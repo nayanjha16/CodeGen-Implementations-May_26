@@ -43,9 +43,10 @@ class TestEvaluationMetrics:
 
 class TestMLflowTracker:
     def test_log_evaluation(self, tmp_path):
+        db_uri = f"sqlite:///{(tmp_path / 'mlflow.db').resolve().as_posix()}"
         tracker = MLflowTracker(
             experiment_name="test-experiment",
-            tracking_uri=str(tmp_path / "mlruns"),
+            tracking_uri=db_uri,
         )
         run_id = tracker.log_evaluation(
             model_name="test-model",

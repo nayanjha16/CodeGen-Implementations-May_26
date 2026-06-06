@@ -17,10 +17,15 @@ class SpiderLoader:
     """Load and standardize the Spider text-to-SQL benchmark."""
 
     DEFAULT_URL = "https://github.com/taoyds/spider/archive/refs/heads/master.zip"
+    # Full dataset mirror (includes dev.json, tables.json, database/)
+    SPIDER_DATA_URL = (
+        "https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ"
+    )
 
     def __init__(self, cache_dir: str | Path = "data/spider", url: str | None = None):
         self.cache_dir = Path(cache_dir)
         self.url = url or self.DEFAULT_URL
+        self.data_dir = self.cache_dir / "spider_data"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def download(self, force: bool = False) -> Path:
@@ -42,7 +47,7 @@ class SpiderLoader:
         return self.cache_dir
 
     def _find_root(self) -> Path:
-        """Locate extracted Spider root directory."""
+        """Locate extracted Spider GitHub repo root directory."""
         candidates = list(self.cache_dir.glob("spider-*"))
         if candidates:
             return candidates[0]
@@ -51,9 +56,87 @@ class SpiderLoader:
             return nested
         return self.cache_dir
 
-    def _load_tables(self, root: Path) -> dict[str, str]:
+    def _download_spider_data(self, force: bool = False) -> Path:
+        """Download full Spider dataset (JSON + SQLite databases)."""
+        marker = self.data_dir / ".downloaded"
+        if marker.exists() and not force and (self.data_dir / "dev.json").exists():
+            return self.data_dir
+
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = self.cache_dir / "spider_data.zip"
+        logger.info("Downloading full Spider dataset...")
+
+        try:
+            import gdown
+
+            gdown.download(self.SPIDER_DATA_URL, str(zip_path), quiet=False, fuzzy=True)
+        except Exception:
+            logger.info("gdown unavailable, using requests fallback")
+            response = requests.get(self.SPIDER_DATA_URL, timeout=300)
+            response.raise_for_status()
+            zip_path.write_bytes(response.content)
+
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            zf.extractall(self.data_dir)
+
+        # Handle zip that extracts into a nested folder
+        if not (self.data_dir / "dev.json").exists():
+            for nested in self.data_dir.iterdir():
+                if nested.is_dir() and (nested / "dev.json").exists():
+                    for item in nested.iterdir():
+                        dest = self.data_dir / item.name
+                        if item.is_dir():
+                            if dest.exists():
+                                import shutil
+
+                            shutil.copytree(item, dest, dirs_exist_ok=True)
+                        else:
+                            import shutil
+
+                            shutil.copy2(item, dest)
+                    break
+
+        zip_path.unlink(missing_ok=True)
+        marker.touch()
+        return self.data_dir
+
+    def _resolve_data_dir(self) -> Path:
+        """Find directory with Spider JSON splits (dev.json, tables.json)."""
+        self.download()
+
+        if (self.data_dir / "dev.json").exists():
+            return self.data_dir
+
+        root = self._find_root()
+        candidates = [
+            root,
+            root / "evaluation_examples" / "examples",
+            self.cache_dir,
+        ]
+        for cand in candidates:
+            if (cand / "dev.json").exists() or (cand / "train_spider.json").exists():
+                return cand
+
+        # Download full dataset if only GitHub code repo was extracted
+        return self._download_spider_data()
+
+    def _split_path(self, data_dir: Path, split: str) -> Path | None:
+        """Resolve path for a dataset split."""
+        split_files = {
+            "train": ["train_spider.json", "train.json"],
+            "validation": ["dev.json"],
+            "dev": ["dev.json"],
+            "test": ["test.json", "test_data.json"],
+        }
+        for filename in split_files.get(split, []):
+            path = data_dir / filename
+            if path.exists():
+                return path
+        return None
+
+    def _load_tables(self, data_dir: Path) -> dict[str, str]:
         """Build database_id -> schema string mapping."""
-        tables_path = root / "tables.json"
+        tables_path = data_dir / "tables.json"
         if not tables_path.exists():
             return {}
 
@@ -95,19 +178,14 @@ class SpiderLoader:
 
     def load_split(self, split: str = "train") -> list[dict[str, str]]:
         """Load train, dev (validation), or test split."""
-        self.download()
-        root = self._find_root()
-        schemas = self._load_tables(root)
+        data_dir = self._resolve_data_dir()
+        schemas = self._load_tables(data_dir)
 
-        split_map = {
-            "train": root / "train_spider.json",
-            "validation": root / "dev.json",
-            "dev": root / "dev.json",
-            "test": root / "test.json",
-        }
-        path = split_map.get(split)
-        if path is None or not path.exists():
-            raise FileNotFoundError(f"Spider split '{split}' not found at {path}")
+        path = self._split_path(data_dir, split)
+        if path is None:
+            raise FileNotFoundError(
+                f"Spider split '{split}' not found under {data_dir}"
+            )
 
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
@@ -126,6 +204,12 @@ class SpiderLoader:
 
     def get_database_path(self, db_id: str) -> Path | None:
         """Return path to SQLite database for a given db_id."""
-        root = self._find_root()
-        db_path = root / "database" / db_id / f"{db_id}.sqlite"
-        return db_path if db_path.exists() else None
+        data_dir = self._resolve_data_dir()
+        candidates = [
+            data_dir / "database" / db_id / f"{db_id}.sqlite",
+            self._find_root() / "database" / db_id / f"{db_id}.sqlite",
+        ]
+        for db_path in candidates:
+            if db_path.exists():
+                return db_path
+        return None

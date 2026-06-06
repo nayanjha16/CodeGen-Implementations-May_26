@@ -88,7 +88,11 @@ def run_quick_baseline(max_samples: int, log_mlflow: bool) -> dict:
 
     examples = QUICK_REFERENCE[:max_samples]
     generator = SQLGenerator(config=config)
-    runner = BenchmarkRunner(config=config, sql_generator=generator)
+    runner = BenchmarkRunner(
+        config=config,
+        sql_generator=generator,
+        enable_mlflow=log_mlflow,
+    )
     runner.max_samples = max_samples
 
     return runner.run_on_dataset(
@@ -98,12 +102,14 @@ def run_quick_baseline(max_samples: int, log_mlflow: bool) -> dict:
     )
 
 
-def run_dataset_baseline(dataset: str, split: str, max_samples: int) -> dict:
+def run_dataset_baseline(
+    dataset: str, split: str, max_samples: int, log_mlflow: bool = False
+) -> dict:
     """Run baseline on Spider or BirdBench (downloads data + loads model)."""
     config = load_config()
     config["evaluation"]["max_samples"] = max_samples
     set_seeds(config)
-    runner = BenchmarkRunner(config=config)
+    runner = BenchmarkRunner(config=config, enable_mlflow=log_mlflow)
 
     if dataset == "spider":
         return runner.run_spider(split)
@@ -137,7 +143,9 @@ def main() -> None:
         result = run_quick_baseline(args.max_samples, args.mlflow)
     else:
         print("Note: First run downloads model (~700MB) and dataset.")
-        result = run_dataset_baseline(args.dataset, args.split, args.max_samples)
+        result = run_dataset_baseline(
+            args.dataset, args.split, args.max_samples, log_mlflow=args.mlflow
+        )
 
     print_metrics(result["metrics"], f"Baseline Results ({result['dataset']})")
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
@@ -156,7 +164,8 @@ def main() -> None:
             indent=2,
         )
     print(f"  Results saved: {output_path}")
-    print("\nView MLflow UI: mlflow ui --backend-store-uri mlruns")
+    if args.mlflow:
+        print("\nView MLflow UI: mlflow ui --backend-store-uri sqlite:///mlflow.db")
 
 
 if __name__ == "__main__":

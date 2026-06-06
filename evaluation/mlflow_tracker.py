@@ -8,12 +8,26 @@ from typing import Any
 import mlflow
 
 
+def default_tracking_uri(project_root: Path | None = None) -> str:
+    """Return SQLite tracking URI (compatible with MLflow 3.x)."""
+    root = project_root or Path(__file__).resolve().parents[1]
+    db_path = (root / "mlflow.db").resolve().as_posix()
+    return f"sqlite:///{db_path}"
+
+
 def _normalize_tracking_uri(tracking_uri: str) -> str:
-    """Ensure local paths use file:// scheme for cross-platform MLflow support."""
-    if tracking_uri in ("", "mlruns"):
-        return "mlruns"
+    """Normalize tracking URI for cross-platform MLflow 3.x support."""
+    if tracking_uri in ("", "mlruns", "mlflow.db"):
+        return default_tracking_uri()
+    if tracking_uri.startswith("sqlite://"):
+        return tracking_uri
+    if tracking_uri.startswith(("http://", "https://")):
+        return tracking_uri
     path = Path(tracking_uri)
-    if path.exists() or not tracking_uri.startswith(("http://", "https://", "file://", "sqlite://")):
+    if path.suffix == ".db":
+        return f"sqlite:///{path.resolve()}"
+    # Legacy file store — only used if explicitly requested
+    if path.exists() or not tracking_uri.startswith("file://"):
         return path.as_uri()
     return tracking_uri
 
@@ -24,9 +38,10 @@ class MLflowTracker:
     def __init__(
         self,
         experiment_name: str = "codegen-text2sql",
-        tracking_uri: str = "mlruns",
+        tracking_uri: str | None = None,
     ):
-        mlflow.set_tracking_uri(_normalize_tracking_uri(tracking_uri))
+        uri = _normalize_tracking_uri(tracking_uri or default_tracking_uri())
+        mlflow.set_tracking_uri(uri)
         mlflow.set_experiment(experiment_name)
         self.experiment_name = experiment_name
         self._active_run = None

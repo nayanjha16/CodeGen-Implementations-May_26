@@ -22,7 +22,7 @@ datasets:
 evaluation:
   batch_size: 8
   max_samples: 100
-  mlflow_tracking_uri: "mlruns"
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"
 
 api:

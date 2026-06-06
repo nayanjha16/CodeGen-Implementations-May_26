@@ -23,16 +23,20 @@ class BenchmarkRunner:
         sql_generator: SQLGenerator | None = None,
         metrics: EvaluationMetrics | None = None,
         tracker: MLflowTracker | None = None,
+        enable_mlflow: bool = True,
     ):
         self.config = config or load_config()
         set_seeds(self.config)
         self.sql_generator = sql_generator or SQLGenerator(config=self.config)
         self.metrics = metrics or EvaluationMetrics()
         eval_cfg = self.config.get("evaluation", {})
-        self.tracker = tracker or MLflowTracker(
-            experiment_name=eval_cfg.get("experiment_name", "codegen-text2sql"),
-            tracking_uri=eval_cfg.get("mlflow_tracking_uri", "mlruns"),
-        )
+        self.enable_mlflow = enable_mlflow
+        self.tracker = None
+        if enable_mlflow:
+            self.tracker = tracker or MLflowTracker(
+                experiment_name=eval_cfg.get("experiment_name", "codegen-text2sql"),
+                tracking_uri=eval_cfg.get("mlflow_tracking_uri"),
+            )
         self.max_samples = eval_cfg.get("max_samples", 100)
 
     def run_on_dataset(
@@ -58,18 +62,20 @@ class BenchmarkRunner:
 
         eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
 
-        run_id = self.tracker.log_evaluation(
-            model_name=self.config.get("model", {}).get("name", "codegen"),
-            dataset=dataset_name,
-            prompt_template=self.sql_generator.prompt_builder.get_template_name(),
-            metrics=eval_metrics,
-            extra_params={
-                "max_samples": len(samples),
-                "decoding_strategy": self.config.get("generation", {}).get(
-                    "decoding_strategy", "greedy"
-                ),
-            },
-        )
+        run_id = None
+        if self.tracker:
+            run_id = self.tracker.log_evaluation(
+                model_name=self.config.get("model", {}).get("name", "codegen"),
+                dataset=dataset_name,
+                prompt_template=self.sql_generator.prompt_builder.get_template_name(),
+                metrics=eval_metrics,
+                extra_params={
+                    "max_samples": len(samples),
+                    "decoding_strategy": self.config.get("generation", {}).get(
+                        "decoding_strategy", "greedy"
+                    ),
+                },
+            )
 
         return {
             "dataset": dataset_name,

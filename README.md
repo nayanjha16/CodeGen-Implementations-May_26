@@ -13,3 +13,11 @@
 
 - **Shib Sankar Dhara**  
   GitHub: [shibaditi](https://github.com/shibaditi)
+
+
+---
+
+## 📌 Note
+
+We are also part of **CodeGen Group‑2**, contributing to NLP-based Java code generation, Java code to C# code generation and documentation systems.
+

@@ -8,17 +8,13 @@ This project focuses on developing an intelligent code generation framework that
 
 ---
 
-## Team Members
+## 👥 Team Members
 
-| Name | GitHub Profile |
-
-| ----------------- | ----------------------------------- |
-
-| Abhinaya Thavishi | https://github.com/abhinayathavishi |
-
-| Mahin Nandipa | https://github.com/mahin-aeroai |
-
-| Ashu Bagul | https://github.com/ashu60997 |
+| Member                | GitHub                                                   |
+| --------------------- | -------------------------------------------------------- |
+| **Abhinaya Thavishi** | [@abhinayathavishi](https://github.com/abhinayathavishi) |
+| **Mahin Nandipa**     | [@mahin-aeroai](https://github.com/mahin-aeroai)         |
+| **Ashu Bagul**        | [@Ashu60997](https://github.com/Ashu60997)               |
 
 ---
 

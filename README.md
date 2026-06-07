@@ -2,7 +2,7 @@
 
 ## 👥 Group 2 – Contributors
 
-- **Dhruba Maiti (Gurgaon)**  
+- **Dhruba Maiti**  
   GitHub: [dhrubamaiti](https://github.com/dhrubamaiti)
 
 - **Sattwik Ayyagari**  

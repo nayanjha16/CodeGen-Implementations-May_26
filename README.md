@@ -19,5 +19,5 @@
 
 ## 📌 Note
 
-We are also part of **CodeGen Group‑2**, contributing to NLP-based Java code generation, Java code to C# code generation and documentation systems.
+We are part of **Group-6** or **CodeGen Group‑2**, contributing to NLP-based Java code generation, Java code to C# code generation and documentation systems.
 

@@ -1,6 +1,6 @@
 # CodeGen-Implementations-May_26
 
-## 👥 Group 2 – Contributors
+## 👥 Group 6 – Contributors
 
 - **Dhruba Maiti**  
   GitHub: [dhrubamaiti](https://github.com/dhrubamaiti)

@@ -1,7 +1,8 @@
 The actions items and discussions between the group members and mentors are documented here.
 
-[06/07/2026] (06-07-2026)
+[06/07/2026](#06072026)
 
+---
 
 # 06/07/2026
 ## Notes:

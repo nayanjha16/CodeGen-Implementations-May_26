@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rustgen"
+version = "0.1.0"
+description = "English/Python -> Rust translation: codegen-350M + LoRA + RAG, with a mock backend that runs today"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "gradio>=4.0",
+    "numpy",
+]
+
+[project.optional-dependencies]
+ml = ["torch", "transformers", "peft", "accelerate"]
+rag = ["scikit-learn"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["rustgen*"]

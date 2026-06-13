@@ -1,0 +1,2 @@
+{"task_id": "sample/0", "prompt": "Add two integers and return the sum.", "tests": "fn main() {\n    assert_eq!(add(2, 3), 5);\n    assert_eq!(add(-1, 1), 0);\n}"}
+{"task_id": "sample/1", "prompt": "Return the largest element of a non-empty vector of integers.", "tests": "fn main() {\n    assert_eq!(max_element(vec![1, 5, 3]), 5);\n    assert_eq!(max_element(vec![-2, -7]), -2);\n}"}

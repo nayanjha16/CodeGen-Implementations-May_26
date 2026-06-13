@@ -24,7 +24,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.evaluation.benchmark import BenchmarkRunner
-from src.evaluation.export import DETAILS_CSV, METRICS_JSON, save_evaluation_details_csv
+from src.evaluation.export import (
+    METRICS_JSON,
+    SQL2NOSQL_DETAILS_CSV,
+    TEXT2SQL_DETAILS_CSV,
+    save_sql2nosql_details_csv,
+    save_text2sql_details_csv,
+)
 from src.models.model_loader import is_model_cached
 from src.utils.config import get_bertscore_model_name, get_model_name, load_config
 from src.utils.paths import (
@@ -60,7 +66,7 @@ QUICK_REFERENCE = [
 ]
 
 
-def print_metrics(metrics: dict, title: str) -> None:
+def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
     print("\n" + "=" * 60)
     print(f"  {title}")
     print("=" * 60)
@@ -68,6 +74,11 @@ def print_metrics(metrics: dict, title: str) -> None:
         ("exact_match", "Exact Match Accuracy"),
         ("execution_accuracy", "Execution Accuracy"),
         ("syntax_validity", "Syntax Validity Rate"),
+        ("structural_equivalence", "Structural Equivalence"),
+        ("translation_success_rate", "Translation Success Rate"),
+        ("scored_count", "Scored Sample Count"),
+        ("total_count", "Total Sample Count"),
+        ("token_f1", "Token F1"),
         ("bleu", "BLEU"),
         ("rouge_l", "ROUGE-L"),
         ("bertscore", "BERTScore"),
@@ -80,10 +91,11 @@ def print_metrics(metrics: dict, title: str) -> None:
     for key, label in labels:
         if key in metrics:
             val = metrics[key]
+            display_label = f"{prefix}{label}" if prefix else label
             if isinstance(val, float):
-                print(f"  {label:30s}: {val:.4f}")
+                print(f"  {display_label:30s}: {val:.4f}")
             else:
-                print(f"  {label:30s}: {val}")
+                print(f"  {display_label:30s}: {val}")
 
 
 def run_quick_baseline(max_samples: int, log_mlflow: bool) -> dict:
@@ -160,7 +172,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         default="baseline_eval_results",
-        help="run name; creates results/<name>/ with metrics.json and details.csv",
+        help="run name; creates results/<name>/ with metrics.json and detail CSVs",
     )
     args = parser.parse_args()
 
@@ -177,35 +189,46 @@ def main() -> None:
             args.dataset, args.split, args.max_samples, log_mlflow=args.mlflow
         )
 
-    print_metrics(result["metrics"], f"Baseline Results ({result['dataset']})")
+    print_metrics(result["metrics"], f"Text-to-SQL Results ({result['dataset']})")
+    if result.get("nosql_metrics"):
+        print_metrics(
+            result["nosql_metrics"],
+            f"SQL-to-MongoDB Results ({result['dataset']})",
+        )
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
     run_dir = resolve_results_run_dir(args.output)
     metrics_path = run_dir / METRICS_JSON
-    details_path = run_dir / DETAILS_CSV
+    text2sql_details_path = run_dir / TEXT2SQL_DETAILS_CSV
+    sql2nosql_details_path = run_dir / SQL2NOSQL_DETAILS_CSV
 
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "model": model_name,
                 "dataset": result["dataset"],
-                "metrics": result["metrics"],
+                "text2sql": result["metrics"],
+                "sql2nosql": result.get("nosql_metrics"),
                 "mlflow_run_id": result.get("mlflow_run_id"),
             },
             f,
             indent=2,
         )
 
-    db_paths = [pred.get("db_path") for pred in result.get("predictions", [])]
-    save_evaluation_details_csv(
-        details_path,
-        result.get("predictions", []),
+    text2sql_predictions = result.get("predictions", [])
+    sql2nosql_predictions = result.get("nosql_predictions", [])
+    db_paths = [pred.get("db_path") for pred in text2sql_predictions]
+    save_text2sql_details_csv(
+        text2sql_details_path,
+        text2sql_predictions,
         db_paths=db_paths,
     )
+    save_sql2nosql_details_csv(sql2nosql_details_path, sql2nosql_predictions)
 
     print(f"  Run saved: {run_dir}")
     print(f"    metrics: {metrics_path}")
-    print(f"    details: {details_path}")
+    print(f"    text2sql details: {text2sql_details_path}")
+    print(f"    sql2nosql details: {sql2nosql_details_path}")
     if args.mlflow:
         print("\nView MLflow UI: mlflow ui --backend-store-uri sqlite:///mlflow.db")
 

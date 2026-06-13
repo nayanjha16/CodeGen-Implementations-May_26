@@ -20,18 +20,53 @@ class TestSQLToNoSQLTranslator:
     def test_select_star(self):
         sql = "SELECT * FROM products"
         result = self.translator.translate(sql)
+        assert result["success"] is True
         assert "db.products.find" in result["mongodb_query"]
 
     def test_order_by_limit(self):
         sql = "SELECT name FROM users ORDER BY name DESC LIMIT 10"
         result = self.translator.translate(sql)
+        assert result["success"] is True
         assert ".sort" in result["mongodb_query"]
         assert ".limit(10)" in result["mongodb_query"]
 
     def test_group_by(self):
         sql = "SELECT department, COUNT(*) FROM employees GROUP BY department"
         result = self.translator.translate(sql)
+        assert result["success"] is True
         assert "aggregate" in result["mongodb_query"]
+
+    def test_count_without_group_by(self):
+        sql = "SELECT count(*) FROM singer"
+        result = self.translator.translate(sql)
+        assert result["success"] is True
+        assert "aggregate" in result["mongodb_query"]
+        assert "$group" in result["mongodb_query"]
+
+    def test_scalar_aggregates(self):
+        sql = "SELECT avg(age), min(age), max(age) FROM singer WHERE country = 'France'"
+        result = self.translator.translate(sql)
+        assert result["success"] is True
+        assert "aggregate" in result["mongodb_query"]
+        assert "$avg" in result["mongodb_query"]
+
+    def test_distinct(self):
+        sql = "SELECT DISTINCT country FROM singer WHERE age > 20"
+        result = self.translator.translate(sql)
+        assert result["success"] is True
+        assert "distinct" in result["mongodb_query"]
+
+    def test_non_select_input_still_translates(self):
+        result = self.translator.translate("Singer_in_concert")
+        assert result["success"] is True
+        assert "db.collection.find" in result["mongodb_query"]
+
+    def test_schema_fragment_still_translates(self):
+        result = self.translator.translate(
+            "Table singer(Singer_ID number, Name number)"
+        )
+        assert result["success"] is True
+        assert result["mongodb_query"]
 
     def test_unsupported_join_warning(self):
         sql = "SELECT a.name FROM a JOIN b ON a.id = b.id"
@@ -41,6 +76,7 @@ class TestSQLToNoSQLTranslator:
     def test_filter_extraction(self):
         sql = "SELECT name FROM users WHERE age > 20 AND name = 'Alice'"
         result = self.translator.translate(sql)
+        assert result["success"] is True
         assert "age" in result.get("filter", {}) or "20" in result["mongodb_query"]
 
 
@@ -63,7 +99,22 @@ class TestNoSQLEvaluator:
         preds = [{"mongodb_query": "db.t.find({})"}]
         refs = [{"mongodb_query": "db.t.find({})"}]
         result = evaluator.evaluate_batch(preds, refs)
-        assert result["exact_match_rate"] == 1.0
+        assert result["exact_match"] == 1.0
+
+    def test_evaluate_all(self):
+        evaluator = NoSQLEvaluator()
+        preds = ["db.users.find({ age: { $gt: 20 } })"]
+        refs = ["db.users.find({ age: { $gt: 20 } })"]
+        result = evaluator.evaluate_all(preds, refs)
+        assert result["exact_match"] == 1.0
+        assert "bleu" in result
+        assert "codebleu" in result
+
+    def test_syntax_validity(self):
+        evaluator = NoSQLEvaluator()
+        assert evaluator.validate_syntax("db.users.find({})")["valid"] is True
+        assert evaluator.validate_syntax("db.users.distinct(\"country\", {})")["valid"] is True
+        assert evaluator.validate_syntax("invalid query")["valid"] is False
 
     def test_query_equivalence(self):
         evaluator = NoSQLEvaluator()
@@ -75,4 +126,4 @@ class TestNoSQLEvaluator:
     def test_empty_batch(self):
         evaluator = NoSQLEvaluator()
         result = evaluator.evaluate_batch([], [])
-        assert result["translation_accuracy"] == 0.0
+        assert result["exact_match"] == 0.0

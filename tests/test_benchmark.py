@@ -25,7 +25,9 @@ class TestBenchmarkRunner:
         result = runner.run_on_dataset(sample_examples, "test_dataset")
         assert result["dataset"] == "test_dataset"
         assert "metrics" in result
+        assert "nosql_metrics" in result
         assert len(result["predictions"]) == 2
+        assert len(result["nosql_predictions"]) == 2
 
     @patch("src.datasets.spider_loader.SpiderLoader.load_split")
     def test_run_spider(self, mock_load, mock_model, tmp_path):

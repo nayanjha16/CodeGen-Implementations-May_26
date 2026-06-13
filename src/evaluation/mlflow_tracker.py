@@ -81,6 +81,7 @@ class MLflowTracker:
         metrics: dict[str, Any],
         extra_params: dict[str, Any] | None = None,
         run_name: str | None = None,
+        nosql_metrics: dict[str, Any] | None = None,
     ) -> str:
         """Log a complete evaluation run."""
         with self.start_run(run_name=run_name or f"{dataset}-{model_name}"):
@@ -105,6 +106,23 @@ class MLflowTracker:
                 "semantic_match",
             ]
             logged = {k: metrics[k] for k in metric_keys if k in metrics}
+            if nosql_metrics:
+                nosql_keys = [
+                    "exact_match",
+                    "syntax_validity",
+                    "token_f1",
+                    "structural_equivalence",
+                    "bleu",
+                    "rouge_l",
+                    "bertscore",
+                    "codebleu",
+                    "ngram_match",
+                    "syntax_match",
+                    "semantic_match",
+                ]
+                logged.update(
+                    {f"nosql_{k}": nosql_metrics[k] for k in nosql_keys if k in nosql_metrics}
+                )
             self.log_metrics(logged)
             return mlflow.active_run().info.run_id
 

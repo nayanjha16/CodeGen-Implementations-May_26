@@ -19,6 +19,32 @@ class TestPromptBuilder:
         assert "Show all students" in prompt
         assert "Generate SQL query" in prompt
 
+    def test_seq2seq_template(self):
+        builder = PromptBuilder(template_name="seq2seq")
+        prompt = builder.build(
+            "How many singers?",
+            "Table singer(id, name)\nTable concert(id, theme)",
+        )
+        assert prompt.startswith("Question: How many singers?")
+        assert "Schema:" in prompt
+        assert "SQL:" in prompt
+        assert "singer(id, name)" in prompt
+
+    def test_for_model_selects_seq2seq_with_checkpoint(self):
+        builder = PromptBuilder.for_model(
+            "google-t5/t5-base",
+            {"model": {"checkpoint": "spider-t5-base-smoke"}},
+        )
+        assert builder.get_template_name() == "seq2seq"
+
+    def test_for_model_selects_default_for_base_t5(self):
+        builder = PromptBuilder.for_model("google-t5/t5-base")
+        assert builder.get_template_name() == "default"
+
+    def test_for_model_selects_default(self):
+        builder = PromptBuilder.for_model("Salesforce/codegen-350M-multi")
+        assert builder.get_template_name() == "default"
+
     def test_build_batch(self, sample_examples):
         builder = PromptBuilder()
         prompts = builder.build_batch(sample_examples)
@@ -45,6 +71,17 @@ class TestSQLGenerator:
         generator = SQLGenerator(model=mock_model)
         result = generator.generate("q", "schema")
         assert result["sql"] == "SELECT * FROM t"
+
+    def test_extracts_fallback_from_non_sql_output(self, mock_model):
+        mock_model.generate = lambda prompt, **kw: "Singer_in_concert"
+        generator = SQLGenerator(model=mock_model)
+        result = generator.generate("q", "schema")
+        assert result["sql"] == "Singer_in_concert"
+
+    def test_is_valid_sql(self, mock_model):
+        generator = SQLGenerator(model=mock_model)
+        assert generator.is_valid_sql("SELECT name FROM students")
+        assert not generator.is_valid_sql("Singer_in_concert")
 
     def test_generate_batch(self, mock_model, sample_examples):
         generator = SQLGenerator(model=mock_model)

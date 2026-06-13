@@ -121,7 +121,10 @@ class EvaluationMetrics:
             return self._simple_token_overlap(predictions, references)
 
     def compute_codebleu(
-        self, predictions: list[str], references: list[str]
+        self,
+        predictions: list[str],
+        references: list[str],
+        lang: str = "sql",
     ) -> dict[str, float]:
         """Compute CodeBLEU with n-gram, syntax, and semantic components."""
         try:
@@ -130,7 +133,7 @@ class EvaluationMetrics:
             result = calc_codebleu(
                 references,
                 predictions,
-                lang="sql",
+                lang=lang,
                 weights=(0.25, 0.25, 0.25, 0.25),
             )
             return {

@@ -7,6 +7,8 @@ from typing import Any
 
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.mlflow_tracker import MLflowTracker
+from src.sql2nosql.evaluator import NoSQLEvaluator
+from src.sql2nosql.translator import SQLToNoSQLTranslator
 from src.text2sql.sql_generator import SQLGenerator
 from src.utils.config import load_config
 from src.utils.seeds import set_seeds
@@ -22,6 +24,8 @@ class BenchmarkRunner:
         config: dict[str, Any] | None = None,
         sql_generator: SQLGenerator | None = None,
         metrics: EvaluationMetrics | None = None,
+        nosql_evaluator: NoSQLEvaluator | None = None,
+        nosql_translator: SQLToNoSQLTranslator | None = None,
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
     ):
@@ -29,6 +33,8 @@ class BenchmarkRunner:
         set_seeds(self.config)
         self.sql_generator = sql_generator or SQLGenerator(config=self.config)
         self.metrics = metrics or EvaluationMetrics()
+        self.nosql_evaluator = nosql_evaluator or NoSQLEvaluator()
+        self.nosql_translator = nosql_translator or SQLToNoSQLTranslator()
         eval_cfg = self.config.get("evaluation", {})
         self.enable_mlflow = enable_mlflow
         self.tracker = None
@@ -38,6 +44,86 @@ class BenchmarkRunner:
                 tracking_uri=eval_cfg.get("mlflow_tracking_uri"),
             )
         self.max_samples = eval_cfg.get("max_samples", 100)
+
+    @staticmethod
+    def _is_valid_select_sql(sql: str, validator) -> bool:
+        """Return True when SQL is a complete SELECT ... FROM query."""
+        import re
+
+        if not sql.strip():
+            return False
+        if not re.match(r"^\s*SELECT\b", sql, re.IGNORECASE):
+            return False
+        if not re.search(r"\bFROM\b", sql, re.IGNORECASE):
+            return False
+        syntax = validator.validate_syntax(sql)
+        completeness = validator.validate_completeness(sql)
+        return syntax["valid"] and completeness["complete"]
+
+    def evaluate_sql2nosql(
+        self,
+        gen_results: list[dict[str, Any]],
+        samples: list[dict[str, str]],
+    ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        """Translate predicted and reference SQL to MongoDB and score."""
+        from src.text2sql.sql_validator import SQLValidator
+
+        sql_validator = SQLValidator()
+        pred_queries: list[str] = []
+        ref_queries: list[str] = []
+        structured_preds: list[dict[str, Any]] = []
+        structured_refs: list[dict[str, Any]] = []
+        nosql_results: list[dict[str, Any]] = []
+
+        for result, example in zip(gen_results, samples):
+            pred_sql = result.get("sql", "")
+            ref_sql = result.get("ground_truth", example.get("sql", ""))
+
+            pred_sql_valid = self._is_valid_select_sql(pred_sql, sql_validator)
+            ref_sql_valid = self._is_valid_select_sql(ref_sql, sql_validator)
+
+            pred_trans = self.nosql_translator.translate(pred_sql)
+            ref_trans = self.nosql_translator.translate(ref_sql)
+
+            pred_queries.append(pred_trans.get("mongodb_query", ""))
+            ref_queries.append(ref_trans.get("mongodb_query", ""))
+            structured_preds.append(pred_trans)
+            structured_refs.append(ref_trans)
+
+            nosql_results.append(
+                {
+                    **result,
+                    "reference_sql": ref_sql,
+                    "predicted_sql_valid": pred_sql_valid,
+                    "reference_sql_valid": ref_sql_valid,
+                    "predicted_mongodb_query": pred_trans.get("mongodb_query", ""),
+                    "reference_mongodb_query": ref_trans.get("mongodb_query", ""),
+                    "reference_translation_success": ref_trans.get("success", False),
+                    "mongodb_warnings": "; ".join(pred_trans.get("warnings", [])),
+                    "mongodb_success": pred_trans.get("success", False),
+                    "collection": pred_trans.get("collection", ""),
+                    "filter": pred_trans.get("filter", {}),
+                    "projection": pred_trans.get("projection", {}),
+                    "reference_collection": ref_trans.get("collection", ""),
+                    "reference_filter": ref_trans.get("filter", {}),
+                    "reference_projection": ref_trans.get("projection", {}),
+                }
+            )
+
+        nosql_metrics = self.nosql_evaluator.evaluate_all(
+            pred_queries,
+            ref_queries,
+            structured_preds,
+            structured_refs,
+        )
+        nosql_metrics["total_count"] = len(nosql_results)
+        nosql_metrics["scored_count"] = len(pred_queries)
+        nosql_metrics["translation_success_rate"] = (
+            sum(1 for r in nosql_results if r.get("mongodb_success")) / len(nosql_results)
+            if nosql_results
+            else 0.0
+        )
+        return nosql_metrics, nosql_results
 
     def run_on_dataset(
         self,
@@ -67,6 +153,7 @@ class BenchmarkRunner:
             db_paths = [None] * len(samples)
 
         eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
+        nosql_metrics, nosql_results = self.evaluate_sql2nosql(gen_results, samples)
 
         run_id = None
         if self.tracker:
@@ -75,6 +162,7 @@ class BenchmarkRunner:
                 dataset=dataset_name,
                 prompt_template=self.sql_generator.prompt_builder.get_template_name(),
                 metrics=eval_metrics,
+                nosql_metrics=nosql_metrics,
                 extra_params={
                     "max_samples": len(samples),
                     "decoding_strategy": self.config.get("generation", {}).get(
@@ -86,7 +174,9 @@ class BenchmarkRunner:
         return {
             "dataset": dataset_name,
             "metrics": eval_metrics,
+            "nosql_metrics": nosql_metrics,
             "predictions": gen_results,
+            "nosql_predictions": nosql_results,
             "mlflow_run_id": run_id,
         }
 

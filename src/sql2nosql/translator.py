@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from typing import Any
@@ -12,9 +13,14 @@ from sqlparse.tokens import Keyword, Name
 
 logger = logging.getLogger("codegen")
 
+_AGG_FUNC_PATTERN = re.compile(
+    r"(count|avg|min|max|sum)\s*\(\s*(?:\*\s*|\w+)\s*\)",
+    re.IGNORECASE,
+)
+
 
 class SQLToNoSQLTranslator:
-    """Translate SQL SELECT queries to MongoDB find() syntax."""
+    """Translate SQL SELECT queries to MongoDB find() or aggregate() syntax."""
 
     SUPPORTED = {"SELECT", "WHERE", "ORDER BY", "LIMIT", "GROUP BY"}
     UNSUPPORTED_WARNINGS: list[str] = []
@@ -26,7 +32,7 @@ class SQLToNoSQLTranslator:
 
         parsed = sqlparse.parse(sql)
         if not parsed:
-            return {"mongodb_query": "", "warnings": ["Unable to parse SQL"], "success": False}
+            return self._failure("Unable to parse SQL")
 
         statement = parsed[0]
         upper_sql = sql.upper()
@@ -38,19 +44,76 @@ class SQLToNoSQLTranslator:
         if "UNION" in upper_sql:
             self._warn("UNION is not supported")
         if "INSERT" in upper_sql or "UPDATE" in upper_sql or "DELETE" in upper_sql:
-            self._warn("Only SELECT queries are supported for translation")
+            return self._failure("Only SELECT queries are supported for translation")
 
         table = self._extract_table(statement)
         columns = self._extract_columns(statement)
+        if columns == ["*"]:
+            select_clause = self._extract_select_clause(sql)
+            if select_clause and select_clause.strip() != "*":
+                columns = [
+                    c.strip()
+                    for c in re.sub(
+                        r"^\s*DISTINCT\s+",
+                        "",
+                        select_clause,
+                        flags=re.IGNORECASE,
+                    ).split(",")
+                ]
         where_filter = self._extract_where(statement)
         order_by = self._extract_order_by(sql)
         limit = self._extract_limit(sql)
         group_by = self._extract_group_by(sql)
+        distinct = self._has_distinct(sql)
 
         if group_by:
             return self._build_aggregate(table, columns, where_filter, group_by)
 
+        if distinct and not self._has_aggregates(sql):
+            return self._build_distinct(table, columns, where_filter, sql)
+
+        if self._has_aggregates(sql):
+            return self._build_scalar_aggregate(table, sql, where_filter)
+
         return self._build_find(table, columns, where_filter, order_by, limit)
+
+    def _failure(self, message: str) -> dict[str, Any]:
+        return {
+            "mongodb_query": "",
+            "collection": "",
+            "filter": {},
+            "projection": {},
+            "warnings": [message],
+            "success": False,
+        }
+
+    def _is_valid_select(self, sql: str) -> bool:
+        """Require a SELECT statement with a FROM clause."""
+        if not sql:
+            return False
+        if not re.match(r"^\s*SELECT\b", sql, re.IGNORECASE):
+            return False
+        return bool(re.search(r"\bFROM\b", sql, re.IGNORECASE))
+
+    def _has_distinct(self, sql: str) -> bool:
+        select_match = re.search(
+            r"SELECT\s+(DISTINCT\s+)?", sql, re.IGNORECASE
+        )
+        if not select_match:
+            return False
+        return bool(select_match.group(1))
+
+    def _has_aggregates(self, sql: str) -> bool:
+        select_clause = self._extract_select_clause(sql)
+        return bool(select_clause and _AGG_FUNC_PATTERN.search(select_clause))
+
+    def _extract_select_clause(self, sql: str) -> str:
+        match = re.search(
+            r"SELECT\s+(.*?)\s+FROM\b",
+            sql,
+            re.IGNORECASE | re.DOTALL,
+        )
+        return match.group(1).strip() if match else ""
 
     def _warn(self, message: str) -> None:
         logger.warning(message)
@@ -90,7 +153,11 @@ class SQLToNoSQLTranslator:
         return columns
 
     def _col_name(self, identifier) -> str:
-        name = identifier.get_real_name() if hasattr(identifier, "get_real_name") else str(identifier)
+        name = (
+            identifier.get_real_name()
+            if hasattr(identifier, "get_real_name")
+            else str(identifier)
+        )
         return name.strip()
 
     def _extract_where(self, statement) -> dict[str, Any]:
@@ -159,7 +226,7 @@ class SQLToNoSQLTranslator:
     def _mongo_op(self, column: str, op: str, value: str) -> dict[str, Any]:
         """Convert SQL comparison to MongoDB operator."""
         ops_map = {
-            "=": lambda v: v,
+            "=": lambda v: self._cast_value(v),
             "!=": lambda v: {"$ne": self._cast_value(v)},
             "<>": lambda v: {"$ne": self._cast_value(v)},
             ">": lambda v: {"$gt": self._cast_value(v)},
@@ -223,7 +290,9 @@ class SQLToNoSQLTranslator:
         parts = []
         for k, v in doc.items():
             if isinstance(v, dict):
-                inner = ", ".join(f"{ik}: {self._format_value(iv)}" for ik, iv in v.items())
+                inner = ", ".join(
+                    f"{ik}: {self._format_value(iv)}" for ik, iv in v.items()
+                )
                 parts.append(f"{k}: {{ {inner} }}")
             else:
                 parts.append(f"{k}: {self._format_value(v)}")
@@ -266,6 +335,86 @@ class SQLToNoSQLTranslator:
             "success": True,
         }
 
+    def _build_distinct(
+        self,
+        table: str,
+        columns: list[str],
+        where_filter: dict,
+        sql: str,
+    ) -> dict[str, Any]:
+        select_clause = re.sub(
+            r"^\s*DISTINCT\s+",
+            "",
+            self._extract_select_clause(sql),
+            flags=re.IGNORECASE,
+        )
+        field = select_clause.split(",")[0].strip()
+        if not field or field == "*":
+            field = columns[0] if columns and columns[0] != "*" else "_id"
+        filter_str = self._format_doc(where_filter)
+        query = f"db.{table}.distinct(\n  \"{field}\",\n  {filter_str}\n)"
+
+        return {
+            "mongodb_query": query,
+            "collection": table,
+            "filter": where_filter,
+            "projection": {field: 1},
+            "warnings": self.UNSUPPORTED_WARNINGS,
+            "success": True,
+        }
+
+    def _build_scalar_aggregate(
+        self,
+        table: str,
+        sql: str,
+        where_filter: dict,
+    ) -> dict[str, Any]:
+        select_clause = self._extract_select_clause(sql)
+        group_fields: dict[str, Any] = {"_id": None}
+
+        for match in _AGG_FUNC_PATTERN.finditer(select_clause):
+            func = match.group(1).lower()
+            inner = match.group(0)
+            col_match = re.search(r"\(\s*(\*|\w+)\s*\)", inner, re.IGNORECASE)
+            col = col_match.group(1) if col_match else "*"
+
+            alias_match = re.search(
+                rf"{re.escape(inner)}\s*(?:AS\s+)?(\w+)?",
+                select_clause,
+                re.IGNORECASE,
+            )
+            alias = alias_match.group(1) if alias_match and alias_match.group(1) else func
+            if col == "*":
+                alias = alias if alias != func else "count"
+                group_fields[alias] = {"$sum": 1}
+            else:
+                mongo_func = {
+                    "count": "$sum",
+                    "avg": "$avg",
+                    "min": "$min",
+                    "max": "$max",
+                    "sum": "$sum",
+                }[func]
+                group_fields[alias] = {mongo_func: f"${col}"}
+
+        pipeline: list[dict[str, Any]] = []
+        if where_filter:
+            pipeline.append({"$match": where_filter})
+        pipeline.append({"$group": group_fields})
+
+        pipeline_str = json.dumps(pipeline, indent=2)
+        query = f"db.{table}.aggregate(\n{pipeline_str}\n)"
+
+        return {
+            "mongodb_query": query,
+            "collection": table,
+            "filter": where_filter,
+            "projection": {},
+            "pipeline": pipeline,
+            "warnings": self.UNSUPPORTED_WARNINGS,
+            "success": True,
+        }
+
     def _build_aggregate(
         self,
         table: str,
@@ -274,12 +423,33 @@ class SQLToNoSQLTranslator:
         group_by: list[str],
     ) -> dict[str, Any]:
         group_id = group_by[0] if len(group_by) == 1 else {c: f"${c}" for c in group_by}
-        pipeline = []
+        group_stage: dict[str, Any] = {"_id": group_id}
+
+        for col_expr in columns:
+            count_match = re.match(r"count\s*\(\s*\*\s*\)", col_expr, re.IGNORECASE)
+            if count_match:
+                group_stage["count"] = {"$sum": 1}
+                continue
+            agg_match = re.match(
+                r"(count|avg|min|max|sum)\s*\(\s*(\w+)\s*\)",
+                col_expr,
+                re.IGNORECASE,
+            )
+            if agg_match:
+                func, col = agg_match.group(1).lower(), agg_match.group(2)
+                mongo_func = {
+                    "count": "$sum",
+                    "avg": "$avg",
+                    "min": "$min",
+                    "max": "$max",
+                    "sum": "$sum",
+                }[func]
+                group_stage[col] = {mongo_func: f"${col}"}
+
+        pipeline: list[dict[str, Any]] = []
         if where_filter:
             pipeline.append({"$match": where_filter})
-        pipeline.append({"$group": {"_id": group_id}})
-
-        import json
+        pipeline.append({"$group": group_stage})
 
         pipeline_str = json.dumps(pipeline, indent=2)
         query = f"db.{table}.aggregate(\n{pipeline_str}\n)"
@@ -287,6 +457,8 @@ class SQLToNoSQLTranslator:
         return {
             "mongodb_query": query,
             "collection": table,
+            "filter": where_filter,
+            "projection": {},
             "pipeline": pipeline,
             "warnings": self.UNSUPPORTED_WARNINGS,
             "success": True,

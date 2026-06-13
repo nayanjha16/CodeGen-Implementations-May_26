@@ -1,18 +1,35 @@
 {
   "model": "google-t5/t5-base",
   "dataset": "spider_validation",
-  "metrics": {
+  "text2sql": {
     "exact_match": 0.0,
     "syntax_validity": 0.0,
     "bleu": 0.0,
-    "rouge_l": 0.18015621389064176,
-    "bertscore": 0.09,
-    "codebleu": 0.09,
-    "ngram_match": 0.09,
-    "syntax_match": 0.09,
-    "semantic_match": 0.09,
+    "rouge_l": 0.21762458288074985,
+    "bertscore": 0.0625,
+    "codebleu": 0.0625,
+    "ngram_match": 0.0625,
+    "syntax_match": 0.0625,
+    "semantic_match": 0.0625,
     "count": 10,
     "execution_accuracy": 0.0
+  },
+  "sql2nosql": {
+    "exact_match": 0.0,
+    "syntax_validity": 1.0,
+    "token_f1": 0.23772727272727273,
+    "bleu": 0.00016722161666337014,
+    "rouge_l": 0.19015873015873014,
+    "bertscore": 0.16062271062271063,
+    "codebleu": 0.16062271062271063,
+    "ngram_match": 0.16062271062271063,
+    "syntax_match": 0.16062271062271063,
+    "semantic_match": 0.16062271062271063,
+    "count": 10,
+    "structural_equivalence": 0.0,
+    "total_count": 10,
+    "scored_count": 10,
+    "translation_success_rate": 1.0
   },
   "mlflow_run_id": null
 }

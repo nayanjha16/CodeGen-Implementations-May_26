@@ -1,5 +1,5 @@
 """
-Baseline model evaluation for Salesforce/codegen-350M-multi.
+Baseline model evaluation.
 
 Computes: Exact Match, Execution Accuracy, Syntax Validity,
           BLEU, ROUGE-L, BERTScore, CodeBLEU
@@ -22,10 +22,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from evaluation.benchmark import BenchmarkRunner
-from evaluation.metrics import EvaluationMetrics
-from evaluation.mlflow_tracker import MLflowTracker
-from src.utils.config import load_config
+from src.evaluation.benchmark import BenchmarkRunner
+from src.evaluation.metrics import EvaluationMetrics
+from src.evaluation.mlflow_tracker import MLflowTracker
+from src.models.model_loader import is_model_cached
+from src.utils.config import get_bertscore_model_name, get_model_name, load_config
+from src.utils.paths import (
+    get_bird_data_dir,
+    get_model_cache_dir,
+    get_spider_data_dir,
+    is_bird_cached,
+    is_spider_cached,
+    resolve_results_output_path,
+)
 from src.utils.seeds import set_seeds
 
 # Small built-in reference set for quick baseline (no download required)
@@ -84,7 +93,7 @@ def run_quick_baseline(max_samples: int, log_mlflow: bool) -> dict:
 
     config = load_config()
     set_seeds(config)
-    db_path = create_sample_db(ROOT / "data" / "sample" / "students.db")
+    db_path = create_sample_db(ROOT / "data" / "samples" / "students.db")
 
     examples = QUICK_REFERENCE[:max_samples]
     generator = SQLGenerator(config=config)
@@ -100,6 +109,21 @@ def run_quick_baseline(max_samples: int, log_mlflow: bool) -> dict:
         dataset_name="quick_reference_baseline",
         db_resolver=lambda _: str(db_path),
     )
+
+
+def _print_cache_status(dataset: str, config: dict) -> None:
+    """Show whether model and dataset will be loaded from local cache."""
+    model_dir = get_model_cache_dir(get_model_name(config))
+    bert_dir = get_model_cache_dir(get_bertscore_model_name(config))
+    data_dir = get_spider_data_dir() if dataset == "spider" else get_bird_data_dir()
+    data_cached = is_spider_cached(data_dir) if dataset == "spider" else is_bird_cached(data_dir)
+
+    model_status = "cached" if is_model_cached(model_dir) else "will download"
+    bert_status = "cached" if is_model_cached(bert_dir) else "will download"
+    data_status = "cached" if data_cached else "will download"
+    print(f"Model ({get_model_name(config)}): {model_status} at {model_dir}")
+    print(f"BERTScore ({get_bertscore_model_name(config)}): {bert_status} at {bert_dir}")
+    print(f"Dataset ({dataset}): {data_status} at {data_dir}")
 
 
 def run_dataset_baseline(
@@ -119,6 +143,10 @@ def run_dataset_baseline(
 
 
 def main() -> None:
+    import os
+
+    os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+
     parser = argparse.ArgumentParser(description="Baseline model evaluation")
     parser.add_argument(
         "--dataset",
@@ -131,18 +159,20 @@ def main() -> None:
     parser.add_argument("--mlflow", action="store_true", help="log results to MLflow")
     parser.add_argument(
         "--output",
-        default=str(ROOT / "data" / "baseline_eval_results.json"),
-        help="save metrics JSON here",
+        default="baseline_eval_results.json",
+        help="output filename or path under results/ (default: baseline_eval_results.json)",
     )
     args = parser.parse_args()
 
-    print("Baseline Evaluation: Salesforce/codegen-350M-multi")
+    config = load_config()
+    model_name = get_model_name(config)
+    print(f"Baseline Evaluation: {model_name}")
     print(f"Dataset: {args.dataset} | Max samples: {args.max_samples}")
 
     if args.dataset == "quick":
         result = run_quick_baseline(args.max_samples, args.mlflow)
     else:
-        print("Note: First run downloads model (~700MB) and dataset.")
+        _print_cache_status(args.dataset, config)
         result = run_dataset_baseline(
             args.dataset, args.split, args.max_samples, log_mlflow=args.mlflow
         )
@@ -150,12 +180,12 @@ def main() -> None:
     print_metrics(result["metrics"], f"Baseline Results ({result['dataset']})")
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
-    output_path = Path(args.output)
+    output_path = resolve_results_output_path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(
             {
-                "model": "Salesforce/codegen-350M-multi",
+                "model": model_name,
                 "dataset": result["dataset"],
                 "metrics": result["metrics"],
                 "mlflow_run_id": result.get("mlflow_run_id"),

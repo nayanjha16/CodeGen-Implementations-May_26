@@ -9,4 +9,4 @@ export PYTHONPATH="${PYTHONPATH:-}:$(pwd)"
 PORT="${PORT:-8501}"
 
 echo "Starting CodeGen Streamlit UI on port ${PORT}"
-streamlit run streamlit_app/app.py --server.port "$PORT"
+streamlit run apps/streamlit/app.py --server.port "$PORT"

@@ -10,28 +10,47 @@ from typing import Any
 
 import requests
 
+from src.utils.config import get_bird_dataset_url, load_config
+from src.utils.paths import get_bird_data_dir, resolve_project_path
+
 logger = logging.getLogger("codegen")
 
 
 class BirdLoader:
     """Load and standardize the BIRD text-to-SQL benchmark."""
 
-    DEFAULT_URL = (
-        "https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/heads/master.zip"
-    )
-
-    def __init__(self, cache_dir: str | Path = "data/bird", url: str | None = None):
-        self.cache_dir = Path(cache_dir)
-        self.url = url or self.DEFAULT_URL
+    def __init__(
+        self,
+        cache_dir: str | Path | None = None,
+        dataset_url: str | None = None,
+        config: dict[str, Any] | None = None,
+    ):
+        self.config = config or load_config()
+        resolved = Path(cache_dir) if cache_dir else get_bird_data_dir()
+        self.cache_dir = resolve_project_path(resolved)
+        self.url = dataset_url or get_bird_dataset_url(self.config)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._announced: set[str] = set()
+
+    def _announce_once(self, key: str, message: str) -> None:
+        if key not in self._announced:
+            print(message)
+            self._announced.add(key)
 
     def download(self, force: bool = False) -> Path:
         """Download BIRD dataset archive if not cached."""
         marker = self.cache_dir / ".downloaded"
         if marker.exists() and not force:
+            self._announce_once(
+                "download", f"Using cached dataset: {self.cache_dir}"
+            )
+            logger.info("Using cached BIRD dataset at %s", self.cache_dir)
             return self.cache_dir
 
         zip_path = self.cache_dir / "bird.zip"
+        self._announce_once(
+            "download", f"Downloading BIRD dataset to {self.cache_dir} ..."
+        )
         logger.info("Downloading BIRD from %s", self.url)
         response = requests.get(self.url, timeout=120)
         response.raise_for_status()

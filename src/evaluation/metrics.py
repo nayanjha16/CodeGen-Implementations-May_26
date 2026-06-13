@@ -100,12 +100,19 @@ class EvaluationMetrics:
         try:
             from bert_score import score as bert_score
 
+            from src.models.model_loader import ensure_model_cached, is_model_cached
+            from src.utils.config import get_bertscore_model_name
+
+            bertscore_model = get_bertscore_model_name()
+            bert_path = ensure_model_cached(bertscore_model, causal=False)
+            model_type = str(bert_path) if is_model_cached(bert_path) else bertscore_model
+
             _, _, f1 = bert_score(
                 predictions,
                 references,
                 lang="en",
                 verbose=False,
-                model_type="distilbert-base-uncased",
+                model_type=model_type,
             )
             return float(f1.mean())
         except Exception:

@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
-from evaluation.benchmark import BenchmarkRunner
+from src.evaluation.benchmark import BenchmarkRunner
 from src.text2sql.sql_generator import SQLGenerator
 
 
@@ -16,7 +16,7 @@ class TestBenchmarkRunner:
                 "evaluation": {
                     "max_samples": 2,
                     "experiment_name": "test",
-                    "mlflow_tracking_uri": str(tmp_path / "mlruns"),
+                    "mlflow_tracking_uri": f"sqlite:///{(tmp_path / 'mlflow.db').resolve().as_posix()}",
                 },
                 "seeds": {"random": 42, "numpy": 42, "torch": 42},
             },
@@ -27,7 +27,7 @@ class TestBenchmarkRunner:
         assert "metrics" in result
         assert len(result["predictions"]) == 2
 
-    @patch("datasets.spider_loader.SpiderLoader.load_split")
+    @patch("src.datasets.spider_loader.SpiderLoader.load_split")
     def test_run_spider(self, mock_load, mock_model, tmp_path):
         mock_load.return_value = [
             {
@@ -46,7 +46,7 @@ class TestBenchmarkRunner:
                 "evaluation": {
                     "max_samples": 1,
                     "experiment_name": "test",
-                    "mlflow_tracking_uri": str(tmp_path / "mlruns"),
+                    "mlflow_tracking_uri": f"sqlite:///{(tmp_path / 'mlflow.db').resolve().as_posix()}",
                 },
                 "seeds": {"random": 42, "numpy": 42, "torch": 42},
             },
@@ -55,7 +55,7 @@ class TestBenchmarkRunner:
         result = runner.run_spider("validation")
         assert "spider" in result["dataset"]
 
-    @patch("datasets.bird_loader.BirdLoader.load_split")
+    @patch("src.datasets.bird_loader.BirdLoader.load_split")
     def test_run_bird(self, mock_load, mock_model, tmp_path):
         mock_load.return_value = [
             {
@@ -74,7 +74,7 @@ class TestBenchmarkRunner:
                 "evaluation": {
                     "max_samples": 1,
                     "experiment_name": "test",
-                    "mlflow_tracking_uri": str(tmp_path / "mlruns"),
+                    "mlflow_tracking_uri": f"sqlite:///{(tmp_path / 'mlflow.db').resolve().as_posix()}",
                 },
                 "seeds": {"random": 42, "numpy": 42, "torch": 42},
             },

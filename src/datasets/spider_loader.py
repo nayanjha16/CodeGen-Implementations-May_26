@@ -10,31 +10,57 @@ from typing import Any
 
 import requests
 
+from src.utils.config import (
+    get_bird_dataset_url,
+    get_spider_dataset_url,
+    get_spider_repo_url,
+    load_config,
+)
+from src.utils.paths import get_bird_data_dir, get_spider_data_dir, resolve_project_path
+
 logger = logging.getLogger("codegen")
 
 
 class SpiderLoader:
     """Load and standardize the Spider text-to-SQL benchmark."""
 
-    DEFAULT_URL = "https://github.com/taoyds/spider/archive/refs/heads/master.zip"
-    # Full dataset mirror (includes dev.json, tables.json, database/)
-    SPIDER_DATA_URL = (
-        "https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ"
-    )
-
-    def __init__(self, cache_dir: str | Path = "data/spider", url: str | None = None):
-        self.cache_dir = Path(cache_dir)
-        self.url = url or self.DEFAULT_URL
+    def __init__(
+        self,
+        cache_dir: str | Path | None = None,
+        repo_url: str | None = None,
+        dataset_url: str | None = None,
+        config: dict[str, Any] | None = None,
+    ):
+        self.config = config or load_config()
+        spider_cfg = self.config.get("datasets", {}).get("spider", {})
+        resolved = Path(cache_dir) if cache_dir else get_spider_data_dir()
+        self.cache_dir = resolve_project_path(resolved)
+        self.url = repo_url or get_spider_repo_url(self.config)
+        self.dataset_url = dataset_url or get_spider_dataset_url(self.config)
         self.data_dir = self.cache_dir / "spider_data"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._resolved_data_dir: Path | None = None
+        self._announced: set[str] = set()
+
+    def _announce_once(self, key: str, message: str) -> None:
+        if key not in self._announced:
+            print(message)
+            self._announced.add(key)
 
     def download(self, force: bool = False) -> Path:
         """Download Spider dataset archive if not cached."""
         marker = self.cache_dir / ".downloaded"
         if marker.exists() and not force:
+            self._announce_once(
+                "download", f"Using cached dataset: {self.cache_dir}"
+            )
+            logger.info("Using cached Spider dataset at %s", self.cache_dir)
             return self.cache_dir
 
         zip_path = self.cache_dir / "spider.zip"
+        self._announce_once(
+            "download", f"Downloading Spider dataset to {self.cache_dir} ..."
+        )
         logger.info("Downloading Spider from %s", self.url)
         response = requests.get(self.url, timeout=120)
         response.raise_for_status()
@@ -60,19 +86,27 @@ class SpiderLoader:
         """Download full Spider dataset (JSON + SQLite databases)."""
         marker = self.data_dir / ".downloaded"
         if marker.exists() and not force and (self.data_dir / "dev.json").exists():
+            self._announce_once(
+                "spider_data", f"Using cached Spider data files: {self.data_dir}"
+            )
+            logger.info("Using cached Spider data files at %s", self.data_dir)
             return self.data_dir
 
         self.data_dir.mkdir(parents=True, exist_ok=True)
         zip_path = self.cache_dir / "spider_data.zip"
-        logger.info("Downloading full Spider dataset...")
+        self._announce_once(
+            "spider_data",
+            f"Downloading full Spider data files to {self.data_dir} ...",
+        )
+        logger.info("Downloading full Spider dataset from %s", self.dataset_url)
 
         try:
             import gdown
 
-            gdown.download(self.SPIDER_DATA_URL, str(zip_path), quiet=False, fuzzy=True)
+            gdown.download(self.dataset_url, str(zip_path), quiet=False, fuzzy=True)
         except Exception:
             logger.info("gdown unavailable, using requests fallback")
-            response = requests.get(self.SPIDER_DATA_URL, timeout=300)
+            response = requests.get(self.dataset_url, timeout=300)
             response.raise_for_status()
             zip_path.write_bytes(response.content)
 
@@ -102,10 +136,14 @@ class SpiderLoader:
 
     def _resolve_data_dir(self) -> Path:
         """Find directory with Spider JSON splits (dev.json, tables.json)."""
+        if self._resolved_data_dir is not None:
+            return self._resolved_data_dir
+
         self.download()
 
         if (self.data_dir / "dev.json").exists():
-            return self.data_dir
+            self._resolved_data_dir = self.data_dir
+            return self._resolved_data_dir
 
         root = self._find_root()
         candidates = [
@@ -115,10 +153,11 @@ class SpiderLoader:
         ]
         for cand in candidates:
             if (cand / "dev.json").exists() or (cand / "train_spider.json").exists():
-                return cand
+                self._resolved_data_dir = cand
+                return self._resolved_data_dir
 
-        # Download full dataset if only GitHub code repo was extracted
-        return self._download_spider_data()
+        self._resolved_data_dir = self._download_spider_data()
+        return self._resolved_data_dir
 
     def _split_path(self, data_dir: Path, split: str) -> Path | None:
         """Resolve path for a dataset split."""

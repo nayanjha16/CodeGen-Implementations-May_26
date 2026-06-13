@@ -1,5 +1,5 @@
 model:
-  name: "Salesforce/codegen-350M-multi"
+  # name and storage paths come from .env (MODEL_NAME, MODELS_BASE_DIR, etc.)
   max_length: 512
   device: "auto"  # auto, cuda, cpu
 
@@ -12,16 +12,13 @@ generation:
   decoding_strategy: "greedy"  # greedy, beam
 
 datasets:
-  spider:
-    url: "https://github.com/taoyds/spider/archive/refs/heads/master.zip"
-    cache_dir: "data/spider"
-  bird:
-    url: "https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/heads/master.zip"
-    cache_dir: "data/bird"
+  spider: {}  # cache_dir, repo_url, dataset_url set from .env
+  bird: {}     # cache_dir, dataset_url set from .env
 
 evaluation:
   batch_size: 8
   max_samples: 100
+  # bertscore_model set from BERTSCORE_MODEL_NAME in .env
   mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"
 

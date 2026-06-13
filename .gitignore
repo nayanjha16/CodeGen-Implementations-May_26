@@ -10,11 +10,15 @@ venv/
 .venv/
 env/
 
-# Data & models
+# Data & models (downloaded content)
 data/spider/
 data/bird/
 data/processed/
-data/sample/
+data/samples/
+models/base/*
+!models/base/.gitkeep
+models/checkpoints/*
+!models/checkpoints/.gitkeep
 *.sqlite
 *.db
 

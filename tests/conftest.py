@@ -1,9 +1,28 @@
 """Shared pytest fixtures."""
 
+import os
 import sqlite3
 from pathlib import Path
 
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def test_env(monkeypatch, tmp_path):
+    """Provide required environment variables for all tests."""
+    monkeypatch.setenv("MODEL_NAME", "test/mock-codegen")
+    monkeypatch.setenv("BERTSCORE_MODEL_NAME", "test/mock-bertscore")
+    monkeypatch.setenv("MODELS_BASE_DIR", str(tmp_path / "models" / "base"))
+    monkeypatch.setenv("MODELS_CHECKPOINTS_DIR", str(tmp_path / "models" / "checkpoints"))
+    monkeypatch.setenv("DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("SPIDER_DATA_DIR", str(tmp_path / "data" / "spider"))
+    monkeypatch.setenv("BIRD_DATA_DIR", str(tmp_path / "data" / "bird"))
+    monkeypatch.setenv("SPIDER_REPO_URL", "https://example.com/spider.zip")
+    monkeypatch.setenv(
+        "SPIDER_DATASET_URL",
+        "https://example.com/spider-data.zip",
+    )
+    monkeypatch.setenv("BIRD_DATASET_URL", "https://example.com/bird.zip")
 
 
 @pytest.fixture

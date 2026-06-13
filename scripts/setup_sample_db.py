@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 
 
-def create_sample_db(db_path: str | Path = "data/sample/students.db") -> Path:
+def create_sample_db(db_path: str | Path = "data/samples/students.db") -> Path:
     """Create a sample students database."""
     db_path = Path(db_path)
     db_path.parent.mkdir(parents=True, exist_ok=True)

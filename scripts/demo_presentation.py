@@ -4,7 +4,7 @@ Natural Language → SQL | SQL → NoSQL | Base Model Evaluation
 
 Usage:
   python scripts/demo_presentation.py              # Full demo (metrics + SQL→NoSQL, no model download)
-  python scripts/demo_presentation.py --with-model # Include CodeGen-350M generation (needs ~700MB download)
+  python scripts/demo_presentation.py --with-model # Include live generation (uses cached model in models/)
   python scripts/demo_presentation.py --eval-only  # Base model evaluation on reference data only
 """
 
@@ -18,13 +18,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from evaluation.metrics import EvaluationMetrics
-from evaluation.mlflow_tracker import MLflowTracker
+from src.evaluation.metrics import EvaluationMetrics
+from src.evaluation.mlflow_tracker import MLflowTracker
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 from src.text2sql.prompt_builder import PromptBuilder
 from src.text2sql.sql_executor import SQLExecutor
 from src.text2sql.sql_validator import SQLValidator
-from src.utils.config import load_config
+from src.utils.config import get_model_name, load_config
+from src.utils.paths import get_results_dir, resolve_results_output_path
 from src.utils.seeds import set_seeds
 
 # ---------------------------------------------------------------------------
@@ -117,15 +118,16 @@ def demo_prompt_builder() -> None:
 
 
 def demo_text2sql_with_model() -> None:
-    banner("3. Live Text-to-SQL (CodeGen-350M-Multi)")
+    banner("3. Live Text-to-SQL")
     from src.text2sql.sql_generator import SQLGenerator
 
     config = load_config()
+    model_name = get_model_name(config)
     config["evaluation"]["max_samples"] = 2
     generator = SQLGenerator(config=config)
 
     ex = REFERENCE_BENCHMARK[0]
-    print("Loading model (first run downloads ~700MB from HuggingFace)...\n")
+    print(f"Loading model {model_name} (cached under models/base/ after first run)...\n")
     result = generator.generate(ex["question"], ex["schema"])
     print(f"  Question     : {ex['question']}")
     print(f"  Generated SQL: {result['sql']}")
@@ -165,9 +167,12 @@ def demo_sql_to_nosql() -> None:
             print(f"  Warnings: {', '.join(result['warnings'])}")
 
 
-def demo_base_model_evaluation(db_path: Path | None, log_mlflow: bool = False) -> dict:
+def demo_base_model_evaluation(
+    db_path: Path | None, log_mlflow: bool = False, config: dict | None = None
+) -> dict:
     banner("6. Base Model Evaluation on Reference Data")
     metrics_calc = EvaluationMetrics()
+    config = config or load_config()
 
     references = [ex["sql"] for ex in REFERENCE_BENCHMARK]
     predictions = BASE_MODEL_PREDICTIONS
@@ -217,7 +222,7 @@ def demo_base_model_evaluation(db_path: Path | None, log_mlflow: bool = False) -
             tracking_uri=str(ROOT / "mlruns"),
         )
         run_id = tracker.log_evaluation(
-            model_name="Salesforce/codegen-350M-multi",
+            model_name=get_model_name(config),
             dataset="reference_benchmark_demo",
             prompt_template="default",
             metrics=all_metrics,
@@ -243,11 +248,13 @@ def demo_datasets_overview() -> None:
 """)
 
 
-def save_demo_results(metrics: dict, output_path: Path) -> None:
+def save_demo_results(metrics: dict, output_path: Path, config: dict | None = None) -> None:
+    output_path = resolve_results_output_path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    config = config or load_config()
     payload = {
         "demo": "IIT Hyderabad AIML Training",
-        "model": "Salesforce/codegen-350M-multi",
+        "model": get_model_name(config),
         "reference_examples": len(REFERENCE_BENCHMARK),
         "metrics": {k: v for k, v in metrics.items() if isinstance(v, (int, float))},
     }
@@ -269,7 +276,7 @@ def main() -> None:
     # Ensure sample DB exists
     from scripts.setup_sample_db import create_sample_db
 
-    db_path = create_sample_db(ROOT / "data" / "sample" / "students.db")
+    db_path = create_sample_db(ROOT / "data" / "samples" / "students.db")
 
     demo_intro()
 
@@ -279,11 +286,12 @@ def main() -> None:
         if args.with_model:
             demo_text2sql_with_model()
         else:
-            banner("3. Text-to-SQL (CodeGen-350M-Multi)")
-            print("""
+            banner("3. Text-to-SQL")
+            print(f"""
   [Skipped live model — use --with-model to run live generation]
+  Configured model: {get_model_name(config)}
   For live demo in Streamlit instead:
-    streamlit run streamlit_app/app.py
+    streamlit run apps/streamlit/app.py
 
   Or start API:
     uvicorn src.api.main:app --port 8000
@@ -292,13 +300,13 @@ def main() -> None:
         demo_sql_validation_and_execution(db_path)
         demo_sql_to_nosql()
 
-    metrics = demo_base_model_evaluation(db_path, log_mlflow=args.mlflow)
+    metrics = demo_base_model_evaluation(db_path, log_mlflow=args.mlflow, config=config)
     demo_datasets_overview()
 
-    save_demo_results(metrics, ROOT / "data" / "demo_results.json")
+    save_demo_results(metrics, get_results_dir() / "demo_results.json", config=config)
 
     banner("Demo Complete — Ready for Q&A")
-    print("  Streamlit UI : streamlit run streamlit_app/app.py")
+    print("  Streamlit UI : streamlit run apps/streamlit/app.py")
     print("  API docs     : http://localhost:8000/docs")
     print("  MLflow UI    : mlflow ui --backend-store-uri mlruns\n")
 

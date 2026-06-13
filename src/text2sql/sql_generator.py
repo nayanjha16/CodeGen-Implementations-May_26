@@ -19,14 +19,9 @@ class SQLGenerator:
         config: dict[str, Any] | None = None,
     ):
         self.config = config or {}
-        model_cfg = self.config.get("model", {})
         gen_cfg = self.config.get("generation", {})
 
-        self.model = model or load_model(
-            model_name=model_cfg.get("name", "Salesforce/codegen-350M-multi"),
-            device=model_cfg.get("device", "auto"),
-            max_length=model_cfg.get("max_length", 512),
-        )
+        self.model = model or load_model(config=self.config)
         self.prompt_builder = prompt_builder or PromptBuilder()
         self.gen_config = gen_cfg
 

@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from evaluation.metrics import EvaluationMetrics
-from evaluation.mlflow_tracker import MLflowTracker
+from src.evaluation.metrics import EvaluationMetrics
+from src.evaluation.mlflow_tracker import MLflowTracker
 from src.text2sql.sql_generator import SQLGenerator
 from src.utils.config import load_config
 from src.utils.seeds import set_seeds
@@ -86,13 +86,10 @@ class BenchmarkRunner:
 
     def run_spider(self, split: str = "validation") -> dict[str, Any]:
         """Run benchmark on Spider dataset."""
-        from datasets.spider_loader import SpiderLoader
+        from src.datasets.spider_loader import SpiderLoader
 
-        loader = SpiderLoader(
-            cache_dir=self.config.get("datasets", {}).get("spider", {}).get(
-                "cache_dir", "data/spider"
-            )
-        )
+        spider_cfg = self.config.get("datasets", {}).get("spider", {})
+        loader = SpiderLoader(config=self.config, cache_dir=spider_cfg.get("cache_dir"))
         examples = loader.load_split(split)
         return self.run_on_dataset(
             examples,
@@ -102,13 +99,10 @@ class BenchmarkRunner:
 
     def run_bird(self, split: str = "validation") -> dict[str, Any]:
         """Run benchmark on BIRD dataset."""
-        from datasets.bird_loader import BirdLoader
+        from src.datasets.bird_loader import BirdLoader
 
-        loader = BirdLoader(
-            cache_dir=self.config.get("datasets", {}).get("bird", {}).get(
-                "cache_dir", "data/bird"
-            )
-        )
+        bird_cfg = self.config.get("datasets", {}).get("bird", {})
+        loader = BirdLoader(config=self.config, cache_dir=bird_cfg.get("cache_dir"))
         examples = loader.load_split(split)
         return self.run_on_dataset(
             examples,

@@ -6,7 +6,7 @@ from functools import lru_cache
 
 from fastapi import FastAPI, HTTPException
 
-from evaluation.metrics import EvaluationMetrics
+from src.evaluation.metrics import EvaluationMetrics
 from src import __version__
 from src.api.schemas import (
     EvaluateRequest,

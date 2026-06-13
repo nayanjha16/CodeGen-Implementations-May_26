@@ -14,7 +14,7 @@ echo "=== CodeGen Evaluation ==="
 echo "Dataset: $DATASET | Split: $SPLIT | Max samples: $MAX_SAMPLES"
 
 python -c "
-from evaluation.benchmark import BenchmarkRunner
+from src.evaluation.benchmark import BenchmarkRunner
 from src.utils.config import load_config
 
 config = load_config()

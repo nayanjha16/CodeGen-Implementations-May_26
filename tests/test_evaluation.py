@@ -1,7 +1,7 @@
 """Tests for evaluation framework."""
 
-from evaluation.metrics import EvaluationMetrics
-from evaluation.mlflow_tracker import MLflowTracker
+from src.evaluation.metrics import EvaluationMetrics
+from src.evaluation.mlflow_tracker import MLflowTracker
 
 
 class TestEvaluationMetrics:

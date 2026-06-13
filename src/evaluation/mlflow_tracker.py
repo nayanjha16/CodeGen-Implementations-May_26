@@ -10,9 +10,20 @@ import mlflow
 
 def default_tracking_uri(project_root: Path | None = None) -> str:
     """Return SQLite tracking URI (compatible with MLflow 3.x)."""
-    root = project_root or Path(__file__).resolve().parents[1]
+    root = project_root or Path(__file__).resolve().parents[2]
     db_path = (root / "mlflow.db").resolve().as_posix()
     return f"sqlite:///{db_path}"
+
+
+def _sqlite_uri_for_path(path: Path) -> str:
+    """Map a local path to a SQLite MLflow backend URI."""
+    if path.suffix == ".db":
+        db_path = path.resolve()
+    elif path.is_dir() or path.suffix == "":
+        db_path = (path / "mlflow.db").resolve()
+    else:
+        db_path = path.with_suffix(".db").resolve()
+    return f"sqlite:///{db_path.as_posix()}"
 
 
 def _normalize_tracking_uri(tracking_uri: str) -> str:
@@ -23,13 +34,9 @@ def _normalize_tracking_uri(tracking_uri: str) -> str:
         return tracking_uri
     if tracking_uri.startswith(("http://", "https://")):
         return tracking_uri
-    path = Path(tracking_uri)
-    if path.suffix == ".db":
-        return f"sqlite:///{path.resolve()}"
-    # Legacy file store — only used if explicitly requested
-    if path.exists() or not tracking_uri.startswith("file://"):
-        return path.as_uri()
-    return tracking_uri
+
+    local_path = tracking_uri.removeprefix("file://")
+    return _sqlite_uri_for_path(Path(local_path))
 
 
 class MLflowTracker:

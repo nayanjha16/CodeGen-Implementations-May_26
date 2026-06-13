@@ -11,15 +11,15 @@ import plotly.express as px
 import streamlit as st
 
 # Add project root to path
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from evaluation.metrics import EvaluationMetrics
+from src.evaluation.metrics import EvaluationMetrics
 from src.query_engine.engine import QueryEngine
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 from src.text2sql.prompt_builder import PromptBuilder
 from src.text2sql.sql_generator import SQLGenerator
-from src.utils.config import load_config
+from src.utils.config import get_model_name, load_config
 
 st.set_page_config(
     page_title="CodeGen Studio",
@@ -47,7 +47,7 @@ def get_query_engine():
 
 def page_text2sql():
     st.header("Text-to-SQL Generation")
-    st.write("Generate SQL queries from natural language using CodeGen-350M-Multi.")
+    st.write(f"Generate SQL queries from natural language using {get_model_name(config)}.")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -202,7 +202,7 @@ def page_evaluation():
 def main():
     st.sidebar.title("CodeGen Studio")
     st.sidebar.markdown("**Interactive Database Querying**")
-    st.sidebar.markdown("Using Salesforce/codegen-350M-multi")
+    st.sidebar.markdown(f"Using **{get_model_name(config)}**")
 
     page = st.sidebar.radio(
         "Navigation",

@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from datasets.bird_loader import BirdLoader
-from datasets.preprocess import DatasetPreprocessor, clean_sql, compute_statistics
-from datasets.spider_loader import SpiderLoader
+from src.datasets.bird_loader import BirdLoader
+from src.datasets.preprocess import DatasetPreprocessor, clean_sql, compute_statistics
+from src.datasets.spider_loader import SpiderLoader
 
 
 class TestPreprocess:
@@ -46,7 +46,7 @@ class TestSpiderLoader:
         assert result[0]["sql"] == "SELECT * FROM t"
         assert result[0]["schema"] == "Table t(id, name)"
 
-    @patch("datasets.spider_loader.requests.get")
+    @patch("src.datasets.spider_loader.requests.get")
     def test_download(self, mock_get, tmp_path):
         import io
         import zipfile
@@ -70,8 +70,8 @@ class TestSpiderLoader:
 
 
 class TestBirdLoader:
-    def test_standardize_format(self):
-        loader = BirdLoader(cache_dir="data/bird")
+    def test_standardize_format(self, tmp_path):
+        loader = BirdLoader(cache_dir=tmp_path / "data" / "bird")
         raw = [
             {
                 "question": "What is the total?",

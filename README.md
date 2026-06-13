@@ -86,22 +86,24 @@ SPIDER_DATA_DIR=data/spider
 BIRD_DATA_DIR=data/bird
 SPIDER_REPO_URL=https://github.com/taoyds/spider/archive/refs/heads/master.zip
 SPIDER_DATASET_URL=https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ
-BIRD_DATASET_URL=https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/heads/master.zip
+BIRD_DATASET_URL=https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip
 ```
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MODEL_NAME` | HuggingFace model identifier (**required**) | — |
-| `BERTSCORE_MODEL_NAME` | BERTScore metric model (**required**) | — |
-| `MODEL_CHECKPOINT` | Checkpoint name under `models/checkpoints/` | — |
-| `MODELS_BASE_DIR` | Where base models are cached | `models/base` |
-| `MODELS_CHECKPOINTS_DIR` | Where training checkpoints are stored | `models/checkpoints` |
-| `DATA_DIR` | Root data directory | `data` |
-| `SPIDER_DATA_DIR` | Spider dataset location | `data/spider` |
-| `BIRD_DATA_DIR` | BIRD dataset location | `data/bird` |
-| `SPIDER_REPO_URL` | Spider GitHub archive URL | — |
-| `SPIDER_DATASET_URL` | Spider full dataset mirror URL | — |
-| `BIRD_DATASET_URL` | BIRD dataset archive URL | — |
+
+| Variable                 | Description                                 | Default              |
+| ------------------------ | ------------------------------------------- | -------------------- |
+| `MODEL_NAME`             | HuggingFace model identifier (**required**) | —                    |
+| `BERTSCORE_MODEL_NAME`   | BERTScore metric model (**required**)       | —                    |
+| `MODEL_CHECKPOINT`       | Checkpoint name under `models/checkpoints/` | —                    |
+| `MODELS_BASE_DIR`        | Where base models are cached                | `models/base`        |
+| `MODELS_CHECKPOINTS_DIR` | Where training checkpoints are stored       | `models/checkpoints` |
+| `DATA_DIR`               | Root data directory                         | `data`               |
+| `SPIDER_DATA_DIR`        | Spider dataset location                     | `data/spider`        |
+| `BIRD_DATA_DIR`          | BIRD dataset location                       | `data/bird`          |
+| `SPIDER_REPO_URL`        | Spider GitHub archive URL                   | —                    |
+| `SPIDER_DATASET_URL`     | Spider full dataset mirror URL              | —                    |
+| `BIRD_DATASET_URL`       | BIRD dataset archive URL                    | —                    |
+
 
 YAML settings in `configs/default.yaml` cover generation parameters, evaluation limits, and seeds. Model name and storage paths always come from `.env`.
 
@@ -167,18 +169,21 @@ python scripts/run_baseline_eval.py --dataset spider --output spider_baseline
 ```
 
 Creates `results/spider_baseline/` containing:
+
 - `metrics.json` — aggregate metrics
 - `details.csv` — per-sample prompts, outputs, and scores
 
 #### All options
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--dataset` | `quick` | `quick` (built-in examples), `spider`, or `bird` |
-| `--split` | `validation` | Dataset split: `train`, `validation`/`dev`, `test` |
-| `--max-samples` | `5` | Number of examples to evaluate |
-| `--mlflow` | off | Log metrics to MLflow |
-| `--output` | `baseline_eval_results` | Run name; outputs go to `results/<name>/` |
+
+| Flag            | Default                 | Description                                        |
+| --------------- | ----------------------- | -------------------------------------------------- |
+| `--dataset`     | `quick`                 | `quick` (built-in examples), `spider`, or `bird`   |
+| `--split`       | `validation`            | Dataset split: `train`, `validation`/`dev`, `test` |
+| `--max-samples` | `5`                     | Number of examples to evaluate                     |
+| `--mlflow`      | off                     | Log metrics to MLflow                              |
+| `--output`      | `baseline_eval_results` | Run name; outputs go to `results/<name>/`          |
+
 
 #### Example output
 
@@ -255,10 +260,11 @@ data/spider/
 └── .downloaded          # cache marker
 
 data/bird/
-├── DAMO-ConvAI-master/bird/finetuning/
-│   ├── train.json
-│   └── dev.json
-└── .downloaded
+├── bird_data/
+│   ├── dev.json
+│   ├── dev_tables.json
+│   └── dev_databases/
+└── .downloaded          # cache marker
 ```
 
 - Checked before every load via `.downloaded` marker and data file presence
@@ -294,7 +300,7 @@ SPIDER_DATA_DIR=data/spider
 BIRD_DATA_DIR=data/bird
 SPIDER_REPO_URL=https://github.com/taoyds/spider/archive/refs/heads/master.zip
 SPIDER_DATASET_URL=https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ
-BIRD_DATASET_URL=https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/heads/master.zip
+BIRD_DATASET_URL=https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip
 ```
 
 ### YAML (`configs/default.yaml`) — runtime behavior
@@ -349,15 +355,17 @@ print(examples[0])
 
 ## Evaluation Metrics
 
-| Metric | Description |
-|--------|-------------|
-| Exact Match | Normalized SQL string equality |
-| Execution Accuracy | Result set comparison on SQLite |
-| Syntax Validity | Valid SQL structure rate |
-| BLEU | N-gram overlap |
-| ROUGE-L | Longest common subsequence |
-| BERTScore | Contextual embedding similarity |
-| CodeBLEU | n-gram + syntax + semantic match |
+
+| Metric             | Description                      |
+| ------------------ | -------------------------------- |
+| Exact Match        | Normalized SQL string equality   |
+| Execution Accuracy | Result set comparison on SQLite  |
+| Syntax Validity    | Valid SQL structure rate         |
+| BLEU               | N-gram overlap                   |
+| ROUGE-L            | Longest common subsequence       |
+| BERTScore          | Contextual embedding similarity  |
+| CodeBLEU           | n-gram + syntax + semantic match |
+
 
 ---
 
@@ -398,15 +406,17 @@ Test coverage includes: config/env loading, model caching logic, dataset loading
 
 ## Troubleshooting
 
-| Issue | Fix |
-|-------|-----|
-| `MODEL_NAME is not set` | Run `cp .env.example .env` and set `MODEL_NAME` |
-| `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env` |
-| Model re-downloads every run | Check `models/base/<slug>/.downloaded` exists; ensure write permissions |
-| Dataset re-downloads every run | Check `data/spider/.downloaded` or `data/bird/.downloaded` exists |
-| Out of memory on GPU | Set `device: "cpu"` in `configs/default.yaml` or use `--max-samples 5` |
-| Checkpoint not found | Ensure `models/checkpoints/<name>/config.json` exists and `MODEL_CHECKPOINT` matches |
-| `ModuleNotFoundError: src` | Export `PYTHONPATH=$(pwd)` from project root |
+
+| Issue                             | Fix                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------ |
+| `MODEL_NAME is not set`           | Run `cp .env.example .env` and set `MODEL_NAME`                                      |
+| `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env`                         |
+| Model re-downloads every run      | Check `models/base/<slug>/.downloaded` exists; ensure write permissions              |
+| Dataset re-downloads every run    | Check `data/spider/.downloaded` or `data/bird/.downloaded` exists                    |
+| Out of memory on GPU              | Set `device: "cpu"` in `configs/default.yaml` or use `--max-samples 5`               |
+| Checkpoint not found              | Ensure `models/checkpoints/<name>/config.json` exists and `MODEL_CHECKPOINT` matches |
+| `ModuleNotFoundError: src`        | Export `PYTHONPATH=$(pwd)` from project root                                         |
+
 
 ---
 

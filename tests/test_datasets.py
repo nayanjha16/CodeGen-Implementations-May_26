@@ -87,3 +87,34 @@ class TestBirdLoader:
     def test_empty_statistics(self):
         stats = compute_statistics([])
         assert stats["count"] == 0
+
+    @patch("src.datasets.bird_loader.requests.get")
+    def test_download(self, mock_get, tmp_path):
+        import io
+        import zipfile
+
+        loader = BirdLoader(cache_dir=tmp_path)
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as zf:
+            zf.writestr(
+                "dev/dev.json",
+                json.dumps(
+                    [
+                        {
+                            "question": "q",
+                            "SQL": "SELECT 1",
+                            "db_id": "db1",
+                            "evidence": "hint",
+                        }
+                    ]
+                ),
+            )
+        mock_response = MagicMock()
+        mock_response.iter_content = MagicMock(return_value=[buffer.getvalue()])
+        mock_response.raise_for_status = MagicMock()
+        mock_get.return_value = mock_response
+
+        examples = loader.load_split("validation")
+        assert len(examples) == 1
+        assert examples[0]["sql"] == "SELECT 1"
+        assert (tmp_path / "bird_data" / ".downloaded").exists()

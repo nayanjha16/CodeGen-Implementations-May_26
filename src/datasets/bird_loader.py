@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -29,7 +30,9 @@ class BirdLoader:
         resolved = Path(cache_dir) if cache_dir else get_bird_data_dir()
         self.cache_dir = resolve_project_path(resolved)
         self.url = dataset_url or get_bird_dataset_url(self.config)
+        self.data_dir = self.cache_dir / "bird_data"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._resolved_data_dir: Path | None = None
         self._announced: set[str] = set()
 
     def _announce_once(self, key: str, message: str) -> None:
@@ -37,44 +40,126 @@ class BirdLoader:
             print(message)
             self._announced.add(key)
 
-    def download(self, force: bool = False) -> Path:
-        """Download BIRD dataset archive if not cached."""
-        marker = self.cache_dir / ".downloaded"
-        if marker.exists() and not force:
-            self._announce_once(
-                "download", f"Using cached dataset: {self.cache_dir}"
-            )
-            logger.info("Using cached BIRD dataset at %s", self.cache_dir)
-            return self.cache_dir
+    def _find_data_dir(self) -> Path | None:
+        """Locate directory containing BIRD JSON splits."""
+        candidates = [
+            self.data_dir,
+            self.cache_dir,
+        ]
+        for base in candidates:
+            if not base.exists():
+                continue
+            if (base / "dev.json").exists() or (base / "train.json").exists():
+                return base
+            for nested in base.iterdir():
+                if nested.is_dir() and (
+                    (nested / "dev.json").exists() or (nested / "train.json").exists()
+                ):
+                    return nested
+        return None
 
-        zip_path = self.cache_dir / "bird.zip"
+    def _flatten_nested_data(self, nested: Path) -> None:
+        """Move split files from a nested extract folder into bird_data/."""
+        for item in nested.iterdir():
+            dest = self.data_dir / item.name
+            if item.is_dir():
+                if dest.exists():
+                    shutil.copytree(item, dest, dirs_exist_ok=True)
+                else:
+                    shutil.move(str(item), str(dest))
+            else:
+                shutil.copy2(item, dest)
+
+    def _extract_databases(self, data_dir: Path) -> None:
+        """Extract dev_databases.zip or train_databases.zip when present."""
+        for zip_name in ("dev_databases.zip", "train_databases.zip"):
+            db_zip = data_dir / zip_name
+            if not db_zip.exists():
+                continue
+            target_name = zip_name.replace(".zip", "")
+            target_dir = data_dir / target_name
+            if target_dir.exists():
+                continue
+            with zipfile.ZipFile(db_zip, "r") as zf:
+                zf.extractall(data_dir)
+
+    def _download_bird_data(self, force: bool = False) -> Path:
+        """Download official BIRD dev bundle (JSON + SQLite databases)."""
+        marker = self.data_dir / ".downloaded"
+        if marker.exists() and not force and self._find_data_dir() is not None:
+            self._announce_once(
+                "bird_data", f"Using cached BIRD data files: {self.data_dir}"
+            )
+            logger.info("Using cached BIRD data files at %s", self.data_dir)
+            return self.data_dir
+
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = self.cache_dir / "bird_dev.zip"
         self._announce_once(
-            "download", f"Downloading BIRD dataset to {self.cache_dir} ..."
+            "bird_data",
+            f"Downloading BIRD data files to {self.data_dir} ...",
         )
-        logger.info("Downloading BIRD from %s", self.url)
-        response = requests.get(self.url, timeout=120)
+        logger.info("Downloading BIRD dataset from %s", self.url)
+
+        response = requests.get(self.url, timeout=600, stream=True)
         response.raise_for_status()
-        zip_path.write_bytes(response.content)
+        with open(zip_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                if chunk:
+                    f.write(chunk)
 
         with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(self.cache_dir)
+            zf.extractall(self.data_dir)
+
+        if not (self.data_dir / "dev.json").exists():
+            for nested in self.data_dir.iterdir():
+                if nested.is_dir() and (
+                    (nested / "dev.json").exists() or (nested / "train.json").exists()
+                ):
+                    self._flatten_nested_data(nested)
+                    if nested.exists() and not any(nested.iterdir()):
+                        nested.rmdir()
+                    break
+
+        resolved = self._find_data_dir()
+        if resolved is not None and resolved != self.data_dir:
+            for item in resolved.iterdir():
+                dest = self.data_dir / item.name
+                if item.is_dir():
+                    if dest.exists():
+                        shutil.copytree(item, dest, dirs_exist_ok=True)
+                    else:
+                        shutil.move(str(item), str(dest))
+                elif not dest.exists():
+                    shutil.move(str(item), str(dest))
+
+        data_root = self._find_data_dir() or self.data_dir
+        self._extract_databases(data_root)
+
         zip_path.unlink(missing_ok=True)
         marker.touch()
-        return self.cache_dir
+        (self.cache_dir / ".downloaded").touch()
+        return self.data_dir
 
-    def _find_bird_root(self) -> Path:
-        """Locate BIRD dataset within extracted archive."""
-        candidates = [
-            self.cache_dir / "DAMO-ConvAI-master" / "bird" / "finetuning",
-            self.cache_dir / "bird" / "finetuning",
-        ]
-        for path in candidates:
-            if path.exists():
-                return path
-        for path in self.cache_dir.rglob("finetuning"):
-            if (path / "train.json").exists() or (path / "dev.json").exists():
-                return path
-        return self.cache_dir
+    def _resolve_data_dir(self) -> Path:
+        """Find directory with BIRD JSON splits (dev.json, train.json)."""
+        if self._resolved_data_dir is not None:
+            return self._resolved_data_dir
+
+        data_dir = self._find_data_dir()
+        if data_dir is not None:
+            self._extract_databases(data_dir)
+            self._resolved_data_dir = data_dir
+            return self._resolved_data_dir
+
+        self._resolved_data_dir = self._download_bird_data()
+        resolved = self._find_data_dir()
+        if resolved is None:
+            raise FileNotFoundError(
+                f"BIRD data files not found under {self.data_dir} after download"
+            )
+        self._resolved_data_dir = resolved
+        return self._resolved_data_dir
 
     def _schema_from_evidence(self, example: dict) -> str:
         """Extract schema hints from BIRD evidence and db_id."""
@@ -102,18 +187,25 @@ class BirdLoader:
 
     def load_split(self, split: str = "train") -> list[dict[str, str]]:
         """Load train, validation (dev), or test split."""
-        self.download()
-        root = self._find_bird_root()
+        data_dir = self._resolve_data_dir()
 
         split_map = {
-            "train": root / "train.json",
-            "validation": root / "dev.json",
-            "dev": root / "dev.json",
-            "test": root / "test.json",
+            "train": ["train.json"],
+            "validation": ["dev.json"],
+            "dev": ["dev.json"],
+            "test": ["test.json"],
         }
-        path = split_map.get(split)
-        if path is None or not path.exists():
-            raise FileNotFoundError(f"BIRD split '{split}' not found at {path}")
+        path = None
+        for filename in split_map.get(split, []):
+            candidate = data_dir / filename
+            if candidate.exists():
+                path = candidate
+                break
+
+        if path is None:
+            raise FileNotFoundError(
+                f"BIRD split '{split}' not found under {data_dir}"
+            )
 
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
@@ -132,11 +224,13 @@ class BirdLoader:
 
     def get_database_path(self, db_id: str) -> Path | None:
         """Return path to SQLite database for a given db_id."""
-        root = self._find_bird_root()
+        data_dir = self._resolve_data_dir()
         candidates = [
-            root.parent / "train_databases" / db_id / f"{db_id}.sqlite",
-            root.parent / "dev_databases" / db_id / f"{db_id}.sqlite",
-            root / "databases" / db_id / f"{db_id}.sqlite",
+            data_dir / "dev_databases" / db_id / f"{db_id}.sqlite",
+            data_dir / "train_databases" / db_id / f"{db_id}.sqlite",
+            data_dir / "databases" / db_id / f"{db_id}.sqlite",
+            data_dir.parent / "dev_databases" / db_id / f"{db_id}.sqlite",
+            data_dir.parent / "train_databases" / db_id / f"{db_id}.sqlite",
         ]
         for db_path in candidates:
             if db_path.exists():

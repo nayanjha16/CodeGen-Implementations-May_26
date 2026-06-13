@@ -57,8 +57,9 @@ class TestBenchmarkRunner:
         result = runner.run_spider("validation")
         assert "spider" in result["dataset"]
 
+    @patch("src.datasets.bird_loader.BirdLoader.get_database_path", return_value=None)
     @patch("src.datasets.bird_loader.BirdLoader.load_split")
-    def test_run_bird(self, mock_load, mock_model, tmp_path):
+    def test_run_bird(self, mock_load, _mock_db, mock_model, tmp_path):
         mock_load.return_value = [
             {
                 "question": "Count rows",

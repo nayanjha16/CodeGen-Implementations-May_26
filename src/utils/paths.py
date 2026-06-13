@@ -136,18 +136,15 @@ def is_spider_cached(data_dir: Path) -> bool:
 
 def is_bird_cached(data_dir: Path) -> bool:
     """Return True when BIRD data files exist locally."""
-    if not is_dataset_cached(data_dir):
-        return False
-    candidates = [
-        data_dir / "DAMO-ConvAI-master" / "bird" / "finetuning",
-        data_dir / "bird" / "finetuning",
-    ]
-    for path in candidates:
-        if (path / "dev.json").exists() or (path / "train.json").exists():
-            return True
+    bird_data = data_dir / "bird_data"
+    if (bird_data / "dev.json").exists() or (bird_data / "train.json").exists():
+        return True
+    if (data_dir / "dev.json").exists() or (data_dir / "train.json").exists():
+        return True
     return any(
         (path / "dev.json").exists() or (path / "train.json").exists()
-        for path in data_dir.rglob("finetuning")
+        for path in data_dir.rglob("*")
+        if path.is_dir()
     )
 
 

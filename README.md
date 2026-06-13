@@ -168,11 +168,15 @@ python scripts/run_baseline_eval.py --dataset spider --mlflow
 python scripts/run_baseline_eval.py --dataset bird --max-samples 10 --mlflow
 ```
 
-#### Save results to a custom path
+#### Save results to a named run folder
 
 ```bash
-python scripts/run_baseline_eval.py --dataset spider --output results/my_eval.json
+python scripts/run_baseline_eval.py --dataset spider --output spider_baseline
 ```
+
+Creates `results/spider_baseline/` containing:
+- `metrics.json` — aggregate metrics
+- `details.csv` — per-sample prompts, outputs, and scores
 
 #### All options
 
@@ -182,7 +186,7 @@ python scripts/run_baseline_eval.py --dataset spider --output results/my_eval.js
 | `--split` | `validation` | Dataset split: `train`, `validation`/`dev`, `test` |
 | `--max-samples` | `5` | Number of examples to evaluate |
 | `--mlflow` | off | Log metrics to MLflow |
-| `--output` | `results/baseline_eval_results.json` | Path for JSON results |
+| `--output` | `baseline_eval_results` | Run name; outputs go to `results/<name>/` |
 
 #### Example output
 
@@ -199,7 +203,9 @@ Note: First run downloads model and dataset to local models/ and data/ folders.
   Syntax Validity Rate          : 0.9000
   BLEU                          : 0.3500
   ...
-  Results saved: results/baseline_eval_results.json
+  Run saved: results/baseline_eval_results
+    metrics: results/baseline_eval_results/metrics.json
+    details: results/baseline_eval_results/details.csv
 ```
 
 #### What happens on first run

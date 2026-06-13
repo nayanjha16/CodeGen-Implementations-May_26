@@ -50,13 +50,19 @@ class BenchmarkRunner:
         logger.info("Evaluating %d samples from %s", len(samples), dataset_name)
 
         gen_results = self.sql_generator.generate_batch(samples)
+        for result, example in zip(gen_results, samples):
+            result.setdefault("schema", example.get("schema", ""))
+            result.setdefault("db_id", example.get("db_id", ""))
+
         predictions = [r["sql"] for r in gen_results]
         references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]
 
         db_paths = []
         if db_resolver:
-            for ex in samples:
-                db_paths.append(db_resolver(ex.get("db_id", "")))
+            for result, example in zip(gen_results, samples):
+                db_path = db_resolver(example.get("db_id", ""))
+                db_paths.append(db_path)
+                result["db_path"] = db_path
         else:
             db_paths = [None] * len(samples)
 

@@ -10,6 +10,7 @@ Usage:
   python scripts/run_baseline_eval.py --dataset bird     # BirdBench validation split
   python scripts/run_baseline_eval.py --max-samples 20   # limit samples
   python scripts/run_baseline_eval.py --mlflow           # log to MLflow
+  python scripts/run_baseline_eval.py --dataset spider --output spider_baseline
 """
 
 from __future__ import annotations
@@ -23,8 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.evaluation.benchmark import BenchmarkRunner
-from src.evaluation.metrics import EvaluationMetrics
-from src.evaluation.mlflow_tracker import MLflowTracker
+from src.evaluation.export import DETAILS_CSV, METRICS_JSON, save_evaluation_details_csv
 from src.models.model_loader import is_model_cached
 from src.utils.config import get_bertscore_model_name, get_model_name, load_config
 from src.utils.paths import (
@@ -33,7 +33,7 @@ from src.utils.paths import (
     get_spider_data_dir,
     is_bird_cached,
     is_spider_cached,
-    resolve_results_output_path,
+    resolve_results_run_dir,
 )
 from src.utils.seeds import set_seeds
 
@@ -159,8 +159,8 @@ def main() -> None:
     parser.add_argument("--mlflow", action="store_true", help="log results to MLflow")
     parser.add_argument(
         "--output",
-        default="baseline_eval_results.json",
-        help="output filename or path under results/ (default: baseline_eval_results.json)",
+        default="baseline_eval_results",
+        help="run name; creates results/<name>/ with metrics.json and details.csv",
     )
     args = parser.parse_args()
 
@@ -180,9 +180,11 @@ def main() -> None:
     print_metrics(result["metrics"], f"Baseline Results ({result['dataset']})")
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
-    output_path = resolve_results_output_path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
+    run_dir = resolve_results_run_dir(args.output)
+    metrics_path = run_dir / METRICS_JSON
+    details_path = run_dir / DETAILS_CSV
+
+    with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "model": model_name,
@@ -193,7 +195,17 @@ def main() -> None:
             f,
             indent=2,
         )
-    print(f"  Results saved: {output_path}")
+
+    db_paths = [pred.get("db_path") for pred in result.get("predictions", [])]
+    save_evaluation_details_csv(
+        details_path,
+        result.get("predictions", []),
+        db_paths=db_paths,
+    )
+
+    print(f"  Run saved: {run_dir}")
+    print(f"    metrics: {metrics_path}")
+    print(f"    details: {details_path}")
     if args.mlflow:
         print("\nView MLflow UI: mlflow ui --backend-store-uri sqlite:///mlflow.db")
 

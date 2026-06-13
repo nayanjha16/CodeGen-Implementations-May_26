@@ -1,0 +1,498 @@
+index,question,schema,db_id,db_path,prompt,raw_output,predicted_sql,ground_truth,exact_match,syntax_valid,execution_match
+0,How many singers do we have?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+How many singers do we have?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a new database connection
+	db, err := sql.Open(""sqlite3"", "":memory:"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Concert_ID text)"")
+
+	// Create a new database table
+	db.Exec(""INS",*/,SELECT count(*) FROM singer,False,False,
+1,What is the total number of singers?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the total number of singers?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a new database connection
+	db, err := sql.Open(""sqlite3"", "":memory:"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Concert_ID text)"")
+
+	// Create a new database table
+	db.Exec(""INS",*/,SELECT count(*) FROM singer,False,False,
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+Generate SQL query.","For example:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name, country, age FROM stadium
+WHERE name = 'John Doe'
+AND country = 'USA'
+AND age = 20
+
+The above query will return the following SQL:
+
+SELECT name,","SELECT name, country, age FROM stadium","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,
+3,"What are the names, countries, and ages for every singer in descending order of age?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names, countries, and ages for every singer in descending order of age?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a new database connection
+	db, err := sql.Open(""sqlite3"", "":memory:"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Singer_ID text)"")
+
+	// Create a new database table
+	db.Exec(""INS",*/,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,False,
+4,"What is the average, minimum, and maximum age of all singers from France?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age of all singers from France?
+
+Generate SQL query.","*/
+
+func main() {
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query.
+	// Generate SQL query",*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,False,
+5,"What is the average, minimum, and maximum age for all French singers?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age for all French singers?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a new database connection
+	db, err := sql.Open(""sqlite3"", ""./data/database.db"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new table
+	stadium := &sql.Stmt{
+		Table: ""stadium"",
+		Name: ""stadium"",
+		Columns: []string{
+			""ID"",
+			""Name"",
+			""Capacity"",
+			""Highest"",
+			""Lowest"",
+			""Average"",
+		},
+	}
+
+	// Create a new table
+	singer := &sql.Stmt{
+		Table: ""singer"",
+		Name: ""singer"",
+		Columns: []string{
+			""ID"",
+			""Name"",
+			""Country"",
+			""Song_Name"",
+			""Song_release_year"",
+			""Age"",
+			""Is_male"",
+		},
+	}
+
+	// Create a new table
+	concert := &sql.Stmt{
+		Table: ""concert"",
+		Name: """,*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,False,
+6,Show the name and the release year of the song by the youngest singer.,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show the name and the release year of the song by the youngest singer.
+
+Generate SQL query.","Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.
+
+Create table.",Create table.,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",False,False,
+7,What are the names and release years for all the songs of the youngest singer?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names and release years for all the songs of the youngest singer?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a new database connection
+	db, err := sql.Open(""sqlite3"", "":memory:"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+
+	// Create a new database table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Singer_ID text)"")
+
+	// Create a new database table
+	db.Exec(""INS",*/,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",False,False,
+8,What are all distinct countries where singers above age 20 are from?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are all distinct countries where singers above age 20 are from?
+
+Generate SQL query.","*/
+
+func main() {
+	// Create a database connection
+	db, err := sql.Open(""sqlite3"", ""./data/db.db"")
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a table
+	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+
+	// Create a table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+
+	// Create a table
+	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+
+	// Create a table
+	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Concerto_ID text)"")
+
+	// Create a table
+	db.Exec(""CREATE TABLE IF NOT EXISTS",*/,SELECT DISTINCT country FROM singer WHERE age  >  20,False,False,
+9,What are  the different countries with singers above age 20?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are  the different countries with singers above age 20?
+
+Generate SQL query.","*/
+
+package main
+
+import (
+	""fmt""
+	""log""
+	""os""
+	""strings""
+)
+
+func main() {
+	if len(os.Args) < 3 {
+		log.Fatal(""Usage: ./generate_sql.go <country> <year>"")
+	}
+
+	country := os.Args[1]
+	year := os.Args[2]
+
+	sql := fmt.Sprintf(""SELECT * FROM %s WHERE Country = '%s' AND Year = '%s'"",
+		""Stadiums"", country, year)
+
+	rows, err := db.Query(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var stadium_ID int
+		var location_ID int
+		var name_ID int
+		var capacity_ID int
+		var highest_ID int
+		var lowest_ID int
+		var average_ID int
+		var name_text string
+		var capacity_text string
+		var highest_text string",*/,SELECT DISTINCT country FROM singer WHERE age  >  20,False,False,

@@ -79,6 +79,21 @@ def resolve_project_path(path: str | Path) -> Path:
     return resolved if resolved.is_absolute() else _PROJECT_ROOT / resolved
 
 
+def resolve_results_run_dir(name: str | Path) -> Path:
+    """Resolve a named evaluation run directory under results/.
+
+    Creates ``results/<name>/`` and returns that path. A ``.json`` suffix on
+    ``name`` is ignored so legacy filenames still map to a folder name.
+    """
+    raw_path = Path(name)
+    if raw_path.suffix.lower() == ".json":
+        raw_path = raw_path.with_suffix("")
+    safe = re.sub(r"[^\w.\-]+", "__", raw_path.name).strip("_") or "eval_run"
+    run_dir = get_results_dir() / safe
+    run_dir.mkdir(parents=True, exist_ok=True)
+    return run_dir
+
+
 def resolve_results_output_path(path: str | Path) -> Path:
     """Resolve an evaluation output path under the project results directory.
 

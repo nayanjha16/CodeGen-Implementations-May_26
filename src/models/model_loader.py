@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from src.utils.config import get_model_name, load_config
+from src.utils.device import resolve_device
 from src.utils.paths import (
     ensure_storage_dirs,
     get_checkpoint_path,
@@ -14,6 +15,12 @@ from src.utils.paths import (
 )
 
 logger = logging.getLogger("codegen")
+
+
+def is_seq2seq_model(model_name: str) -> bool:
+    """Return True for encoder-decoder models such as T5."""
+    lowered = model_name.lower()
+    return any(tag in lowered for tag in ("t5", "bart", "pegasus", "mbart"))
 
 
 def is_model_cached(path: Path) -> bool:
@@ -40,9 +47,15 @@ def ensure_model_cached(
         logger.info("Using cached model at %s", cache_dir)
         return cache_dir
 
-    from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer
+    from transformers import AutoModel, AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
 
-    model_cls = AutoModelForCausalLM if causal else AutoModel
+    if causal:
+        if is_seq2seq_model(model_name):
+            model_cls = AutoModelForSeq2SeqLM
+        else:
+            model_cls = AutoModelForCausalLM
+    else:
+        model_cls = AutoModel
     cache_dir.mkdir(parents=True, exist_ok=True)
     print(f"Downloading model {model_name} to {cache_dir} ...")
     logger.info("Downloading model %s to %s", model_name, cache_dir)
@@ -87,23 +100,13 @@ class CodeGenModel:
     ):
         self.model_name = model_name
         self.max_length = max_length
-        self.device = self._resolve_device(device)
+        self.device = resolve_device(device)
         self.config = config
         self.model_path = Path(model_path) if model_path else None
         self.tokenizer = None
         self.model = None
         self._loaded = False
-
-    @staticmethod
-    def _resolve_device(device: str) -> str:
-        if device != "auto":
-            return device
-        try:
-            import torch
-
-            return "cuda" if torch.cuda.is_available() else "cpu"
-        except ImportError:
-            return "cpu"
+        self._seq2seq = is_seq2seq_model(model_name)
 
     def _resolve_local_path(self) -> Path:
         if self.model_path is not None:
@@ -115,7 +118,7 @@ class CodeGenModel:
         if self._loaded:
             return
 
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
         from transformers.utils import logging as transformers_logging
 
         transformers_logging.set_verbosity_error()
@@ -124,7 +127,10 @@ class CodeGenModel:
         load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
         logger.info("Loading model %s from %s on %s", self.model_name, local_path, self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
-        self.model = AutoModelForCausalLM.from_pretrained(local_path, **load_kwargs)
+        model_cls = AutoModelForSeq2SeqLM if self._seq2seq else AutoModelForCausalLM
+        self.model = model_cls.from_pretrained(local_path, **load_kwargs)
+        if self.tokenizer.pad_token_id is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
         self.model.to(self.device)
         self.model.eval()
         self._loaded = True
@@ -172,6 +178,9 @@ class CodeGenModel:
 
         with torch.no_grad():
             outputs = self.model.generate(**inputs, **gen_kwargs)
+
+        if self._seq2seq:
+            return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
         generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         if generated.startswith(prompt):

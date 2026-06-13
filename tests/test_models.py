@@ -9,6 +9,7 @@ from src.models.model_loader import (
     CodeGenModel,
     ensure_model_cached,
     is_model_cached,
+    is_seq2seq_model,
     load_model,
     resolve_model_path,
 )
@@ -16,6 +17,10 @@ from src.utils.config import get_model_name, load_config
 
 
 class TestModelLoader:
+    def test_is_seq2seq_model(self):
+        assert is_seq2seq_model("google-t5/t5-base")
+        assert not is_seq2seq_model("Salesforce/codegen-350M-multi")
+
     def test_resolve_device_cpu(self):
         model = CodeGenModel(model_name="test/mock", device="cpu")
         assert model.device == "cpu"

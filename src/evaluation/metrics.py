@@ -102,6 +102,7 @@ class EvaluationMetrics:
 
             from src.models.model_loader import ensure_model_cached, is_model_cached
             from src.utils.config import get_bertscore_model_name
+            from src.utils.device import resolve_device
 
             bertscore_model = get_bertscore_model_name()
             bert_path = ensure_model_cached(bertscore_model, causal=False)
@@ -113,6 +114,7 @@ class EvaluationMetrics:
                 lang="en",
                 verbose=False,
                 model_type=model_type,
+                device=resolve_device(),
             )
             return float(f1.mean())
         except Exception:

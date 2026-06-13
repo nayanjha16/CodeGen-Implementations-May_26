@@ -8,12 +8,9 @@ A modular, reproducible, research-oriented project for evaluating small code lan
 
 - **Natural Language → SQL** generation with greedy and beam search decoding
 - **SQL → MongoDB** rule-based translation (SELECT, WHERE, ORDER BY, LIMIT, GROUP BY)
-- **Interactive query pipeline** with validation, execution, and explanations
 - **Benchmark evaluation** on Spider and BirdBench datasets
 - **Metrics**: Exact Match, Execution Accuracy, BLEU, ROUGE-L, BERTScore, CodeBLEU
 - **MLflow** experiment tracking
-- **FastAPI** REST API with Swagger docs
-- **Streamlit** interactive UI
 - **Local caching** — models and datasets download once, then reuse from disk
 
 ## Project Structure
@@ -23,8 +20,6 @@ CodeGen-Studio/
 ├── src/                     # Application source code
 │   ├── text2sql/            # Prompt builder, generator, validator, executor
 │   ├── sql2nosql/           # SQL to MongoDB translator
-│   ├── query_engine/        # End-to-end interactive pipeline
-│   ├── api/                 # FastAPI backend
 │   ├── models/              # HuggingFace model loader (with local cache)
 │   ├── datasets/            # Spider & BIRD loaders, preprocessing
 │   ├── evaluation/          # Metrics, benchmarks, MLflow tracking
@@ -37,15 +32,12 @@ CodeGen-Studio/
 │   ├── bird/                # BIRD dataset (downloaded once)
 │   ├── processed/           # Preprocessed dataset exports
 │   └── samples/             # Sample SQLite databases
-├── results/                 # Evaluation output JSON
-├── apps/
-│   └── streamlit/           # Streamlit UI
-├── configs/                 # YAML configuration (generation, evaluation, API)
-├── scripts/                 # Setup, evaluation, and launcher scripts
+├── results/                 # Evaluation output (metrics.json, details.csv)
+├── configs/                 # YAML configuration (generation, evaluation)
+├── scripts/                 # Setup and evaluation scripts
 ├── tests/                   # pytest test suite
 ├── .env.example             # Environment variable template
-├── requirements.txt
-└── docker-compose.yml
+└── requirements.txt
 ```
 
 ## Quick Start
@@ -111,7 +103,7 @@ BIRD_DATASET_URL=https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/hea
 | `SPIDER_DATASET_URL` | Spider full dataset mirror URL | — |
 | `BIRD_DATASET_URL` | BIRD dataset archive URL | — |
 
-YAML settings in `configs/default.yaml` cover generation parameters, evaluation limits, API ports, and seeds. Model name and storage paths always come from `.env`.
+YAML settings in `configs/default.yaml` cover generation parameters, evaluation limits, and seeds. Model name and storage paths always come from `.env`.
 
 ### 3. Create Sample Database
 
@@ -227,61 +219,6 @@ The loader uses the checkpoint instead of the base model.
 
 ---
 
-### Other Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/setup_sample_db.py` | Create sample SQLite database |
-| `scripts/demo_presentation.py` | IIT Hyderabad-style live demo (metrics, SQL→NoSQL) |
-| `scripts/evaluate.sh` | Shell wrapper for Spider/Bird benchmark via `BenchmarkRunner` |
-| `scripts/train.sh` | Training placeholder (sets seeds, prints config) |
-| `scripts/run_api.sh` | Start FastAPI server on port 8000 |
-| `scripts/run_streamlit.sh` | Start Streamlit UI on port 8501 |
-
-#### Demo presentation
-
-```bash
-# Metrics + SQL→NoSQL only (no model download)
-python scripts/demo_presentation.py
-
-# Include live text-to-SQL generation (uses cached model)
-python scripts/demo_presentation.py --with-model
-
-# Evaluation section only
-python scripts/demo_presentation.py --eval-only --mlflow
-```
-
-#### Shell evaluation wrapper
-
-```bash
-bash scripts/evaluate.sh spider validation
-bash scripts/evaluate.sh bird validation
-MAX_SAMPLES=20 bash scripts/evaluate.sh spider validation
-```
-
-#### Start API server
-
-```bash
-# Linux/macOS
-bash scripts/run_api.sh
-
-# Windows
-set PYTHONPATH=%CD% && uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-API docs: http://localhost:8000/docs
-
-#### Start Streamlit UI
-
-```bash
-bash scripts/run_streamlit.sh
-# or: streamlit run apps/streamlit/app.py
-```
-
-UI: http://localhost:8501
-
----
-
 ## Local Caching
 
 Assets are downloaded once and reused on every subsequent run.
@@ -386,38 +323,6 @@ To use a different HuggingFace model, change `MODEL_NAME` in `.env` and delete t
 
 ---
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-| POST | `/generate-sql` | NL → SQL generation |
-| POST | `/translate-nosql` | SQL → MongoDB translation |
-| POST | `/execute-query` | Execute SQL on SQLite DB |
-| POST | `/evaluate` | Compute evaluation metrics |
-| POST | `/interactive-query` | Full query pipeline |
-
-### Example: Generate SQL
-
-```bash
-curl -X POST http://localhost:8000/generate-sql \
-  -H "Content-Type: application/json" \
-  -d '{
-    "question": "Show all students older than 20",
-    "schema": "Table students(id, name, age)"
-  }'
-```
-
-### Example: Translate to MongoDB
-
-```bash
-curl -X POST http://localhost:8000/translate-nosql \
-  -H "Content-Type: application/json" \
-  -d '{"sql": "SELECT name FROM users WHERE age > 20"}'
-```
-
----
-
 ## Datasets
 
 ### Spider
@@ -470,31 +375,11 @@ Tracked per run: model name, dataset, prompt template, decoding strategy, all me
 
 ---
 
-## Docker
-
-```bash
-docker compose up --build
-# or: docker compose -f docker/docker-compose.yml up --build
-```
-
-Services:
-- **API**: http://localhost:8000
-- **Streamlit**: http://localhost:8501
-- **MLflow**: http://localhost:5000
-
-Mount `.env` and `models/`, `data/` volumes to persist cached assets across container restarts.
-
----
-
 ## Reproducibility
 
 Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All evaluation scripts call `set_seeds(config)` before running.
 
 ```bash
-# Verify seeds and config
-bash scripts/train.sh
-
-# Full baseline evaluation with reproducible seeds
 python scripts/run_baseline_eval.py --dataset spider --max-samples 10
 ```
 

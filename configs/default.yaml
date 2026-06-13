@@ -1,7 +1,7 @@
 model:
   # name and storage paths come from .env (MODEL_NAME, MODELS_BASE_DIR, etc.)
   max_length: 512
-  device: "auto"  # auto, cuda, cpu
+  device: "auto"  # auto (cuda > mps > cpu), cuda, mps, cpu
 
 generation:
   max_new_tokens: 256
@@ -21,13 +21,6 @@ evaluation:
   # bertscore_model set from BERTSCORE_MODEL_NAME in .env
   mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"
-
-api:
-  host: "0.0.0.0"
-  port: 8000
-
-streamlit:
-  port: 8501
 
 seeds:
   random: 42

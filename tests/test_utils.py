@@ -2,7 +2,10 @@
 
 from pathlib import Path
 
+from unittest.mock import MagicMock, patch
+
 from src.utils.config import get_bertscore_model_name, get_model_name, load_config
+from src.utils.device import resolve_device
 from src.utils.logging import setup_logging
 from src.utils.paths import get_bird_data_dir, get_model_cache_dir, get_spider_data_dir
 from src.utils.seeds import set_seeds
@@ -51,6 +54,37 @@ class TestSeeds:
     def test_set_seeds_from_config(self):
         config = load_config()
         set_seeds(config)
+
+
+class TestDevice:
+    def test_resolve_device_explicit(self):
+        assert resolve_device("cpu") == "cpu"
+        assert resolve_device("cuda") == "cuda"
+        assert resolve_device("mps") == "mps"
+
+    def test_resolve_device_auto_prefers_cuda(self):
+        mock_torch = MagicMock()
+        mock_torch.cuda.is_available.return_value = True
+        mock_torch.backends.mps.is_available.return_value = True
+
+        with patch.dict("sys.modules", {"torch": mock_torch}):
+            assert resolve_device("auto") == "cuda"
+
+    def test_resolve_device_auto_falls_back_to_mps(self):
+        mock_torch = MagicMock()
+        mock_torch.cuda.is_available.return_value = False
+        mock_torch.backends.mps.is_available.return_value = True
+
+        with patch.dict("sys.modules", {"torch": mock_torch}):
+            assert resolve_device("auto") == "mps"
+
+    def test_resolve_device_auto_falls_back_to_cpu(self):
+        mock_torch = MagicMock()
+        mock_torch.cuda.is_available.return_value = False
+        mock_torch.backends.mps.is_available.return_value = False
+
+        with patch.dict("sys.modules", {"torch": mock_torch}):
+            assert resolve_device("auto") == "cpu"
 
 
 class TestLogging:

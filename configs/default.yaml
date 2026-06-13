@@ -1,0 +1,38 @@
+model:
+  name: "Salesforce/codegen-350M-multi"
+  max_length: 512
+  device: "auto"  # auto, cuda, cpu
+
+generation:
+  max_new_tokens: 256
+  temperature: 0.2
+  top_p: 0.95
+  num_beams: 4
+  do_sample: false
+  decoding_strategy: "greedy"  # greedy, beam
+
+datasets:
+  spider:
+    url: "https://github.com/taoyds/spider/archive/refs/heads/master.zip"
+    cache_dir: "data/spider"
+  bird:
+    url: "https://github.com/AlibabaResearch/DAMO-ConvAI/archive/refs/heads/master.zip"
+    cache_dir: "data/bird"
+
+evaluation:
+  batch_size: 8
+  max_samples: 100
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
+  experiment_name: "codegen-text2sql"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+
+streamlit:
+  port: 8501
+
+seeds:
+  random: 42
+  numpy: 42
+  torch: 42

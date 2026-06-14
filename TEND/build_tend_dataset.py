@@ -11,6 +11,8 @@ from typing import Any
 
 from tqdm import tqdm
 
+from src.sql2nosql.translator import SQLToNoSQLTranslator
+
 from TEND.paths import build_output_csv_path
 from TEND.qwen_evaluator import DEFAULT_MODEL, QwenTENDEvaluator
 from TEND.schema_to_sql import generate_sql_schema, generate_sql_schema_from_spider_schema
@@ -38,23 +40,29 @@ class TENDDatasetBuilder:
         max_samples: int | None = None,
         evaluate: bool = True,
         model_name: str = DEFAULT_MODEL,
+        evaluator: QwenTENDEvaluator | None = None,
+        spider_source: SpiderSource | None = None,
+        tables_by_db: dict[str, dict[str, Any]] | None = None,
+        translator: SQLToNoSQLTranslator | None = None,
     ):
         self.dataset = dataset.lower()
         self.split = split
         self.max_samples = max_samples
         self.evaluate = evaluate
         self.model_name = model_name
-        self._tables_by_db: dict[str, dict[str, Any]] | None = None
-        self._evaluator: QwenTENDEvaluator | None = None
+        self._evaluator = evaluator
+        self._spider_source = spider_source or SpiderSource()
+        self._tables_by_db = tables_by_db
+        self._translator = translator
 
     def _load_spider_tables(self) -> dict[str, dict[str, Any]]:
         if self._tables_by_db is not None:
             return self._tables_by_db
-        self._tables_by_db = SpiderSource().load_tables()
+        self._tables_by_db = self._spider_source.load_tables()
         return self._tables_by_db
 
     def _load_spider_samples(self) -> list[dict[str, str]]:
-        samples = SpiderSource().load_split(self.split)
+        samples = self._spider_source.load_split(self.split)
         if self.max_samples is not None:
             samples = samples[: self.max_samples]
         return samples
@@ -90,12 +98,17 @@ class TENDDatasetBuilder:
             self._evaluator = QwenTENDEvaluator(model_name=self.model_name)
         return self._evaluator
 
+    def _get_translator(self) -> SQLToNoSQLTranslator:
+        if self._translator is None:
+            self._translator = SQLToNoSQLTranslator()
+        return self._translator
+
     def build_row(self, sample: dict[str, str], index: int) -> dict[str, Any]:
         """Convert one source sample into a TEND dataset row."""
         sql_schema = self._sql_schema_for_sample(sample)
         sql_query = sample.get("sql", "")
         nosql_schema = convert_schema_json(sql_schema)
-        query_result = convert_query(sql_query)
+        query_result = convert_query(sql_query, self._get_translator())
         nosql_query = query_result["nosql_query"]
 
         sql_schema_check = validate_sql_schema(sql_schema)

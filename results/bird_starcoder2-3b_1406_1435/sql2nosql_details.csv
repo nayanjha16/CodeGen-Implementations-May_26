@@ -1,0 +1,387 @@
+question,schema,reference_sql,nosql_schema,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,qwen_query_correct,qwen_raw_response
+What is the highest eligible free rate for K-12 students in the schools in Alameda County?,"Database: california_schools
+Evidence: Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`",SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,{},"db.california_schools.find(
+  {
+    ""County"": ""Alameda"",
+    ""Free Meal Count (K-12)"": { $gt: 0 },
+    ""Enrollment (K-12)"": { $gt: 0 }
+  },
+  {
+    ""County"": 1,
+    ""Free Meal Count (K-12)"": 1,
+    ""Enrollment (K-12)"": 1,
+    ""Free Meal Rate (K-12)"": { $divide: [ ""$Free Meal Count (K-12)"", ""$Enrollment (K-12)"" ] }
+  }
+).sort( { ""Free Meal Rate (K-12)"": -1 } ).limit(1)
+
+*/
+
+db.california_schools.find(
+  {
+    ""County"": ""Alameda"",
+    ""Free Meal Count (K-12)"": { $gt: 0 },
+    ""Enrollment (K-12)"": { $gt: 0 }
+  },
+  {
+    ""County"": 1,
+    ""Free Meal Count (K-12)"":","db.california_schools.find(
+  {
+    ""County"": ""Alameda"",
+    ""Free Meal Count (K-12)"": { $gt: 0 },
+    ""Enrollment (K-12)"": { $gt: 0 }
+  },
+  {
+    ""County"": 1,
+    ""Free Meal Count (K-12)"": 1,
+    ""Enrollment (K-12)"": 1,
+    ""Free Meal Rate (K-12)"": { $divide: [ ""$Free Meal Count (K-12)"", ""$Enrollment (K-12)"" ] }
+  }
+).sort( { ""Free Meal Rate (K-12)","db.frpm.find(
+  {},
+  { `Free Meal Count (K-12)` / `Enrollment (K-12)`: 1 }
+).sort({ ""(CAST(`Free"": 1 }).limit(1)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$gt` instead of `/` for sorting, which is not supported in MongoDB.""
+}"
+Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.,"Database: california_schools
+Evidence: Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`",SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,{},"db.california_schools.aggregate([
+    {
+        $match: {
+            ""Enrollment (Ages 5-17)"": {
+                $gt: 0
+            },
+            ""Free Meal Count (Ages 5-17)"": {
+                $gt: 0
+            }
+        }
+    },
+    {
+        $project: {
+            ""School Name"": 1,
+            ""Free Meal Count (Ages 5-17)"": 1,
+            ""Enrollment (Ages 5-17)"": 1
+        }
+    },
+    {
+        $sort: {
+            ""Free Meal Count (Ages 5-17)"": 1
+        }
+    },
+    {
+        $limit: 3
+    }
+])
+
+Output:","db.california_schools.aggregate([
+    {
+        $match: {
+            ""Enrollment (Ages 5-17)"": {
+                $gt: 0
+            },
+            ""Free Meal Count (Ages 5-17)"": {
+                $gt: 0
+            }
+        }
+    },
+    {
+        $project: {
+            ""School Name"": 1,
+            ""Free Meal Count (Ages 5-17)"": 1,
+            ""Enrollment (Ages 5-17)"": 1
+        }
+    },
+    {
+        $sort: {
+            ""Free Meal Count (Ages 5-17)"": 1
+        }
+    },
+    {
+        $limit: 3
+    }
+])","db.frpm.find(
+  {},
+  { `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`: 1 }
+).sort({ ""`Free"": 1 }).limit(3)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `$match` to filter records based on specific conditions, while the reference MongoDB query uses `$project` to create new fields from the existing data.""
+}"
+Please list the zip code of all the charter schools in Fresno County Office of Education.,"Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the table fprm",SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,{},"db.california_schools.find({$and:[{'County': 'FRESNO'},{'Charter School (Y/N)': 1}]},{'Zip Code': 1, '_id': 0})
+
+*/
+
+db.california_schools.find({$and:[{'County': 'FRESNO'},{'Charter School (Y/N)': 1}]},{'Zip Code': 1, '_id': 0})
+
+/*
+
+Question:
+Please list the zip code of all the charter schools in Fresno County Office of Education.
+
+MongoDB:","db.california_schools.find({$and:[{'County': 'FRESNO'},{'Charter School (Y/N)': 1}]},{'Zip Code': 1, '_id': 0})","db.frpm.find(
+  {},
+  { T2.Zip: 1 }
+)",,True,False,"```json
+{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$and` to filter schools based on County and Charter status, while the reference query uses `{ T2.Zip: 1 }` which is not valid in MongoDB.""
+}
+```"
+What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?,Database: california_schools,SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,{},"db.schools.find(
+  {
+    ""school.school_name"": {
+      $regex: /^.*[A-Z]{2}$/
+    },
+    ""student_academic_record.student_academic_record_id"": {
+      $exists: true
+    },
+    ""student_academic_record.student_academic_record_id.frpm_count"": {
+      $exists: true
+    },
+    ""student_academic_record.student_academic_record_id.frpm_count.value"": {
+      $exists: true
+    }
+  },
+  {
+    ""school.mailing_address.street_address"": 1,
+    ""student_academic_record.student_academic_record_id.frpm_count.value"": 1
+  }
+).sort({
+  ""student_academic_record.student_academic_record_id.frpm_count.value"": -1
+}).limit(1)
+
+*/
+
+db.schools.find(
+  {
+    ""school.school_name"": {
+      $regex: /^.*[A-Z]{2}$/
+    },
+    ""student_academic_record.student_academic_record_id"": {","db.schools.find(
+  {
+    ""school.school_name"": {
+      $regex: /^.*[A-Z]{2}$/
+    },
+    ""student_academic_record.student_academic_record_id"": {
+      $exists: true
+    },
+    ""student_academic_record.student_academic_record_id.frpm_count"": {
+      $exists: true
+    },
+    ""student_academic_record.student_academic_record_id.frpm_count.value"": {
+      $exists: true
+    }
+  },
+  {
+    ""school.mailing_address.street_address"": 1,
+    ""student_academic_record.student_academic_record_id.frpm_count.value"": 1
+  }
+).sort({
+  ""student_academic_record.student_academic_record_id.frpm_count.value"": -1
+}).limit(1)","db.frpm.find(
+  {},
+  { T2.MailStreet: 1 }
+).sort({ ""T1.`FRPM"": 1 }).limit(1)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$regex` to filter records based on a regular expression, while the reference query uses `$exists` to check for existence of fields. These operations differ in their approach.""
+}"
+Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.,"Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the frpm",SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',{},"db.california_schools.find({$and: [{`Charter School (Y/N)`: 1}, {`School Year Opened`: {$gt: 2000}}]}, {`Phone Number`: 1, _id: 0})
+
+*/
+
+db.california_schools.find({$and: [{`Charter School (Y/N)`: 1}, {`School Year Opened`: {$gt: 2000}}]}, {`Phone Number`: 1, _id: 0})
+
+/*
+
+Question:
+Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.
+
+MongoDB:","db.california_schools.find({$and: [{`Charter School (Y/N)`: 1}, {`School Year Opened`: {$gt: 2000}}]}, {`Phone Number`: 1, _id: 0})","db.frpm.find(
+  {},
+  { T2.Phone: 1 }
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$and` to filter charter schools that opened in 2000, while the reference query does not use any filters.""
+}"
+How many schools with an average score in Math greater than 400 in the SAT test are exclusively virtual?,"Database: california_schools
+Evidence: Exclusively virtual refers to Virtual = 'F'",SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400,{},"db.california_schools.find({$and: [{SAT_AVG_ALL: {$gt: 400}}, {Virtual: 'F'}]}).count()
+
+Output:","db.california_schools.find({$and: [{SAT_AVG_ALL: {$gt: 400}}, {Virtual: 'F'}]})","db.satscores.find(
+  {},
+  { COUNT(DISTINCT T2.School): 1 }
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$and` to filter schools based on SAT average and virtual status, while the reference query uses `{ COUNT(DISTINCT T2.School): 1 }` which is not valid in MongoDB.""
+}"
+"Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.","Database: california_schools
+Evidence: Magnet schools or offer a magnet program means that Magnet = 1",SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500,{},"db.schools.find({$and: [{sat_test_takers: {$gt: 500}}, {magnet: {$exists: true}}]})
+
+*/
+
+db.schools.find({$and: [{sat_test_takers: {$gt: 500}}, {magnet: {$exists: true}}]})
+
+/*
+
+Task: write one MongoDB shell query only.
+
+Rules:
+- Use only the collections and fields listed in the schema below.
+- Return exactly one MongoDB query using db.<collection>.find(), aggregate(), or distinct().
+- Do not write SQL, Python, JavaScript functions, or explanations.
+- Do not execute the query or print results.
+- Do not repeat ""MongoDB:"" or generate multiple queries.
+
+Schema:
+Database: california_schools
+Evidence: Magnet schools or offer a magnet program means that Magnet = 1
+
+Question:
+Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.
+
+MongoDB:","db.schools.find({$and: [{sat_test_takers: {$gt: 500}}, {magnet: {$exists: true}}]})","db.satscores.find(
+  {},
+  { T2.School: 1 }
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$and` to filter schools based on two conditions (sat_test_takers > 500 and magnet.exists), while the reference query uses `{ T2.School: 1 }`, which is not valid in MongoDB.""
+}"
+What is the phone number of the school that has the highest number of test takers with an SAT score of over 1500?,Database: california_schools,SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1,{},"db.schools.find({$and: [{sat_score: {$gt: 1500}}, {test_takers: {$exists: true}}]}, {phone: 1, _id: 0}).sort({test_takers: -1}).limit(1)
+
+Output:","db.schools.find({$and: [{sat_score: {$gt: 1500}}, {test_takers: {$exists: true}}]}, {phone: 1, _id: 0}).sort({test_takers: -1}).limit(1)","db.satscores.find(
+  {},
+  { T2.Phone: 1 }
+).sort({ ""T1.NumGE1500"": -1 }).limit(1)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$and` to filter documents based on multiple conditions, while the reference query uses `$expr` for sorting and limiting.""
+}"
+What is the number of SAT test takers of the schools with the highest FRPM count for K-12 students?,Database: california_schools,SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 ),{},"db.california_schools.aggregate([
+    {
+        $match: {
+            ""school.type"": ""K-12"",
+            ""school.students.enrollment.total"": {
+                $gt: 0
+            }
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            ""school.name"": 1,
+            ""school.students.enrollment.total"": 1,
+            ""school.students.enrollment.k12.total"": 1,
+            ""school.students.enrollment.k12.frpm"": 1
+        }
+    },
+    {
+        $sort: {
+            ""school.students.enrollment.k12.frpm"": -1
+        }
+    },
+    {
+        $limit: 1
+    },
+    {
+        $project: {
+            _id: 0,
+            ""school.students.enrollment.k12.total"": 1
+        }
+    },
+    {
+        $group: {
+            _id: null,
+            ""total"": {
+                $sum: ""$school.students.enrollment.k12.total""
+            }
+        }
+    }
+])
+
+Output:","db.california_schools.aggregate([
+    {
+        $match: {
+            ""school.type"": ""K-12"",
+            ""school.students.enrollment.total"": {
+                $gt: 0
+            }
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            ""school.name"": 1,
+            ""school.students.enrollment.total"": 1,
+            ""school.students.enrollment.k12.total"": 1,
+            ""school.students.enrollment.k12.frpm"": 1
+        }
+    },
+    {
+        $sort: {
+            ""school.students.enrollment.k12.frpm"": -1
+        }
+    },
+    {
+        $limit: 1
+    },
+    {
+        $project: {
+            _id: 0,
+            ""school.students.enrollment.k12.total"": 1
+        }
+    },
+    {
+        $group: {
+            _id: null,
+            ""total"": {
+                $sum: ""$school.students.enrollment.k12.total""
+            }
+        }
+    }
+])","db.satscores.find(
+  { cds: ""( SELECT CDSCode FROM frpm"" },
+  { NumTstTakr: 1 }
+).sort({ ""`FRPM"": 1 }).limit(1)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `$match` to filter documents based on specific conditions, while the reference MongoDB query uses `$project` to aggregate data.""
+}"
+"Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?",Database: california_schools,SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded',{},"db.schools.aggregate([
+  { $match: {
+    ""sat_scores.math"": { $gt: 560 }
+  }},
+  { $group: {
+    _id: ""$charter"",
+    count: { $sum: 1 }
+  }}
+])
+
+*/
+
+db.schools.aggregate([
+  { $match: {
+    ""sat_scores.math"": { $gt: 560 }
+  }},
+  { $group: {
+    _id: ""$charter"",
+    count: { $sum: 1 }
+  }}
+])
+
+/*
+
+Question:
+Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?
+
+MongoDB:","db.schools.aggregate([
+  { $match: {
+    ""sat_scores.math"": { $gt: 560 }
+  }},
+  { $group: {
+    _id: ""$charter"",
+    count: { $sum: 1 }
+  }}
+])","db.satscores.find(
+  {},
+  { COUNT(T2.`School Code`): 1 }
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `$match` to filter documents based on a condition involving `sat_scores.math`, which is not present in the Reference MongoDB query.""
+}"

@@ -12,6 +12,79 @@ METRICS_JSON = "metrics.json"
 TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
 SQL2NOSQL_DETAILS_CSV = "sql2nosql_details.csv"
 
+TASK_METRIC_KEYS = [
+    "exact_match",
+    "syntax_validity",
+    "token_f1",
+    "bleu",
+    "rouge_l",
+    "bertscore",
+    "codebleu",
+    "ngram_match",
+    "syntax_match",
+    "semantic_match",
+    "count",
+    "execution_accuracy",
+    "structural_equivalence",
+    "total_count",
+    "scored_count",
+    "translation_success_rate",
+    "qwen_correct_rate",
+    "qwen_overall_correct_rate",
+    "qwen_count",
+]
+
+
+def merge_qwen_summary_into_metrics(
+    base_metrics: dict[str, Any] | None,
+    qwen_summary: dict[str, Any] | None,
+    *,
+    task: str,
+) -> dict[str, Any]:
+    """Merge Qwen aggregate metrics and normalize to the shared task metrics schema."""
+    merged = dict(base_metrics or {})
+    if qwen_summary:
+        if task == "text2sql":
+            merged["qwen_correct_rate"] = qwen_summary.get("sql_correct_rate")
+            merged["qwen_overall_correct_rate"] = qwen_summary.get("sql_correct_rate")
+        elif task == "sql2nosql":
+            merged["qwen_correct_rate"] = qwen_summary.get("query_correct_rate")
+            merged["qwen_overall_correct_rate"] = qwen_summary.get(
+                "overall_correct_rate"
+            )
+        if "count" in qwen_summary:
+            merged["qwen_count"] = qwen_summary["count"]
+    return normalize_task_metrics(merged, task=task)
+
+
+def normalize_task_metrics(
+    metrics: dict[str, Any] | None,
+    *,
+    task: str,
+) -> dict[str, Any]:
+    """Return metrics with the same keys for text2sql and sql2nosql."""
+    source = dict(metrics or {})
+    count = source.get("count", 0)
+
+    if task == "text2sql":
+        source.setdefault("total_count", count)
+        source.setdefault("scored_count", count)
+        source.setdefault(
+            "translation_success_rate", source.get("syntax_validity", 0.0)
+        )
+    elif task == "sql2nosql":
+        source.setdefault("execution_accuracy", 0.0)
+
+    normalized: dict[str, Any] = {}
+    for key in TASK_METRIC_KEYS:
+        if key in source:
+            normalized[key] = source[key]
+        elif key.startswith("qwen_"):
+            normalized[key] = None
+        else:
+            normalized[key] = 0.0
+    return normalized
+
 TEXT2SQL_DETAIL_FIELDS = [
     "index",
     "question",
@@ -29,6 +102,7 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "schema",
     "reference_sql",
     "nosql_schema",
+    "raw_output",
     "predicted_mongodb_query",
     "reference_mongodb_query",
     "mongodb_warnings",
@@ -162,6 +236,7 @@ def save_sql2nosql_details_csv(
                     "schema": schema,
                     "reference_sql": reference_sql,
                     "nosql_schema": nosql_schema,
+                    "raw_output": pred.get("nosql_raw_output", ""),
                     "predicted_mongodb_query": predicted_mongodb,
                     "reference_mongodb_query": reference_mongodb,
                     "mongodb_warnings": pred.get("mongodb_warnings", ""),

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -28,6 +29,8 @@ from src.evaluation.export import (
     METRICS_JSON,
     SQL2NOSQL_DETAILS_CSV,
     TEXT2SQL_DETAILS_CSV,
+    merge_qwen_summary_into_metrics,
+    normalize_task_metrics,
     save_sql2nosql_details_csv,
     save_text2sql_details_csv,
 )
@@ -72,15 +75,48 @@ QUICK_REFERENCE = [
 ]
 
 
+def _compute_text2sql_translation_success_rate(
+    predictions: list[dict[str, object]],
+) -> float:
+    """Rate of predictions that are complete SELECT ... FROM SQL statements."""
+    if not predictions:
+        return 0.0
+
+    from src.text2sql.sql_validator import SQLValidator
+
+    validator = SQLValidator()
+    successful = 0
+
+    for pred in predictions:
+        sql_valid = pred.get("sql_valid")
+        if isinstance(sql_valid, bool):
+            successful += int(sql_valid)
+            continue
+
+        sql = str(pred.get("sql", "")).strip()
+        if not sql:
+            continue
+        if not re.match(r"^\s*SELECT\b", sql, re.IGNORECASE):
+            continue
+        if not re.search(r"\bFROM\b", sql, re.IGNORECASE):
+            continue
+
+        syntax = validator.validate_syntax(sql)
+        completeness = validator.validate_completeness(sql)
+        if syntax["valid"] and completeness["complete"]:
+            successful += 1
+
+    return successful / len(predictions)
+
+
 def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
     print("\n" + "=" * 60)
     print(f"  {title}")
     print("=" * 60)
     labels = [
         ("exact_match", "Exact Match Accuracy"),
-        ("sql_correct_rate", "SQL Correct Rate"),
-        ("query_correct_rate", "Query Correct Rate"),
-        ("overall_correct_rate", "Overall Correct Rate"),
+        ("qwen_correct_rate", "Qwen Correct Rate"),
+        ("qwen_overall_correct_rate", "Qwen Overall Correct Rate"),
         ("execution_accuracy", "Execution Accuracy"),
         ("syntax_validity", "Syntax Validity Rate"),
         ("structural_equivalence", "Structural Equivalence"),
@@ -96,10 +132,13 @@ def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
         ("syntax_match", "  CodeBLEU Syntax"),
         ("semantic_match", "  CodeBLEU Semantic"),
         ("count", "Sample Count"),
+        ("qwen_count", "Qwen Sample Count"),
     ]
     for key, label in labels:
         if key in metrics:
             val = metrics[key]
+            if val is None:
+                continue
             display_label = f"{prefix}{label}" if prefix else label
             if isinstance(val, float):
                 print(f"  {display_label:30s}: {val:.4f}")
@@ -205,11 +244,14 @@ def main() -> None:
             args.dataset, args.split, args.max_samples, log_mlflow=args.mlflow
         )
 
-    print_metrics(result["metrics"], f"Generation Text-to-SQL ({result['dataset']})")
+    print_metrics(
+        normalize_task_metrics(result["metrics"], task="text2sql"),
+        f"Text-to-SQL ({result['dataset']})",
+    )
     if result.get("nosql_metrics"):
         print_metrics(
-            result["nosql_metrics"],
-            f"Generation SQL-to-MongoDB ({result['dataset']})",
+            normalize_task_metrics(result["nosql_metrics"], task="sql2nosql"),
+            f"SQL-to-MongoDB ({result['dataset']})",
         )
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
@@ -241,18 +283,30 @@ def main() -> None:
         use_qwen=use_qwen,
     )
 
+    text2sql_metrics = merge_qwen_summary_into_metrics(
+        result["metrics"],
+        qwen_text2sql_metrics if use_qwen else None,
+        task="text2sql",
+    )
+    text2sql_metrics["total_count"] = len(text2sql_predictions)
+    text2sql_metrics["scored_count"] = len(text2sql_predictions)
+    text2sql_metrics["translation_success_rate"] = (
+        _compute_text2sql_translation_success_rate(text2sql_predictions)
+    )
+    sql2nosql_metrics = merge_qwen_summary_into_metrics(
+        result.get("nosql_metrics"),
+        qwen_sql2nosql_metrics if use_qwen else None,
+        task="sql2nosql",
+    )
+
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "model": model_name,
                 "evaluator_model": qwen_model_name if use_qwen else None,
                 "dataset": result["dataset"],
-                "text2sql": qwen_text2sql_metrics if use_qwen else result["metrics"],
-                "sql2nosql": (
-                    qwen_sql2nosql_metrics if use_qwen else result.get("nosql_metrics")
-                ),
-                "generation_text2sql": result["metrics"],
-                "generation_sql2nosql": result.get("nosql_metrics"),
+                "text2sql": text2sql_metrics,
+                "sql2nosql": sql2nosql_metrics,
                 "mlflow_run_id": result.get("mlflow_run_id"),
             },
             f,
@@ -260,12 +314,22 @@ def main() -> None:
         )
 
     if use_qwen:
+        qwen_text2sql_only = {
+            key: value
+            for key, value in text2sql_metrics.items()
+            if key.startswith("qwen_")
+        }
+        qwen_sql2nosql_only = {
+            key: value
+            for key, value in sql2nosql_metrics.items()
+            if key.startswith("qwen_")
+        }
         print_metrics(
-            qwen_text2sql_metrics,
+            qwen_text2sql_only,
             f"Qwen Text-to-SQL ({result['dataset']})",
         )
         print_metrics(
-            qwen_sql2nosql_metrics,
+            qwen_sql2nosql_only,
             f"Qwen SQL-to-MongoDB ({result['dataset']})",
         )
 

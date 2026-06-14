@@ -1,0 +1,255 @@
+index,question,prompt,raw_output,predicted_sql,predicted_sql_valid,ground_truth,qwen_sql_correct,qwen_raw_response
+0,How many singers do we have?,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+How many singers do we have?
+
+SQL:","SELECT COUNT(*) FROM singer;
+
+Output:",SELECT COUNT(*) FROM singer;,True,SELECT count(*) FROM singer,True,"{""sql_correct"": true, ""reason"": ""The predicted SQL uses a single SELECT statement that counts all singers, while the ground truth SQL also counts all singers but does so using a different approach.""}"
+1,What is the total number of singers?,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the total number of singers?
+
+SQL:","SELECT COUNT(Singer_ID) FROM singer;
+
+Output:",SELECT COUNT(Singer_ID) FROM singer;,True,SELECT count(*) FROM singer,True,"{""sql_correct"": true, ""reason"": ""The predicted SQL uses a simple COUNT function to count the number of singers, while the ground truth SQL directly counts the number of singers using a COUNT(*) function.""}"
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+SQL:","SELECT Name, Country, Age FROM singer ORDER BY Age DESC;
+
+""""""","SELECT Name, Country, Age FROM singer ORDER BY Age DESC;",True,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL query uses the correct syntax and structure to select the required fields from the singer table, ordered by age in descending order.""
+}"
+3,"What are the names, countries, and ages for every singer in descending order of age?","Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names, countries, and ages for every singer in descending order of age?
+
+SQL:","SELECT Name, Country, Age FROM singer ORDER BY Age DESC;
+
+Output:","SELECT Name, Country, Age FROM singer ORDER BY Age DESC;",True,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL query uses the correct syntax and structure to select the required fields from the singer table and orders them by age in descending order.""
+}"
+4,"What is the average, minimum, and maximum age of all singers from France?","Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age of all singers from France?
+
+SQL:","SELECT AVG(Age), MIN(Age), MAX(Age)
+FROM singer
+WHERE Country = 'France'
+
+Output:","SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France'",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the correct syntax for selecting average, minimum, and maximum ages from the singer table where the country is equal to 'France'. The ground truth SQL also correctly selects these values.""
+}"
+5,"What is the average, minimum, and maximum age for all French singers?","Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age for all French singers?
+
+SQL:","SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France'
+
+Output:","SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France'",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the correct syntax and includes the necessary conditions to match the ground truth SQL.""
+}"
+6,Show the name and the release year of the song by the youngest singer.,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show the name and the release year of the song by the youngest singer.
+
+SQL:","SELECT Name, Song_release_year
+FROM singer
+WHERE Age = (SELECT MIN(Age) FROM singer)
+
+Output:","SELECT Name, Song_release_year FROM singer WHERE Age = (SELECT MIN(Age) FROM singer)",True,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses a subquery to find the minimum age among all singers, which directly corresponds to the ground truth SQL's requirement for finding the youngest singer.""
+}"
+7,What are the names and release years for all the songs of the youngest singer?,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names and release years for all the songs of the youngest singer?
+
+SQL:","SELECT singer.Name, singer.Song_release_year
+FROM singer
+WHERE singer.Age = (SELECT MIN(singer.Age) FROM singer)
+
+Output:","SELECT singer.Name, singer.Song_release_year FROM singer WHERE singer.Age = (SELECT MIN(singer.Age) FROM singer)",True,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses a subquery to find the minimum age among singers, which is different from the ground truth SQL that directly compares the ages.""
+}"
+8,What are all distinct countries where singers above age 20 are from?,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are all distinct countries where singers above age 20 are from?
+
+SQL:","SELECT DISTINCT Country
+FROM singer
+WHERE Age > 20;
+
+""""""",SELECT DISTINCT Country FROM singer WHERE Age > 20;,True,SELECT DISTINCT country FROM singer WHERE age  >  20,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL query selects distinct countries from the 'singer' table where the 'Age' column is greater than 20, which is essentially the same as the ground truth SQL query.""
+}"
+9,What are  the different countries with singers above age 20?,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are  the different countries with singers above age 20?
+
+SQL:","SELECT DISTINCT Country
+FROM singer
+WHERE Age > 20;
+
+""""""",SELECT DISTINCT Country FROM singer WHERE Age > 20;,True,SELECT DISTINCT country FROM singer WHERE age  >  20,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL query selects distinct countries from the 'singer' table where the 'Age' column has values greater than 20, which is identical to the ground truth SQL query.""
+}"

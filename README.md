@@ -1,6 +1,6 @@
 # CodeGen-Implementations-May_26 - Group 46
 
-**Members:** Anupa Vishwanath, Mohan Krishna, Mohan Kumar, and Praveen  
+**Members:** Anupa Viswanath, Mohan Krishna, Mohan Kumar, and Praveen Kumar
 
 **Proposal Document:**  
 https://github.com/nayanjha16/CodeGen-Implementations-May_26/blob/Group-46/RepoCoderStudio-Group46-proposal-V2.docx  

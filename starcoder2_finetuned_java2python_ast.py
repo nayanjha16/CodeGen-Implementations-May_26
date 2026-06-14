@@ -10,9 +10,6 @@ Original file is located at
 !pip install -q datasets==3.6.0
 !pip install -q -U bitsandbytes>=0.46.1
 !pip install -q transformers peft accelerate bitsandbytes
-#!pip install tree-sitter-languages
-# !pip install tree-sitter==0.20.1
-# !pip install tree-sitter-languages==1.10.2
 !pip install tree-sitter
 !pip install tree-sitter-java
 !pip install tree-sitter-python
@@ -25,7 +22,6 @@ from datasets import load_dataset, Dataset
 import torch
 import pandas as pd
 import tree_sitter
-#from tree_sitter_languages import get_parser
 import ast
 import json
 from tree_sitter import Language, Parser
@@ -126,88 +122,6 @@ def run_mbpp_tests(code, test_list):
 
     except Exception:
         return False
-
-
-
-# The following lines are commented out as we are now creating a new DataFrame for results.
-# translation_pairs_df['generated_python_code'] = ''
-# translation_pairs_df['similarity_score'] = 0.0
-
-"""Now, let's iterate through the `translation_pairs_df`, generate Python code for each Java problem, and calculate the similarity score."""
-
-
-
-# This display is no longer needed as the new DataFrame is displayed after creation.
-# display(translation_pairs_df)
-
-"""### Java to Python Conversion and AST Evaluation
-
-First, let's define a sample Java problem and generate a Python solution using the loaded model. We'll provide a simple Java method description and some test cases that would apply to its Python equivalent.
-"""
-
-# Define a Java problem to be converted to Python
-java_problem= """
-public class Solution {
-    /**
-     * Given two integers, return their sum.
-     *
-     * Example:
-     * sum(1, 2) == 3
-     * sum(0, 0) == 0
-     * sum(-1, 5) == 4
-     */
-    public int sum(int a, int b) {
-        return a + b;
-    }
-}
-"""
-
-
-java_problem_prompt = """
-Convert the following Java method to Python.
-
-public class Solution {
-    /**
-     * Given two integers, return their sum.
-     *
-     * Example:
-     * sum(1, 2) == 3
-     * sum(0, 0) == 0
-     * sum(-1, 5) == 4
-     */
-    public int sum(int a, int b) {
-        return a + b;
-    }
-}
-"""
-
-# Define test cases for the equivalent Python function
-python_test_list = [
-    "assert sum(1, 2) == 3",
-    "assert sum(0, 0) == 0",
-    "assert sum(-1, 5) == 4"
-]
-
-print("Java Problem Prompt and Python Test Cases defined.")
-
-# Generate a Python solution from the Java problem prompt
-generated_solutions = generate_solution(java_problem_prompt, python_test_list, num_solutions=1)
-
-# Extract the first generated code snippet
-python_code = extract_code(generated_solutions[0])
-
-print("Generated Python Code:\n")
-print(python_code)
-
-python_code = '''def sum(a, b):
-  return a + b
-
-'''
-
-# java_parser = get_parser("java")
-# python_parser = get_parser("python")
-# from tree_sitter import Language, Parser
-# import tree_sitter_java
 
 JAVA_LANGUAGE = Language(
     tree_sitter_java.language()
@@ -485,9 +399,6 @@ def similarity(ir1, ir2):
     return round(score / total, 4)
 
 def compare_java_python(java_problem, python_code):
-
-
-
     java_ir = extract_java_ir(java_problem)
     python_ir = extract_python_ir(python_code)
 
@@ -497,9 +408,6 @@ def compare_java_python(java_problem, python_code):
     )
     print(f"Similarity: {score}")
     return score
-
-result = compare_java_python(java_problem, python_code)
-result
 
 translation_pairs_df = pd.read_csv('/content/java_python_translation_pairs_corrected.csv')
 display(translation_pairs_df.head())

@@ -31,8 +31,14 @@ from src.evaluation.export import (
     save_sql2nosql_details_csv,
     save_text2sql_details_csv,
 )
+from src.evaluation.qwen_evaluator import QwenEvaluator
 from src.models.model_loader import is_model_cached
-from src.utils.config import get_bertscore_model_name, get_model_name, load_config
+from src.utils.config import (
+    get_bertscore_model_name,
+    get_model_name,
+    get_qwen_evaluator_model_name,
+    load_config,
+)
 from src.utils.paths import (
     get_bird_data_dir,
     get_model_cache_dir,
@@ -72,6 +78,9 @@ def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
     print("=" * 60)
     labels = [
         ("exact_match", "Exact Match Accuracy"),
+        ("sql_correct_rate", "SQL Correct Rate"),
+        ("query_correct_rate", "Query Correct Rate"),
+        ("overall_correct_rate", "Overall Correct Rate"),
         ("execution_accuracy", "Execution Accuracy"),
         ("syntax_validity", "Syntax Validity Rate"),
         ("structural_equivalence", "Structural Equivalence"),
@@ -174,11 +183,18 @@ def main() -> None:
         default="baseline_eval_results",
         help="run name; creates results/<name>/ with metrics.json and detail CSVs",
     )
+    parser.add_argument(
+        "--no-qwen",
+        action="store_true",
+        help="Skip Qwen semantic evaluation for detail CSVs and metrics",
+    )
     args = parser.parse_args()
 
     config = load_config()
     model_name = get_model_name(config)
+    qwen_model_name = get_qwen_evaluator_model_name(config)
     print(f"Baseline Evaluation: {model_name}")
+    print(f"Qwen Evaluator: {qwen_model_name}")
     print(f"Dataset: {args.dataset} | Max samples: {args.max_samples}")
 
     if args.dataset == "quick":
@@ -189,11 +205,11 @@ def main() -> None:
             args.dataset, args.split, args.max_samples, log_mlflow=args.mlflow
         )
 
-    print_metrics(result["metrics"], f"Text-to-SQL Results ({result['dataset']})")
+    print_metrics(result["metrics"], f"Generation Text-to-SQL ({result['dataset']})")
     if result.get("nosql_metrics"):
         print_metrics(
             result["nosql_metrics"],
-            f"SQL-to-MongoDB Results ({result['dataset']})",
+            f"Generation SQL-to-MongoDB ({result['dataset']})",
         )
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
@@ -202,28 +218,56 @@ def main() -> None:
     text2sql_details_path = run_dir / TEXT2SQL_DETAILS_CSV
     sql2nosql_details_path = run_dir / SQL2NOSQL_DETAILS_CSV
 
+    text2sql_predictions = result.get("predictions", [])
+    sql2nosql_predictions = result.get("nosql_predictions", [])
+    db_paths = [pred.get("db_path") for pred in text2sql_predictions]
+
+    use_qwen = not args.no_qwen
+    qwen_evaluator = None
+    if use_qwen:
+        qwen_evaluator = QwenEvaluator(model_name=qwen_model_name)
+
+    _, _, qwen_text2sql_metrics = save_text2sql_details_csv(
+        text2sql_details_path,
+        text2sql_predictions,
+        db_paths=db_paths,
+        qwen_evaluator=qwen_evaluator,
+        use_qwen=use_qwen,
+    )
+    _, _, qwen_sql2nosql_metrics = save_sql2nosql_details_csv(
+        sql2nosql_details_path,
+        sql2nosql_predictions,
+        qwen_evaluator=qwen_evaluator,
+        use_qwen=use_qwen,
+    )
+
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "model": model_name,
+                "evaluator_model": qwen_model_name if use_qwen else None,
                 "dataset": result["dataset"],
-                "text2sql": result["metrics"],
-                "sql2nosql": result.get("nosql_metrics"),
+                "text2sql": qwen_text2sql_metrics if use_qwen else result["metrics"],
+                "sql2nosql": (
+                    qwen_sql2nosql_metrics if use_qwen else result.get("nosql_metrics")
+                ),
+                "generation_text2sql": result["metrics"],
+                "generation_sql2nosql": result.get("nosql_metrics"),
                 "mlflow_run_id": result.get("mlflow_run_id"),
             },
             f,
             indent=2,
         )
 
-    text2sql_predictions = result.get("predictions", [])
-    sql2nosql_predictions = result.get("nosql_predictions", [])
-    db_paths = [pred.get("db_path") for pred in text2sql_predictions]
-    save_text2sql_details_csv(
-        text2sql_details_path,
-        text2sql_predictions,
-        db_paths=db_paths,
-    )
-    save_sql2nosql_details_csv(sql2nosql_details_path, sql2nosql_predictions)
+    if use_qwen:
+        print_metrics(
+            qwen_text2sql_metrics,
+            f"Qwen Text-to-SQL ({result['dataset']})",
+        )
+        print_metrics(
+            qwen_sql2nosql_metrics,
+            f"Qwen SQL-to-MongoDB ({result['dataset']})",
+        )
 
     print(f"  Run saved: {run_dir}")
     print(f"    metrics: {metrics_path}")

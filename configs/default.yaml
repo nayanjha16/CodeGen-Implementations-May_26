@@ -13,7 +13,7 @@ generation:
   seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
 
 text2sql:
-  prompt_template: "auto"  # auto, default, seq2seq
+  prompt_template: "auto"  # auto, default, causal, seq2seq
 
 datasets:
   spider: {}  # cache_dir, repo_url, dataset_url set from .env

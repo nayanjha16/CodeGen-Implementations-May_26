@@ -1,0 +1,46 @@
+{
+  "model": "Salesforce/codegen-350M-multi",
+  "evaluator_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "dataset": "spider_validation",
+  "text2sql": {
+    "sql_correct_rate": 0.9,
+    "count": 10
+  },
+  "sql2nosql": {
+    "schema_correct_rate": 1.0,
+    "query_correct_rate": 1.0,
+    "overall_correct_rate": 1.0,
+    "count": 10
+  },
+  "generation_text2sql": {
+    "exact_match": 0.0,
+    "syntax_validity": 0.1,
+    "bleu": 0.00020509957006568754,
+    "rouge_l": 0.0625,
+    "bertscore": 0.05555555555555556,
+    "codebleu": 0.05555555555555556,
+    "ngram_match": 0.05555555555555556,
+    "syntax_match": 0.05555555555555556,
+    "semantic_match": 0.05555555555555556,
+    "count": 10,
+    "execution_accuracy": 0.0
+  },
+  "generation_sql2nosql": {
+    "exact_match": 0.0,
+    "syntax_validity": 1.0,
+    "token_f1": 0.2813636363636364,
+    "bleu": 0.010935533768200457,
+    "rouge_l": 0.23968253968253977,
+    "bertscore": 0.21062271062271062,
+    "codebleu": 0.21062271062271062,
+    "ngram_match": 0.21062271062271062,
+    "syntax_match": 0.21062271062271062,
+    "semantic_match": 0.21062271062271062,
+    "count": 10,
+    "structural_equivalence": 0.0,
+    "total_count": 10,
+    "scored_count": 10,
+    "translation_success_rate": 1.0
+  },
+  "mlflow_run_id": null
+}

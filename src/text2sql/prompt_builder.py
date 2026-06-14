@@ -9,21 +9,47 @@ from typing import Any
 class PromptBuilder:
     """Build prompts for text-to-SQL generation."""
 
-    DEFAULT_TEMPLATE = """Schema:
+    DEFAULT_TEMPLATE = """The database tables already exist. Do not create or modify tables.
+Write only a single SQL SELECT query to answer the question.
+Do not execute the query or show its results. Output the SQL query only—no "Output" section, explanations, Python/C++ code, or any other text after the query.
+
+Schema:
 {schema}
 
 Question:
 {question}
 
-Generate SQL query.
-"""
+SQL:"""
 
-    SEQ2SEQ_TEMPLATE = """Question: {question}
+    CAUSAL_LM_TEMPLATE = """Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no "Output:" section or sample rows).
+- Do not repeat "SQL:" or generate multiple queries.
+
+Schema:
+{schema}
+
+Question:
+{question}
+
+SQL:"""
+
+    SEQ2SEQ_TEMPLATE = """The database tables already exist. Do not create or modify tables.
+Write only a single SQL SELECT query.
+Do not execute the query or show its results. Output the SQL query only—no extra text after the query.
+
+Question: {question}
 Schema: {schema}
 SQL:"""
 
     TEMPLATES = {
         "default": DEFAULT_TEMPLATE,
+        "causal": CAUSAL_LM_TEMPLATE,
         "seq2seq": SEQ2SEQ_TEMPLATE,
     }
 
@@ -50,8 +76,11 @@ SQL:"""
             # base models (including unfine-tuned T5) use the default template.
             if is_seq2seq_model(model_name) and has_checkpoint:
                 template_name = "seq2seq"
-            else:
+            elif is_seq2seq_model(model_name):
                 template_name = "default"
+            else:
+                # CodeGen and other causal LMs tend to continue into code/output.
+                template_name = "causal"
         elif requested in cls.TEMPLATES:
             template_name = requested
         else:

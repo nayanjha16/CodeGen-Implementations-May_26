@@ -4,173 +4,180 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
+from typing import Any
 
-from src.evaluation.metrics import EvaluationMetrics
+from src.evaluation.qwen_evaluator import QwenEvaluator
 
 METRICS_JSON = "metrics.json"
 TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
 SQL2NOSQL_DETAILS_CSV = "sql2nosql_details.csv"
 
+TEXT2SQL_DETAIL_FIELDS = [
+    "index",
+    "question",
+    "prompt",
+    "raw_output",
+    "predicted_sql",
+    "predicted_sql_valid",
+    "ground_truth",
+    "qwen_sql_correct",
+    "qwen_raw_response",
+]
+
+SQL2NOSQL_DETAIL_FIELDS = [
+    "question",
+    "schema",
+    "reference_sql",
+    "nosql_schema",
+    "predicted_mongodb_query",
+    "reference_mongodb_query",
+    "mongodb_warnings",
+    "mongodb_success",
+    "qwen_query_correct",
+    "qwen_raw_response",
+]
+
+
+def _derive_nosql_schema(schema: str) -> str:
+    """Best-effort MongoDB schema from SQL schema text when available."""
+    if not schema.strip():
+        return ""
+    try:
+        from TEND.sql_schema_to_mongo_schema import convert_schema_json
+
+        return convert_schema_json(schema)
+    except Exception:
+        return ""
+
 
 def save_text2sql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-    metrics: EvaluationMetrics | None = None,
     db_paths: list[str | None] | None = None,
-) -> Path:
-    """Write text-to-SQL per-sample details to CSV."""
+    qwen_evaluator: QwenEvaluator | None = None,
+    use_qwen: bool = True,
+) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
+    """Write text-to-SQL per-sample details to CSV using Qwen semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    evaluator = metrics or EvaluationMetrics()
     db_paths = db_paths or [None] * len(predictions)
+    evaluator = qwen_evaluator
+    if use_qwen and evaluator is None:
+        evaluator = QwenEvaluator()
 
-    from src.text2sql.sql_validator import SQLValidator
+    fieldnames = TEXT2SQL_DETAIL_FIELDS
 
-    validator = SQLValidator()
-    executor = None
-
-    fieldnames = [
-        "index",
-        "question",
-        "schema",
-        "db_id",
-        "db_path",
-        "prompt",
-        "raw_output",
-        "predicted_sql",
-        "ground_truth",
-        "exact_match",
-        "syntax_valid",
-        "execution_match",
-    ]
-
+    qwen_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for idx, (pred, db_path) in enumerate(zip(predictions, db_paths)):
+        for idx, (pred, _db_path) in enumerate(zip(predictions, db_paths)):
             predicted_sql = pred.get("sql", "")
             ground_truth = pred.get("ground_truth", "")
-            execution_match = ""
+            predicted_sql_valid = pred.get("sql_valid", "")
 
-            if db_path:
-                if executor is None:
-                    from src.text2sql.sql_executor import SQLExecutor
-
-                    executor = SQLExecutor()
-                result = executor.compare_results(
-                    predicted_sql, ground_truth, db_path
+            qwen_eval: dict[str, Any] = {}
+            if use_qwen and evaluator is not None:
+                sql_valid = (
+                    predicted_sql_valid
+                    if isinstance(predicted_sql_valid, bool)
+                    else None
                 )
-                execution_match = result.get("execution_match", False)
+                qwen_eval = evaluator.evaluate_text2sql_sample(
+                    question=pred.get("question", ""),
+                    schema=pred.get("schema", ""),
+                    predicted_sql=predicted_sql,
+                    ground_truth_sql=ground_truth,
+                    raw_output=pred.get("raw_output", ""),
+                    prompt=pred.get("prompt", ""),
+                    predicted_sql_valid=sql_valid,
+                )
+                qwen_results.append(qwen_eval)
+                if predicted_sql_valid == "":
+                    predicted_sql_valid = qwen_eval.get("predicted_sql_valid", "")
 
             writer.writerow(
                 {
                     "index": idx,
                     "question": pred.get("question", ""),
-                    "schema": pred.get("schema", ""),
-                    "db_id": pred.get("db_id", ""),
-                    "db_path": db_path or "",
                     "prompt": pred.get("prompt", ""),
                     "raw_output": pred.get("raw_output", ""),
                     "predicted_sql": predicted_sql,
+                    "predicted_sql_valid": predicted_sql_valid,
                     "ground_truth": ground_truth,
-                    "exact_match": evaluator.exact_match(predicted_sql, ground_truth),
-                    "syntax_valid": validator.validate_syntax(predicted_sql)["valid"],
-                    "execution_match": execution_match,
+                    "qwen_sql_correct": qwen_eval.get("sql_correct", ""),
+                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
                 }
             )
 
-    return output_path
+    summary = (
+        QwenEvaluator.summarize_text2sql(qwen_results)
+        if use_qwen
+        else {"sql_correct_rate": 0.0, "count": len(predictions)}
+    )
+    return output_path, qwen_results, summary
 
 
 def save_sql2nosql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-) -> Path:
-    """Write SQL-to-MongoDB per-sample details to CSV."""
+    qwen_evaluator: QwenEvaluator | None = None,
+    use_qwen: bool = True,
+) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
+    """Write SQL-to-MongoDB per-sample details to CSV using Qwen semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    from src.sql2nosql.evaluator import NoSQLEvaluator
+    evaluator = qwen_evaluator
+    if use_qwen and evaluator is None:
+        evaluator = QwenEvaluator()
 
-    evaluator = NoSQLEvaluator()
+    fieldnames = SQL2NOSQL_DETAIL_FIELDS
 
-    fieldnames = [
-        "index",
-        "question",
-        "db_id",
-        "predicted_sql",
-        "reference_sql",
-        "predicted_sql_valid",
-        "reference_sql_valid",
-        "predicted_mongodb_query",
-        "reference_mongodb_query",
-        "reference_translation_success",
-        "mongodb_warnings",
-        "mongodb_success",
-        "exact_match",
-        "syntax_valid",
-        "structural_match",
-        "token_f1",
-    ]
-
+    qwen_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for idx, pred in enumerate(predictions):
-            predicted_sql = pred.get("sql", "")
+        for pred in predictions:
             reference_sql = pred.get("reference_sql", pred.get("ground_truth", ""))
             predicted_mongodb = pred.get("predicted_mongodb_query", "")
             reference_mongodb = pred.get("reference_mongodb_query", "")
+            schema = pred.get("schema", "")
+            nosql_schema = pred.get("nosql_schema", "") or _derive_nosql_schema(schema)
 
-            structural_match = ""
-            exact_match = ""
-            syntax_valid = ""
-            token_f1 = ""
-
-            if predicted_mongodb and reference_mongodb:
-                accuracy = evaluator.translation_accuracy(
-                    predicted_mongodb, reference_mongodb
+            qwen_eval: dict[str, Any] = {}
+            if use_qwen and evaluator is not None:
+                qwen_eval = evaluator.evaluate_sql2nosql_sample(
+                    predicted_mongodb_query=predicted_mongodb,
+                    reference_mongodb_query=reference_mongodb,
                 )
-                exact_match = accuracy["exact_match"]
-                token_f1 = accuracy["token_f1"]
-                syntax_valid = evaluator.validate_syntax(predicted_mongodb)["valid"]
-                structural_match = evaluator.query_equivalence(
-                    {
-                        "collection": pred.get("collection", ""),
-                        "filter": pred.get("filter", {}),
-                        "projection": pred.get("projection", {}),
-                    },
-                    {
-                        "collection": pred.get("reference_collection", ""),
-                        "filter": pred.get("reference_filter", {}),
-                        "projection": pred.get("reference_projection", {}),
-                    },
-                )["equivalent"]
+                qwen_results.append(qwen_eval)
 
             writer.writerow(
                 {
-                    "index": idx,
                     "question": pred.get("question", ""),
-                    "db_id": pred.get("db_id", ""),
-                    "predicted_sql": predicted_sql,
+                    "schema": schema,
                     "reference_sql": reference_sql,
-                    "predicted_sql_valid": pred.get("predicted_sql_valid", ""),
-                    "reference_sql_valid": pred.get("reference_sql_valid", ""),
+                    "nosql_schema": nosql_schema,
                     "predicted_mongodb_query": predicted_mongodb,
                     "reference_mongodb_query": reference_mongodb,
-                    "reference_translation_success": pred.get(
-                        "reference_translation_success", ""
-                    ),
                     "mongodb_warnings": pred.get("mongodb_warnings", ""),
                     "mongodb_success": pred.get("mongodb_success", ""),
-                    "exact_match": exact_match,
-                    "syntax_valid": syntax_valid,
-                    "structural_match": structural_match,
-                    "token_f1": token_f1,
+                    "qwen_query_correct": qwen_eval.get("query_correct", ""),
+                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
                 }
             )
 
-    return output_path
+    summary = (
+        QwenEvaluator.summarize_sql2nosql(qwen_results)
+        if use_qwen
+        else {
+            "query_correct_rate": 0.0,
+            "overall_correct_rate": 0.0,
+            "count": len(predictions),
+        }
+    )
+    return output_path, qwen_results, summary

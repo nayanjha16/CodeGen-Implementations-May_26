@@ -1,0 +1,216 @@
+index,question,schema,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_sql_valid,nosql_schema,predicted_mongodb_query,reference_mongodb_query,reference_translation_success,mongodb_warnings,mongodb_success,qwen_schema_correct,qwen_query_correct,qwen_overall_correct,qwen_schema_reason,qwen_query_reason,qwen_raw_response
+0,How many singers do we have?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,SELECT count(*) FROM singer,False,True,{},"db.collection.find(
+  {}
+)","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",True,,True,True,True,True,The predicted MongoDB schema is correct as it matches the reference schema.,Both queries return the same result: '0' which represents no songs found.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it matches the reference schema."",
+  ""query_reason"": ""Both queries return the same result: '0' which represents no songs found.""
+}
+```"
+1,What is the total number of singers?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,SELECT count(*) FROM singer,False,True,{},"db.collection.find(
+  {}
+)","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",True,,True,True,True,True,The schema is correct as it matches the expected structure.,Both queries return the same result: the count of unique singer IDs.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The schema is correct as it matches the expected structure."",
+  ""query_reason"": ""Both queries return the same result: the count of unique singer IDs.""
+}
+```"
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,"SELECT name, country, age FROM stadium","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,True,{},"db.stadium.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+)","db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",True,,True,True,True,True,Both queries are identical in structure and content.,Both queries correctly retrieve the desired fields and order the results.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""Both queries are identical in structure and content."",
+  ""query_reason"": ""Both queries correctly retrieve the desired fields and order the results.""
+}
+```"
+3,"What are the names, countries, and ages for every singer in descending order of age?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,{},"db.collection.find(
+  {}
+)","db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",True,,True,True,True,True,The predicted MongoDB schema is correct as it matches the reference schema.,The predicted MongoDB query is correct as it correctly sorts the results by age in descending order.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it matches the reference schema."",
+  ""query_reason"": ""The predicted MongoDB query is correct as it correctly sorts the results by age in descending order.""
+}
+```"
+4,"What is the average, minimum, and maximum age of all singers from France?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,{},"db.collection.find(
+  {}
+)","db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",True,,True,True,True,True,The schema matches the expected structure of the MongoDB collection.,"The query correctly filters the data based on the country being 'France'. It then calculates the average, minimum, and maximum ages.","```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The schema matches the expected structure of the MongoDB collection."",
+  ""query_reason"": ""The query correctly filters the data based on the country being 'France'. It then calculates the average, minimum, and maximum ages.""
+}
+```"
+5,"What is the average, minimum, and maximum age for all French singers?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,{},"db.collection.find(
+  {}
+)","db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",True,,True,True,True,True,The schema and query are exactly the same.,Both queries return the same result set.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The schema and query are exactly the same."",
+  ""query_reason"": ""Both queries return the same result set.""
+}
+```"
+6,Show the name and the release year of the song by the youngest singer.,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,Create table.,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",False,True,{},"db.collection.find(
+  {}
+)","db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",True,,True,True,True,True,The predicted MongoDB schema is correct as it matches the reference schema.,Both queries return the expected results based on the given data.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it matches the reference schema."",
+  ""query_reason"": ""Both queries return the expected results based on the given data.""
+}
+```"
+7,What are the names and release years for all the songs of the youngest singer?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",False,True,{},"db.collection.find(
+  {}
+)","db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",True,,True,True,True,True,The predicted MongoDB schema is correct as it matches the reference schema.,Both queries return the expected result of finding the name and release year of the youngest singer.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it matches the reference schema."",
+  ""query_reason"": ""Both queries return the expected result of finding the name and release year of the youngest singer.""
+}
+```"
+8,What are all distinct countries where singers above age 20 are from?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,SELECT DISTINCT country FROM singer WHERE age  >  20,False,True,{},"db.collection.find(
+  {}
+)","db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",True,,True,True,True,True,The predicted MongoDB schema is correct as it uses the same structure as the reference.,The predicted MongoDB query is correct as it correctly filters the `singer` collection based on the condition in the reference.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it uses the same structure as the reference."",
+  ""query_reason"": ""The predicted MongoDB query is correct as it correctly filters the `singer` collection based on the condition in the reference.""
+}
+```"
+9,What are  the different countries with singers above age 20?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,*/,SELECT DISTINCT country FROM singer WHERE age  >  20,False,True,{},"db.collection.find(
+  {}
+)","db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",True,,True,True,True,True,The predicted MongoDB schema is correct as it matches the reference schema.,Both queries return the same result set.,"```json
+{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The predicted MongoDB schema is correct as it matches the reference schema."",
+  ""query_reason"": ""Both queries return the same result set.""
+}
+```"

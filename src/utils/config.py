@@ -67,6 +67,7 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
 
     eval_cfg = _ensure_dict(config, "evaluation")
     eval_cfg["bertscore_model"] = os.environ.get("BERTSCORE_MODEL_NAME")
+    eval_cfg["qwen_evaluator_model"] = os.environ.get("QWEN_EVALUATOR_MODEL_NAME")
 
     return config
 
@@ -80,6 +81,18 @@ def get_model_name(config: dict[str, Any] | None = None) -> str:
     if not name:
         return _require_env("MODEL_NAME")
     return name
+
+
+def get_qwen_evaluator_model_name(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Qwen evaluator model name from env/config."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    name = (
+        os.environ.get("QWEN_EVALUATOR_MODEL_NAME")
+        or config.get("evaluation", {}).get("qwen_evaluator_model")
+    )
+    return name or "Qwen/Qwen2.5-0.5B-Instruct"
 
 
 def get_bertscore_model_name(config: dict[str, Any] | None = None) -> str:

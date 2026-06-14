@@ -8,6 +8,7 @@ from typing import Any
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.mlflow_tracker import MLflowTracker
 from src.sql2nosql.evaluator import NoSQLEvaluator
+from src.sql2nosql.nosql_generator import NoSQLGenerator
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 from src.text2sql.sql_generator import SQLGenerator
 from src.utils.config import load_config
@@ -25,6 +26,7 @@ class BenchmarkRunner:
         sql_generator: SQLGenerator | None = None,
         metrics: EvaluationMetrics | None = None,
         nosql_evaluator: NoSQLEvaluator | None = None,
+        nosql_generator: NoSQLGenerator | None = None,
         nosql_translator: SQLToNoSQLTranslator | None = None,
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
@@ -35,6 +37,10 @@ class BenchmarkRunner:
         self.metrics = metrics or EvaluationMetrics()
         self.nosql_evaluator = nosql_evaluator or NoSQLEvaluator()
         self.nosql_translator = nosql_translator or SQLToNoSQLTranslator()
+        self.nosql_generator = nosql_generator or NoSQLGenerator(
+            model=self.sql_generator.model,
+            config=self.config,
+        )
         eval_cfg = self.config.get("evaluation", {})
         self.enable_mlflow = enable_mlflow
         self.tracker = None
@@ -65,7 +71,7 @@ class BenchmarkRunner:
         gen_results: list[dict[str, Any]],
         samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Translate predicted and reference SQL to MongoDB and score."""
+        """Generate predicted MongoDB with the model; derive reference from ground-truth SQL."""
         from src.text2sql.sql_validator import SQLValidator
 
         sql_validator = SQLValidator()
@@ -75,19 +81,50 @@ class BenchmarkRunner:
         structured_refs: list[dict[str, Any]] = []
         nosql_results: list[dict[str, Any]] = []
 
+        nosql_samples = []
         for result, example in zip(gen_results, samples):
+            nosql_samples.append(
+                {
+                    "question": result.get("question", example.get("question", "")),
+                    "schema": result.get("schema", example.get("schema", "")),
+                    "sql": example.get("sql", ""),
+                }
+            )
+
+        nosql_gen_results = self.nosql_generator.generate_batch(nosql_samples)
+
+        for result, example, nosql_gen in zip(gen_results, samples, nosql_gen_results):
             pred_sql = result.get("sql", "")
             ref_sql = result.get("ground_truth", example.get("sql", ""))
 
             pred_sql_valid = self._is_valid_select_sql(pred_sql, sql_validator)
             ref_sql_valid = self._is_valid_select_sql(ref_sql, sql_validator)
 
-            pred_trans = self.nosql_translator.translate(pred_sql)
+            pred_mongo = nosql_gen.get("mongodb_query", "")
+            pred_warnings: list[str] = []
+            if not pred_mongo:
+                pred_warnings.append(
+                    "Unable to extract MongoDB query from model output"
+                )
+            elif not nosql_gen.get("mongodb_valid", False):
+                pred_warnings.append(
+                    "Model output is not valid MongoDB shell syntax"
+                )
+
             ref_trans = self.nosql_translator.translate(ref_sql)
 
-            pred_queries.append(pred_trans.get("mongodb_query", ""))
+            pred_structured = {
+                "mongodb_query": pred_mongo,
+                "collection": NoSQLGenerator._parse_collection(pred_mongo),
+                "filter": {},
+                "projection": {},
+                "warnings": pred_warnings,
+                "success": bool(pred_mongo) and nosql_gen.get("mongodb_valid", False),
+            }
+
+            pred_queries.append(pred_mongo)
             ref_queries.append(ref_trans.get("mongodb_query", ""))
-            structured_preds.append(pred_trans)
+            structured_preds.append(pred_structured)
             structured_refs.append(ref_trans)
 
             nosql_results.append(
@@ -96,14 +133,16 @@ class BenchmarkRunner:
                     "reference_sql": ref_sql,
                     "predicted_sql_valid": pred_sql_valid,
                     "reference_sql_valid": ref_sql_valid,
-                    "predicted_mongodb_query": pred_trans.get("mongodb_query", ""),
+                    "nosql_prompt": nosql_gen.get("prompt", ""),
+                    "nosql_raw_output": nosql_gen.get("raw_output", ""),
+                    "predicted_mongodb_query": pred_mongo,
                     "reference_mongodb_query": ref_trans.get("mongodb_query", ""),
                     "reference_translation_success": ref_trans.get("success", False),
-                    "mongodb_warnings": "; ".join(pred_trans.get("warnings", [])),
-                    "mongodb_success": pred_trans.get("success", False),
-                    "collection": pred_trans.get("collection", ""),
-                    "filter": pred_trans.get("filter", {}),
-                    "projection": pred_trans.get("projection", {}),
+                    "mongodb_warnings": "; ".join(pred_warnings),
+                    "mongodb_success": pred_structured["success"],
+                    "collection": pred_structured.get("collection", ""),
+                    "filter": pred_structured.get("filter", {}),
+                    "projection": pred_structured.get("projection", {}),
                     "reference_collection": ref_trans.get("collection", ""),
                     "reference_filter": ref_trans.get("filter", {}),
                     "reference_projection": ref_trans.get("projection", {}),

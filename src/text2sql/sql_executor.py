@@ -93,9 +93,22 @@ class SQLExecutor:
         }
 
     @staticmethod
+    def _normalize_value(value: Any) -> str:
+        """Canonical string for order-independent result comparison."""
+        if value is None:
+            return "__NULL__"
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        return str(value)
+
+    @staticmethod
     def _normalize_rows(rows: list[dict]) -> list[tuple]:
         """Normalize rows for comparison (order-independent)."""
         normalized = []
         for row in rows:
-            normalized.append(tuple(sorted(row.items())))
+            items = tuple(
+                (key, SQLExecutor._normalize_value(val))
+                for key, val in sorted(row.items(), key=lambda item: item[0])
+            )
+            normalized.append(items)
         return sorted(normalized)

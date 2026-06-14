@@ -108,6 +108,31 @@ class CodeGenModel:
         self._loaded = False
         self._seq2seq = is_seq2seq_model(model_name)
 
+    @staticmethod
+    def _build_stop_string_criteria(
+        tokenizer: Any,
+        stop_strings: list[str],
+        prompt_length: int,
+    ) -> Any:
+        from transformers import StoppingCriteria, StoppingCriteriaList
+
+        class _StopOnSubstring(StoppingCriteria):
+            def __init__(self, tok: Any, stops: list[str], start: int) -> None:
+                self.tokenizer = tok
+                self.stops = stops
+                self.start = start
+
+            def __call__(self, input_ids: Any, scores: Any, **kwargs: Any) -> bool:
+                text = self.tokenizer.decode(
+                    input_ids[0][self.start :],
+                    skip_special_tokens=True,
+                )
+                return any(stop in text for stop in self.stops)
+
+        return StoppingCriteriaList(
+            [_StopOnSubstring(tokenizer, stop_strings, prompt_length)]
+        )
+
     def _resolve_local_path(self) -> Path:
         if self.model_path is not None:
             return self.model_path
@@ -144,6 +169,7 @@ class CodeGenModel:
         num_beams: int = 1,
         do_sample: bool = False,
         decoding_strategy: str = "greedy",
+        stop_strings: list[str] | None = None,
     ) -> str:
         """Generate text from prompt using greedy or beam search decoding."""
         if not self._loaded:
@@ -158,10 +184,19 @@ class CodeGenModel:
             max_length=self.max_length,
         ).to(self.device)
 
+        input_length = inputs["input_ids"].shape[1]
+
         gen_kwargs: dict[str, Any] = {
             "max_new_tokens": max_new_tokens,
             "pad_token_id": self.tokenizer.eos_token_id,
         }
+
+        if stop_strings and not self._seq2seq:
+            gen_kwargs["stopping_criteria"] = self._build_stop_string_criteria(
+                self.tokenizer,
+                stop_strings,
+                input_length,
+            )
 
         if decoding_strategy == "beam":
             gen_kwargs.update(
@@ -182,7 +217,6 @@ class CodeGenModel:
         if self._seq2seq:
             return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
-        input_length = inputs["input_ids"].shape[1]
         new_tokens = outputs[0][input_length:]
         return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 

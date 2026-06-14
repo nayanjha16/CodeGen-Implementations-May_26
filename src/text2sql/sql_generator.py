@@ -17,6 +17,29 @@ class SQLGenerator:
         r"^\s*SELECT\b.+\bFROM\b",
         re.IGNORECASE | re.DOTALL,
     )
+    _NON_SQL_MARKER_RE = re.compile(
+        r"\n(?:Output:|import\s+|#include\b|\"\"\"|\nSQL:|\nSQL:\n)",
+        re.IGNORECASE,
+    )
+    _NON_SQL_LINE_RE = re.compile(
+        r"^(?:Output:|import\s+|#include\b|\"\"\"|conn\s*=|for\s+\w+\s+in|print\s*\(|SQL:)",
+        re.IGNORECASE,
+    )
+    _SQL_KEYWORD_LINE_RE = re.compile(
+        r"^(?:SELECT|FROM|WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT|OFFSET|"
+        r"JOIN|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN|ON|AND|OR|UNION|WITH|"
+        r"DISTINCT|\)|\(|,)",
+        re.IGNORECASE,
+    )
+    _SQL_FRAGMENT_LINE_RE = re.compile(r"^[\w\s.*'\",=<>!+\-/%()?;[\]]+$")
+    _SQL_STOP_STRINGS = [
+        "\nOutput:",
+        "\nimport ",
+        "\n#include",
+        '\n"""',
+        "\n\nSQL:",
+        "\nSQL:\n",
+    ]
 
     def __init__(
         self,
@@ -44,21 +67,75 @@ class SQLGenerator:
             return False
         return bool(self._SELECT_FROM_RE.match(text))
 
+    def _trim_non_sql_suffix(self, text: str) -> str:
+        """Drop generation artifacts such as Output blocks and host-language code."""
+        match = self._NON_SQL_MARKER_RE.search(text)
+        if match:
+            text = text[: match.start()]
+        return text.strip()
+
+    def _is_sql_fragment_line(self, line: str) -> bool:
+        if self._NON_SQL_LINE_RE.match(line):
+            return False
+        if self._SQL_KEYWORD_LINE_RE.match(line):
+            return True
+        return bool(self._SQL_FRAGMENT_LINE_RE.match(line))
+
+    def _normalize_sql(self, sql: str) -> str:
+        return re.sub(r"\s+", " ", sql).strip()
+
+    def _extract_multiline_select(self, text: str) -> str:
+        """Collect a multi-line SELECT statement before non-SQL continuation."""
+        text = self._trim_non_sql_suffix(text)
+        if not re.match(r"^\s*SELECT\b", text, re.IGNORECASE):
+            return ""
+
+        lines: list[str] = []
+        for line in text.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                if lines:
+                    break
+                continue
+            if lines and not self._is_sql_fragment_line(stripped):
+                break
+            if (
+                lines
+                and re.match(r"^SELECT\b", stripped, re.IGNORECASE)
+                and self._looks_like_sql(self._normalize_sql(" ".join(lines)))
+            ):
+                break
+            if not lines and not re.match(r"^SELECT\b", stripped, re.IGNORECASE):
+                continue
+            lines.append(stripped)
+
+        if not lines:
+            return ""
+
+        candidate = self._normalize_sql(" ".join(lines))
+        if self._looks_like_sql(candidate):
+            return candidate
+        return ""
+
     def _extract_sql(self, raw_output: str) -> str:
         """Extract SQL from model output."""
-        text = raw_output.strip()
+        text = self._trim_non_sql_suffix(raw_output.strip())
 
         code_match = re.search(
             r"```(?:sql)?\s*(.*?)```", text, re.DOTALL | re.IGNORECASE
         )
         if code_match:
-            candidate = code_match.group(1).strip()
+            candidate = self._normalize_sql(code_match.group(1))
             if self._looks_like_sql(candidate):
                 return candidate
             if re.match(
                 r"^(SELECT|INSERT|UPDATE|DELETE|WITH)\b", candidate, re.IGNORECASE
             ):
                 return candidate
+
+        multiline = self._extract_multiline_select(text)
+        if multiline:
+            return multiline
 
         lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
         for line in lines:
@@ -70,9 +147,9 @@ class SQLGenerator:
                 return line
 
         if self._looks_like_sql(text):
-            return text.strip()
+            return self._normalize_sql(text)
 
-        return lines[0] if lines else text
+        return ""
 
     def _resolve_decoding_strategy(self, decoding_strategy: str | None) -> str:
         configured = (
@@ -92,15 +169,18 @@ class SQLGenerator:
         """Generate SQL for a single question."""
         prompt = self.prompt_builder.build(question, schema)
         strategy = self._resolve_decoding_strategy(decoding_strategy)
-        raw = self.model.generate(
-            prompt,
-            max_new_tokens=self.gen_config.get("max_new_tokens", 256),
-            temperature=self.gen_config.get("temperature", 0.2),
-            top_p=self.gen_config.get("top_p", 0.95),
-            num_beams=self.gen_config.get("num_beams", 4),
-            do_sample=self.gen_config.get("do_sample", False),
-            decoding_strategy=strategy,
-        )
+        generate_kwargs: dict[str, Any] = {
+            "max_new_tokens": self.gen_config.get("max_new_tokens", 256),
+            "temperature": self.gen_config.get("temperature", 0.2),
+            "top_p": self.gen_config.get("top_p", 0.95),
+            "num_beams": self.gen_config.get("num_beams", 4),
+            "do_sample": self.gen_config.get("do_sample", False),
+            "decoding_strategy": strategy,
+        }
+        if not self._seq2seq:
+            generate_kwargs["stop_strings"] = self._SQL_STOP_STRINGS
+
+        raw = self.model.generate(prompt, **generate_kwargs)
         sql = self._extract_sql(raw)
         return {"prompt": prompt, "raw_output": raw, "sql": sql}
 

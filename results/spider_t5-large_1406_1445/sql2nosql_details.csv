@@ -1,0 +1,125 @@
+question,schema,reference_sql,nosql_schema,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,qwen_query_correct,qwen_raw_response
+How many singers do we have?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT count(*) FROM singer,{},not_duplicate,,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+What is the total number of singers?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT count(*) FROM singer,{},not_available,,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",{},MongoDB collections already exist. Do not create or modify collections. Write only a single MongoDB shell query to answer the question.,,"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"What are the names, countries, and ages for every singer in descending order of age?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",{},"not_male number) Table singer_in_concert(concert_ID text, Singer_ID text)",,"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"What is the average, minimum, and maximum age of all singers from France?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",{},not_duplicate,,"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"What is the average, minimum, and maximum age for all French singers?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",{},not_duplicate,,"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+Show the name and the release year of the song by the youngest singer.,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",{},Question: Show the name and the release year of the song by the oldest singer.,,"db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+What are the names and release years for all the songs of the youngest singer?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",{},not_duplicate,,"db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+What are all distinct countries where singers above age 20 are from?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT DISTINCT country FROM singer WHERE age  >  20,{},"Country number, Song_name_year number, Age number, Is_male number)",,"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+What are  the different countries with singers above age 20?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT DISTINCT country FROM singer WHERE age  >  20,{},not_duplicate,,"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query

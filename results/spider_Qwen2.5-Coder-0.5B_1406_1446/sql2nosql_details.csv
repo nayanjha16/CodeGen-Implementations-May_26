@@ -1,0 +1,200 @@
+question,schema,reference_sql,nosql_schema,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,qwen_query_correct,qwen_raw_response
+How many singers do we have?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT count(*) FROM singer,{},"db.singer.count()
+Output:",,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+What is the total number of singers?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT count(*) FROM singer,{},"db.singer.aggregate([
+  { $group: { _id: ""$Singer_ID"", total_singers: { $sum: 1 } } }
+])
+
+Output:","db.singer.aggregate([
+  { $group: { _id: ""$Singer_ID"", total_singers: { $sum: 1 } } }
+])","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The reference MongoDB query uses `$group` to count unique `Singer_ID`s, while the predicted query does not use this feature.""
+}"
+"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",{},db.singer.find({}).sort({age: -1}).limit(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,db.singer.find({}).sort({age: -1}),"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `find` followed by sorting, while the reference MongoDB query uses an aggregation pipeline to sort documents.""
+}"
+"What are the names, countries, and ages for every singer in descending order of age?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",{},db.singer.find({}).sort({age: -1}).limit(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000,db.singer.find({}).sort({age: -1}),"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `find` followed by sorting, while the reference MongoDB query uses an aggregation pipeline to sort documents.""
+}"
+"What is the average, minimum, and maximum age of all singers from France?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",{},"db.singer.find({Country: 4}).sort({Age: 1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1).toArray()
+db.s",db.singer.find({Country: 4}).sort({Age: 1}).limit(1),"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `$match` to filter documents based on the `Country` field, while the reference MongoDB query uses `$group` to calculate the average age of all documents.""
+}"
+"What is the average, minimum, and maximum age for all French singers?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",{},"db.singer.find({Country: 4}).sort({Age: 1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer.find({Country: 4}).sort({Age: -1}).limit(1)
+db.singer",db.singer.find({Country: 4}).sort({Age: 1}).limit(1),"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",,True,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query uses `$match` to filter documents based on the `Country` field, while the reference MongoDB query uses `$group` to calculate the average age of all documents.""
+}"
+Show the name and the release year of the song by the youngest singer.,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",{},"db.singer.find({}).sort({Age: -1}).limit(1).pretty()
+
+Answer:
+```
+db.singer.find({}).sort({Age: -1}).limit(1).pretty()
+```",db.singer.find({}).sort({Age: -1}).limit(1),"db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",,True,False,"```json
+{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `sort` without specifying an order, while the reference query specifies `{ age: 1 }`. This can lead to different results.""
+}
+```"
+What are the names and release years for all the songs of the youngest singer?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",{},"db.singer.find({Age: { $lt: 18 }}, {Song_Name: 1, Song_release_year: 1}).sort({Song_release_year: 1}).limit(10)
+
+Answer:
+```
+db.singer.find({Age: { $lt: 18 }}, {Song_Name: 1, Song_release_year: 1}).sort({Song_release_year: 1}).limit(10)
+```","db.singer.find({Age: { $lt: 18 }}, {Song_Name: 1, Song_release_year: 1}).sort({Song_release_year: 1}).limit(10)","db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",,True,False,"```json
+{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query uses `$lt` instead of `$lte`, which changes the comparison logic.""
+}
+```"
+What are all distinct countries where singers above age 20 are from?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT DISTINCT country FROM singer WHERE age  >  20,{},db.singer.find({Age: {$gt: 20}}).distinct('Country'),db.singer.find({Age: {$gt: 20}}),"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",,True,False,"```json
+{
+  ""query_correct"": false,
+  ""reason"": ""The reference MongoDB query uses `$gte` for filtering, while the predicted query uses `{$gt}` which is different.""
+}
+```"
+What are  the different countries with singers above age 20?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)",SELECT DISTINCT country FROM singer WHERE age  >  20,{},db.singer.find({Age: {$gt: 20}}).distinct('Country'),db.singer.find({Age: {$gt: 20}}),"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",,True,False,"```json
+{
+  ""query_correct"": false,
+  ""reason"": ""The reference MongoDB query uses `$gte` for filtering, while the predicted query uses `{$gt}` which is different.""
+}
+```"

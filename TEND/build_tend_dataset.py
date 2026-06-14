@@ -130,7 +130,7 @@ class TENDDatasetBuilder:
         }
 
         if self.evaluate:
-            evaluation = self._get_evaluator().evaluate_sample(
+            evaluation = self._get_evaluator().evaluate_tend_sample(
                 sql_schema=sql_schema,
                 sql_query=sql_query,
                 nosql_schema=nosql_schema,

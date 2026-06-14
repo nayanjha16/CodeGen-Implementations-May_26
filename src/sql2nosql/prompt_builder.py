@@ -1,4 +1,4 @@
-"""Prompt builder for natural language to SQL generation."""
+"""Build prompts for text-to-MongoDB generation."""
 
 from __future__ import annotations
 
@@ -6,12 +6,13 @@ import re
 from typing import Any
 
 
-class PromptBuilder:
-    """Build prompts for text-to-SQL generation."""
+class NoSQLPromptBuilder:
+    """Build prompts for MongoDB shell query generation."""
 
-    DEFAULT_TEMPLATE = """The database tables already exist. Do not create or modify tables.
-Write only a single SQL SELECT query to answer the question.
-Do not execute the query or show its results. Output the SQL query only—no "Output" section, explanations, Python/C++ code, or any other text after the query.
+    DEFAULT_TEMPLATE = """The MongoDB collections already exist. Do not create or modify collections.
+Write only a single MongoDB shell query to answer the question.
+Use db.<collection>.find(), db.<collection>.aggregate(), or db.<collection>.distinct().
+Output the MongoDB query only—no explanations, SQL, Python code, or other text after the query.
 
 Schema:
 {schema}
@@ -19,17 +20,16 @@ Schema:
 Question:
 {question}
 
-SQL:"""
+MongoDB:"""
 
-    CAUSAL_LM_TEMPLATE = """Task: write one SQL SELECT query only.
+    CAUSAL_LM_TEMPLATE = """Task: write one MongoDB shell query only.
 
 Rules:
-- Use only the tables and columns listed in the schema below.
-- Return exactly one complete SQL SELECT statement, then stop.
-- Do not write Python, C++, JavaScript, or any other programming language.
-- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
-- Do not execute the query or print results (no "Output:" section or sample rows).
-- Do not repeat "SQL:" or generate multiple queries.
+- Use only the collections and fields listed in the schema below.
+- Return exactly one MongoDB query using db.<collection>.find(), aggregate(), or distinct().
+- Do not write SQL, Python, JavaScript functions, or explanations.
+- Do not execute the query or print results.
+- Do not repeat "MongoDB:" or generate multiple queries.
 
 Schema:
 {schema}
@@ -37,15 +37,15 @@ Schema:
 Question:
 {question}
 
-SQL:"""
+MongoDB:"""
 
-    SEQ2SEQ_TEMPLATE = """The database tables already exist. Do not create or modify tables.
-Write only a single SQL SELECT query.
-Do not execute the query or show its results. Output the SQL query only—no extra text after the query.
+    SEQ2SEQ_TEMPLATE = """The MongoDB collections already exist. Do not create or modify collections.
+Write only a single MongoDB shell query.
+Output the MongoDB query only—no extra text after the query.
 
 Question: {question}
 Schema: {schema}
-SQL:"""
+MongoDB:"""
 
     TEMPLATES = {
         "default": DEFAULT_TEMPLATE,
@@ -62,24 +62,21 @@ SQL:"""
             self.template = self.TEMPLATES.get(template_name, self.DEFAULT_TEMPLATE)
 
     @classmethod
-    def for_model(cls, model_name: str, config: dict[str, Any] | None = None) -> "PromptBuilder":
-        """Pick a prompt template suited to the model family."""
+    def for_model(cls, model_name: str, config: dict[str, Any] | None = None) -> "NoSQLPromptBuilder":
+        """Pick a prompt template based on model type and config."""
         config = config or {}
-        text2sql_cfg = config.get("text2sql", {})
-        requested = text2sql_cfg.get("prompt_template", "auto")
+        sql2nosql_cfg = config.get("sql2nosql", {})
+        requested = sql2nosql_cfg.get("prompt_template", "auto")
 
         if requested == "auto":
             from src.models.model_loader import is_seq2seq_model
 
             has_checkpoint = bool((config or {}).get("model", {}).get("checkpoint"))
-            # Fine-tuned seq2seq checkpoints expect the compact seq2seq prompt;
-            # base models (including unfine-tuned T5) use the default template.
             if is_seq2seq_model(model_name) and has_checkpoint:
                 template_name = "seq2seq"
             elif is_seq2seq_model(model_name):
                 template_name = "default"
             else:
-                # CodeGen and other causal LMs tend to continue into code/output.
                 template_name = "causal"
         elif requested in cls.TEMPLATES:
             template_name = requested
@@ -110,15 +107,6 @@ SQL:"""
             schema=formatted_schema,
             question=question.strip(),
         ).strip()
-
-    def build_batch(
-        self, examples: list[dict[str, str]]
-    ) -> list[str]:
-        """Build prompts for a batch of examples."""
-        return [
-            self.build(ex["question"], ex.get("schema", ""))
-            for ex in examples
-        ]
 
     def get_template_name(self) -> str:
         """Return template identifier for experiment tracking."""

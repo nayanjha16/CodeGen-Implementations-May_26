@@ -38,13 +38,13 @@ Layered Python architecture with strong separation of concerns and dependency in
 - `datasets/` — Spider & BIRD loaders + preprocessing/statistics.
 - `evaluation/` — metrics, benchmark runner, MLflow tracker.
 - `streamlit_app/` — 4-page UI.
-- `scripts/`, `tests/`, `notebooks/` — tooling, tests, demos.
+- `scripts/`, `notebooks/` — tooling and demos.
 
 ## Tech Stack
 
 Python 3.11 · PyTorch · Transformers · sqlparse · FastAPI/uvicorn/pydantic ·
 Streamlit/plotly · MLflow (SQLite store) · SQLite · nltk/rouge-score/bert-score/codebleu ·
-pytest · Docker + docker-compose.
+Docker + docker-compose.
 
 ## Core Workflows
 

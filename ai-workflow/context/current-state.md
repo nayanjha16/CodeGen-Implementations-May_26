@@ -21,14 +21,14 @@ A feature-complete baseline/evaluation/demo system for `Salesforce/codegen-350M-
 - **Evaluation**: full metric suite (EM, exec acc, syntax validity, BLEU, ROUGE-L,
   BERTScore, CodeBLEU), benchmark runner, MLflow tracker — implemented.
 - **Serving**: FastAPI (6 endpoints) + Streamlit (4 pages) — implemented.
-- **Tooling**: scripts (setup/baseline/demo + shell launchers), Docker/compose, notebooks,
-  pytest suite (~679 lines / 10 modules) — implemented.
+- **Tooling**: scripts (setup/baseline/demo + shell launchers), Docker/compose, notebooks
+  — implemented.
 
 ## Known Gaps (no fixes applied)
 
 - No fine-tuning/training loop (`scripts/train.sh` is a placeholder).
 - No real MongoDB execution (translator emits strings only).
-- No CI; generation tests are fully mocked.
+- No CI; no dedicated regression suite for real-model generation.
 - Streamlit eval charts use hard-coded sample data.
 
 ## Notable Issues Found (for planning, not yet addressed)
@@ -43,7 +43,7 @@ A feature-complete baseline/evaluation/demo system for `Salesforce/codegen-350M-
 
 ## Validation Status
 
-- Tests **not executed** during research (analysis only). pytest suite present and wired.
+- Unit tests were not executed during research (analysis only).
 - No code modified.
 
 ## Environment Assumptions

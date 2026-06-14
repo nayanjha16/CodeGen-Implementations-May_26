@@ -35,7 +35,6 @@ CodeGen-Studio/
 ├── results/                 # Evaluation output (metrics.json, details.csv)
 ├── configs/                 # YAML configuration (generation, evaluation)
 ├── scripts/                 # Setup and evaluation scripts
-├── tests/                   # pytest test suite
 ├── .env.example             # Environment variable template
 └── requirements.txt
 ```
@@ -114,14 +113,6 @@ python scripts/setup_sample_db.py
 ```
 
 Creates `data/samples/students.db` with students, courses, and enrollments tables.
-
-### 4. Run Tests
-
-```bash
-pytest tests/ --cov=src --cov-report=term-missing
-```
-
----
 
 ## Scripts
 
@@ -390,17 +381,6 @@ Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All 
 ```bash
 python scripts/run_baseline_eval.py --dataset spider --max-samples 10
 ```
-
----
-
-## Testing
-
-```bash
-pytest tests/ -v
-pytest tests/ --cov=src
-```
-
-Test coverage includes: config/env loading, model caching logic, dataset loading, SQL generation, validation, execution, NoSQL translation, and benchmark runner.
 
 ---
 

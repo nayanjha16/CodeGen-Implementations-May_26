@@ -46,8 +46,6 @@ A clean layered Python architecture with strong separation of concerns:
   BERTScore, CodeBLEU), a `BenchmarkRunner`, and an `MLflowTracker`.
 - **`streamlit_app/`** — 4-page UI (Text-to-SQL, SQL-to-NoSQL, Interactive, Evaluation).
 - **`scripts/`** — setup, baseline eval, demo, and shell launchers.
-- **`tests/`** — pytest suite (~679 lines across 10 test modules) with mock model and
-  temp DB fixtures.
 
 Dependency injection is used throughout (constructors accept optional collaborators),
 which makes the code highly testable. Heavy imports (`torch`, `transformers`, metric
@@ -69,7 +67,6 @@ token-overlap fallback when optional libraries are missing.
 | UI | Streamlit ≥1.30, plotly |
 | Storage | SQLite (execution + sample DBs) |
 | Config | PyYAML (`configs/default.yaml`) |
-| Testing | pytest, pytest-cov, httpx |
 | Packaging | Dockerfile (python:3.11-slim) + docker-compose (api, streamlit, mlflow) |
 
 ## Core Workflows
@@ -98,6 +95,6 @@ unsupported constructs (JOIN, HAVING, UNION, write statements).
 ## Current Maturity
 
 The project is **feature-complete for a baseline/evaluation/demo** use case: all modules
-exist, are wired together, and are covered by tests. It is **not** a fine-tuning project
+exist and are wired together. It is **not** a fine-tuning project
 (training is an explicit placeholder in `scripts/train.sh`) and the NoSQL translator is
 intentionally rule-based with documented limitations.

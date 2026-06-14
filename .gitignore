@@ -13,6 +13,8 @@ env/
 # Data & models (downloaded content)
 data/spider/
 data/bird/
+data/TEND/*.csv
+data/TEND/*.json
 data/processed/
 data/samples/
 models/base/*
@@ -29,11 +31,6 @@ mlruns/
 .idea/
 .vscode/
 *.swp
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
 
 # OS
 .DS_Store

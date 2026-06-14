@@ -114,6 +114,7 @@ Spider sample (question, sql, db_id)
 | `validator.py` | Lightweight structural validation helpers |
 | `qwen_evaluator.py` | Qwen chat prompt, generation, JSON parsing, equivalence scores |
 | `paths.py` | `data/TEND` output paths and timestamped CSV naming |
+| `explore_tend_datasets.ipynb` | Jupyter notebook to inspect CSV outputs, quality metrics, and conversion issues |
 | `TEND.md` | Original design plan and milestones |
 
 ---
@@ -251,6 +252,60 @@ builder = TENDDatasetBuilder(
 )
 csv_path = builder.build()
 summary = TENDDatasetBuilder.summarize_csv(csv_path)
+```
+
+### Explore datasets (Jupyter)
+
+Use `explore_tend_datasets.ipynb` to browse generated CSVs under `data/TEND/`, compare train vs validation splits, inspect SQL/Mongo pairs, and surface conversion or evaluation failures.
+
+**1. Install Jupyter** (one-time; `pandas` is already in `requirements.txt`):
+
+```bash
+conda activate ai
+pip install jupyter matplotlib ipykernel
+```
+
+`matplotlib` is optional but enables the summary charts in the notebook.
+
+**2. Launch from the project root** with `PYTHONPATH` set:
+
+```bash
+conda activate ai
+export PYTHONPATH="$(pwd)"
+jupyter notebook TEND/explore_tend_datasets.ipynb
+```
+
+Other launch options:
+
+```bash
+# JupyterLab
+jupyter lab TEND/explore_tend_datasets.ipynb
+
+# VS Code / Cursor — open TEND/explore_tend_datasets.ipynb and select the "ai" kernel
+```
+
+Windows PowerShell:
+
+```powershell
+conda activate ai
+$env:PYTHONPATH = (Get-Location).Path
+jupyter notebook TEND/explore_tend_datasets.ipynb
+```
+
+**3. In the notebook**, run cells top-to-bottom. Useful knobs:
+
+| Variable | Purpose |
+|----------|---------|
+| `SELECTED_SPLIT` | `"train"` or `"validation"` — picks the latest CSV for that split |
+| `SAMPLE_INDEX` | Row index for side-by-side SQL vs Mongo inspection |
+| `SAMPLE_DB` | Filter playground to one Spider `db_id` |
+| `ONLY_FAILURES` | Show only rows where conversion failed |
+| `SEARCH_TEXT` | Substring search in `question` or `sql_query` |
+
+The notebook auto-discovers timestamped files such as `spider_train_0614_1752.csv` and their `.summary.json` companions. Generate data first if `data/TEND/` is empty:
+
+```bash
+python -m TEND.run_tend --dataset spider --split train --no-eval
 ```
 
 ---

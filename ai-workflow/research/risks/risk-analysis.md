@@ -101,9 +101,9 @@ args → FastAPI treats them as **query** params, inconsistent with the JSON-bod
 
 ## 4. Tech Debt / Maintainability
 
-- **[Medium] No CI** — no automated test/lint pipeline; correctness relies on manual `pytest`.
-- **[Medium] Tests are fully mocked for generation** — no integration test exercises the
-  real model or the full download path; regressions in real inference go uncaught.
+- **[Medium] No CI** — no automated quality gate for linting or regression checks.
+- **[Medium] No dedicated regression suite** — real-model and full-download integration
+  regressions can go uncaught.
 - **[Low] Hard-coded sample data in Streamlit eval charts** — the "Evaluation Dashboard"
   shows fabricated numbers rather than live MLflow runs; misleading in demos.
 - **[Low] Duplicated reference example sets** — `run_baseline_eval.py` and

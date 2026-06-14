@@ -50,7 +50,6 @@
 - [x] Scripts: `setup_sample_db`, `run_baseline_eval`, `demo_presentation`, shell launchers
   (`train.sh`, `evaluate.sh`, `run_api.sh`, `run_streamlit.sh`), PowerShell setup.
 - [x] Dockerfile + docker-compose (api/streamlit/mlflow).
-- [x] pytest suite (~679 lines, 10 modules) with mock model + temp DB fixtures.
 - [x] Demo notebooks (`01_text2sql_demo.ipynb`, `02_evaluation_demo.ipynb`).
 - [x] Reproducibility seeds (random/numpy/torch).
 
@@ -100,7 +99,7 @@
   PyPI package on `sys.path`; ordering matters.
 - **License**: research/academic use; dataset and model licenses apply.
 
-## 5. Acceptance-style Expectations (derived from tests)
+## 5. Acceptance-style Expectations (derived from prior validation artifacts)
 
 - `/health` returns `{status: "healthy", version}`.
 - `/translate-nosql` returns `success=True` and a `mongodb_query` for a simple SELECT.

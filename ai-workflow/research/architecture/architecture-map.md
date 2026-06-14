@@ -140,5 +140,5 @@ computes corpus statistics.
   and translator.
 - **Graceful degradation**: every external metric library and the model are optional at
   runtime — failures fall back to token overlap / lazy errors rather than import crashes.
-- **Testability**: constructors accept injected collaborators; `tests/conftest.py`
-  provides `mock_model`, `sample_db`, and `sample_examples` fixtures.
+- **Testability**: constructors accept injected collaborators, enabling lightweight mocking
+  and integration scaffolding.

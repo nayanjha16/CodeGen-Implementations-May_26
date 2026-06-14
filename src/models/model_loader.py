@@ -182,10 +182,9 @@ class CodeGenModel:
         if self._seq2seq:
             return self.tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
-        generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        if generated.startswith(prompt):
-            generated = generated[len(prompt) :].strip()
-        return generated.strip()
+        input_length = inputs["input_ids"].shape[1]
+        new_tokens = outputs[0][input_length:]
+        return self.tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
 def load_model(

@@ -1,6 +1,21 @@
 index,question,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_sql_valid,predicted_mongodb_query,reference_mongodb_query,reference_translation_success,mongodb_warnings,mongodb_success,exact_match,syntax_valid,structural_match,token_f1
-0,How many singers do we have?,concert_singer,*/,SELECT count(*) FROM singer,False,True,"db.collection.find(
-  {}
+0,How many singers do we have?,concert_singer,SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer';,SELECT count(*) FROM singer,True,True,"db.sqlite_master.aggregate(
+[
+  {
+    ""$match"": {
+      ""type"": ""table"",
+      ""name"": ""singer""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
 )","db.singer.aggregate(
 [
   {
@@ -12,9 +27,18 @@ index,question,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_s
     }
   }
 ]
-)",True,,True,False,True,False,0.16666666666666666
-1,What is the total number of singers?,concert_singer,*/,SELECT count(*) FROM singer,False,True,"db.collection.find(
-  {}
+)",True,,True,False,True,False,0.782608695652174
+1,What is the total number of singers?,concert_singer,SELECT COUNT(*) FROM singer,SELECT count(*) FROM singer,True,True,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
 )","db.singer.aggregate(
 [
   {
@@ -26,21 +50,20 @@ index,question,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_s
     }
   }
 ]
-)",True,,True,False,True,False,0.16666666666666666
-2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.",concert_singer,"SELECT name, country, age FROM stadium","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,True,"db.stadium.find(
-  {},
-  { name: 1, country: 1, age: 1 }
-)","db.singer.find(
-  {},
-  { name: 1, country: 1, age: 1 }
-).sort({ ""age"": -1 })",True,,True,False,True,False,0.8
-3,"What are the names, countries, and ages for every singer in descending order of age?",concert_singer,*/,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,"db.collection.find(
+)",True,,True,True,True,True,1.0
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.",concert_singer,SELECT * FROM stadium,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,True,"db.stadium.find(
   {}
 )","db.singer.find(
   {},
   { name: 1, country: 1, age: 1 }
 ).sort({ ""age"": -1 })",True,,True,False,True,False,0.36363636363636365
-4,"What is the average, minimum, and maximum age of all singers from France?",concert_singer,*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,"db.collection.find(
+3,"What are the names, countries, and ages for every singer in descending order of age?",concert_singer,SELECT,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,"db.collection.find(
+  {}
+)","db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",True,,True,False,True,False,0.36363636363636365
+4,"What is the average, minimum, and maximum age of all singers from France?",concert_singer,"SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,"db.collection.find(
   {}
 )","db.singer.aggregate(
 [

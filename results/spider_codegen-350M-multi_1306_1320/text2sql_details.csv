@@ -2,7 +2,17 @@ index,question,schema,db_id,db_path,prompt,raw_output,predicted_sql,ground_truth
 0,How many singers do we have?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
-Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
 Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
@@ -11,33 +21,48 @@ Table singer_in_concert(concert_ID text, Singer_ID text)
 Question:
 How many singers do we have?
 
-Generate SQL query.","*/
+SQL:","SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer';
 
-func main() {
-	// Create a new database connection
-	db, err := sql.Open(""sqlite3"", "":memory:"")
-	if err != nil {
-		panic(err)
-	}
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer_in_concert';
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='concert';
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer_in_concert';
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='concert';
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Concert_ID text)"")
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer_in_concert';
 
-	// Create a new database table
-	db.Exec(""INS",*/,SELECT count(*) FROM singer,False,False,
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='concert';
+
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer_in_concert';
+
+SQL:
+SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='concert';
+
+SQL:
+SELECT COUNT(*) FROM sqlite_",SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='singer';,SELECT count(*) FROM singer,False,True,
 1,What is the total number of singers?,"Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
-Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
 Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
@@ -46,33 +71,78 @@ Table singer_in_concert(concert_ID text, Singer_ID text)
 Question:
 What is the total number of singers?
 
-Generate SQL query.","*/
+SQL:","SELECT COUNT(*) FROM singer
 
-func main() {
-	// Create a new database connection
-	db, err := sql.Open(""sqlite3"", "":memory:"")
-	if err != nil {
-		panic(err)
-	}
+SQL:
+SELECT COUNT(*) FROM concert
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+SQL:
+SELECT COUNT(*) FROM singer_in_concert
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+SQL:
+SELECT COUNT(*) FROM stadium
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
+SQL:
+SELECT COUNT(*) FROM singer
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Concert_ID text)"")
+SQL:
+SELECT COUNT(*) FROM concert
 
-	// Create a new database table
-	db.Exec(""INS",*/,SELECT count(*) FROM singer,False,False,
+SQL:
+SELECT COUNT(*) FROM singer_in_concert
+
+SQL:
+SELECT COUNT(*) FROM stadium
+
+SQL:
+SELECT COUNT(*) FROM singer
+
+SQL:
+SELECT COUNT(*) FROM concert
+
+SQL:
+SELECT COUNT(*) FROM singer_in_concert
+
+SQL:
+SELECT COUNT(*) FROM stadium
+
+SQL:
+SELECT COUNT(*) FROM singer
+
+SQL:
+SELECT COUNT(*) FROM concert
+
+SQL:
+SELECT COUNT(*) FROM singer_in_concert
+
+SQL:
+SELECT COUNT(*) FROM stadium
+
+SQL:
+SELECT COUNT(*) FROM singer
+
+SQL:
+SELECT COUNT(*) FROM concert
+
+SQL:
+SELECT COUNT(*) FROM singer_in_concert
+
+SQL:
+SELECT COUNT(*) FROM stadium",SELECT COUNT(*) FROM singer,SELECT count(*) FROM singer,False,True,
 2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
-Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
 Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
@@ -81,55 +151,73 @@ Table singer_in_concert(concert_ID text, Singer_ID text)
 Question:
 Show name, country, age for all singers ordered by age from the oldest to the youngest.
 
-Generate SQL query.","For example:
+SQL:","SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
+Output:
+Name, Country, Age, Highest, Lowest, Average
 
-The above query will return the following SQL:
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-The above query will return the following SQL:
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-The above query will return the following SQL:
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-The above query will return the following SQL:
+Sample SQL:
+SELECT * FROM stadium
+SELECT * FROM singer
+SELECT * FROM concert
+SELECT * FROM singer_in_concert
 
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
-
-The above query will return the following SQL:
-
-SELECT name, country, age FROM stadium
-WHERE name = 'John Doe'
-AND country = 'USA'
-AND age = 20
-
-The above query will return the following SQL:
-
-SELECT name,","SELECT name, country, age FROM stadium","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,
+Sample SQL:
+SELECT * FROM stadium
+SELECT",SELECT * FROM stadium,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,
 3,"What are the names, countries, and ages for every singer in descending order of age?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
-Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
 Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
@@ -138,33 +226,56 @@ Table singer_in_concert(concert_ID text, Singer_ID text)
 Question:
 What are the names, countries, and ages for every singer in descending order of age?
 
-Generate SQL query.","*/
+SQL:","SELECT
+    Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male
+FROM
+    Singer_in_concert
+WHERE
+    Singer_ID = concert_ID
 
-func main() {
-	// Create a new database connection
-	db, err := sql.Open(""sqlite3"", "":memory:"")
-	if err != nil {
-		panic(err)
-	}
+SQL:
+SELECT
+    Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male
+FROM
+    Singer_in_concert
+WHERE
+    Singer_ID = concert_ID
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)"")
+SQL:
+SELECT
+    Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male
+FROM
+    Singer_in_concert
+WHERE
+    Singer_ID = concert_ID
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)"")
+SQL:
+SELECT
+    Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male
+FROM
+    Singer_in_concert
+WHERE
+    Singer_ID = concert_ID
 
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS concert(Concert_ID text, Concert_Name text, Theme text, Stadium_ID text, Year text)"")
-
-	// Create a new database table
-	db.Exec(""CREATE TABLE IF NOT EXISTS singer_in_concert(Singer_ID text)"")
-
-	// Create a new database table
-	db.Exec(""INS",*/,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,False,
+SQL:
+SELECT
+    Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male
+FROM
+    Singer_",SELECT,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,
 4,"What is the average, minimum, and maximum age of all singers from France?","Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
-Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Schema:
+Table singer_in_concert(concert_ID text, Singer_ID text)",concert_singer,,"Task: write one SQL SELECT query only.
+
+Rules:
+- Use only the tables and columns listed in the schema below.
+- Return exactly one complete SQL SELECT statement, then stop.
+- Do not write Python, C++, JavaScript, or any other programming language.
+- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not execute the query or print results (no ""Output:"" section or sample rows).
+- Do not repeat ""SQL:"" or generate multiple queries.
+
+Schema:
 Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
 Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
 Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
@@ -173,37 +284,28 @@ Table singer_in_concert(concert_ID text, Singer_ID text)
 Question:
 What is the average, minimum, and maximum age of all singers from France?
 
-Generate SQL query.","*/
+SQL:","SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum
+FROM singer
+GROUP BY Average, Minimum, Maximum
+ORDER BY Average, Minimum, Maximum
 
-func main() {
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query.
-	// Generate SQL query",*/,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,False,
+SQL:
+SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum
+FROM singer
+GROUP BY Average, Minimum, Maximum
+ORDER BY Average, Minimum, Maximum
+
+SQL:
+SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum
+FROM singer
+GROUP BY Average, Minimum, Maximum
+ORDER BY Average, Minimum, Maximum
+
+SQL:
+SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum
+FROM singer
+GROUP BY Average, Minimum, Maximum
+ORDER BY Average, Minimum, Maximum
+
+SQL:
+SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum","SELECT SUM(Singer_ID) AS Average, MIN(Singer_ID) AS Minimum, MAX(Singer_ID) AS Maximum","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,

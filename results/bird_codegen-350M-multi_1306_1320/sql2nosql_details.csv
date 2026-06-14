@@ -1,29 +1,29 @@
 index,question,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_sql_valid,predicted_mongodb_query,reference_mongodb_query,reference_translation_success,mongodb_warnings,mongodb_success,exact_match,syntax_valid,structural_match,token_f1
-0,What is the highest eligible free rate for K-12 students in the schools in Alameda County?,california_schools,Output:,SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,False,True,"db.collection.find(
+0,What is the highest eligible free rate for K-12 students in the schools in Alameda County?,california_schools,SELECT * FROM `california_schools`,SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,True,True,"db.california_schools.find(
   {}
 )","db.frpm.find(
   {},
   { `Free Meal Count (K-12)` / `Enrollment (K-12)`: 1 }
 ).sort({ ""(CAST(`Free"": 1 }).limit(1)",True,,True,False,True,False,0.25
-1,Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.,california_schools,Output:,SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,False,True,"db.collection.find(
+1,Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.,california_schools,SELECT * FROM california_schools,SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,True,True,"db.california_schools.find(
   {}
 )","db.frpm.find(
   {},
   { `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`: 1 }
 ).sort({ ""`Free"": 1 }).limit(3)",True,,True,False,True,False,0.23529411764705882
-2,Please list the zip code of all the charter schools in Fresno County Office of Education.,california_schools,"""""""",SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,False,True,"db.collection.find(
+2,Please list the zip code of all the charter schools in Fresno County Office of Education.,california_schools,SELECT * FROM fprm.charter_schools,SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,True,True,"db.charter_schools.find(
   {}
 )","db.frpm.find(
   {},
   { T2.Zip: 1 }
 )",True,,True,False,True,False,0.4444444444444444
-3,What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?,california_schools,Output:,SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,False,True,"db.collection.find(
+3,What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?,california_schools,SELECT,SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,False,True,"db.collection.find(
   {}
 )","db.frpm.find(
   {},
   { T2.MailStreet: 1 }
 ).sort({ ""T1.`FRPM"": 1 }).limit(1)",True,,True,False,True,False,0.3333333333333333
-4,Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.,california_schools,"""""""",SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',False,True,"db.collection.find(
+4,Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.,california_schools,SELECT * FROM `california_schools`,SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',True,True,"db.california_schools.find(
   {}
 )","db.frpm.find(
   {},

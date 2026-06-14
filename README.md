@@ -7,6 +7,10 @@ Text to Java
 Python to Java
 Java to Python
 
+Model used: starcoder2-3B
+
+starcoder2 base model is trained for code completion not for following instructions. so we are finetuning it to follow the instructions.
+
 Pass@k evaluation metrics for Python Generation on MBPP data set
 
 Pass@1 for text to python

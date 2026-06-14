@@ -1,0 +1,32 @@
+model:
+  # name and storage paths come from .env (MODEL_NAME, MODELS_BASE_DIR, etc.)
+  max_length: 512
+  device: "auto"  # auto (cuda > mps > cpu), cuda, mps, cpu
+
+generation:
+  max_new_tokens: 256
+  temperature: 0.7
+  top_p: 0.95
+  num_beams: 4
+  do_sample: false
+  decoding_strategy: "greedy"  # greedy, beam
+  seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
+
+text2sql:
+  prompt_template: "auto"  # auto, default, seq2seq
+
+datasets:
+  spider: {}  # cache_dir, repo_url, dataset_url set from .env
+  bird: {}     # cache_dir, dataset_url set from .env
+
+evaluation:
+  batch_size: 8
+  max_samples: 100
+  # bertscore_model set from BERTSCORE_MODEL_NAME in .env
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
+  experiment_name: "codegen-text2sql"
+
+seeds:
+  random: 42
+  numpy: 42
+  torch: 42

@@ -1,0 +1,172 @@
+index,question,schema,db_id,db_path,prompt,raw_output,predicted_sql,ground_truth,exact_match,syntax_valid,execution_match
+0,What is the highest eligible free rate for K-12 students in the schools in Alameda County?,"Database: california_schools
+Evidence: Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`",california_schools,C:\Users\Bhavani\Documents\Codegen\Group-44\CodeGen-Implementations-May_26\data\bird\bird_data\dev_databases\california_schools\california_schools.sqlite,"Schema:
+Database: california_schools
+Evidence: Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`
+
+Question:
+What is the highest eligible free rate for K-12 students in the schools in Alameda County?
+
+Generate SQL query.","Output:
+The highest eligible free rate for K-12 students in the schools in Alameda County.
+
+""""""
+
+from datetime import datetime
+
+from sqlalchemy import func
+from sqlalchemy.sql import select
+from sqlalchemy.sql import text
+from sqlalchemy.sql import union
+
+from california_schools.models import Student, StudentSchema
+from california_schools.models import StudentSchemaSchema
+from california_schools.models import StudentSchemaSchemaTable
+from california_schools.models import StudentSchemaTableSchema
+from california_schools.models import StudentSchemaTableSchemaTable
+from california_schools.models import StudentSchemaTableSchemaTableSchema
+from california_schools.models import StudentSchemaTableSchemaTableSchema
+from california_schools.models import StudentSchemaTableSchemaTableSchemaTable
+from california_schools.models import StudentSchemaTableSchemaTableSchemaTable
+from california_schools.models import StudentSchemaTableSchemaTableSchema",Output:,SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,False,False,False
+1,Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.,"Database: california_schools
+Evidence: Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`",california_schools,C:\Users\Bhavani\Documents\Codegen\Group-44\CodeGen-Implementations-May_26\data\bird\bird_data\dev_databases\california_schools\california_schools.sqlite,"Schema:
+Database: california_schools
+Evidence: Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`
+
+Question:
+Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.
+
+Generate SQL query.","Output:
+
+`Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`
+
+""""""
+
+import pandas as pd
+import numpy as np
+import sqlalchemy as sa
+from sqlalchemy.sql import table, column
+from sqlalchemy.sql.functions import *
+from sqlalchemy.sql.expression import literal_column
+from sqlalchemy.sql.schema import ForeignKeyConstraint
+from sqlalchemy.sql.schema import Index
+from sqlalchemy.sql.schema import UniqueConstraint
+from sqlalchemy.sql.schema import Table
+from sqlalchemy.sql.schema import Column
+from sqlalchemy.sql.schema import Index
+from sqlalchemy.sql.schema import ForeignKeyConstraint
+from sqlalchemy.sql.schema import UniqueConstraint
+from sqlalchemy.sql.schema import Table
+from sqlalchemy.sql.schema import Column
+from sqlalchemy.sql.schema import Index
+from sqlalchemy.sql.schema import ForeignKeyConstraint
+from sqlal",Output:,SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,False,False,False
+2,Please list the zip code of all the charter schools in Fresno County Office of Education.,"Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the table fprm",california_schools,C:\Users\Bhavani\Documents\Codegen\Group-44\CodeGen-Implementations-May_26\data\bird\bird_data\dev_databases\california_schools\california_schools.sqlite,"Schema:
+Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the table fprm
+
+Question:
+Please list the zip code of all the charter schools in Fresno County Office of Education.
+
+Generate SQL query.","""""""
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
+Base = declarative_base()
+
+class City(Base):
+    __tablename__ = 'city'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    zipcode = Column(String(10))
+    city_state = Column(String(50))
+    city_state_code = Column(String(50))
+    city_state_name = Column(String(50))
+    city_state_zipcode = Column(String(10))
+    city_state_name_code = Column(String(50))
+    city_state_zipcode_code = Column(String(10))
+    city_state_name_code_code = Column(String(50))
+    city_state_name_code_code = Column(String(50))
+    city_state_name_code_code_code = Column(String(","""""""",SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,False,False,False
+3,What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?,Database: california_schools,california_schools,C:\Users\Bhavani\Documents\Codegen\Group-44\CodeGen-Implementations-May_26\data\bird\bird_data\dev_databases\california_schools\california_schools.sqlite,"Schema:
+Database: california_schools
+
+Question:
+What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?
+
+Generate SQL query.","Output:
+
+The highest FRPM count for K-12 students is 3.
+
+*/
+
+package main
+
+import (
+	""fmt""
+	""log""
+	""os""
+	""strings""
+)
+
+func main() {
+	if len(os.Args) != 2 {
+		log.Fatal(""Usage:"")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal("""")
+		log.Fatal(""",Output:,SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,False,False,False
+4,Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.,"Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the frpm",california_schools,C:\Users\Bhavani\Documents\Codegen\Group-44\CodeGen-Implementations-May_26\data\bird\bird_data\dev_databases\california_schools\california_schools.sqlite,"Schema:
+Database: california_schools
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the frpm
+
+Question:
+Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.
+
+Generate SQL query.","""""""
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
+Base = declarative_base()
+
+class City(Base):
+    __tablename__ = 'city'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    latitude = Column(Float)
+    longitude = Column(Float)
+    population = Column(Integer)
+    population_count = Column(Integer)
+    population_sum = Column(Integer)
+    population_sum_count = Column(Integer)
+    population_sum_count_count = Column(Integer)
+    population_sum_count_count_count = Column(Integer)
+    population_sum_count_count_count_count = Column(Integer)
+    population_sum_count_count_count_count_count = Column(Integer)
+    population_sum_count_count_count_count_count_count = Column(Integer)
+    population_sum","""""""",SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',False,False,False

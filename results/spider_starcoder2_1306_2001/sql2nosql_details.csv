@@ -1,0 +1,85 @@
+index,question,db_id,predicted_sql,reference_sql,predicted_sql_valid,reference_sql_valid,predicted_mongodb_query,reference_mongodb_query,reference_translation_success,mongodb_warnings,mongodb_success,exact_match,syntax_valid,structural_match,token_f1
+0,How many singers do we have?,concert_singer,SELECT COUNT(*) FROM singer;,SELECT count(*) FROM singer,True,True,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",True,,True,True,True,True,1.0
+1,What is the total number of singers?,concert_singer,SELECT COUNT(Singer_ID) FROM singer;,SELECT count(*) FROM singer,True,True,"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": ""$Singer_ID""
+      }
+    }
+  }
+]
+)","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",True,,True,False,True,True,0.8888888888888888
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.",concert_singer,"SELECT Name, Country, Age FROM singer ORDER BY Age DESC;","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,True,"db.singer.find(
+  {},
+  { Name: 1, Country: 1, Age: 1 }
+).sort({ ""Age"": -1 })","db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",True,,True,True,True,False,1.0
+3,"What are the names, countries, and ages for every singer in descending order of age?",concert_singer,"SELECT Name, Country, Age","SELECT name ,  country ,  age FROM singer ORDER BY age DESC",False,True,"db.collection.find(
+  {}
+)","db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",True,,True,False,True,False,0.36363636363636365
+4,"What is the average, minimum, and maximum age of all singers from France?",concert_singer,"SELECT AVG(Age), MIN(Age), MAX(Age)","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,True,"db.collection.find(
+  {}
+)","db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",True,,True,False,True,False,0.125

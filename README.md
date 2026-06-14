@@ -1,4 +1,4 @@
-# CodeGen – Interactive Database Querying Using Small Code Language Models
+# CodeGen-NL2DB Studio – Small Code Models for SQL Generation and NoSQL Translation
 
 A modular, reproducible, research-oriented project for evaluating small code language models on database query generation and translation tasks.
 

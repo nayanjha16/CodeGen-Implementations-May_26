@@ -15,7 +15,7 @@ The actions items and discussions between the group members and mentors are docu
 >
 > ## Actions
 > 1. Find a dataset that has python and C++ for the same intent.
-> 1. create diagram for easy reference in discussions.
+> 1. create diagram for easy reference in discussions. Closed, added [Diagrams](#Architecture/Diagrams.md)
 
 ---
 ---
@@ -34,7 +34,7 @@ The actions items and discussions between the group members and mentors are docu
 >
 > ## Actions:
 > 1. Team to follow suggested approach of three iterations from generated > documentation for code generation. <span style="color:green">[ Closed on 06/12/2026 ]</span>
-> 2. Nayan(@nayanjha16) to provide AST comparator models. <span style="color:green">[ Obsolete by use of node similarity for AST comparison ]</span>
+> 2. Nayan(@nayanjha16) to provide AST comparator models. <span style="color:green">[ Obsolete by use of node similarity for AST comparison ]</span>: Closed
 
 ## Document Generation Fidelity Diagram
 

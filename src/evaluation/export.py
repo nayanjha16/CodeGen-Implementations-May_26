@@ -98,10 +98,8 @@ TEXT2SQL_DETAIL_FIELDS = [
 ]
 
 SQL2NOSQL_DETAIL_FIELDS = [
-    "question",
-    "schema",
     "reference_sql",
-    "nosql_schema",
+    "prompt",
     "raw_output",
     "predicted_mongodb_query",
     "reference_mongodb_query",
@@ -110,18 +108,6 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "qwen_query_correct",
     "qwen_raw_response",
 ]
-
-
-def _derive_nosql_schema(schema: str) -> str:
-    """Best-effort MongoDB schema from SQL schema text when available."""
-    if not schema.strip():
-        return ""
-    try:
-        from TEND.sql_schema_to_mongo_schema import convert_schema_json
-
-        return convert_schema_json(schema)
-    except Exception:
-        return ""
 
 
 def save_text2sql_details_csv(
@@ -219,8 +205,6 @@ def save_sql2nosql_details_csv(
             reference_sql = pred.get("reference_sql", pred.get("ground_truth", ""))
             predicted_mongodb = pred.get("predicted_mongodb_query", "")
             reference_mongodb = pred.get("reference_mongodb_query", "")
-            schema = pred.get("schema", "")
-            nosql_schema = pred.get("nosql_schema", "") or _derive_nosql_schema(schema)
 
             qwen_eval: dict[str, Any] = {}
             if use_qwen and evaluator is not None:
@@ -232,11 +216,9 @@ def save_sql2nosql_details_csv(
 
             writer.writerow(
                 {
-                    "question": pred.get("question", ""),
-                    "schema": schema,
                     "reference_sql": reference_sql,
-                    "nosql_schema": nosql_schema,
-                    "raw_output": pred.get("nosql_raw_output", ""),
+                    "prompt": pred.get("nosql_prompt", pred.get("prompt", "")),
+                    "raw_output": pred.get("nosql_raw_output", pred.get("raw_output", "")),
                     "predicted_mongodb_query": predicted_mongodb,
                     "reference_mongodb_query": reference_mongodb,
                     "mongodb_warnings": pred.get("mongodb_warnings", ""),

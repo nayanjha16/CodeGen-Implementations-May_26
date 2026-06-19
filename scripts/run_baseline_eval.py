@@ -36,6 +36,7 @@ from src.evaluation.export import (
 )
 from src.evaluation.qwen_evaluator import QwenEvaluator
 from src.models.model_loader import is_model_cached
+from src.text2sql.sql_executor import build_text2sql_prompt
 from src.utils.config import (
     get_bertscore_model_name,
     get_model_name,
@@ -107,6 +108,28 @@ def _compute_text2sql_translation_success_rate(
             successful += 1
 
     return successful / len(predictions)
+
+
+def _ensure_text2sql_prompts(
+    predictions: list[dict[str, object]],
+    *,
+    config: dict,
+    model_name: str,
+) -> None:
+    """Backfill generation prompts so CSV rows match text2sql_details.csv format."""
+    for pred in predictions:
+        if pred.get("prompt"):
+            continue
+        question = str(pred.get("question", "")).strip()
+        schema = str(pred.get("schema", "")).strip()
+        if not question:
+            continue
+        pred["prompt"] = build_text2sql_prompt(
+            question,
+            schema,
+            config=config,
+            model_name=model_name,
+        )
 
 
 def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
@@ -262,6 +285,11 @@ def main() -> None:
 
     text2sql_predictions = result.get("predictions", [])
     sql2nosql_predictions = result.get("nosql_predictions", [])
+    _ensure_text2sql_prompts(
+        text2sql_predictions,
+        config=config,
+        model_name=model_name,
+    )
     db_paths = [pred.get("db_path") for pred in text2sql_predictions]
 
     use_qwen = not args.no_qwen

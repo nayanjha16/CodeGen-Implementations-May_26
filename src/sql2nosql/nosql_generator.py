@@ -8,9 +8,10 @@ from typing import Any
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
 from src.sql2nosql.evaluator import NoSQLEvaluator
 from src.sql2nosql.prompt_builder import NoSQLPromptBuilder
+from src.utils.schema_conversion import derive_mongo_schema_json
 
 _MONGO_START_RE = re.compile(
-    r"db\.\w+\.(?:find|aggregate|distinct)\s*\(",
+    r"db\.\w+\.(?:find|aggregate|distinct|countDocuments)\s*\(",
     re.IGNORECASE,
 )
 _CODE_FENCE_RE = re.compile(
@@ -24,20 +25,29 @@ _CHAIN_RE = re.compile(
 
 
 class NoSQLGenerator:
-    """Generate MongoDB shell queries from natural language using a HuggingFace model."""
+    """Generate MongoDB shell queries from SQL using a HuggingFace model."""
 
     _NON_MONGO_MARKER_RE = re.compile(
-        r"\n(?:Output:|SQL:|import\s+|#include\b|\"\"\"|\nMongoDB:|\nMongoDB:\n)",
+        r"\n(?:Output:|SQL:|MongoDB:|Python\b|JavaScript\b|import\s+|#include\b|\"\"\"|```)",
         re.IGNORECASE,
     )
     _MONGO_STOP_STRINGS = [
         "\nOutput:",
         "\nSQL:",
+        "\nPython Query:",
+        "\nJavaScript Query:",
+        "\nPython Example:",
+        "\nJavaScript Example:",
+        "\nPython:",
+        "\nJavaScript:",
         "\nimport ",
         "\n#include",
         '\n"""',
+        "\n```",
         "\n\nMongoDB:",
         "\nMongoDB:\n",
+        "\n\nPython",
+        "\n\nJavaScript",
     ]
 
     def __init__(
@@ -115,16 +125,32 @@ class NoSQLGenerator:
 
     def is_valid_mongodb_query(self, query: str) -> bool:
         """Return True when output looks like valid MongoDB shell syntax."""
+        if not query.strip():
+            return False
+        if not _MONGO_START_RE.search(query):
+            return False
         return self.evaluator.validate_syntax(query)["valid"]
+
+    def build_prompt(
+        self,
+        sql_query: str,
+        schema: str,
+        nosql_schema: str | None = None,
+    ) -> str:
+        """Build the conversion prompt for a SQL query and schema."""
+        return self.prompt_builder.build(sql_query, schema, nosql_schema=nosql_schema)
 
     def generate(
         self,
-        question: str,
+        sql_query: str,
         schema: str,
         decoding_strategy: str | None = None,
+        nosql_schema: str | None = None,
     ) -> dict[str, str]:
-        """Generate a MongoDB query for a single question."""
-        prompt = self.prompt_builder.build(question, schema)
+        """Generate a MongoDB query by converting a SQL query."""
+        if nosql_schema is None:
+            nosql_schema = derive_mongo_schema_json(schema)
+        prompt = self.build_prompt(sql_query, schema, nosql_schema=nosql_schema)
         strategy = self._resolve_decoding_strategy(decoding_strategy)
         generate_kwargs: dict[str, Any] = {
             "max_new_tokens": self.gen_config.get("max_new_tokens", 256),
@@ -137,12 +163,14 @@ class NoSQLGenerator:
         if not self._seq2seq:
             generate_kwargs["stop_strings"] = self._MONGO_STOP_STRINGS
 
-        raw = self.model.generate(prompt, **generate_kwargs)
-        mongodb_query = self._extract_mongodb_query(raw)
+        model_output = self.model.generate(prompt, **generate_kwargs)
+        mongodb_query = self._extract_mongodb_query(model_output)
         return {
             "prompt": prompt,
-            "raw_output": raw,
+            "raw_output": model_output,
             "mongodb_query": mongodb_query,
+            "nosql_schema": nosql_schema,
+            "sql_query": sql_query,
         }
 
     def generate_batch(
@@ -150,16 +178,23 @@ class NoSQLGenerator:
         examples: list[dict[str, str]],
         decoding_strategy: str | None = None,
     ) -> list[dict[str, str]]:
-        """Generate MongoDB queries for multiple examples."""
+        """Generate MongoDB queries for multiple SQL examples."""
         results = []
         for example in examples:
+            schema = example.get("schema", "")
+            sql_query = example.get("sql", example.get("sql_query", ""))
+            nosql_schema = example.get("nosql_schema") or derive_mongo_schema_json(schema)
             result = self.generate(
-                example["question"],
-                example.get("schema", ""),
+                sql_query,
+                schema,
                 decoding_strategy=decoding_strategy,
+                nosql_schema=nosql_schema,
             )
-            result["question"] = example["question"]
-            result["ground_truth"] = example.get("sql", "")
+            result["question"] = example.get("question", "")
+            result["schema"] = schema
+            result["nosql_schema"] = nosql_schema
+            result["sql_query"] = sql_query
+            result["ground_truth"] = example.get("ground_truth_sql", example.get("sql", ""))
             result["mongodb_valid"] = self.is_valid_mongodb_query(
                 result["mongodb_query"]
             )

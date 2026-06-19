@@ -8,6 +8,7 @@ from typing import Any
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
 from src.text2sql.prompt_builder import PromptBuilder
 from src.text2sql.sql_validator import SQLValidator
+from src.utils.schema_conversion import derive_mongo_schema_json
 
 
 class SQLGenerator:
@@ -18,11 +19,11 @@ class SQLGenerator:
         re.IGNORECASE | re.DOTALL,
     )
     _NON_SQL_MARKER_RE = re.compile(
-        r"\n(?:Output:|import\s+|#include\b|\"\"\"|\nSQL:|\nSQL:\n)",
+        r"\n(?:Output:|MongoDB:|Python:|JavaScript:|import\s+|#include\b|\"\"\"|SQL:\n)",
         re.IGNORECASE,
     )
     _NON_SQL_LINE_RE = re.compile(
-        r"^(?:Output:|import\s+|#include\b|\"\"\"|conn\s*=|for\s+\w+\s+in|print\s*\(|SQL:)",
+        r"^(?:Output:|MongoDB:|Python:|JavaScript:|import\s+|#include\b|\"\"\"|conn\s*=|for\s+\w+\s+in|print\s*\(|SQL:)",
         re.IGNORECASE,
     )
     _SQL_KEYWORD_LINE_RE = re.compile(
@@ -34,11 +35,16 @@ class SQLGenerator:
     _SQL_FRAGMENT_LINE_RE = re.compile(r"^[\w\s.*'\",=<>!+\-/%()?;[\]]+$")
     _SQL_STOP_STRINGS = [
         "\nOutput:",
+        "\nMongoDB:",
+        "\nPython:",
+        "\nJavaScript:",
         "\nimport ",
         "\n#include",
         '\n"""',
         "\n\nSQL:",
         "\nSQL:\n",
+        "\n\nMongoDB:",
+        "\n\nPython:",
     ]
 
     def __init__(
@@ -160,6 +166,14 @@ class SQLGenerator:
             return self.gen_config.get("seq2seq_decoding_strategy", "beam")
         return configured
 
+    def build_prompt(
+        self,
+        question: str,
+        schema: str,
+    ) -> str:
+        """Build the SQL-only generation prompt for a question and schema."""
+        return self.prompt_builder.build(question, schema)
+
     def generate(
         self,
         question: str,
@@ -167,7 +181,8 @@ class SQLGenerator:
         decoding_strategy: str | None = None,
     ) -> dict[str, str]:
         """Generate SQL for a single question."""
-        prompt = self.prompt_builder.build(question, schema)
+        nosql_schema = derive_mongo_schema_json(schema)
+        prompt = self.build_prompt(question, schema)
         strategy = self._resolve_decoding_strategy(decoding_strategy)
         generate_kwargs: dict[str, Any] = {
             "max_new_tokens": self.gen_config.get("max_new_tokens", 256),
@@ -182,7 +197,13 @@ class SQLGenerator:
 
         raw = self.model.generate(prompt, **generate_kwargs)
         sql = self._extract_sql(raw)
-        return {"prompt": prompt, "raw_output": raw, "sql": sql}
+        trimmed_raw = self._trim_non_sql_suffix(raw)
+        return {
+            "prompt": prompt,
+            "raw_output": trimmed_raw or raw.strip(),
+            "sql": sql,
+            "nosql_schema": nosql_schema,
+        }
 
     def is_valid_sql(self, sql: str) -> bool:
         """Return True when SQL passes syntax and completeness checks."""
@@ -200,12 +221,14 @@ class SQLGenerator:
         """Generate SQL for multiple examples."""
         results = []
         for ex in examples:
+            schema = ex.get("schema", "")
             result = self.generate(
                 ex["question"],
-                ex.get("schema", ""),
+                schema,
                 decoding_strategy=decoding_strategy,
             )
             result["question"] = ex["question"]
+            result["schema"] = schema
             result["ground_truth"] = ex.get("sql", "")
             result["sql_valid"] = self.is_valid_sql(result["sql"])
             results.append(result)

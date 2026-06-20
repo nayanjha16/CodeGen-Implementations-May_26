@@ -26,11 +26,13 @@ sys.path.insert(0, str(ROOT))
 
 from src.evaluation.benchmark import BenchmarkRunner
 from src.evaluation.export import (
+    DOCUMENTATION_DETAILS_CSV,
     METRICS_JSON,
     SQL2NOSQL_DETAILS_CSV,
     TEXT2SQL_DETAILS_CSV,
     merge_qwen_summary_into_metrics,
     normalize_task_metrics,
+    save_documentation_details_csv,
     save_sql2nosql_details_csv,
     save_text2sql_details_csv,
 )
@@ -276,15 +278,22 @@ def main() -> None:
             normalize_task_metrics(result["nosql_metrics"], task="sql2nosql"),
             f"SQL-to-MongoDB ({result['dataset']})",
         )
+    if result.get("doc_metrics"):
+        print_metrics(
+            normalize_task_metrics(result["doc_metrics"], task="documentation"),
+            f"MongoDB Documentation ({result['dataset']})",
+        )
     print(f"\n  MLflow run ID: {result.get('mlflow_run_id', 'N/A')}")
 
     run_dir = resolve_results_run_dir(args.output)
     metrics_path = run_dir / METRICS_JSON
     text2sql_details_path = run_dir / TEXT2SQL_DETAILS_CSV
     sql2nosql_details_path = run_dir / SQL2NOSQL_DETAILS_CSV
+    documentation_details_path = run_dir / DOCUMENTATION_DETAILS_CSV
 
     text2sql_predictions = result.get("predictions", [])
     sql2nosql_predictions = result.get("nosql_predictions", [])
+    documentation_predictions = result.get("doc_predictions", [])
     _ensure_text2sql_prompts(
         text2sql_predictions,
         config=config,
@@ -314,6 +323,14 @@ def main() -> None:
         model_name=model_name,
         config=config,
     )
+    _, _, qwen_documentation_metrics = save_documentation_details_csv(
+        documentation_details_path,
+        documentation_predictions,
+        qwen_evaluator=qwen_evaluator,
+        use_qwen=use_qwen,
+        model_name=model_name,
+        config=config,
+    )
 
     text2sql_metrics = merge_qwen_summary_into_metrics(
         result["metrics"],
@@ -330,6 +347,11 @@ def main() -> None:
         qwen_sql2nosql_metrics if use_qwen else None,
         task="sql2nosql",
     )
+    documentation_metrics = merge_qwen_summary_into_metrics(
+        result.get("doc_metrics"),
+        qwen_documentation_metrics if use_qwen else None,
+        task="documentation",
+    )
 
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(
@@ -339,6 +361,7 @@ def main() -> None:
                 "dataset": result["dataset"],
                 "text2sql": text2sql_metrics,
                 "sql2nosql": sql2nosql_metrics,
+                "documentation": documentation_metrics,
                 "mlflow_run_id": result.get("mlflow_run_id"),
             },
             f,
@@ -356,6 +379,11 @@ def main() -> None:
             for key, value in sql2nosql_metrics.items()
             if key.startswith("qwen_")
         }
+        qwen_documentation_only = {
+            key: value
+            for key, value in documentation_metrics.items()
+            if key.startswith("qwen_")
+        }
         print_metrics(
             qwen_text2sql_only,
             f"Qwen Text-to-SQL ({result['dataset']})",
@@ -364,11 +392,16 @@ def main() -> None:
             qwen_sql2nosql_only,
             f"Qwen SQL-to-MongoDB ({result['dataset']})",
         )
+        print_metrics(
+            qwen_documentation_only,
+            f"Qwen MongoDB Documentation ({result['dataset']})",
+        )
 
     print(f"  Run saved: {run_dir}")
     print(f"    metrics: {metrics_path}")
     print(f"    text2sql details: {text2sql_details_path}")
     print(f"    sql2nosql details: {sql2nosql_details_path}")
+    print(f"    documentation details: {documentation_details_path}")
     if args.mlflow:
         print("\nView MLflow UI: mlflow ui --backend-store-uri sqlite:///mlflow.db")
 

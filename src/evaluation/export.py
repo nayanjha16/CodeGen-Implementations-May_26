@@ -13,6 +13,7 @@ from src.utils.config import get_model_name, load_config
 METRICS_JSON = "metrics.json"
 TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
 SQL2NOSQL_DETAILS_CSV = "sql2nosql_details.csv"
+DOCUMENTATION_DETAILS_CSV = "documentation_details.csv"
 
 TASK_METRIC_KEYS = [
     "exact_match",
@@ -54,6 +55,11 @@ def merge_qwen_summary_into_metrics(
             merged["qwen_overall_correct_rate"] = qwen_summary.get(
                 "overall_correct_rate"
             )
+        elif task == "documentation":
+            merged["qwen_correct_rate"] = qwen_summary.get("doc_correct_rate")
+            merged["qwen_overall_correct_rate"] = qwen_summary.get(
+                "overall_correct_rate"
+            )
         if "count" in qwen_summary:
             merged["qwen_count"] = qwen_summary["count"]
     return normalize_task_metrics(merged, task=task)
@@ -76,6 +82,9 @@ def normalize_task_metrics(
         )
     elif task == "sql2nosql":
         source.setdefault("execution_accuracy", 0.0)
+    elif task == "documentation":
+        source.setdefault("execution_accuracy", 0.0)
+        source.setdefault("structural_equivalence", 0.0)
 
     normalized: dict[str, Any] = {}
     for key in TASK_METRIC_KEYS:
@@ -110,6 +119,15 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "mongodb_warnings",
     "mongodb_success",
     "qwen_query_correct",
+    "qwen_raw_response",
+]
+
+DOCUMENTATION_DETAIL_FIELDS = [
+    "mongodb_query",
+    "prompt",
+    "input_token_count",
+    "raw_output",
+    "qwen_doc_correct",
     "qwen_raw_response",
 ]
 
@@ -264,6 +282,78 @@ def save_sql2nosql_details_csv(
         if use_qwen
         else {
             "query_correct_rate": 0.0,
+            "overall_correct_rate": 0.0,
+            "count": len(predictions),
+        }
+    )
+    return output_path, qwen_results, summary
+
+
+def save_documentation_details_csv(
+    path: str | Path,
+    predictions: list[dict[str, str]],
+    qwen_evaluator: QwenEvaluator | None = None,
+    use_qwen: bool = True,
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
+    """Write MongoDB documentation per-sample details to CSV using Qwen evaluation."""
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    evaluator = qwen_evaluator
+    if use_qwen and evaluator is None:
+        evaluator = QwenEvaluator()
+
+    fieldnames = DOCUMENTATION_DETAIL_FIELDS
+    cfg = config or load_config()
+    generation_model = model_name or get_model_name(cfg)
+
+    qwen_results: list[dict[str, Any]] = []
+    with open(output_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for pred in predictions:
+            mongodb_query = pred.get(
+                "predicted_mongodb_query",
+                pred.get("mongodb_query", ""),
+            )
+            prompt = pred.get("doc_prompt", pred.get("prompt", ""))
+            input_token_count = pred.get("input_token_count")
+            if input_token_count in ("", None):
+                input_token_count = count_input_tokens(
+                    prompt,
+                    model_name=generation_model,
+                    config=cfg,
+                )
+
+            qwen_eval: dict[str, Any] = {}
+            if use_qwen and evaluator is not None:
+                raw_output = pred.get("doc_raw_output", pred.get("raw_output", ""))
+                qwen_eval = evaluator.evaluate_documentation_sample(
+                    mongodb_query=mongodb_query,
+                    raw_output=raw_output,
+                    reference_sql=pred.get("reference_sql", pred.get("ground_truth", "")),
+                )
+                qwen_results.append(qwen_eval)
+
+            writer.writerow(
+                {
+                    "mongodb_query": mongodb_query,
+                    "prompt": prompt,
+                    "input_token_count": input_token_count,
+                    "raw_output": pred.get("doc_raw_output", pred.get("raw_output", "")),
+                    "qwen_doc_correct": qwen_eval.get("doc_correct", ""),
+                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
+                }
+            )
+
+    summary = (
+        QwenEvaluator.summarize_documentation(qwen_results)
+        if use_qwen
+        else {
+            "doc_correct_rate": 0.0,
             "overall_correct_rate": 0.0,
             "count": len(predictions),
         }

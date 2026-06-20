@@ -66,6 +66,29 @@ Respond with JSON only (no markdown fences). In reason, do not include curly bra
   "reason": "short reason focused on output differences, not syntax style"
 }}"""
 
+_DOCUMENTATION_PROMPT = """You are a strict MongoDB query documentation judge.
+
+Decide whether the generated documentation accurately and completely explains the MongoDB query below.
+
+Rules:
+- doc_correct is true ONLY if the documentation correctly explains the collection, operation, filters, projections, sorting, limits, and aggregation behavior when present.
+- Ignore stylistic differences when the meaning matches the query.
+- doc_correct must be false if the output is empty, unrelated, or misses key query semantics.
+- Brief mentions of the MongoDB query syntax inside the explanation are acceptable.
+- Do not mark doc_correct true unless you are confident the documentation would help a developer understand what the query returns.
+
+{context}MongoDB query:
+{mongodb_query}
+
+Generated documentation:
+{generated_output}
+
+Respond with JSON only (no markdown fences). In reason, do not include curly braces or backticks:
+{{
+  "doc_correct": true or false,
+  "reason": "short reason focused on missing or incorrect explanation"
+}}"""
+
 _TEND_PROMPT = """You are a database expert. Compare the SQL input with the MongoDB output.
 
 {sections}Decide whether the MongoDB schema and query are semantically equivalent to the SQL schema and query.
@@ -285,6 +308,31 @@ class QwenEvaluator:
             "raw_response": raw_response,
         }
 
+    def _parse_documentation_response(self, text: str) -> dict[str, Any]:
+        raw_response = text
+        text = self._strip_code_fences(self._strip_assistant_prefix(text))
+        parsed = self._extract_eval_json(text, {"doc_correct"})
+        if parsed is not None:
+            return {
+                "doc_correct": bool(parsed.get("doc_correct")),
+                "reason": str(parsed.get("reason", "")),
+                "raw_response": raw_response,
+            }
+
+        doc_correct = self._extract_bool_field(text, "doc_correct")
+        if doc_correct is not None:
+            return {
+                "doc_correct": doc_correct,
+                "reason": self._extract_string_field(text, "reason"),
+                "raw_response": raw_response,
+            }
+
+        return {
+            "doc_correct": False,
+            "reason": "Unable to parse model response",
+            "raw_response": raw_response,
+        }
+
     def evaluate_text2sql_sample(
         self,
         question: str = "",
@@ -381,6 +429,45 @@ class QwenEvaluator:
         result["overall_correct"] = result["query_correct"]
         return result
 
+    def evaluate_documentation_sample(
+        self,
+        mongodb_query: str = "",
+        raw_output: str = "",
+        reference_sql: str = "",
+        predicted_documentation: str = "",
+        **_kwargs: Any,
+    ) -> dict[str, Any]:
+        """Evaluate one MongoDB query documentation sample with Qwen."""
+        generated_output = raw_output.strip() or predicted_documentation.strip()
+
+        if not mongodb_query.strip():
+            skip_reason = "Skipped Qwen evaluation: missing MongoDB query"
+            return {
+                "doc_correct": False,
+                "reason": "Missing MongoDB query",
+                "raw_response": skip_reason,
+            }
+
+        if not generated_output:
+            skip_reason = "Skipped Qwen evaluation: missing model raw output"
+            return {
+                "doc_correct": False,
+                "reason": "Missing model raw output",
+                "raw_response": skip_reason,
+            }
+
+        context = _build_sections({"Source SQL": reference_sql})
+        response = self._generate(
+            _DOCUMENTATION_PROMPT.format(
+                context=context,
+                mongodb_query=mongodb_query.strip(),
+                generated_output=generated_output,
+            )
+        )
+        result = self._parse_documentation_response(response)
+        result["overall_correct"] = result["doc_correct"]
+        return result
+
     def evaluate_tend_sample(
         self,
         sql_schema: str,
@@ -454,6 +541,28 @@ class QwenEvaluator:
             )
         return results
 
+    def evaluate_documentation_batch(
+        self,
+        samples: list[dict[str, str]],
+    ) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
+        for sample in samples:
+            results.append(
+                self.evaluate_documentation_sample(
+                    mongodb_query=sample.get(
+                        "mongodb_query", sample.get("predicted_mongodb_query", "")
+                    ),
+                    raw_output=sample.get(
+                        "doc_raw_output", sample.get("raw_output", "")
+                    ),
+                    reference_sql=sample.get("reference_sql", sample.get("ground_truth", "")),
+                    predicted_documentation=sample.get(
+                        "predicted_documentation", sample.get("documentation", "")
+                    ),
+                )
+            )
+        return results
+
     @staticmethod
     def summarize_text2sql(results: list[dict[str, Any]]) -> dict[str, Any]:
         total = len(results)
@@ -478,6 +587,22 @@ class QwenEvaluator:
         return {
             "query_correct_rate": query_correct / total,
             "overall_correct_rate": query_correct / total,
+            "count": total,
+        }
+
+    @staticmethod
+    def summarize_documentation(results: list[dict[str, Any]]) -> dict[str, Any]:
+        total = len(results)
+        if total == 0:
+            return {
+                "doc_correct_rate": 0.0,
+                "overall_correct_rate": 0.0,
+                "count": 0,
+            }
+        doc_correct = sum(1 for result in results if result.get("doc_correct"))
+        return {
+            "doc_correct_rate": doc_correct / total,
+            "overall_correct_rate": doc_correct / total,
             "count": total,
         }
 

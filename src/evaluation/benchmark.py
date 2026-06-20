@@ -5,6 +5,9 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from src.documentation.doc_generator import DocumentationGenerator
+from src.documentation.evaluator import DocumentationEvaluator
+from src.documentation.reference_builder import ReferenceDocumentationBuilder
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.mlflow_tracker import MLflowTracker
 from src.sql2nosql.evaluator import NoSQLEvaluator
@@ -28,6 +31,8 @@ class BenchmarkRunner:
         nosql_evaluator: NoSQLEvaluator | None = None,
         nosql_generator: NoSQLGenerator | None = None,
         nosql_translator: SQLToNoSQLTranslator | None = None,
+        doc_generator: DocumentationGenerator | None = None,
+        doc_evaluator: DocumentationEvaluator | None = None,
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
     ):
@@ -41,6 +46,12 @@ class BenchmarkRunner:
             model=self.sql_generator.model,
             config=self.config,
         )
+        self.doc_generator = doc_generator or DocumentationGenerator(
+            model=self.sql_generator.model,
+            config=self.config,
+        )
+        self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
+        self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
         self.enable_mlflow = enable_mlflow
         self.tracker = None
@@ -170,6 +181,93 @@ class BenchmarkRunner:
         )
         return nosql_metrics, nosql_results
 
+    def evaluate_documentation(
+        self,
+        nosql_results: list[dict[str, Any]],
+    ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        """Generate documentation for MongoDB queries produced during sql2nosql."""
+        pred_docs: list[str] = []
+        ref_docs: list[str] = []
+        mongodb_queries: list[str] = []
+        structured_preds: list[dict[str, Any]] = []
+        structured_refs: list[dict[str, Any]] = []
+        doc_results: list[dict[str, Any]] = []
+
+        doc_samples = []
+        for result in nosql_results:
+            doc_samples.append(
+                {
+                    "question": result.get("question", ""),
+                    "schema": result.get("schema", ""),
+                    "nosql_schema": result.get("nosql_schema", ""),
+                    "mongodb_query": result.get("predicted_mongodb_query", ""),
+                    "predicted_mongodb_query": result.get("predicted_mongodb_query", ""),
+                    "reference_mongodb_query": result.get("reference_mongodb_query", ""),
+                    "reference_sql": result.get("reference_sql", result.get("ground_truth", "")),
+                }
+            )
+
+        doc_gen_results = self.doc_generator.generate_batch(doc_samples)
+
+        for result, doc_gen in zip(nosql_results, doc_gen_results):
+            mongodb_query = doc_gen.get("mongodb_query", "")
+            predicted_doc = doc_gen.get("documentation", "")
+            reference_doc = doc_gen.get("reference_documentation", "")
+            reference_mongodb = result.get("reference_mongodb_query", "")
+
+            pred_warnings: list[str] = []
+            if not mongodb_query.strip():
+                pred_warnings.append("Missing MongoDB query for documentation generation")
+            elif not predicted_doc:
+                pred_warnings.append("Unable to extract documentation from model output")
+            elif not doc_gen.get("documentation_valid", False):
+                pred_warnings.append("Generated documentation failed structure validation")
+
+            pred_structured = {
+                **self.reference_doc_builder.to_structured(mongodb_query),
+                "documentation": predicted_doc,
+                "warnings": pred_warnings,
+                "success": bool(predicted_doc) and doc_gen.get("documentation_valid", False),
+            }
+            ref_structured = {
+                **self.reference_doc_builder.to_structured(reference_mongodb),
+                "documentation": reference_doc,
+            }
+
+            pred_docs.append(predicted_doc)
+            ref_docs.append(reference_doc)
+            mongodb_queries.append(mongodb_query)
+            structured_preds.append(pred_structured)
+            structured_refs.append(ref_structured)
+
+            doc_results.append(
+                {
+                    **result,
+                    "doc_prompt": doc_gen.get("prompt", ""),
+                    "doc_raw_output": doc_gen.get("raw_output", ""),
+                    "predicted_documentation": predicted_doc,
+                    "reference_documentation": reference_doc,
+                    "documentation_warnings": "; ".join(pred_warnings),
+                    "documentation_success": pred_structured["success"],
+                }
+            )
+
+        doc_metrics = self.doc_evaluator.evaluate_all(
+            pred_docs,
+            ref_docs,
+            mongodb_queries=mongodb_queries,
+            structured_preds=structured_preds,
+            structured_refs=structured_refs,
+        )
+        doc_metrics["total_count"] = len(doc_results)
+        doc_metrics["scored_count"] = len(pred_docs)
+        doc_metrics["translation_success_rate"] = (
+            sum(1 for r in doc_results if r.get("documentation_success")) / len(doc_results)
+            if doc_results
+            else 0.0
+        )
+        return doc_metrics, doc_results
+
     def run_on_dataset(
         self,
         examples: list[dict[str, str]],
@@ -204,6 +302,7 @@ class BenchmarkRunner:
 
         eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
         nosql_metrics, nosql_results = self.evaluate_sql2nosql(gen_results, samples)
+        doc_metrics, doc_results = self.evaluate_documentation(nosql_results)
 
         run_id = None
         if self.tracker:
@@ -225,8 +324,10 @@ class BenchmarkRunner:
             "dataset": dataset_name,
             "metrics": eval_metrics,
             "nosql_metrics": nosql_metrics,
+            "doc_metrics": doc_metrics,
             "predictions": gen_results,
             "nosql_predictions": nosql_results,
+            "doc_predictions": doc_results,
             "mlflow_run_id": run_id,
         }
 

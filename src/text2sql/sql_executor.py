@@ -52,6 +52,27 @@ def derive_nosql_schema(schema: str, *, compact: bool = False) -> str:
     return derive_mongo_schema_json(schema, compact=compact)
 
 
+def build_documentation_prompt(
+    mongodb_query: str,
+    schema: str = "",
+    *,
+    config: dict[str, Any] | None = None,
+    model_name: str | None = None,
+    nosql_schema: str | None = None,
+) -> str:
+    """Build a MongoDB query documentation prompt."""
+    from src.documentation.prompt_builder import DocumentationPromptBuilder
+    from src.utils.config import get_model_name, load_config
+
+    cfg = config or load_config()
+    name = model_name or get_model_name(cfg)
+    return DocumentationPromptBuilder.for_model(name, cfg).build(
+        mongodb_query,
+        schema,
+        nosql_schema=nosql_schema,
+    )
+
+
 class SQLExecutor:
     """Execute SQL queries and compare results for evaluation."""
 

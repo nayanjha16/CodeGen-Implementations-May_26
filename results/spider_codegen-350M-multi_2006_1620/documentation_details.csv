@@ -1,0 +1,837 @@
+mongodb_query,prompt,input_token_count,raw_output,qwen_doc_correct,qwen_raw_response
+db.singer.countDocuments({}),"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+db.singer.countDocuments({})
+
+Documentation:",407,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    """,False,"{
+  ""doc_correct"": false,
+  ""reason"": ""The provided MongoDB query does not contain any information about the collection, operation, filters, projections, sorting, limits, or aggregation behavior.""
+}"
+db.singer.countDocuments({}),"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+db.singer.countDocuments({})
+
+Documentation:",407,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Name"": ""string"",
+    """,False,"{
+  ""doc_correct"": false,
+  ""reason"": ""The provided MongoDB query does not contain any information about the collection, operation, filters, projections, sorting, limits, or aggregation behavior.""
+}"
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query
+,"Generate documentation for the MongoDB shell query below.
+
+Requirements:
+
+* Explain what the query does in plain English.
+* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
+* Describe filters, projections, sorting, limits, and aggregation stages when present.
+* Return documentation text only.
+* No code.
+* No markdown fences.
+* No extra headings or labels.
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:
+
+
+Documentation:",397,"{
+  ""singer"": {
+    ""Name"": ""string"",
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""concert"": {
+    ""Name"": ""string"",
+    ""Country"": ""string"",
+    ""Is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB query:",False,Skipped Qwen evaluation: missing MongoDB query

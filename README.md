@@ -9,6 +9,22 @@ https://github.com/nayanjha16/CodeGen-Implementations-May_26/blob/Group-46/RepoC
 
 ## Discussion Points
 
+**Date:** June 20th  
+**Participants:** Nayan & Pavan with team 
+
+**Progress so far:**
+- As of now - we uploaded 3 stages independently and uploaded to github under Group-46 branch.
+- As a team - we completed with the approach of handling each stage independently.
+
+**Next steps:**
+- We concluded to create a combined corpus and train with single model, this single model will provide all the capabilities of stage 1,2 and 3 modelaties.
+- During the combined carpus creation - we will patch the missig information using an LLM and validate based execution output and AST similarity.
+- Explorer the Transcoder data as an option.
+
+
+----------------------
+
+
 **Date:** June 14th  
 **Participants:** Nayan & Pavan with team  
 

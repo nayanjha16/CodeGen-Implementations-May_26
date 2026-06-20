@@ -1,0 +1,12 @@
++-----------------------------------------------------------------------+
+|  1. STATIC DEMONSTRATION EXAMPLE                                      |
+|  Uses a fixed 'instructor' table schema to show the model how to     |
+|  map a question to valid SQL text. (Never changes).                  |
++-----------------------------------------------------------------------+
+|  2. DYNAMIC TARGET SCHEMA (From Step 2)                               |
+|  Injects the exact DDL schema string from your loaded schema_map      |
+|  matching the current query's db_id. (Changes every query).           |
++-----------------------------------------------------------------------+
+|  3. TARGET QUESTION & ANCHOR                                          |
+|  The actual evaluation question, ending with "SQL: SELECT".           |
++-----------------------------------------------------------------------+

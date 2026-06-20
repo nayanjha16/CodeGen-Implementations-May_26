@@ -1,0 +1,115 @@
+
+
+import json
+import os
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# 1. Explicitly point to our cloud-extracted file paths
+DEV_PATH = "data/spider/dev.json"
+TABLES_PATH = "data/spider/tables.json"
+OUTPUT_PAYLOAD_PATH = "outputs/stage2_one_shot/stage2_predictions.json"
+
+# 2. Load the validation split and structural table descriptions
+with open(DEV_PATH, "r", encoding="utf-8") as f:
+    tasks = json.load(f)
+
+with open(TABLES_PATH, "r", encoding="utf-8") as f:
+    tables_data = json.load(f)
+
+# 3. Define the optimized 'Swiss Army Knife' One-Shot template
+def construct_one_shot_prompt(task, schema_map):
+    db_id = task.get("db_id", "unknown_db")
+    question = task.get("question", "")
+    ddl_schema = schema_map.get(db_id, "-- Schema unavailable")
+
+    demo_schema = (
+        "CREATE TABLE student (\n"
+        "    student_id int,\n"
+        "    name text,\n"
+        "    age int,\n"
+        "    major_id int\n"
+        ");\n"
+        "CREATE TABLE major (\n"
+        "    major_id int,\n"
+        "    major_name text\n"
+        ");"
+    )
+    demo_question = "Find the total number of students in each major, sorted from highest to lowest enrollment count."
+    demo_sql = "SELECT T2.major_name, COUNT(T1.student_id) FROM student AS T1 JOIN major AS T2 ON T1.major_id = T2.major_id GROUP BY T2.major_name ORDER BY COUNT(T1.student_id) DESC;"
+
+    return (
+        f"/* Example Task Mapping */\n"
+        f"/* Database Schema: */\n{demo_schema}\n"
+        f"/* Question: {demo_question} */\n"
+        f"SQL: {demo_sql}\n\n"
+        f"/* Target Task Mapping */\n"
+        f"/* Database Schema: */\n{ddl_schema}\n"
+        f"/* Question: {question} */\n"
+        f"SQL: SELECT"
+    )
+
+# 4. Generate dynamic DDL schema representations on the fly
+schema_map = {}
+for db in tables_data:
+    db_id = db["db_id"]
+    table_names = db["table_names_original"]
+    column_names = db["column_names_original"]
+    column_types = db["column_types"]
+
+    table_columns = {i: [] for i in range(len(table_names))}
+    for idx, (table_idx, col_name) in enumerate(column_names):
+        if table_idx != -1:
+            table_columns[table_idx].append(f"    {col_name} {column_types[idx]}")
+
+    ddl_tables = [f"CREATE TABLE {t_name} (\n{',\n'.join(table_columns[i])}\n);" for i, t_name in enumerate(table_names)]
+    schema_map[db_id] = "\n\n".join(ddl_tables)
+
+# 5. Initialize CodeGen-350M-Multi directly inside your GPU environment
+print("🤖 Initializing Salesforce/codegen-350M-multi on active CUDA engine...")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model_name = "Salesforce/codegen-350M-multi"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
+
+evaluation_results = []
+
+# 6. Kick off full greedy generation stream loop
+print(f"🏃‍♂️ Commencing full One-Shot execution over all {len(tasks)} target records...")
+for idx, task in enumerate(tasks):
+    prompt_text = construct_one_shot_prompt(task, schema_map)
+    inputs = tokenizer(prompt_text, return_tensors="pt").to(device)
+
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=150,
+            temperature=0.0,
+            do_sample=False,
+            pad_token_id=tokenizer.eos_token_id
+        )
+
+    # Isolate newly generated tokens and truncate at trailing semicolons
+    generated_tokens = outputs[0][inputs['input_ids'].shape[1]:]
+    decoded_raw = tokenizer.decode(generated_tokens, skip_special_tokens=True)
+    predicted_sql = "SELECT " + decoded_raw.split(';')[0].strip() + ";"
+
+    evaluation_results.append({
+        "question": task.get("question"),
+        "db_id": task.get("db_id"),
+        "predicted_sql": predicted_sql
+    })
+
+    # Progress feedback indicator
+    if (idx + 1) % 100 == 0 or (idx + 1) == len(tasks):
+        print(f" 📑 Progress Track: [{idx+1:04d}/{len(tasks)}] text-to-SQL conversions generated.")
+
+# 7. Write results safely out to session disk
+os.makedirs(os.path.dirname(OUTPUT_PAYLOAD_PATH), exist_ok=True)
+with open(OUTPUT_PAYLOAD_PATH, "w", encoding="utf-8") as f:
+    json.dump(evaluation_results, f, indent=4)
+
+print("\n" + "="*70)
+print("🎉 Stage 2 One-Shot Generation Execution Vector Finalized!")
+print(f"💾 File compiled and ready for download at: {OUTPUT_PAYLOAD_PATH}")
+print("="*70)

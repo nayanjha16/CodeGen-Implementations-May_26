@@ -13,7 +13,10 @@ Java to Python
 Model used: starcoder2-3B
 
 starcoder2 base model is trained for code completion not for following instructions. so we are finetuning it to follow the instructions.
+
 Original Dataset java, python translation pairs: Mean AST Similarity Score: 0.5424
+
+original java compilation rate: 100%
 
 ---------------------------------------------Text to Python----------------------------------------------------------------------
 

@@ -87,6 +87,41 @@ def resolve_model_path(config: dict[str, Any] | None = None) -> Path:
     return ensure_model_cached(model_name)
 
 
+_tokenizer_cache: dict[str, Any] = {}
+
+
+def load_tokenizer(
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> Any:
+    """Load and cache a HuggingFace tokenizer for the given model."""
+    from transformers import AutoTokenizer
+
+    name = model_name or get_model_name(config)
+    if name in _tokenizer_cache:
+        return _tokenizer_cache[name]
+
+    local_path = get_model_cache_dir(name)
+    if not is_model_cached(local_path):
+        ensure_model_cached(name)
+    load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
+    tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
+    _tokenizer_cache[name] = tokenizer
+    return tokenizer
+
+
+def count_input_tokens(
+    text: str,
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> int:
+    """Return input token count for text without truncation."""
+    if not text:
+        return 0
+    tokenizer = load_tokenizer(model_name, config)
+    return len(tokenizer.encode(text, add_special_tokens=True))
+
+
 class CodeGenModel:
     """Wrapper for HuggingFace CodeGen models with configurable generation."""
 

@@ -12,12 +12,6 @@ generation:
   decoding_strategy: "greedy"  # greedy, beam
   seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
 
-text2sql:
-  prompt_template: "auto"  # auto, default, causal, seq2seq
-
-sql2nosql:
-  prompt_template: "auto"  # auto, default, causal, seq2seq
-
 datasets:
   spider: {}  # cache_dir, repo_url, dataset_url set from .env
   bird: {}     # cache_dir, dataset_url set from .env

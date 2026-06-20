@@ -1,0 +1,941 @@
+reference_sql,prompt,input_token_count,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,qwen_query_correct,qwen_raw_response
+SELECT count(*) FROM singer,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM singer
+
+MongoDB:",436,"db.singer.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""age"": ""number"",
+    ""country"": ""number"",
+    ""is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""location"": ""string"",
+    ""lowest"": ""string"",
+    ""highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:",db.singer.countDocuments({}),"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query `db.singer.countDocuments()` returns the number of documents matching the specified criteria.""
+}"
+SELECT count(*) FROM singer,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM singer
+
+MongoDB:",436,"db.singer.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""age"": ""number"",
+    ""country"": ""number"",
+    ""is_male"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""location"": ""string"",
+    ""lowest"": ""string"",
+    ""highest"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:",db.singer.countDocuments({}),"db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query `db.singer.countDocuments()` returns the number of documents matching the specified criteria.""
+}"
+"SELECT name ,  country ,  age FROM singer ORDER BY age DESC","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT name ,  country ,  age FROM singer ORDER BY age DESC
+
+MongoDB:",445,"db.singer.name, db.singer.country, db.singer.age
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""country"": ""string"",
+    ""age"": ""number""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""country"": ""string"",
+    ""age"": ""number""
+  }
+}
+
+SQL:",,"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"SELECT name ,  country ,  age FROM singer ORDER BY age DESC","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT name ,  country ,  age FROM singer ORDER BY age DESC
+
+MongoDB:",445,"db.singer.name, db.singer.country, db.singer.age
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""country"": ""string"",
+    ""age"": ""number""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""name"": ""string"",
+    ""country"": ""string"",
+    ""age"": ""number""
+  }
+}
+
+SQL:",,"db.singer.find(
+  {},
+  { name: 1, country: 1, age: 1 }
+).sort({ ""age"": -1 })",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'
+
+MongoDB:",457,"db.singer.avg(age)
+db.singer.min(age)
+db.singer.max(age)
+db.singer._id
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:",,"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'
+
+MongoDB:",457,"db.singer.avg(age)
+db.singer.min(age)
+db.singer.max(age)
+db.singer._id
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""avg"": ""string"",
+    ""min"": ""string"",
+    ""max"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:",,"db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg"": {
+        ""$avg"": ""$age""
+      },
+      ""min"": {
+        ""$min"": ""$age""
+      },
+      ""max"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1
+
+MongoDB:",449,"db.singer.song_name, db.singer.song_release_year
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:",,"db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1","Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1
+
+MongoDB:",449,"db.singer.song_name, db.singer.song_release_year
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:",,"db.singer.find(
+  {},
+  { song_name: 1, song_release_year: 1 }
+).sort({ ""age"": 1 }).limit(1)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+SELECT DISTINCT country FROM singer WHERE age  >  20,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT DISTINCT country FROM singer WHERE age  >  20
+
+MongoDB:",444,"db.singer.country.findOne({age: 20})
+
+MongoDB collections:
+{
+  ""country"": {
+    ""_id"": ""ObjectId"",
+    ""country_name"": ""string"",
+    ""country_code"": ""string"",
+    ""country_code_2"": ""string"",
+    ""country_code_3"": ""string"",
+    ""country_code_4"": ""string"",
+    ""country_code_5"": ""string"",
+    ""country_code_6"": ""string"",
+    ""country_code_7"": ""string"",
+    ""country_code_8"": ""string"",
+    ""country_code_9"": ""string"",
+    ""country_code_10"": ""string"",
+    ""country_code_11"": ""string"",
+    ""country_code_12"": ""string"",
+    ""country_code_13"": ""string"",
+    ""country_code_14"": ""string"",
+    ""country_code_15"": ""string"",
+    ""country_code_16"": ""string"",
+    ""country_code_17"": ""string"",
+    ""country",,"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+SELECT DISTINCT country FROM singer WHERE age  >  20,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""number"",
+    ""Is_male"": ""number"",
+    ""Name"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Song_Name"": ""number"",
+    ""Song_release_year"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""string""
+  },
+  ""stadium"": {
+    ""Average"": ""string"",
+    ""Capacity"": ""string"",
+    ""Highest"": ""string"",
+    ""Location"": ""string"",
+    ""Lowest"": ""string"",
+    ""Name"": ""string"",
+    ""Stadium_ID"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT DISTINCT country FROM singer WHERE age  >  20
+
+MongoDB:",444,"db.singer.country.findOne({age: 20})
+
+MongoDB collections:
+{
+  ""country"": {
+    ""_id"": ""ObjectId"",
+    ""country_name"": ""string"",
+    ""country_code"": ""string"",
+    ""country_code_2"": ""string"",
+    ""country_code_3"": ""string"",
+    ""country_code_4"": ""string"",
+    ""country_code_5"": ""string"",
+    ""country_code_6"": ""string"",
+    ""country_code_7"": ""string"",
+    ""country_code_8"": ""string"",
+    ""country_code_9"": ""string"",
+    ""country_code_10"": ""string"",
+    ""country_code_11"": ""string"",
+    ""country_code_12"": ""string"",
+    ""country_code_13"": ""string"",
+    ""country_code_14"": ""string"",
+    ""country_code_15"": ""string"",
+    ""country_code_16"": ""string"",
+    ""country_code_17"": ""string"",
+    ""country",,"db.singer.distinct(
+  ""country"",
+  { age: { $gt: 20 } }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query

@@ -1,0 +1,1556 @@
+reference_sql,prompt,input_token_count,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,qwen_query_correct,qwen_raw_response
+SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1
+
+MongoDB:",1223,"db.frpm.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High",db.frpm.countDocuments({}),"db.frpm.find(
+  {},
+  { `Free Meal Count (K-12)` / `Enrollment (K-12)`: 1 }
+).sort({ ""(CAST(`Free"": 1 }).limit(1)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query uses `$countDocuments` to count the number of documents matching the criteria, while the reference MongoDB query does not use any aggregation pipeline stages.""
+}"
+SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3
+
+MongoDB:",1253,"db.frpm.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High",db.frpm.countDocuments({}),"db.frpm.find(
+  {},
+  { `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`: 1 }
+).sort({ ""`Free"": 1 }).limit(3)",Model output is not valid MongoDB shell syntax,False,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query does not match the reference MongoDB query due to differences in sorting and limiting criteria.""
+}"
+SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1
+
+MongoDB:",1221,"db.frpm.zip.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",",,"db.frpm.find(
+  {},
+  { T2.Zip: 1 }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1
+
+MongoDB:",1208,"db.frpm.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High",db.frpm.countDocuments({}),"db.frpm.find(
+  {},
+  { T2.MailStreet: 1 }
+).sort({ ""T1.`FRPM"": 1 }).limit(1)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query uses `$count` to count documents, while the reference MongoDB query uses `find` with no specific criteria.""
+}"
+SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01'
+
+MongoDB:",1233,"db.frpm.phone.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",",,"db.frpm.find(
+  {},
+  { T2.Phone: 1 }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400
+
+MongoDB:",1215,"db.schools.countDocuments({})
+
+MongoDB collections:
+{
+  ""schools"": {
+    ""School"": {
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string"",
+      ""School Name"": ""string"",
+      ""School Type"": ""string"",
+      ""School Code"": ""string",db.schools.countDocuments({}),"db.satscores.find(
+  {},
+  { COUNT(DISTINCT T2.School): 1 }
+)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query `db.schools.countDocuments({})` returns the count of distinct school IDs from the `schools` collection without any additional filtering or aggregation.""
+}"
+SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500
+
+MongoDB:",1208,"db.schools.School.SchoolCode.SchoolName.SchoolName = ""School Name""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.schools.School.SchoolCode.SchoolName.SchoolType = ""School Type""
+db.school",,"db.satscores.find(
+  {},
+  { T2.School: 1 }
+)",Unable to extract MongoDB query from model output,False,False,Skipped Qwen evaluation: missing predicted or reference MongoDB query
+SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1,"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1
+
+MongoDB:",1201,"db.satscores.countDocuments({})
+
+MongoDB collections:
+{
+  ""satscores"": {
+    ""Phone"": ""string"",
+    ""School"": ""string"",
+    ""SchoolCode"": ""string"",
+    ""SchoolName"": ""string"",
+    ""SchoolType"": ""string"",
+    ""SchoolTypeCode"": ""string"",
+    ""SchoolTypeName"": ""string"",
+    ""SchoolTypeType"": ""string"",
+    ""SchoolTypeTypeCode"": ""string"",
+    ""SchoolTypeTypeName"": ""string"",
+    ""SchoolTypeTypeType"": ""string"",
+    ""SchoolTypeTypeTypeCode"": ""string"",
+    ""SchoolTypeTypeTypeName"": ""string"",
+    ""SchoolTypeTypeTypeType"": ""string"",
+    ""SchoolTypeTypeTypeTypeCode"": ""string"",
+    ""SchoolTypeTypeTypeTypeName"": ""string"",
+    ""SchoolTypeTypeTypeTypeType"": ""string"",
+    ""SchoolTypeTypeTypeTypeTypeCode"": ""string"",
+    ""SchoolTypeTypeTypeTypeTypeName"": ""string"",
+    ""SchoolTypeTypeTypeTypeTypeType"": ""string"",
+    """,db.satscores.countDocuments({}),"db.satscores.find(
+  {},
+  { T2.Phone: 1 }
+).sort({ ""T1.NumGE1500"": -1 }).limit(1)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query `db.satscores.countDocuments({})` returns the number of documents matching the criteria without any sorting, limiting to 1 document.""
+}"
+SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 ),"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 )
+
+MongoDB:",1196,"db.satscores.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",",db.satscores.countDocuments({}),"db.satscores.find(
+  { cds: ""( SELECT CDSCode FROM frpm"" },
+  { NumTstTakr: 1 }
+).sort({ ""`FRPM"": 1 }).limit(1)",Model output is not valid MongoDB shell syntax,False,False,"{
+  ""query_correct"": false,
+  ""reason"": ""The predicted MongoDB query does not match the reference MongoDB query due to differences in filtering criteria.""
+}"
+SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded',"Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",
+    ""High Grade"": ""string"",
+    ""IRC"": ""number"",
+    ""Low Grade"": ""string"",
+    ""NSLP Provision Status"": ""string"",
+    ""Percent (%) Eligible FRPM (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible FRPM (K-12)"": ""number"",
+    ""Percent (%) Eligible Free (Ages 5-17)"": ""number"",
+    ""Percent (%) Eligible Free (K-12)"": ""number"",
+    ""School Code"": ""string"",
+    ""School Name"": ""string"",
+    ""School Type"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""satscores"": {
+    ""AvgScrMath"": ""number"",
+    ""AvgScrRead"": ""number"",
+    ""AvgScrWrite"": ""number"",
+    ""NumGE1500"": ""number"",
+    ""NumTstTakr"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""cds"": ""string"",
+    ""cname"": ""string"",
+    ""dname"": ""string"",
+    ""enroll12"": ""number"",
+    ""rtype"": ""string"",
+    ""sname"": ""string""
+  },
+  ""schools"": {
+    ""AdmEmail1"": ""string"",
+    ""AdmEmail2"": ""string"",
+    ""AdmEmail3"": ""string"",
+    ""AdmFName1"": ""string"",
+    ""AdmFName2"": ""string"",
+    ""AdmFName3"": ""string"",
+    ""AdmLName1"": ""string"",
+    ""AdmLName2"": ""string"",
+    ""AdmLName3"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter"": ""number"",
+    ""CharterNum"": ""string"",
+    ""City"": ""string"",
+    ""ClosedDate"": ""string"",
+    ""County"": ""string"",
+    ""DOC"": ""string"",
+    ""DOCType"": ""string"",
+    ""District"": ""string"",
+    ""EILCode"": ""string"",
+    ""EILName"": ""string"",
+    ""EdOpsCode"": ""string"",
+    ""EdOpsName"": ""string"",
+    ""Ext"": ""string"",
+    ""FundingType"": ""string"",
+    ""GSoffered"": ""string"",
+    ""GSserved"": ""string"",
+    ""LastUpdate"": ""string"",
+    ""Latitude"": ""number"",
+    ""Longitude"": ""number"",
+    ""Magnet"": ""number"",
+    ""MailCity"": ""string"",
+    ""MailState"": ""string"",
+    ""MailStrAbr"": ""string"",
+    ""MailStreet"": ""string"",
+    ""MailZip"": ""string"",
+    ""NCESDist"": ""string"",
+    ""NCESSchool"": ""string"",
+    ""OpenDate"": ""string"",
+    ""Phone"": ""string"",
+    ""SOC"": ""string"",
+    ""SOCType"": ""string"",
+    ""School"": ""string"",
+    ""State"": ""string"",
+    ""StatusType"": ""string"",
+    ""Street"": ""string"",
+    ""StreetAbr"": ""string"",
+    ""Virtual"": ""string"",
+    ""Website"": ""string"",
+    ""Zip"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded'
+
+MongoDB:",1222,"db.satscores.countDocuments({})
+
+MongoDB collections:
+{
+  ""frpm"": {
+    ""2013-14 CALPADS Fall 1 Certification Status"": ""number"",
+    ""Academic Year"": ""string"",
+    ""CDSCode"": ""string"",
+    ""Charter Funding Type"": ""string"",
+    ""Charter School (Y/N)"": ""number"",
+    ""Charter School Number"": ""string"",
+    ""County Code"": ""string"",
+    ""County Name"": ""string"",
+    ""District Code"": ""number"",
+    ""District Name"": ""string"",
+    ""District Type"": ""string"",
+    ""Educational Option Type"": ""string"",
+    ""Enrollment (Ages 5-17)"": ""number"",
+    ""Enrollment (K-12)"": ""number"",
+    ""FRPM Count (Ages 5-17)"": ""number"",
+    ""FRPM Count (K-12)"": ""number"",
+    ""Free Meal Count (Ages 5-17)"": ""number"",
+    ""Free Meal Count (K-12)"": ""number"",",db.satscores.countDocuments({}),"db.satscores.find(
+  {},
+  { COUNT(T2.`School Code`): 1 }
+)",Model output is not valid MongoDB shell syntax,False,True,"{
+  ""query_correct"": true,
+  ""reason"": ""The predicted MongoDB query `db.satscores.countDocuments({})` returns the count of documents matching the specified conditions.""
+}"

@@ -71,7 +71,7 @@ class BenchmarkRunner:
         gen_results: list[dict[str, Any]],
         samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Generate predicted MongoDB with the model; derive reference from ground-truth SQL."""
+        """Generate predicted MongoDB from reference SQL; derive reference MongoDB from the same SQL."""
         from src.text2sql.sql_validator import SQLValidator
 
         sql_validator = SQLValidator()
@@ -84,14 +84,14 @@ class BenchmarkRunner:
         nosql_samples = []
         for result, example in zip(gen_results, samples):
             schema = result.get("schema", example.get("schema", ""))
-            pred_sql = result.get("sql", "")
+            ref_sql = result.get("ground_truth", example.get("sql", ""))
             nosql_samples.append(
                 {
                     "question": result.get("question", example.get("question", "")),
                     "schema": schema,
                     "nosql_schema": result.get("nosql_schema", ""),
-                    "sql": pred_sql,
-                    "ground_truth_sql": example.get("sql", ""),
+                    "sql": ref_sql,
+                    "ground_truth_sql": ref_sql,
                 }
             )
 

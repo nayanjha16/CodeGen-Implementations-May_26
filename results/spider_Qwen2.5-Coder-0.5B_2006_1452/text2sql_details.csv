@@ -1,0 +1,314 @@
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,qwen_sql_correct,qwen_raw_response
+0,How many singers do we have?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+How many singers do we have?
+
+SQL:",189,SELECT COUNT(*) FROM singer;,SELECT COUNT(*) FROM singer;,True,SELECT count(*) FROM singer,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the COUNT(*) function to count the number of rows, which is identical to the ground truth SQL.""
+}"
+1,What is the total number of singers?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the total number of singers?
+
+SQL:",190,SELECT COUNT(*) FROM singer;,SELECT COUNT(*) FROM singer;,True,SELECT count(*) FROM singer,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the COUNT(*) function to count the number of rows, which is different from the ground truth SQL which uses a subquery.""
+}"
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+SQL:",201,"SELECT singer.Name, singer.Country, singer.Age
+FROM singer
+INNER JOIN concert ON singer.Singer_ID = concert.Singer_ID
+INNER JOIN concert ON concert.Stadium_ID = stadium.Stadium_ID
+INNER JOIN stadium ON stadium.Stadium_ID = concert.Stadium_ID
+ORDER BY singer.Age ASC;","SELECT singer.Name, singer.Country, singer.Age FROM singer INNER JOIN concert ON singer.Singer_ID = concert.Singer_ID INNER JOIN concert ON concert.Stadium_ID = stadium.Stadium_ID INNER JOIN stadium ON stadium.Stadium_ID = concert.Stadium_ID ORDER BY singer.Age ASC;",True,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses INNER JOIN to join the singer, concert, and stadium tables, which is different from the ground truth SQL which directly joins these tables.""
+}"
+3,"What are the names, countries, and ages for every singer in descending order of age?","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names, countries, and ages for every singer in descending order of age?
+
+SQL:",200,"SELECT singer.Name, singer.Country, singer.Age
+FROM singer
+INNER JOIN concert ON singer.Singer_ID = concert.Singer_ID
+INNER JOIN stadium ON concert.Stadium_ID = stadium.Stadium_ID
+INNER JOIN singer_in_concert ON concert.concert_ID = singer_in_concert.concert_ID
+ORDER BY singer.Age DESC;","SELECT singer.Name, singer.Country, singer.Age FROM singer INNER JOIN concert ON singer.Singer_ID = concert.Singer_ID INNER JOIN stadium ON concert.Stadium_ID = stadium.Stadium_ID INNER JOIN singer_in_concert ON concert.concert_ID = singer_in_concert.concert_ID ORDER BY singer.Age DESC;",True,"SELECT name ,  country ,  age FROM singer ORDER BY age DESC",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses INNER JOIN to match singers with concerts, which is different from the ground truth SQL which directly joins all tables.""
+}"
+4,"What is the average, minimum, and maximum age of all singers from France?","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age of all singers from France?
+
+SQL:",198,"SELECT AVG(Age) AS Average, MIN(Age) AS Minimum, MAX(Age) AS Maximum FROM singer WHERE Country = 100 AND Name = 'Singer_Name' AND Age > 20 AND Age < 30;","SELECT AVG(Age) AS Average, MIN(Age) AS Minimum, MAX(Age) AS Maximum FROM singer WHERE Country = 100 AND Name = 'Singer_Name' AND Age > 20 AND Age < 30;",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the correct syntax and includes the necessary conditions to filter for singers from France and their ages.""
+}"
+5,"What is the average, minimum, and maximum age for all French singers?","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What is the average, minimum, and maximum age for all French singers?
+
+SQL:",197,"SELECT AVG(Age) AS Average, MIN(Age) AS Minimum, MAX(Age) AS Maximum FROM singer WHERE Country = 4 AND Name = 'France' AND Is_male = 1;","SELECT AVG(Age) AS Average, MIN(Age) AS Minimum, MAX(Age) AS Maximum FROM singer WHERE Country = 4 AND Name = 'France' AND Is_male = 1;",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the correct syntax and includes the necessary conditions to match the ground truth SQL.""
+}"
+6,Show the name and the release year of the song by the youngest singer.,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+Show the name and the release year of the song by the youngest singer.
+
+SQL:",197,"SELECT Singer.Name, Year
+FROM Singer
+JOIN concert ON Singer.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Stadium_ID = stadium.Stadium_ID
+JOIN concert ON concert.Year = Year
+JOIN concert ON concert.Theme = Theme
+JOIN concert ON concert.Song_Name = Song_Name
+JOIN concert ON concert.Song_release_year = Song_release_year
+JOIN concert ON concert.Average = Average
+JOIN concert ON concert.Highest = Highest
+JOIN concert ON concert.Lowest = Lowest
+JOIN concert ON concert.Is_male = Is_male
+JOIN concert ON concert.Age = Age
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer_ID = Singer.Singer_ID
+JOIN concert ON concert.Singer","SELECT Singer.Name, Year FROM Singer JOIN concert ON Singer.Singer_ID = concert.Singer_ID JOIN concert ON concert.Stadium_ID = stadium.Stadium_ID JOIN concert ON concert.Year = Year JOIN concert ON concert.Theme = Theme JOIN concert ON concert.Song_Name = Song_Name JOIN concert ON concert.Song_release_year = Song_release_year JOIN concert ON concert.Average = Average JOIN concert ON concert.Highest = Highest JOIN concert ON concert.Lowest = Lowest JOIN concert ON concert.Is_male = Is_male JOIN concert ON concert.Age = Age JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer_ID = Singer.Singer_ID JOIN concert ON concert.Singer",True,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses JOINs to connect all the necessary tables, while the ground truth SQL does not use any joins.""
+}"
+7,What are the names and release years for all the songs of the youngest singer?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are the names and release years for all the songs of the youngest singer?
+
+SQL:",198,"SELECT Singer.Name, Song_Name, Song_release_year
+FROM singer
+JOIN concert ON singer.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID = concert.Singer_ID
+JOIN concert ON concert.Singer_ID =","SELECT Singer.Name, Song_Name, Song_release_year FROM singer JOIN concert ON singer.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID = concert.Singer_ID JOIN concert ON concert.Singer_ID =",True,"SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses a JOIN clause to match singer IDs across multiple tables, which is different from the ground truth SQL that directly joins the singer table.""
+}"
+8,What are all distinct countries where singers above age 20 are from?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are all distinct countries where singers above age 20 are from?
+
+SQL:",197,SELECT DISTINCT Country FROM singer WHERE Age > 20;,SELECT DISTINCT Country FROM singer WHERE Age > 20;,True,SELECT DISTINCT country FROM singer WHERE age  >  20,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses DISTINCT to filter countries, while the ground truth SQL does not.""
+}"
+9,What are  the different countries with singers above age 20?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table stadium(Stadium_ID text, Location text, Name text, Capacity text, Highest text, Lowest text, Average text)
+Table singer(Singer_ID number, Name number, Country number, Song_Name number, Song_release_year number, Age number, Is_male number)
+Table concert(concert_ID text, concert_Name text, Theme text, Stadium_ID text, Year text)
+Table singer_in_concert(concert_ID text, Singer_ID text)
+
+Question:
+What are  the different countries with singers above age 20?
+
+SQL:",196,SELECT DISTINCT Country FROM singer WHERE Age > 20;,SELECT DISTINCT Country FROM singer WHERE Age > 20;,True,SELECT DISTINCT country FROM singer WHERE age  >  20,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses DISTINCT to select unique countries from the singer table where the age is greater than 20, while the ground truth SQL selects distinct countries based on the age condition.""
+}"

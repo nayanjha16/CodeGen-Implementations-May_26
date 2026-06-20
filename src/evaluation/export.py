@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from src.evaluation.qwen_evaluator import QwenEvaluator
+from src.models.model_loader import count_input_tokens
+from src.utils.config import get_model_name, load_config
 
 METRICS_JSON = "metrics.json"
 TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
@@ -89,6 +91,7 @@ TEXT2SQL_DETAIL_FIELDS = [
     "index",
     "question",
     "prompt",
+    "input_token_count",
     "raw_output",
     "predicted_sql",
     "predicted_sql_valid",
@@ -100,6 +103,7 @@ TEXT2SQL_DETAIL_FIELDS = [
 SQL2NOSQL_DETAIL_FIELDS = [
     "reference_sql",
     "prompt",
+    "input_token_count",
     "raw_output",
     "predicted_mongodb_query",
     "reference_mongodb_query",
@@ -116,6 +120,8 @@ def save_text2sql_details_csv(
     db_paths: list[str | None] | None = None,
     qwen_evaluator: QwenEvaluator | None = None,
     use_qwen: bool = True,
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
     """Write text-to-SQL per-sample details to CSV using Qwen semantic evaluation."""
     output_path = Path(path)
@@ -127,6 +133,8 @@ def save_text2sql_details_csv(
         evaluator = QwenEvaluator()
 
     fieldnames = TEXT2SQL_DETAIL_FIELDS
+    cfg = config or load_config()
+    generation_model = model_name or get_model_name(cfg)
 
     qwen_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
@@ -137,6 +145,14 @@ def save_text2sql_details_csv(
             predicted_sql = pred.get("sql", "")
             ground_truth = pred.get("ground_truth", "")
             predicted_sql_valid = pred.get("sql_valid", "")
+            prompt = pred.get("prompt", "")
+            input_token_count = pred.get("input_token_count")
+            if input_token_count in ("", None):
+                input_token_count = count_input_tokens(
+                    prompt,
+                    model_name=generation_model,
+                    config=cfg,
+                )
 
             qwen_eval: dict[str, Any] = {}
             if use_qwen and evaluator is not None:
@@ -162,7 +178,8 @@ def save_text2sql_details_csv(
                 {
                     "index": idx,
                     "question": pred.get("question", ""),
-                    "prompt": pred.get("prompt", ""),
+                    "prompt": prompt,
+                    "input_token_count": input_token_count,
                     "raw_output": pred.get("raw_output", ""),
                     "predicted_sql": predicted_sql,
                     "predicted_sql_valid": predicted_sql_valid,
@@ -185,6 +202,8 @@ def save_sql2nosql_details_csv(
     predictions: list[dict[str, str]],
     qwen_evaluator: QwenEvaluator | None = None,
     use_qwen: bool = True,
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
     """Write SQL-to-MongoDB per-sample details to CSV using Qwen semantic evaluation."""
     output_path = Path(path)
@@ -195,6 +214,8 @@ def save_sql2nosql_details_csv(
         evaluator = QwenEvaluator()
 
     fieldnames = SQL2NOSQL_DETAIL_FIELDS
+    cfg = config or load_config()
+    generation_model = model_name or get_model_name(cfg)
 
     qwen_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
@@ -205,19 +226,29 @@ def save_sql2nosql_details_csv(
             reference_sql = pred.get("reference_sql", pred.get("ground_truth", ""))
             predicted_mongodb = pred.get("predicted_mongodb_query", "")
             reference_mongodb = pred.get("reference_mongodb_query", "")
+            prompt = pred.get("nosql_prompt", pred.get("prompt", ""))
+            input_token_count = pred.get("input_token_count")
+            if input_token_count in ("", None):
+                input_token_count = count_input_tokens(
+                    prompt,
+                    model_name=generation_model,
+                    config=cfg,
+                )
 
             qwen_eval: dict[str, Any] = {}
             if use_qwen and evaluator is not None:
                 qwen_eval = evaluator.evaluate_sql2nosql_sample(
                     predicted_mongodb_query=predicted_mongodb,
                     reference_mongodb_query=reference_mongodb,
+                    reference_sql=reference_sql,
                 )
                 qwen_results.append(qwen_eval)
 
             writer.writerow(
                 {
                     "reference_sql": reference_sql,
-                    "prompt": pred.get("nosql_prompt", pred.get("prompt", "")),
+                    "prompt": prompt,
+                    "input_token_count": input_token_count,
                     "raw_output": pred.get("nosql_raw_output", pred.get("raw_output", "")),
                     "predicted_mongodb_query": predicted_mongodb,
                     "reference_mongodb_query": reference_mongodb,

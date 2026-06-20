@@ -1,0 +1,250 @@
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,qwen_sql_correct,qwen_raw_response
+0,What is the highest eligible free rate for K-12 students in the schools in Alameda County?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Eligible free rate for K-12 = `Free Meal Count (K-12)` / `Enrollment (K-12)`
+
+Question:
+What is the highest eligible free rate for K-12 students in the schools in Alameda County?
+
+SQL:",653,SELECT MAX(`Free Meal Count (K-12)`) FROM schools WHERE County = 'Alameda County' AND District = 'Alameda County' AND School = 'Alameda County' AND Charter = 1 AND CharterNum = '1234567890' AND FundingType = 'Charter' AND SOC = 'Charter' AND EdOpsCode = 'Charter' AND EILCode = 'Charter' AND GSoffered = 'Charter' AND GSserved = 'Charter' AND Virtual = 1 AND Latitude = 37.7749 AND Longitude = -122.4194 AND AdmFName1 = 'John' AND AdmLName1 = 'Doe' AND AdmEmail1 = 'john.doe@example.com' AND AdmFName2 = 'Jane' AND AdmLName2 = 'Doe' AND AdmEmail2 = 'jane.doe@example.com' AND AdmFName3 = 'Mike' AND AdmLName3 = 'Doe' AND AdmEmail3 = 'mike.doe@example.com' AND LastUpdate = '2022-01-,SELECT MAX(`Free Meal Count (K-12)`) FROM schools WHERE County = 'Alameda County' AND District = 'Alameda County' AND School = 'Alameda County' AND Charter = 1 AND CharterNum = '1234567890' AND FundingType = 'Charter' AND SOC = 'Charter' AND EdOpsCode = 'Charter' AND EILCode = 'Charter' AND GSoffered = 'Charter' AND GSserved = 'Charter' AND Virtual = 1 AND Latitude = 37.7749 AND Longitude = -122.4194 AND AdmFName1 = 'John' AND AdmLName1 = 'Doe' AND AdmEmail1 = 'john.doe@example.com' AND AdmFName2 = 'Jane' AND AdmLName2 = 'Doe' AND AdmEmail2 = 'jane.doe@example.com' AND AdmFName3 = 'Mike' AND AdmLName3 = 'Doe' AND AdmEmail3 = 'mike.doe@example.com' AND LastUpdate = '2022-01-,True,SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1,False,"Skipped Qwen evaluation: Predicted and ground truth reference different tables: predicted=['schools'], ground_truth=['frpm']"
+1,Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Eligible free rates for students aged 5-17 = `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)`
+
+Question:
+Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.
+
+SQL:",661,SELECT * FROM schools WHERE Charter = 1 AND CharterNum = '12345' AND FundingType = 'Free Meal' AND SOC = 'Free Meal' AND SOCType = 'Free Meal' AND EdOpsCode = 'Free Meal' AND EdOpsName = 'Free Meal' AND EILCode = 'Free Meal' AND EILName = 'Free Meal' AND GSoffered = 'Free Meal' AND GSserved = 'Free Meal' AND Virtual = 'Free Meal' AND Magnet = 'Free Meal' AND Latitude = 'Free Meal' AND Longitude = 'Free Meal' AND AdmFName1 = 'Free Meal' AND AdmLName1 = 'Free Meal' AND AdmEmail1 = 'Free Meal' AND AdmFName2 = 'Free Meal' AND AdmLName2 = 'Free Meal' AND AdmEmail2 = 'Free Meal' AND AdmFName3 = 'Free Meal' AND AdmLName3 = 'Free Meal' AND AdmEmail3 = 'Free Meal' AND LastUpdate = 'Free Meal' ORDER BY Free Meal Count (Ages 5-17) DESC LIMIT 3;,SELECT * FROM schools WHERE Charter = 1 AND CharterNum = '12345' AND FundingType = 'Free Meal' AND SOC = 'Free Meal' AND SOCType = 'Free Meal' AND EdOpsCode = 'Free Meal' AND EdOpsName = 'Free Meal' AND EILCode = 'Free Meal' AND EILName = 'Free Meal' AND GSoffered = 'Free Meal' AND GSserved = 'Free Meal' AND Virtual = 'Free Meal' AND Magnet = 'Free Meal' AND Latitude = 'Free Meal' AND Longitude = 'Free Meal' AND AdmFName1 = 'Free Meal' AND AdmLName1 = 'Free Meal' AND AdmEmail1 = 'Free Meal' AND AdmFName2 = 'Free Meal' AND AdmLName2 = 'Free Meal' AND AdmEmail2 = 'Free Meal' AND AdmFName3 = 'Free Meal' AND AdmLName3 = 'Free Meal' AND AdmEmail3 = 'Free Meal' AND LastUpdate = 'Free Meal' ORDER BY Free Meal Count (Ages 5-17) DESC LIMIT 3;,True,SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3,False,"Skipped Qwen evaluation: Predicted and ground truth reference different tables: predicted=['schools'], ground_truth=['frpm']"
+2,Please list the zip code of all the charter schools in Fresno County Office of Education.,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the table fprm
+
+Question:
+Please list the zip code of all the charter schools in Fresno County Office of Education.
+
+SQL:",639,SELECT Zip FROM schools WHERE Charter = 1 AND County = 'Fresno' AND District = 'Office of Education' AND CharterSchool = 'Y' AND CharterSchoolNumber = '1' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y',SELECT Zip FROM schools WHERE Charter = 1 AND County = 'Fresno' AND District = 'Office of Education' AND CharterSchool = 'Y' AND CharterSchoolNumber = '1' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y' AND CharterSchoolType = 'Y',True,SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the correct syntax and structure to filter schools where the `Charter` column is 1, the `County` is 'Fresno', the `District` is 'Office of Education', and the `CharterSchool` type is 'Y'. The ground truth SQL also correctly filters these conditions.""
+}"
+3,What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+
+Question:
+What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?
+
+SQL:",624,"SELECT DISTINCT satscores.cds, schools.cname, schools.dname, schools.street, schools.streetabbr, schools.city, schools.zip, schools.state, schools.mailstreet, schools.mailstrabbr, schools.mailcity, schools.mailzip, schools.mailstate, schools.phone, schools.ext, schools.website, schools.opendate, schools.closeddate, schools.charter, schools.charternum, schools.fundingtype, schools.doc, schools.doctype, schools.soc, schools.soctype, schools.edopscode, schools.edopsname, schools.eilcode, schools.eilname, schools.gsoffered, schools.gssover, schools.virtual, schools.magnet, schools.latitude, schools.longitude, schools.admfname1, schools.admlname1, schools.admemail1, schools.admfname2, schools.admlname2, schools.admemail2, schools.admfname3, schools.admlname3, schools.admemail3, schools.lastupdate
+FROM schools
+JOIN satscores ON schools.cds = satscores.cds
+JOIN schools ON schools.cds = satscores.cds
+WHERE schools.cds = '123456789'
+ORDER BY schools.fundingtype DESC","SELECT DISTINCT satscores.cds, schools.cname, schools.dname, schools.street, schools.streetabbr, schools.city, schools.zip, schools.state, schools.mailstreet, schools.mailstrabbr, schools.mailcity, schools.mailzip, schools.mailstate, schools.phone, schools.ext, schools.website, schools.opendate, schools.closeddate, schools.charter, schools.charternum, schools.fundingtype, schools.doc, schools.doctype, schools.soc, schools.soctype, schools.edopscode, schools.edopsname, schools.eilcode, schools.eilname, schools.gsoffered, schools.gssover, schools.virtual, schools.magnet, schools.latitude, schools.longitude, schools.admfname1, schools.admlname1, schools.admemail1, schools.admfname2, schools.admlname2, schools.admemail2, schools.admfname3, schools.admlname3, schools.admemail3, schools.lastupdate FROM schools JOIN satscores ON schools.cds = satscores.cds JOIN schools ON schools.cds = satscores.cds WHERE schools.cds = '123456789' ORDER BY schools.fundingtype DESC",True,SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1,False,"{
+  ""sql_correct"": false,
+  ""reason"": ""The predicted SQL uses different columns and conditions compared to the ground truth SQL.""
+}"
+4,Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Charter schools refers to `Charter School (Y/N)` = 1 in the frpm
+
+Question:
+Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.
+
+SQL:",646,"SELECT DISTINCT s.name, s.phone FROM schools s, satscores s2 WHERE s.CDSCode = s2.CDSCode AND s2.rtype = 'C' AND s2.sname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School","SELECT DISTINCT s.name, s.phone FROM schools s, satscores s2 WHERE s.CDSCode = s2.CDSCode AND s2.rtype = 'C' AND s2.sname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School (Y/N)' AND s2.cname = 'Charter School (Y/N)' AND s2.dname = 'Charter School",True,SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01',True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses the exact same structure as the ground truth SQL, including the filtering conditions and the comparison of `Charter Funding Type` and `Charter School (Y/N)` values.""
+}"
+5,How many schools with an average score in Math greater than 400 in the SAT test are exclusively virtual?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Exclusively virtual refers to Virtual = 'F'
+
+Question:
+How many schools with an average score in Math greater than 400 in the SAT test are exclusively virtual?
+
+SQL:",635,SELECT COUNT(*) FROM schools WHERE AVG(ScoreMath) > 400 AND Virtual = 'F',SELECT COUNT(*) FROM schools WHERE AVG(ScoreMath) > 400 AND Virtual = 'F',True,SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses a different join clause and column selection compared to the ground truth SQL.""
+}"
+6,"Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+Evidence: Magnet schools or offer a magnet program means that Magnet = 1
+
+Question:
+Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.
+
+SQL:",645,"SELECT DISTINCT schools.school, schools.CDSCode, schools.NCESSchool, schools.StatusType, schools.County, schools.District, schools.School, schools.Street, schools.StreetAbr, schools.City, schools.Zip, schools.State, schools.MailStreet, schools.MailStrAbr, schools.MailCity, schools.MailZip, schools.MailState, schools.Phone, schools.Ext, schools.Website, schools.OpenDate, schools.ClosedDate, schools.Charters, schools.ChartersNum, schools.FundingType, schools.DOC, schools.DOCType, schools.SOC, schools.SOCType, schools.EdOpsCode, schools.EdOpsName, schools.EILCode, schools.EILName, schools.GSoffered, schools.GSserved, schools.Virtual, schools.Magnet, schools.Latitude, schools.Longitude, schools.AdmFName1, schools.AdmLName1, schools.AdmEmail1, schools.AdmFName2, schools.AdmLName2, schools.AdmEmail2, schools.AdmFName3, schools.AdmLName3, schools.AdmEmail3, schools.LastUpdate
+FROM schools
+JOIN satscores ON schools.school = satscores.sname
+JOIN frpm ON schools.school","SELECT DISTINCT schools.school, schools.CDSCode, schools.NCESSchool, schools.StatusType, schools.County, schools.District, schools.School, schools.Street, schools.StreetAbr, schools.City, schools.Zip, schools.State, schools.MailStreet, schools.MailStrAbr, schools.MailCity, schools.MailZip, schools.MailState, schools.Phone, schools.Ext, schools.Website, schools.OpenDate, schools.ClosedDate, schools.Charters, schools.ChartersNum, schools.FundingType, schools.DOC, schools.DOCType, schools.SOC, schools.SOCType, schools.EdOpsCode, schools.EdOpsName, schools.EILCode, schools.EILName, schools.GSoffered, schools.GSserved, schools.Virtual, schools.Magnet, schools.Latitude, schools.Longitude, schools.AdmFName1, schools.AdmLName1, schools.AdmEmail1, schools.AdmFName2, schools.AdmLName2, schools.AdmEmail2, schools.AdmFName3, schools.AdmLName3, schools.AdmEmail3, schools.LastUpdate FROM schools JOIN satscores ON schools.school = satscores.sname JOIN frpm ON schools.school",True,SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500,True,"{
+  ""sql_correct"": true,
+  ""reason"": ""The predicted SQL uses distinct clauses to filter schools based on their status type, county, district, school name, street, street abbreviation, city, zip code, state, email addresses, website URL, open date, closed date, charter status, funding type, doc number, doc type, soc type, ed ops code, ed ops name, eil code, eil name, gs offered, gs served, virtual, magnet status, latitude, longitude, adm fname, adm lname, adm email, adm fname2, adm lname2, adm email2, adm fname3, adm lname3, adm email3, last update date, and joins the result back to schools.""
+}"
+7,What is the phone number of the school that has the highest number of test takers with an SAT score of over 1500?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+
+Question:
+What is the phone number of the school that has the highest number of test takers with an SAT score of over 1500?
+
+SQL:",628,"SELECT sds.cds, sds.rtype, sds.sname, sds.dname, sds.cname, sds.enroll12, sds.NumTstTakr, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath,","SELECT sds.cds, sds.rtype, sds.sname, sds.dname, sds.cname, sds.enroll12, sds.NumTstTakr, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath, sds.AvgScrWrite, sds.NumGE1500, sds.HighGrade, sds.LowGrade, sds.AvgScrRead, sds.AvgScrMath,",False,SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1,False,Skipped Qwen evaluation: predicted SQL is empty or not a valid SELECT query
+8,What is the number of SAT test takers of the schools with the highest FRPM count for K-12 students?,"Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+
+Question:
+What is the number of SAT test takers of the schools with the highest FRPM count for K-12 students?
+
+SQL:",624,SELECT COUNT(*) FROM schools WHERE FRPM > (SELECT MAX(FRPM) FROM schools WHERE FRPM > 0),SELECT COUNT(*) FROM schools WHERE FRPM > (SELECT MAX(FRPM) FROM schools WHERE FRPM > 0),True,SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 ),False,"Skipped Qwen evaluation: Predicted and ground truth reference different tables: predicted=['schools'], ground_truth=['frpm', 'satscores']"
+9,"Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?","Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+Table frpm(CDSCode text, Academic Year text, County Code text, District Code integer, School Code text, County Name text, District Name text, School Name text, District Type text, School Type text, Educational Option Type text, NSLP Provision Status text, Charter School (Y/N) integer, Charter School Number text, Charter Funding Type text, IRC integer, Low Grade text, High Grade text, Enrollment (K-12) real, Free Meal Count (K-12) real, Percent (%) Eligible Free (K-12) real, FRPM Count (K-12) real, Percent (%) Eligible FRPM (K-12) real, Enrollment (Ages 5-17) real, Free Meal Count (Ages 5-17) real, Percent (%) Eligible Free (Ages 5-17) real, FRPM Count (Ages 5-17) real, Percent (%) Eligible FRPM (Ages 5-17) real, 2013-14 CALPADS Fall 1 Certification Status integer)
+Table satscores(cds text, rtype text, sname text, dname text, cname text, enroll12 integer, NumTstTakr integer, AvgScrRead integer, AvgScrMath integer, AvgScrWrite integer, NumGE1500 integer)
+Table schools(CDSCode text, NCESDist text, NCESSchool text, StatusType text, County text, District text, School text, Street text, StreetAbr text, City text, Zip text, State text, MailStreet text, MailStrAbr text, MailCity text, MailZip text, MailState text, Phone text, Ext text, Website text, OpenDate date, ClosedDate date, Charter integer, CharterNum text, FundingType text, DOC text, DOCType text, SOC text, SOCType text, EdOpsCode text, EdOpsName text, EILCode text, EILName text, GSoffered text, GSserved text, Virtual text, Magnet integer, Latitude real, Longitude real, AdmFName1 text, AdmLName1 text, AdmEmail1 text, AdmFName2 text, AdmLName2 text, AdmEmail2 text, AdmFName3 text, AdmLName3 text, AdmEmail3 text, LastUpdate date)
+
+Question:
+Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?
+
+SQL:",626,SELECT COUNT(*) FROM schools WHERE Charter = 1 AND AVG(Score) > 560;,SELECT COUNT(*) FROM schools WHERE Charter = 1 AND AVG(Score) > 560;,True,SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded',False,"Skipped Qwen evaluation: Predicted and ground truth reference different tables: predicted=['schools'], ground_truth=['frpm', 'satscores']"

@@ -303,12 +303,16 @@ def main() -> None:
         db_paths=db_paths,
         qwen_evaluator=qwen_evaluator,
         use_qwen=use_qwen,
+        model_name=model_name,
+        config=config,
     )
     _, _, qwen_sql2nosql_metrics = save_sql2nosql_details_csv(
         sql2nosql_details_path,
         sql2nosql_predictions,
         qwen_evaluator=qwen_evaluator,
         use_qwen=use_qwen,
+        model_name=model_name,
+        config=config,
     )
 
     text2sql_metrics = merge_qwen_summary_into_metrics(

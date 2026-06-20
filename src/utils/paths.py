@@ -30,12 +30,12 @@ def _env_path(key: str, default: str) -> Path:
 
 def get_models_base_dir() -> Path:
     """Directory for downloaded base models."""
-    return _env_path("MODELS_BASE_DIR", "models/base_model")
+    return _env_path("MODELS_BASE_DIR", "models/base")
 
 
 def get_models_checkpoints_dir() -> Path:
     """Directory for training checkpoints."""
-    return _env_path("MODELS_CHECKPOINTS_DIR", "models/trained_model")
+    return _env_path("MODELS_CHECKPOINTS_DIR", "models/checkpoints")
 
 
 def get_data_dir() -> Path:

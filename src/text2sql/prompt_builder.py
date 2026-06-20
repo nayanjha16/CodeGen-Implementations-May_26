@@ -11,10 +11,10 @@ class PromptBuilder:
 
     DEFAULT_TEMPLATE = """The database tables already exist. Do not create or modify tables.
 Write only a single SQL SELECT query to answer the question.
-Do not execute the query or show its results. Output the SQL query only—no "Output" section, explanations, Python/C++ code, or any other text after the query.
+Do not execute the query or show its results. Output the SQL query only—no "Output" section, MongoDB schema, Python code, explanations, or any other text after the query.
 
-Schema:
-{schema}
+SQL Schema:
+{sql_schema}
 
 Question:
 {question}
@@ -24,15 +24,15 @@ SQL:"""
     CAUSAL_LM_TEMPLATE = """Task: write one SQL SELECT query only.
 
 Rules:
-- Use only the tables and columns listed in the schema below.
+- Use only the tables and columns listed in the SQL schema below.
 - Return exactly one complete SQL SELECT statement, then stop.
-- Do not write Python, C++, JavaScript, or any other programming language.
-- Do not write imports (e.g. import sqlite3), #include, connection code, or scripts.
+- Do not write Python, MongoDB, JavaScript, C++, or any other programming language.
+- Do not write MongoDB schema JSON, imports (e.g. import sqlite3), #include, connection code, or scripts.
 - Do not execute the query or print results (no "Output:" section or sample rows).
 - Do not repeat "SQL:" or generate multiple queries.
 
-Schema:
-{schema}
+SQL Schema:
+{sql_schema}
 
 Question:
 {question}
@@ -41,10 +41,10 @@ SQL:"""
 
     SEQ2SEQ_TEMPLATE = """The database tables already exist. Do not create or modify tables.
 Write only a single SQL SELECT query.
-Do not execute the query or show its results. Output the SQL query only—no extra text after the query.
+Do not execute the query or show its results. Output the SQL query only—no MongoDB, Python, or other text after the query.
 
 Question: {question}
-Schema: {schema}
+SQL Schema: {sql_schema}
 SQL:"""
 
     TEMPLATES = {
@@ -72,14 +72,11 @@ SQL:"""
             from src.models.model_loader import is_seq2seq_model
 
             has_checkpoint = bool((config or {}).get("model", {}).get("checkpoint"))
-            # Fine-tuned seq2seq checkpoints expect the compact seq2seq prompt;
-            # base models (including unfine-tuned T5) use the default template.
             if is_seq2seq_model(model_name) and has_checkpoint:
                 template_name = "seq2seq"
             elif is_seq2seq_model(model_name):
                 template_name = "default"
             else:
-                # CodeGen and other causal LMs tend to continue into code/output.
                 template_name = "causal"
         elif requested in cls.TEMPLATES:
             template_name = requested
@@ -100,14 +97,20 @@ SQL:"""
             parts.append(line)
         return " | ".join(parts)
 
-    def build(self, question: str, schema: str) -> str:
-        """Build a prompt from question and schema."""
-        formatted_schema = schema.strip()
+    def build(
+        self,
+        question: str,
+        schema: str,
+    ) -> str:
+        """Build a SQL-only text-to-SQL prompt (no MongoDB schema)."""
+        sql_schema = schema.strip()
+
+        formatted_sql_schema = sql_schema
         if self.template_name == "seq2seq":
-            formatted_schema = self.compact_schema(schema)
+            formatted_sql_schema = self.compact_schema(sql_schema)
 
         return self.template.format(
-            schema=formatted_schema,
+            sql_schema=formatted_sql_schema,
             question=question.strip(),
         ).strip()
 
@@ -116,7 +119,10 @@ SQL:"""
     ) -> list[str]:
         """Build prompts for a batch of examples."""
         return [
-            self.build(ex["question"], ex.get("schema", ""))
+            self.build(
+                ex["question"],
+                ex.get("schema", ""),
+            )
             for ex in examples
         ]
 

@@ -7,6 +7,51 @@ from pathlib import Path
 from typing import Any
 
 
+from src.utils.schema_conversion import derive_mongo_schema_json
+
+
+def build_text2sql_prompt(
+    question: str,
+    schema: str,
+    *,
+    config: dict[str, Any] | None = None,
+    model_name: str | None = None,
+) -> str:
+    """Build a SQL-only text-to-SQL prompt (same format as text2sql_details.csv)."""
+    from src.text2sql.prompt_builder import PromptBuilder
+    from src.utils.config import get_model_name, load_config
+
+    cfg = config or load_config()
+    name = model_name or get_model_name(cfg)
+    return PromptBuilder.for_model(name, cfg).build(question, schema)
+
+
+def build_nosql_prompt(
+    sql_query: str,
+    schema: str,
+    *,
+    config: dict[str, Any] | None = None,
+    model_name: str | None = None,
+    nosql_schema: str | None = None,
+) -> str:
+    """Build a SQL-to-MongoDB conversion prompt."""
+    from src.sql2nosql.prompt_builder import NoSQLPromptBuilder
+    from src.utils.config import get_model_name, load_config
+
+    cfg = config or load_config()
+    name = model_name or get_model_name(cfg)
+    return NoSQLPromptBuilder.for_model(name, cfg).build(
+        sql_query,
+        schema,
+        nosql_schema=nosql_schema,
+    )
+
+
+def derive_nosql_schema(schema: str, *, compact: bool = False) -> str:
+    """Derive MongoDB schema JSON from SQL schema text."""
+    return derive_mongo_schema_json(schema, compact=compact)
+
+
 class SQLExecutor:
     """Execute SQL queries and compare results for evaluation."""
 

@@ -1,6 +1,6 @@
 model:
   # name and storage paths come from .env (MODEL_NAME, MODELS_BASE_DIR, etc.)
-  max_length: 512
+  max_length: 2048
   device: "auto"  # auto (cuda > mps > cpu), cuda, mps, cpu
 
 generation:

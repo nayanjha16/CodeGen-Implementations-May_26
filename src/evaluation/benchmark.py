@@ -83,11 +83,15 @@ class BenchmarkRunner:
 
         nosql_samples = []
         for result, example in zip(gen_results, samples):
+            schema = result.get("schema", example.get("schema", ""))
+            pred_sql = result.get("sql", "")
             nosql_samples.append(
                 {
                     "question": result.get("question", example.get("question", "")),
-                    "schema": result.get("schema", example.get("schema", "")),
-                    "sql": example.get("sql", ""),
+                    "schema": schema,
+                    "nosql_schema": result.get("nosql_schema", ""),
+                    "sql": pred_sql,
+                    "ground_truth_sql": example.get("sql", ""),
                 }
             )
 
@@ -131,8 +135,10 @@ class BenchmarkRunner:
                 {
                     **result,
                     "reference_sql": ref_sql,
+                    "predicted_sql": pred_sql,
                     "predicted_sql_valid": pred_sql_valid,
                     "reference_sql_valid": ref_sql_valid,
+                    "nosql_schema": nosql_gen.get("nosql_schema", ""),
                     "nosql_prompt": nosql_gen.get("prompt", ""),
                     "nosql_raw_output": nosql_gen.get("raw_output", ""),
                     "predicted_mongodb_query": pred_mongo,
@@ -178,6 +184,11 @@ class BenchmarkRunner:
         for result, example in zip(gen_results, samples):
             result.setdefault("schema", example.get("schema", ""))
             result.setdefault("db_id", example.get("db_id", ""))
+            if not result.get("prompt"):
+                result["prompt"] = self.sql_generator.build_prompt(
+                    result.get("question", example.get("question", "")),
+                    result.get("schema", ""),
+                )
 
         predictions = [r["sql"] for r in gen_results]
         references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]

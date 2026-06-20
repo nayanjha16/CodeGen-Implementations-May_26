@@ -1,4 +1,4 @@
-"""Build prompts for text-to-MongoDB generation."""
+"""Build prompts for SQL-to-MongoDB conversion."""
 
 from __future__ import annotations
 
@@ -7,45 +7,54 @@ from typing import Any
 
 
 class NoSQLPromptBuilder:
-    """Build prompts for MongoDB shell query generation."""
+    """Build prompts for converting SQL queries to MongoDB shell syntax."""
 
     DEFAULT_TEMPLATE = """The MongoDB collections already exist. Do not create or modify collections.
-Write only a single MongoDB shell query to answer the question.
+Convert the SQL query below into a single MongoDB shell query.
 Use db.<collection>.find(), db.<collection>.aggregate(), or db.<collection>.distinct().
 Output the MongoDB query only—no explanations, SQL, Python code, or other text after the query.
 
-Schema:
-{schema}
+SQL Schema:
+{sql_schema}
 
-Question:
-{question}
+SQL Query:
+{sql_query}
 
-MongoDB:"""
+MongoDB Schema:
+{nosql_schema}
 
-    CAUSAL_LM_TEMPLATE = """Task: write one MongoDB shell query only.
+MongoDB Query:"""
+
+    CAUSAL_LM_TEMPLATE = """Task: convert one SQL query to a MongoDB shell query only.
 
 Rules:
-- Use only the collections and fields listed in the schema below.
-- Return exactly one MongoDB query using db.<collection>.find(), aggregate(), or distinct().
-- Do not write SQL, Python, JavaScript functions, or explanations.
+- Use only the collections and fields listed in the MongoDB schema below.
+- Translate the SQL query into exactly one MongoDB query using db.<collection>.find(), aggregate(), or distinct().
+- Output must start with db.<collection>. and contain only MongoDB shell syntax.
+- Do not write SQL, Python, JavaScript, JSON schema dumps, code examples, or explanations.
+- Do not write sections such as "Python Query:", "JavaScript Query:", or "Python Example:".
 - Do not execute the query or print results.
 - Do not repeat "MongoDB:" or generate multiple queries.
 
-Schema:
-{schema}
+SQL Schema:
+{sql_schema}
 
-Question:
-{question}
+SQL Query:
+{sql_query}
 
-MongoDB:"""
+MongoDB Schema:
+{nosql_schema}
+
+MongoDB Query:"""
 
     SEQ2SEQ_TEMPLATE = """The MongoDB collections already exist. Do not create or modify collections.
-Write only a single MongoDB shell query.
+Convert the SQL query below into a single MongoDB shell query.
 Output the MongoDB query only—no extra text after the query.
 
-Question: {question}
-Schema: {schema}
-MongoDB:"""
+SQL Schema: {sql_schema}
+SQL Query: {sql_query}
+MongoDB Schema: {nosql_schema}
+MongoDB Query:"""
 
     TEMPLATES = {
         "default": DEFAULT_TEMPLATE,
@@ -97,15 +106,32 @@ MongoDB:"""
             parts.append(line)
         return " | ".join(parts)
 
-    def build(self, question: str, schema: str) -> str:
-        """Build a prompt from question and schema."""
-        formatted_schema = schema.strip()
+    def build(
+        self,
+        sql_query: str,
+        schema: str,
+        nosql_schema: str | None = None,
+    ) -> str:
+        """Build a prompt from SQL query, SQL schema, and MongoDB schema."""
+        from src.utils.schema_conversion import derive_mongo_schema_json
+
+        sql_schema = schema.strip()
+        mongo_schema = nosql_schema
+        if mongo_schema is None:
+            mongo_schema = derive_mongo_schema_json(
+                sql_schema, compact=self.template_name == "seq2seq"
+            )
+        else:
+            mongo_schema = mongo_schema.strip() or "{}"
+
+        formatted_sql_schema = sql_schema
         if self.template_name == "seq2seq":
-            formatted_schema = self.compact_schema(schema)
+            formatted_sql_schema = self.compact_schema(sql_schema)
 
         return self.template.format(
-            schema=formatted_schema,
-            question=question.strip(),
+            sql_schema=formatted_sql_schema,
+            nosql_schema=mongo_schema,
+            sql_query=sql_query.strip(),
         ).strip()
 
     def get_template_name(self) -> str:

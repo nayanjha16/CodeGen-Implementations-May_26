@@ -94,7 +94,7 @@ class CodeGenModel:
         self,
         model_name: str,
         device: str = "auto",
-        max_length: int = 512,
+        max_length: int = 2048,
         model_path: str | Path | None = None,
         config: dict[str, Any] | None = None,
     ):
@@ -177,10 +177,12 @@ class CodeGenModel:
 
         import torch
 
+        # Keep the tail of long prompts (question / SQL trigger) when truncating.
         inputs = self.tokenizer(
             prompt,
             return_tensors="pt",
             truncation=True,
+            truncation_side="left",
             max_length=self.max_length,
         ).to(self.device)
 
@@ -235,7 +237,7 @@ def load_model(
     model = CodeGenModel(
         model_name=model_name,
         device=device or model_cfg.get("device", "auto"),
-        max_length=max_length or model_cfg.get("max_length", 512),
+        max_length=max_length or model_cfg.get("max_length", 2048),
         config=config,
     )
     if eager:

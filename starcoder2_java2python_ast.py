@@ -27,6 +27,9 @@ import json
 from tree_sitter import Language, Parser
 import tree_sitter_java
 import tree_sitter_python
+import subprocess
+import tempfile
+import os
 
 print(datasets.__version__)
 
@@ -606,17 +609,50 @@ def compare_java_java(java_code1, java_code2):
     # print(f"Similarity: {score}")
     return score
 
+def check_java_compilation(java_code):
+    # Create a temporary directory
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Write the Java code to a .java file
+        file_path = os.path.join(tmpdir, "Solution.java")
+        with open(file_path, "w") as f:
+            f.write(java_code)
+
+        # Try to compile the Java file
+        try:
+            # Use subprocess to run javac
+            compile_process = subprocess.run(
+                ["javac", file_path],
+                capture_output=True,
+                text=True,
+                check=False # Do not raise an exception for non-zero exit codes
+            )
+            # If javac returns 0, compilation was successful
+            if compile_process.returncode == 0:
+                return True
+            else:
+                # print(f"Compilation error: {compile_process.stderr}")
+                return False
+        except FileNotFoundError:
+            print("Error: javac command not found. Make sure Java Development Kit (JDK) is installed and in your PATH.")
+            return False
+        except Exception as e:
+            print(f"An unexpected error occurred during compilation check: {e}")
+            return False
+
 """Now, let's run the evaluation loop for Python to Java translation, calculate all specified metrics, and store them in a new DataFrame."""
 
 java_translation_results_data = []
 
-for index, row in translation_pairs_df.head(10).iterrows():
+for index, row in translation_pairs_df.iterrows():
     python_problem = row['python_code']
     java_solution_original = row['java_code'] # Reference Java solution
 
     # Generate Java solution
     generated_solutions = generate_java_solution(python_problem, num_solutions=1)
     generated_java_code = extract_code(generated_solutions[0])
+
+    # Check Java compilation rate
+    is_compilable = check_java_compilation(generated_java_code)
 
     # Calculate AST similarity score between generated Java and original Java
     try:
@@ -646,6 +682,7 @@ for index, row in translation_pairs_df.head(10).iterrows():
         'python_code_original': python_problem,
         'java_code_original': java_solution_original,
         'generated_java_code': generated_java_code,
+        'is_compilable': is_compilable,
         'ast_similarity_score': ast_score,
         'bleu_score': code_metrics['bleu'],
         'rouge1_score': code_metrics['rouge1'],
@@ -671,7 +708,7 @@ java_translation_results_df["translation_score"] = (
 )
 
 print("Composite translation score calculated for Python to Java. Displaying updated DataFrame head:")
-display(java_translation_results_df.head())
+display(java_translation_results_df.head(10))
 
 """### Mean Scores for Python to Java Translation"""
 
@@ -690,3 +727,9 @@ print(f"Mean Python to Java ROUGE-L Score: {mean_rougeL_java:.4f}")
 print(f"Mean Python to Java ROUGE-1 Score: {mean_rouge1_java:.4f}")
 print(f"Mean Python to Java ROUGE-2 Score: {mean_rouge2_java:.4f}")
 print(f"Mean Python to Java BLEU Score: {mean_bleu_java:.4f}")
+
+compilation_rate = (java_translation_results_df['is_compilable'].sum() / len(java_translation_results_df)) * 100
+print(f"Java Compilation Rate: {compilation_rate:.2f}%")
+
+java_translation_results_df.to_csv('python_to_java_translation_results.csv', index=False)
+print("DataFrame saved to 'python_to_java_translation_results.csv'")

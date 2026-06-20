@@ -74,4 +74,31 @@ translation_score = (
 )
 ```
 
----
+--------------------------------------------Python to Java-----------------------------------------------------------------------
+
+Mean Python to Java CodeBERT Similarity Score: 0.8902
+
+Mean Python to Java AST Similarity Score: 0.7432
+
+Mean Python to Java ROUGE-L Score: 0.6179
+
+Mean Python to Java ROUGE-1 Score: 0.6723
+
+Mean Python to Java ROUGE-2 Score: 0.4870
+
+Mean Python to Java BLEU Score: 0.5242
+
+Mean composite Python to Java Translation Score: 0.7341
+
+The `translation_score` is calculated using the following weighted sum:
+
+```
+translation_score = (
+    0.35 * codebert_similarity_score +
+    0.25 * ast_similarity_score +
+    0.15 * rougeL_score +
+    0.10 * rouge1_score +
+    0.05 * rouge2_score +
+    0.10 * bleu_score
+)
+```

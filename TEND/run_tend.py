@@ -8,10 +8,13 @@ import json
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 from TEND.build_tend_dataset import TENDDatasetBuilder
 from TEND.paths import ensure_project_on_path, get_tend_output_dir
-from TEND.qwen_evaluator import DEFAULT_MODEL
+from TEND.qwen_evaluator import DEFAULT_MODEL, QwenTENDEvaluator
+from TEND.spider_source import SpiderSource
+from src.sql2nosql.translator import SQLToNoSQLTranslator
 
 
 def _configure_logging(verbose: bool) -> None:
@@ -65,6 +68,41 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def run_tend_split(
+    *,
+    dataset: str,
+    split: str,
+    max_samples: int | None = None,
+    evaluate: bool = True,
+    model_name: str = DEFAULT_MODEL,
+    output_path: Path | None = None,
+    evaluator: QwenTENDEvaluator | None = None,
+    spider_source: SpiderSource | None = None,
+    tables_by_db: dict[str, dict[str, Any]] | None = None,
+    translator: SQLToNoSQLTranslator | None = None,
+) -> Path:
+    """Generate one TEND split CSV, reusing optional shared resources."""
+    builder = TENDDatasetBuilder(
+        dataset=dataset,
+        split=split,
+        max_samples=max_samples,
+        evaluate=evaluate,
+        model_name=model_name,
+        evaluator=evaluator,
+        spider_source=spider_source,
+        tables_by_db=tables_by_db,
+        translator=translator,
+    )
+    csv_path = builder.build(output_path=output_path)
+
+    summary = TENDDatasetBuilder.summarize_csv(csv_path)
+    summary_path = csv_path.with_suffix(".summary.json")
+    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print(json.dumps(summary, indent=2))
+    print(f"Summary saved: {summary_path}")
+    return csv_path
+
+
 def main(argv: list[str] | None = None) -> int:
     ensure_project_on_path()
     args = parse_args(argv)
@@ -74,20 +112,14 @@ def main(argv: list[str] | None = None) -> int:
     output_dir = get_tend_output_dir()
     print(f"TEND output directory: {output_dir}")
 
-    builder = TENDDatasetBuilder(
+    run_tend_split(
         dataset=args.dataset,
         split=split,
         max_samples=args.max_samples,
         evaluate=not args.no_eval,
         model_name=args.model,
+        output_path=args.output,
     )
-    csv_path = builder.build(output_path=args.output)
-
-    summary = TENDDatasetBuilder.summarize_csv(csv_path)
-    summary_path = csv_path.with_suffix(".summary.json")
-    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    print(json.dumps(summary, indent=2))
-    print(f"Summary saved: {summary_path}")
     return 0
 
 

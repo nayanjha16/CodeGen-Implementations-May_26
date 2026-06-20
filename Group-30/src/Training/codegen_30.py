@@ -96,10 +96,16 @@ class QwenModelBase(metaclass=SingletonMeta):
         """Loads the Qwen model and tokenizer."""
         if QwenModelBase._model is None:
             if self.device == 'cuda':
-                # Use float32 for stability (float16 can cause index out of bounds issues)
-                QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
-                                                          torch_dtype=torch.float32,
-                                                          device_map="auto")
+                # Use bfloat16 for Qwen (more stable than float16)
+                try:
+                    QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
+                                                              torch_dtype=torch.bfloat16,
+                                                              device_map="auto")
+                except Exception as e:
+                    print(f"bfloat16 loading failed, trying float32: {e}")
+                    QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
+                                                              torch_dtype=torch.float32,
+                                                              device_map="auto")
             else:
                 QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name)
                 QwenModelBase._model.to(self.device)
@@ -155,6 +161,13 @@ class CodeDocumentationGenerator(QwenModelBase):
       text = self._tokenizer.apply_chat_template( messages, tokenize=False, add_generation_prompt=True)
       model_inputs = self._tokenizer([text], return_tensors="pt").to(self.device)
 
+      # Validate input token IDs are within valid range
+      vocab_size = self._model.config.vocab_size
+      input_ids = model_inputs["input_ids"]
+      if torch.any(input_ids >= vocab_size) or torch.any(input_ids < 0):
+          print(f"Warning: Qwen input contains invalid token IDs. Clipping to valid range [0, {vocab_size-1}]")
+          model_inputs["input_ids"] = torch.clamp(input_ids, 0, vocab_size - 1)
+
       # Ensure input doesn't exceed model's max position embeddings
       max_pos = getattr(self._model.config, 'max_position_embeddings', 32768)
       input_len = model_inputs.input_ids.shape[1]
@@ -162,7 +175,64 @@ class CodeDocumentationGenerator(QwenModelBase):
           print(f"Warning: Input length {input_len} >= model max {max_pos}. Truncating.")
           model_inputs = {k: v[:, :max_pos-1] for k, v in model_inputs.items() if k in ['input_ids', 'attention_mask']}
 
-      generated_ids = self._model.generate(**model_inputs, max_new_tokens=512)
+      # Use safer generation parameters to avoid probability tensor errors
+      generated_ids = None
+      try:
+          with torch.no_grad():
+              generated_ids = self._model.generate(
+                  **model_inputs,
+                  max_new_tokens=512,
+                  do_sample=False,  # Use greedy decoding for stability
+                  temperature=1.0,
+              )
+      except RuntimeError as e:
+          error_msg = str(e)
+          print(f"Qwen generation error: {error_msg[:200]}")
+          if "probability tensor" in error_msg or "inf" in error_msg or "nan" in error_msg or "device-side assert" in error_msg:
+              print("Retrying with safer settings...")
+              try:
+                  # Clear CUDA cache
+                  if torch.cuda.is_available():
+                      torch.cuda.empty_cache()
+
+                  # Retry with even safer settings
+                  with torch.no_grad():
+                      generated_ids = self._model.generate(
+                          **model_inputs,
+                          max_new_tokens=256,
+                          do_sample=False,
+                          temperature=0.7,
+                      )
+              except RuntimeError as e2:
+                  print(f"Second attempt failed: {e2[:200]}")
+                  # Final fallback: CPU
+                  print("Falling back to CPU...")
+                  self._model.to('cpu')
+                  model_inputs = {k: v.to('cpu') for k, v in model_inputs.items()}
+                  with torch.no_grad():
+                      generated_ids = self._model.generate(
+                          **model_inputs,
+                          max_new_tokens=256,
+                          do_sample=False,
+                      )
+          else:
+              raise
+
+      if generated_ids is None:
+          return "Error: Documentation generation failed"
+
+      # Handle different output formats from generate()
+      # The output can be a tensor, tuple, or ModelOutput object
+      if isinstance(generated_ids, tuple):
+          generated_ids = generated_ids[0]  # Take first element if tuple
+      elif hasattr(generated_ids, 'input_ids'):
+          # If it's a ModelOutput object
+          generated_ids = generated_ids.input_ids
+
+      # Ensure we have the right format for slicing
+      if isinstance(generated_ids, torch.Tensor):
+          generated_ids = generated_ids
+
       generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids) ]
 
       decoded = self._tokenizer.batch_decode(generated_ids, skip_special_tokens=True)

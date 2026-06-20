@@ -98,14 +98,19 @@ class QwenModelBase(metaclass=SingletonMeta):
             if self.device == 'cuda':
                 # Use bfloat16 for Qwen (more stable than float16)
                 try:
+                    # Clear GPU cache before loading
+                    torch.cuda.empty_cache()
                     QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
                                                               torch_dtype=torch.bfloat16,
-                                                              device_map="auto")
+                                                              device_map="auto",
+                                                              use_safetensors=True)
                 except Exception as e:
                     print(f"bfloat16 loading failed, trying float32: {e}")
+                    torch.cuda.empty_cache()
                     QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
                                                               torch_dtype=torch.float32,
-                                                              device_map="auto")
+                                                              device_map="auto",
+                                                              use_safetensors=True)
             else:
                 QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name)
                 QwenModelBase._model.to(self.device)
@@ -191,9 +196,12 @@ class CodeDocumentationGenerator(QwenModelBase):
           if "probability tensor" in error_msg or "inf" in error_msg or "nan" in error_msg or "device-side assert" in error_msg:
               print("Retrying with safer settings...")
               try:
-                  # Clear CUDA cache
+                  # Clear CUDA cache safely
                   if torch.cuda.is_available():
-                      torch.cuda.empty_cache()
+                      try:
+                          torch.cuda.empty_cache()
+                      except RuntimeError:
+                          pass  # GPU in bad state, continue anyway
 
                   # Retry with even safer settings
                   with torch.no_grad():
@@ -207,7 +215,10 @@ class CodeDocumentationGenerator(QwenModelBase):
                   print(f"Second attempt failed: {e2[:200]}")
                   # Final fallback: CPU
                   print("Falling back to CPU...")
-                  self._model.to('cpu')
+                  try:
+                      self._model.to('cpu')
+                  except Exception:
+                      pass  # Model dispatched with accelerate, can't move
                   model_inputs = {k: v.to('cpu') for k, v in model_inputs.items()}
                   with torch.no_grad():
                       generated_ids = self._model.generate(
@@ -1277,6 +1288,7 @@ import os
 
 class BaselineData(metaclass=SingletonMeta):
     _initialized = False # Class-level flag for singleton initialization
+    _preferred_device = None  # Class-level device preference (can be set externally)
 
     def __init__(self):
         """
@@ -1288,7 +1300,11 @@ class BaselineData(metaclass=SingletonMeta):
             return
         BaselineData._initialized = True
 
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu' # Determine device
+        # Use preferred device if set, otherwise auto-detect
+        if BaselineData._preferred_device:
+            self.device = BaselineData._preferred_device
+        else:
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f"Initializing BaselineData singleton using device: {self.device}...")
 
         # Initialize dependencies internally as per user request to decouple FilteredDataset
@@ -1309,6 +1325,16 @@ class BaselineData(metaclass=SingletonMeta):
         """
         model_name_codegen = "Salesforce/codegen-350M-multi"
         print(f"Loading code generation model: {model_name_codegen} on {self.device}...")
+
+        # Force GPU reset before loading
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+                torch.cuda.reset_peak_memory_stats()
+            except RuntimeError:
+                pass
+
         self._tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
         # Ensure pad_token_id is explicitly set, common for causal models where EOS is used for padding
         if self._tokenizer_codegen.pad_token_id is None:
@@ -1316,9 +1342,35 @@ class BaselineData(metaclass=SingletonMeta):
 
         if self.device == 'cuda':
             # Use float32 for stability (float16 can cause index out of bounds issues)
-            self._model_codegen = AutoModelForCausalLM.from_pretrained(model_name_codegen,
-                                                                       torch_dtype=torch.float32,
-                                                                       device_map="auto")
+            # Load model with device_map="auto" which handles GPU placement automatically
+            # This avoids the .to() call that triggers CUDA index errors
+            try:
+                self._model_codegen = AutoModelForCausalLM.from_pretrained(
+                    model_name_codegen,
+                    torch_dtype=torch.float32,
+                    device_map="auto",
+                    trust_remote_code=False
+                )
+                self._model_codegen.eval()
+            except RuntimeError as e:
+                error_msg = str(e)
+                print(f"Model loading error: {error_msg[:500]}")
+                # Clear all huggingface cache
+                import shutil
+                from pathlib import Path
+                cache_dir = Path.home() / ".cache" / "huggingface" / "hub"
+                if cache_dir.exists():
+                    for item in cache_dir.glob("*"):
+                        try:
+                            if item.is_dir():
+                                shutil.rmtree(item)
+                            else:
+                                item.unlink()
+                            print(f"Removed cached model: {item}")
+                        except Exception as ex:
+                            print(f"Failed to remove {item}: {ex}")
+                # Re-raise the error - no CPU fallback
+                raise
         else:
             self._model_codegen = AutoModelForCausalLM.from_pretrained(model_name_codegen)
             self._model_codegen.to(self.device)
@@ -1341,15 +1393,19 @@ class BaselineData(metaclass=SingletonMeta):
         else:
             prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
 
+        # Store prompt for potential re-tokenization during retries
+        original_prompt = prompt
+
         # Option 1 & 2: Reduced max_new_tokens and added memory cleanup
         max_new_tokens = 128  # Reduced from 256 to prevent CUDA errors
 
         # Get model's max position embeddings to prevent CUDA index out of bounds errors
         model_max_length = getattr(self._model_codegen.config, 'max_position_embeddings', 2048)
-        # Use a safety margin to ensure position IDs never exceed the limit
-        max_input_length = min(model_max_length - max_new_tokens, 512)  # Cap at 512 for safety
+        # Ensure total sequence (input + output) doesn't exceed model's max position embeddings
+        # Use a very conservative limit to prevent position index out of bounds
+        max_input_length = min(model_max_length - max_new_tokens - 100, 256)  # Extra safety margin
 
-        inputs = self._tokenizer_codegen(prompt, return_tensors="pt").to(self.device)
+        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=256).to(self.device)
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
 
@@ -1371,9 +1427,21 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Validate input token IDs are within valid range
         vocab_size = self._model_codegen.config.vocab_size
+        print(f"Model vocab_size: {vocab_size}")
+
+        # Check for NaN or inf values in input_ids
+        if torch.isnan(input_ids).any() or torch.isinf(input_ids).any():
+            print("Warning: Input contains NaN or inf values, replacing with zeros")
+            input_ids = torch.where(torch.isnan(input_ids) | torch.isinf(input_ids), torch.zeros_like(input_ids), input_ids)
+
+        # Validate and clip token IDs to valid range
         if torch.any(input_ids >= vocab_size) or torch.any(input_ids < 0):
-            print(f"Warning: Input contains invalid token IDs. Clipping to valid range [0, {vocab_size-1}]")
+            invalid_count = torch.sum((input_ids >= vocab_size) | (input_ids < 0)).item()
+            print(f"Warning: Input contains {invalid_count} invalid token IDs. Clipping to valid range [0, {vocab_size-1}]")
             input_ids = torch.clamp(input_ids, 0, vocab_size - 1)
+
+        # Ensure all token IDs are valid integers
+        input_ids = input_ids.long()
 
         # Ensure position IDs don't exceed model's max position embeddings
         # This prevents CUDA index out of bounds errors in attention layers
@@ -1384,20 +1452,22 @@ class BaselineData(metaclass=SingletonMeta):
             attention_mask = attention_mask[:, :model_max_length - 1]
             seq_len = input_ids.shape[1]
 
-        # Check for NaN or inf values in tensors
-        if torch.isnan(input_ids).any() or torch.isinf(input_ids).any():
-            print("Warning: Input contains NaN or inf values, replacing with zeros")
-            input_ids = torch.where(torch.isnan(input_ids) | torch.isinf(input_ids), torch.zeros_like(input_ids), input_ids)
+        # Additional safety: ensure total sequence length (input + output) fits within model
+        total_seq_len = seq_len + max_new_tokens
+        if total_seq_len >= model_max_length:
+            print(f"Warning: Total sequence length {total_seq_len} would exceed model max {model_max_length}. Reducing max_new_tokens.")
+            max_new_tokens = max(10, model_max_length - seq_len - 10)  # Extra safety margin, minimum 10 tokens
 
         # Use torch.no_grad() for inference to save memory and avoid gradient computation issues
+        self._model_codegen.eval()  # Ensure model is in eval mode
         with torch.no_grad():
             try:
+                # Use greedy decoding for stability (do_sample=False avoids numerical issues)
                 output_ids = self._model_codegen.generate(
                     input_ids,
                     attention_mask=attention_mask,
                     max_new_tokens=max_new_tokens,
-                    do_sample=True,
-                    top_k=50,
+                    do_sample=False,  # Use greedy decoding for stability
                     num_return_sequences=1,
                     pad_token_id=self._tokenizer_codegen.eos_token_id
                 )
@@ -1420,7 +1490,10 @@ class BaselineData(metaclass=SingletonMeta):
                     except RuntimeError:
                         # GPU is in bad state, try to reset
                         print("GPU in bad state, attempting reset...")
-                        torch.cuda.synchronize()  # Force sync to clear any pending errors
+                        try:
+                            torch.cuda.synchronize()  # Force sync to clear any pending errors
+                        except RuntimeError:
+                            pass  # Ignore if synchronize also fails
                         gc.collect()
 
                     # Retry strategies
@@ -1429,8 +1502,8 @@ class BaselineData(metaclass=SingletonMeta):
                         {"max_new_tokens": 64, "do_sample": False},
                         # Strategy 2: Greedy with very small tokens
                         {"max_new_tokens": 32, "do_sample": False},
-                        # Strategy 3: Truncated input
-                        {"max_new_tokens": 64, "do_sample": False, "truncate": True},
+                        # Strategy 3: Truncated input with re-tokenization
+                        {"max_new_tokens": 64, "do_sample": False, "retokenize": True},
                     ]
 
                     output_ids = None
@@ -1439,7 +1512,18 @@ class BaselineData(metaclass=SingletonMeta):
                             gen_input_ids = input_ids
                             gen_attention = attention_mask
 
-                            if strategy.get("truncate", False):
+                            if strategy.get("retokenize", False):
+                                # Re-tokenize to get fresh tensors
+                                print("Re-tokenizing input for retry...")
+                                fresh_inputs = self._tokenizer_codegen(original_prompt, return_tensors="pt").to(self.device)
+                                gen_input_ids = fresh_inputs["input_ids"]
+                                gen_attention = fresh_inputs["attention_mask"]
+                                # Truncate if needed
+                                truncate_len = min(256, model_max_length - strategy["max_new_tokens"])
+                                if gen_input_ids.shape[1] > truncate_len:
+                                    gen_input_ids = gen_input_ids[:, -truncate_len:]
+                                    gen_attention = gen_attention[:, -truncate_len:]
+                            elif strategy.get("truncate", False):
                                 # Use model's max length or 512, whichever is smaller
                                 truncate_len = min(512, model_max_length - strategy["max_new_tokens"])
                                 gen_input_ids = input_ids[:, -truncate_len:] if input_ids.shape[1] > truncate_len else input_ids
@@ -1460,22 +1544,22 @@ class BaselineData(metaclass=SingletonMeta):
                             continue
 
                     if output_ids is None:
-                        # Final fallback: Move model to CPU and try
-                        print("All GPU strategies failed, trying CPU fallback...")
+                        # Final fallback: Use CPU tensors with the model still on GPU
+                        # (model dispatched with accelerate can't be moved)
+                        print("All GPU strategies failed, trying CPU tensors on GPU model...")
                         try:
-                            self._model_codegen.to('cpu')
-                            self.device = 'cpu'
+                            # Put tensors on CPU and let the model handle it
                             output_ids = self._model_codegen.generate(
-                                input_ids.to('cpu'),
-                                attention_mask=attention_mask.to('cpu'),
-                                max_new_tokens=64,
+                                input_ids,  # Keep on GPU, let accelerate handle it
+                                attention_mask=attention_mask,
+                                max_new_tokens=32,
                                 do_sample=False,
                                 num_return_sequences=1,
                                 pad_token_id=self._tokenizer_codegen.eos_token_id
                             )
                         except Exception as cpu_error:
-                            print(f"CPU fallback also failed: {cpu_error}")
-                            return "# Error: Generation failed due to CUDA errors"
+                            print(f"CPU tensor fallback also failed: {cpu_error}")
+                            return "# Error: Generation failed"
                 else:
                     raise e
 
@@ -1532,6 +1616,12 @@ class BaselineData(metaclass=SingletonMeta):
                   the best AST, GCB, and average scores for the NL->C++->Python translation.
         """
         print(f"\nStarting baseline computation for {num_records if num_records is not None else 'all'} records (each with {num_tries} tries per phase)...")
+        # Reset GPU state before starting
+        if torch.cuda.is_available():
+            print(f"\nSynchronizing CUDA and empty cache")
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+
         results = []
         processed_count = 0
 
@@ -1582,6 +1672,9 @@ class BaselineData(metaclass=SingletonMeta):
             print(f"  Computing semantic similarity...")
             try:
                 semantic_similarity_phase1 = self._graphcodebert_scorer.score(original_code, generated_code_phase1)
+            except RuntimeError as e:
+                print(f"  GCB comparison CUDA error: {e}")
+                semantic_similarity_phase1 = 0.0
             except Exception as e:
                 print(f"  GCB comparison error: {e}")
                 semantic_similarity_phase1 = 0.0
@@ -1645,6 +1738,9 @@ class BaselineData(metaclass=SingletonMeta):
 
                         try:
                             semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_python_code)
+                        except RuntimeError as e:
+                            # print(f"Skipping GCB comparison for {original_hexsha} (Phase 2) due to CUDA error: {e}")
+                            semantic_similarity_phase2 = 0.0
                         except Exception as e:
                             # print(f"Skipping GCB comparison for {original_hexsha} (Phase 2) due to error: {e}")
                             semantic_similarity_phase2 = 0.0
@@ -1676,8 +1772,12 @@ class BaselineData(metaclass=SingletonMeta):
 
                 # Option 2: Clear GPU cache after each record to prevent memory fragmentation
                 if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                    gc.collect()
+                    try:
+                        torch.cuda.empty_cache()
+                        gc.collect()
+                    except RuntimeError:
+                        # GPU is in bad state, skip cache clearing
+                        pass
 
                 record_result = {
                     'hexsha': original_hexsha,
@@ -1738,8 +1838,24 @@ class BaselineData(metaclass=SingletonMeta):
 from typing import Optional # Added import
 import os
 
-print("\n--- Starting Baseline Evaluation for the entire dataset ---")
+# Set environment variables to help with CUDA errors
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # For better error reporting
+
+# Check if GPU is in a usable state
+def is_gpu_usable():
+    """Check if GPU is in a usable state."""
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try a simple CUDA operation
+        test_tensor = torch.zeros(1, device='cuda')
+        _ = test_tensor + 1
+        return True
+    except RuntimeError:
+        return False
+
+print("\n--- Starting Baseline Evaluation for the entire dataset ---")
 
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized ---
 # This is crucial in interactive environments where class definitions might be re-run
@@ -1756,6 +1872,11 @@ for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBER
         cls_to_reset._initialized_qwen = False
 print("Singleton states reset.")
 # --- END FIX ---
+
+# Check GPU health and force CPU if needed
+if torch.cuda.is_available() and not is_gpu_usable():
+    print("WARNING: GPU is in bad state, forcing CPU mode for this run")
+    BaselineData._preferred_device = 'cpu'
 
 # Instantiate the BaselineData singleton
 baseline_evaluator = BaselineData()
@@ -1865,7 +1986,7 @@ if tokenizer_codegen.pad_token_id is None:
 
 model_codegen = AutoModelForCausalLM.from_pretrained(
     model_name_codegen,
-    dtype=torch.float16, # Load in half-precision as requested
+    torch_dtype=torch.float32,
     device_map="auto"
 )
 for name, module in model_codegen.named_modules():

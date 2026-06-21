@@ -10,7 +10,7 @@ Original file is located at
  1. Load the CoDocGen model to generate documentation for a function
  2. Method that uses the CoDocModel model to generate documentation of the given code (as string)
  3. Load the the-stack dataset and extract only the C++ and python code from it.
- 4. load the github/tree-sitter to create abstract syntx trees of given code and lanugage
+ 4. load the github/tree-sitter to create abstract syntax trees of given code and lanuauge
  5. Create ASTs for the given code.
 
 Install all the necessary packages
@@ -75,6 +75,7 @@ class SingletonMeta(type):
 """ # Singleton for the CodeGeneration"""
 
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 import torch
 
 class QwenModelBase(metaclass=SingletonMeta):
@@ -252,112 +253,6 @@ class CodeDocumentationGenerator(QwenModelBase):
       response = decoded[0]
       return response
 
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  # Test the documentation generation
-  sample_code = """
-  def factorial(n):
-      if n == 0:
-          return 1
-      else:
-          return n * factorial(n-1)
-  """
-
-  print("Generating documentation for the following code:")
-  print(sample_code)
-
-"""### Test the Code Documentation Generator"""
-
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  generator = CodeDocumentationGenerator()
-
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  print("\nGenerated Documentation 2:")
-  documentation = generator.generate_documentation(sample_code)
-  print(documentation)
-
-"""# Obsolete TestLoad and Filter Code Dataset
-
-A function to load a `bigcode/the-stack` dataset and filter it to include only C++ and Python code. The `language` column has the type of laguage
-"""
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  from datasets import load_dataset, interleave_datasets
-
-  def load_and_filter_code_dataset(languages:list =None):
-      """
-      Loads a code dataset and filters it by specified languages.
-
-      Args:
-          dataset_name (str): The name of the dataset to load (e.g., "codeparrot/github-code").
-          languages (list): A list of programming languages to filter by (e.g., ['C++', 'Python']).
-                            If None, no language filtering is applied.
-
-      Returns:
-          datasets.Dataset: The filtered dataset.
-      """
-      dataset_name ="bigcode/the-stack-dedup"
-      languages_and_dataset = [
-                                {
-                                    'language':'python',
-                                    'dataset':None
-                                },
-                                {
-                                    'language':'cpp',
-                                    'dataset':None
-                                }
-                              ]
-
-      print(f"Loading dataset: {dataset_name}")
-      train_dataset = None
-
-      for i in range(len(languages_and_dataset)):
-        language = languages_and_dataset[i]['language']
-        print(f"Fetching dataset for '{language}' language")
-        # 2. Merge them into one combined stream
-        # probabilities=[0.5, 0.5] mixes them evenly (1 Python, 1 C++, 1 Python...)
-        languages_and_dataset[i]['dataset'] = load_dataset(dataset_name,
-                                        data_dir = f"data/{language}",
-                                        split="train",
-                                        streaming=True,
-                                          token=True)
-
-
-      return languages_and_dataset
-
-"""### Obsolete Test: Loading and Filtering Code
-
-Use the `load_and_filter_code_dataset` function to get only C++ and Python code from the `codeparrot/github-code` dataset.
-"""
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  try:
-      cpp_python_dataset = load_and_filter_code_dataset()
-
-      print(next(iter(cpp_python_dataset[0]['dataset'])))
-      print(next(iter(cpp_python_dataset[1]['dataset'])))
-      # print("\nFirst example from filtered dataset (showing language and a snippet of code):")
-      # first_example_filtered = next(iter(cpp_python_dataset))
-      # print(f"---\nLanguage: {first_example_filtered.get('lang', 'N/A')}\nCode Snippet: {first_example_filtered.get('content', 'N/A')[:200]}...")
-
-      # The original intent was to get 5 examples, but for streaming datasets,
-      # directly indexing or taking len() can be problematic. Iterating explicitly is safer.
-      # Let's just confirm the first example for now.
-
-  except RuntimeError as e:
-      if "Dataset scripts are no longer supported" in str(e):
-          print(f"\nError loading dataset: {e}")
-          print("\nIt appears the `codeparrot/github-code` dataset cannot be loaded directly via script anymore.")
-          print("To fix this, please modify the `load_and_filter_code_dataset` function in cell `CnarbxKBNomR`.")
-          print("You might need to specify a `config_name` (e.g., 'all' or 'code_x_m') and potentially use `streaming=True` if the dataset is very large, like so:")
-          print("    `dataset = load_dataset(dataset_name, 'all', split=\"train\", streaming=True)`")
-          print("Alternatively, you might need to find a different version of the dataset or a more compatible dataset for demonstration purposes.")
-      else:
-        raise e
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  print("\nFirst example from cpp_python_dataset (using next(iter())):\n")
-  first_example = next(iter(cpp_python_dataset))
-  print(first_example)
 
 """# Singleton for AST Generation and Comparison
 
@@ -521,51 +416,6 @@ class AST(metaclass=SingletonMeta):
 
       _print_node_recursive(tree.root_node, indent)
 
-"""### Test: Generating ASTs
-
-Test the AST generator and comparator for C++ and python using the AST class.
-"""
-
-if 'flag_ast_generation_and_test' in globals() and flag_ast_generation_and_test:
-  # Example 1: Python Code
-  python_code = """
-  def greet(name):
-      print(f"Hello, {name}!")
-  """
-
-
-  ast = AST()
-  print("Generating AST for Python code:")
-  python_ast = ast.generate_ast(python_code, 'python')
-  ast_str = ast.to_str(python_ast)
-  print("--\n", ast_str)
-  if python_ast:
-      ast.print_ast_tree(python_ast)
-
-  print("\n" + "="*50 + "\n")
-
-  # Example 2: C++ Code
-  cpp_code = b"""
-  #include <iostream>
-
-  int main() {
-      std::cout << "Hello from C++!" << std::endl;
-      return 0;
-  }
-  """
-
-  print("Generating AST for C++ code:")
-  cpp_ast = ast.generate_ast(cpp_code, 'cpp')
-  if cpp_ast:
-      ast.print_ast_tree(cpp_ast)
-
-  score = ast.compare_ast(python_ast, cpp_ast)
-  print(f"\nAST Similarity Score: {score}")
-
-"""# GraphCodeBERTScorer for Semantic Code Similarity
-
-The `GraphCodeBERTScorer` class is a singleton that uses a pre-trained `GraphCodeBERT` model (via `sentence-transformers`) to generate semantic embeddings for code snippets. It then calculates the cosine similarity between these embeddings to provide a semantic similarity score between two pieces of code. This is useful for tasks where AST comparison might miss semantic equivalence due to structural differences.
-"""
 
 from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cosine
@@ -1244,23 +1094,6 @@ def create_and_cache_filtered_subset(filtered_dataset_instance: FilteredDataset,
     print(f"Cached dataset saved to {cached_file_path}")
     return cached_dataset
 
-# Example usage (wrapped to prevent automatic execution):
-if __name__ == "__main__" or 'flag_cache_dataset_example' in globals() and flag_cache_dataset_example:
-    # Ensure FilteredDataset is initialized
-    filtered_dataset = FilteredDataset()
-
-    # Create and cache a subset of 100 processable samples
-    num_samples = 100
-    cached_filtered_subset = create_and_cache_filtered_subset(filtered_dataset, num_samples)
-
-    print(f"\nSuccessfully created/loaded a cached dataset with {len(cached_filtered_subset)} samples.")
-    print("First 2 samples from cached dataset:")
-    for i in range(min(2, len(cached_filtered_subset))):
-        print(cached_filtered_subset[i])
-
-    # Now, you can iterate over 'cached_filtered_subset' multiple times very efficiently.
-    # You can also apply further transformations or filtering to this non-streaming dataset.
-
 """# Baseline
 use the codegen-350m-multi model, and for each record in the dataset:
 1. generte the documentation
@@ -1336,6 +1169,7 @@ class BaselineData(metaclass=SingletonMeta):
                 pass
 
         self._tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
+        self._tokenizer_codegen.pad_token = self._tokenizer_codegen.eos_token
         # Ensure pad_token_id is explicitly set, common for causal models where EOS is used for padding
         if self._tokenizer_codegen.pad_token_id is None:
             self._tokenizer_codegen.pad_token_id = self._tokenizer_codegen.eos_token_id
@@ -1374,6 +1208,9 @@ class BaselineData(metaclass=SingletonMeta):
         else:
             self._model_codegen = AutoModelForCausalLM.from_pretrained(model_name_codegen)
             self._model_codegen.to(self.device)
+
+        # When using Salesforce/codegen-350M-multi for translation tasks, this usually happens because of an unconfigured pad token or a context window overflow
+        self._model_codegen.config.pad_token_id = self._model_codegen.config.eos_token_id
         print("Code generation model loaded.")
 
     def _generate_code_from_model(self, input_text: str, target_lang: str, is_cpp_to_py: bool = False) -> str:
@@ -1405,7 +1242,7 @@ class BaselineData(metaclass=SingletonMeta):
         # Use a very conservative limit to prevent position index out of bounds
         max_input_length = min(model_max_length - max_new_tokens - 100, 256)  # Extra safety margin
 
-        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=256).to(self.device)
+        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=256, padding=True).to(self.device)
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
 
@@ -1460,6 +1297,7 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Use torch.no_grad() for inference to save memory and avoid gradient computation issues
         self._model_codegen.eval()  # Ensure model is in eval mode
+        print(f"Max New Tokens for CodeGen: {max_new_tokens}")
         with torch.no_grad():
             try:
                 # Use greedy decoding for stability (do_sample=False avoids numerical issues)
@@ -1650,7 +1488,7 @@ class BaselineData(metaclass=SingletonMeta):
 
             print(f"  Generating documentation for {original_hexsha[:8]}...")
             # Generate documentation for Phase 1
-            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code)
+            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
 
             print(f"  Generating code from documentation...")
             # Generate code from the generated documentation using the base model
@@ -1733,16 +1571,16 @@ class BaselineData(metaclass=SingletonMeta):
                             generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_python_code, language)
                             ast_similarity_phase2 = self._ast_processor.compare_ast(original_ast, generated_ast_phase2)
                         except Exception as e:
-                            # print(f"Skipping AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
+                            print(f"Forcing AST Similarity to : AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
                             ast_similarity_phase2 = 0.0
 
                         try:
                             semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_python_code)
                         except RuntimeError as e:
-                            # print(f"Skipping GCB comparison for {original_hexsha} (Phase 2) due to CUDA error: {e}")
+                            print(f"Forcing  GCB comparison for {original_hexsha} (Phase 2) to 0 due to CUDA error: {e}")
                             semantic_similarity_phase2 = 0.0
                         except Exception as e:
-                            # print(f"Skipping GCB comparison for {original_hexsha} (Phase 2) due to error: {e}")
+                            print(f"Forcing GCB comparison for {original_hexsha} (Phase 2) to 0 due to error: {e}")
                             semantic_similarity_phase2 = 0.0
 
                         current_average_score_phase2 = (ast_similarity_phase2 + semantic_similarity_phase2) / 2.0
@@ -1773,10 +1611,11 @@ class BaselineData(metaclass=SingletonMeta):
                 # Option 2: Clear GPU cache after each record to prevent memory fragmentation
                 if torch.cuda.is_available():
                     try:
+                        print("Clear GPU cache after each record to prevent memory fragmentation")
                         torch.cuda.empty_cache()
                         gc.collect()
                     except RuntimeError:
-                        # GPU is in bad state, skip cache clearing
+                        print("GPU is in bad state, skip cache clearing")
                         pass
 
                 record_result = {
@@ -1799,41 +1638,6 @@ class BaselineData(metaclass=SingletonMeta):
                       (f", NL->C++->Py Avg Score: {best_avg_score_nl_pl1_pl2:.4f}" if best_avg_score_nl_pl1_pl2 is not None else ""))
 
         return results
-
-# if 'flag_baseline_data_test' in globals() and flag_baseline_data_test:
-#   # Example Usage:
-#   # Initialize the BaselineData singleton
-#   baseline_evaluator = BaselineData()
-
-#   # Run the baseline computation for a small number of records (e.g., 5 records, 2 tries each)
-#   num_records_to_process = 5
-#   num_generation_tries = 2
-
-#   print(f"\nStarting baseline evaluation for {num_records_to_process} records with {num_generation_tries} tries each...")
-
-#   baseline_results = baseline_evaluator.compute_baseline(
-#       num_records=num_records_to_process,
-#       num_tries=num_generation_tries
-#   )
-
-#   print("\nBaseline Evaluation Results:")
-#   for res in baseline_results:
-#       print(f"  Hexsha: {res['hexsha'][:10]}..., AST Score: {res['best_ast_score']:.4f}, GCB Score: {res['best_graphcodebert_score']:.4f}, Average Score: {res['best_average_score']:.4f}")
-
-#   # Verify that the FilteredDataset has been updated
-#   print("\nVerifying updates in FilteredDataset:")
-#   # Access the FilteredDataset instance managed by BaselineData
-#   filtered_dataset_instance = baseline_evaluator._filtered_dataset
-#   filtered_dataset_instance.reset_iterator()
-
-#   checked_count = 0
-#   for record in filtered_dataset_instance:
-#       if checked_count >= num_records_to_process: # Check first 'num_records_to_process' that are actually processable
-#           break
-#       # Only print records that were actually processed and updated by the baseline evaluator
-#       if record.get('hexsha') in [res['hexsha'] for res in baseline_results]:
-#           print(f"  Record {record['hexsha'][:10]}...: Doc updated? {bool(record['documentation'])}, AST Score: {record['ast_score']:.4f}, GCB Score: {record['graphcodebert_score']:.4f}, Avg Score: {record['average_score']:.4f}")
-#           checked_count += 1
 
 from typing import Optional # Added import
 import os
@@ -1987,8 +1791,12 @@ if tokenizer_codegen.pad_token_id is None:
 model_codegen = AutoModelForCausalLM.from_pretrained(
     model_name_codegen,
     torch_dtype=torch.float32,
-    device_map="auto"
+    device_map="auto",
+    trust_remote_code=False
 )
+tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
+model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
+
 for name, module in model_codegen.named_modules():
     print(name)
 
@@ -2091,7 +1899,7 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
     documentation = record.get('documentation')
     if not documentation or not documentation.strip():
         # Fallback to generating documentation if not present or empty
-        documentation = documentation_generator.generate_documentation(record['content'])
+        documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
         if not documentation.strip():
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
             continue

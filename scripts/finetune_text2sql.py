@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from src.datasets.bird_loader import BirdLoader
 from src.datasets.spider_loader import SpiderLoader
 from src.text2sql.prompt_builder import PromptBuilder
 from src.utils.config import get_model_name, load_config
@@ -34,15 +35,32 @@ def build_dataset(examples: list[dict[str, str]], prompt_builder: PromptBuilder)
             continue
         rows.append(
             {
-                "input_text": prompt_builder.build(ex["question"], ex.get("schema", "")),
+                "input_text": prompt_builder.build(
+                    ex["question"], ex.get("schema", "")
+                ),
                 "target_text": ex["sql"].strip(),
             }
         )
     return Dataset.from_list(rows)
 
 
+def load_examples(dataset: str, split: str, config: dict) -> list[dict[str, str]]:
+    """Load standardized examples with full table schema for prompts."""
+    if dataset == "spider":
+        return SpiderLoader(config=config).load_split(split)
+    if dataset == "bird":
+        return BirdLoader(config=config).load_split(split)
+    raise ValueError(f"Unknown dataset: {dataset}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fine-tune text-to-SQL on Spider")
+    parser.add_argument(
+        "--dataset",
+        choices=["spider", "bird"],
+        default="spider",
+        help="Training dataset (default: spider)",
+    )
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
@@ -67,9 +85,9 @@ def main() -> None:
     ensure_model_cached(model_name)
     prompt_builder = PromptBuilder.for_model(model_name, config)
 
-    loader = SpiderLoader(config=config)
-    train_examples = loader.load_split(args.split)
-    val_examples = loader.load_split("validation")
+    train_examples = load_examples(args.dataset, args.split, config)
+    val_split = "validation" if args.dataset in {"spider", "bird"} else "dev"
+    val_examples = load_examples(args.dataset, val_split, config)
 
     if args.max_train_samples:
         train_examples = train_examples[: args.max_train_samples]
@@ -95,7 +113,7 @@ def main() -> None:
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    max_input = config.get("model", {}).get("max_length", 512)
+    max_input = config.get("model", {}).get("max_length", 2048)
     max_target = config.get("generation", {}).get("max_new_tokens", 256)
 
     def tokenize(batch):
@@ -143,7 +161,10 @@ def main() -> None:
         data_collator=DataCollatorForSeq2Seq(tokenizer, model=model),
     )
 
-    print(f"Training {model_name} on {len(train_examples)} Spider examples ...")
+    print(
+        f"Training {model_name} on {len(train_examples)} "
+        f"{args.dataset} examples ..."
+    )
     trainer.train()
     trainer.save_model(str(output_dir))
     tokenizer.save_pretrained(str(output_dir))

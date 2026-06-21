@@ -28,9 +28,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DATASETS = ("bird", "spider")
 MODELS = (
     "Salesforce/codegen-350M-multi",
-    "bigcode/starcoder2-3b",
-    "google-t5/t5-base",
-    "google-t5/t5-large",
+    # "bigcode/starcoder2-3b",
+    # "google-t5/t5-base",
+    # "google-t5/t5-large",
     "Qwen/Qwen2.5-Coder-0.5B",
 )
 

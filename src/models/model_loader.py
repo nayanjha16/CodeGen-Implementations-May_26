@@ -87,6 +87,41 @@ def resolve_model_path(config: dict[str, Any] | None = None) -> Path:
     return ensure_model_cached(model_name)
 
 
+_tokenizer_cache: dict[str, Any] = {}
+
+
+def load_tokenizer(
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> Any:
+    """Load and cache a HuggingFace tokenizer for the given model."""
+    from transformers import AutoTokenizer
+
+    name = model_name or get_model_name(config)
+    if name in _tokenizer_cache:
+        return _tokenizer_cache[name]
+
+    local_path = get_model_cache_dir(name)
+    if not is_model_cached(local_path):
+        ensure_model_cached(name)
+    load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
+    tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
+    _tokenizer_cache[name] = tokenizer
+    return tokenizer
+
+
+def count_input_tokens(
+    text: str,
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> int:
+    """Return input token count for text without truncation."""
+    if not text:
+        return 0
+    tokenizer = load_tokenizer(model_name, config)
+    return len(tokenizer.encode(text, add_special_tokens=True))
+
+
 class CodeGenModel:
     """Wrapper for HuggingFace CodeGen models with configurable generation."""
 
@@ -94,7 +129,7 @@ class CodeGenModel:
         self,
         model_name: str,
         device: str = "auto",
-        max_length: int = 512,
+        max_length: int = 2048,
         model_path: str | Path | None = None,
         config: dict[str, Any] | None = None,
     ):
@@ -177,10 +212,12 @@ class CodeGenModel:
 
         import torch
 
+        # Keep the tail of long prompts (question / SQL trigger) when truncating.
         inputs = self.tokenizer(
             prompt,
             return_tensors="pt",
             truncation=True,
+            truncation_side="left",
             max_length=self.max_length,
         ).to(self.device)
 
@@ -235,7 +272,7 @@ def load_model(
     model = CodeGenModel(
         model_name=model_name,
         device=device or model_cfg.get("device", "auto"),
-        max_length=max_length or model_cfg.get("max_length", 512),
+        max_length=max_length or model_cfg.get("max_length", 2048),
         config=config,
     )
     if eager:

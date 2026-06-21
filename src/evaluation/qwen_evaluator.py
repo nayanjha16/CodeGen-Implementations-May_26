@@ -41,20 +41,52 @@ Respond with JSON only:
 
 _SQL2NOSQL_PROMPT = """You are a strict MongoDB query equivalence judge.
 
-Compare the predicted MongoDB query against the reference MongoDB query.
-- query_correct is true only if both queries are semantically equivalent.
-- If predicted query is empty or invalid, query_correct must be false.
+Compare the predicted MongoDB query against the reference MongoDB query. Judge whether both queries would return the same output (same documents, counts, aggregate values, sort order, and limits) when run on the same collection data.
 
-Predicted MongoDB query:
+Rules:
+- query_correct is true ONLY if both queries are semantically equivalent and would produce the same results.
+- Ignore formatting differences: whitespace, quote style, key ordering, and minor alias naming when the returned data matches.
+- Different but equivalent MongoDB APIs are correct when they produce the same output, for example:
+  - db.collection.countDocuments({{}}) vs db.collection.aggregate([{{"$group": {{"_id": null, "count": {{"$sum": 1}}}}}}])
+  - db.collection.distinct("field", filter) vs equivalent find/distinct patterns with the same filter
+  - db.collection.find(filter, projection).sort(sort).limit(n) vs find with equivalent sort/limit options
+- For aggregates: same filters, grouping logic, and computed values matter; cosmetic output-field name differences in $group are acceptable when values match.
+- query_correct must be false if the predicted query is empty, invalid shell syntax, targets a different collection, or differs in filters, sort direction, limit, distinct field, or aggregation logic.
+- Do not mark query_correct true unless you are confident both queries return the same output.
+
+{context}Predicted MongoDB query:
 {predicted_mongodb_query}
 
 Reference MongoDB query:
 {reference_mongodb_query}
 
-Respond with JSON only:
+Respond with JSON only (no markdown fences). In reason, do not include curly braces or backticks:
 {{
   "query_correct": true or false,
-  "reason": "short reason focused on differences between predicted and reference"
+  "reason": "short reason focused on output differences, not syntax style"
+}}"""
+
+_DOCUMENTATION_PROMPT = """You are a strict MongoDB query documentation judge.
+
+Decide whether the generated documentation accurately and completely explains the MongoDB query below.
+
+Rules:
+- doc_correct is true ONLY if the documentation correctly explains the collection, operation, filters, projections, sorting, limits, and aggregation behavior when present.
+- Ignore stylistic differences when the meaning matches the query.
+- doc_correct must be false if the output is empty, unrelated, or misses key query semantics.
+- Brief mentions of the MongoDB query syntax inside the explanation are acceptable.
+- Do not mark doc_correct true unless you are confident the documentation would help a developer understand what the query returns.
+
+{context}MongoDB query:
+{mongodb_query}
+
+Generated documentation:
+{generated_output}
+
+Respond with JSON only (no markdown fences). In reason, do not include curly braces or backticks:
+{{
+  "doc_correct": true or false,
+  "reason": "short reason focused on missing or incorrect explanation"
 }}"""
 
 _TEND_PROMPT = """You are a database expert. Compare the SQL input with the MongoDB output.
@@ -210,6 +242,32 @@ class QwenEvaluator:
             text = re.split(r"\bassistant\b", text, flags=re.IGNORECASE)[-1].strip()
         return text
 
+    @staticmethod
+    def _strip_code_fences(text: str) -> str:
+        text = text.strip()
+        text = re.sub(r"^```(?:json)?\s*", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\s*```\s*$", "", text)
+        return text.strip()
+
+    @staticmethod
+    def _extract_bool_field(text: str, field: str) -> bool | None:
+        match = re.search(
+            rf'"{re.escape(field)}"\s*:\s*(true|false)',
+            text,
+            re.IGNORECASE,
+        )
+        if not match:
+            return None
+        return match.group(1).lower() == "true"
+
+    @staticmethod
+    def _extract_string_field(text: str, field: str) -> str:
+        match = re.search(
+            rf'"{re.escape(field)}"\s*:\s*"((?:\\.|[^"\\])*)"',
+            text,
+        )
+        return match.group(1) if match else ""
+
     def _parse_text2sql_response(self, text: str) -> dict[str, Any]:
         text = self._strip_assistant_prefix(text)
         parsed = self._extract_eval_json(text, {"sql_correct"})
@@ -226,18 +284,53 @@ class QwenEvaluator:
         }
 
     def _parse_sql2nosql_response(self, text: str) -> dict[str, Any]:
-        text = self._strip_assistant_prefix(text)
+        raw_response = text
+        text = self._strip_code_fences(self._strip_assistant_prefix(text))
         parsed = self._extract_eval_json(text, {"query_correct"})
-        if parsed is None:
+        if parsed is not None:
             return {
-                "query_correct": False,
-                "reason": "Unable to parse model response",
-                "raw_response": text,
+                "query_correct": bool(parsed.get("query_correct")),
+                "reason": str(parsed.get("reason", "")),
+                "raw_response": raw_response,
             }
+
+        query_correct = self._extract_bool_field(text, "query_correct")
+        if query_correct is not None:
+            return {
+                "query_correct": query_correct,
+                "reason": self._extract_string_field(text, "reason"),
+                "raw_response": raw_response,
+            }
+
         return {
-            "query_correct": bool(parsed.get("query_correct")),
-            "reason": str(parsed.get("reason", "")),
-            "raw_response": text,
+            "query_correct": False,
+            "reason": "Unable to parse model response",
+            "raw_response": raw_response,
+        }
+
+    def _parse_documentation_response(self, text: str) -> dict[str, Any]:
+        raw_response = text
+        text = self._strip_code_fences(self._strip_assistant_prefix(text))
+        parsed = self._extract_eval_json(text, {"doc_correct"})
+        if parsed is not None:
+            return {
+                "doc_correct": bool(parsed.get("doc_correct")),
+                "reason": str(parsed.get("reason", "")),
+                "raw_response": raw_response,
+            }
+
+        doc_correct = self._extract_bool_field(text, "doc_correct")
+        if doc_correct is not None:
+            return {
+                "doc_correct": doc_correct,
+                "reason": self._extract_string_field(text, "reason"),
+                "raw_response": raw_response,
+            }
+
+        return {
+            "doc_correct": False,
+            "reason": "Unable to parse model response",
+            "raw_response": raw_response,
         }
 
     def evaluate_text2sql_sample(
@@ -312,6 +405,7 @@ class QwenEvaluator:
         self,
         predicted_mongodb_query: str = "",
         reference_mongodb_query: str = "",
+        reference_sql: str = "",
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """Evaluate one SQL-to-MongoDB translation by comparing MongoDB queries."""
@@ -323,14 +417,55 @@ class QwenEvaluator:
                 "raw_response": skip_reason,
             }
 
+        context = _build_sections({"Source SQL": reference_sql})
         response = self._generate(
             _SQL2NOSQL_PROMPT.format(
+                context=context,
                 predicted_mongodb_query=predicted_mongodb_query.strip(),
                 reference_mongodb_query=reference_mongodb_query.strip(),
             )
         )
         result = self._parse_sql2nosql_response(response)
         result["overall_correct"] = result["query_correct"]
+        return result
+
+    def evaluate_documentation_sample(
+        self,
+        mongodb_query: str = "",
+        raw_output: str = "",
+        reference_sql: str = "",
+        predicted_documentation: str = "",
+        **_kwargs: Any,
+    ) -> dict[str, Any]:
+        """Evaluate one MongoDB query documentation sample with Qwen."""
+        generated_output = raw_output.strip() or predicted_documentation.strip()
+
+        if not mongodb_query.strip():
+            skip_reason = "Skipped Qwen evaluation: missing MongoDB query"
+            return {
+                "doc_correct": False,
+                "reason": "Missing MongoDB query",
+                "raw_response": skip_reason,
+            }
+
+        if not generated_output:
+            skip_reason = "Skipped Qwen evaluation: missing model raw output"
+            return {
+                "doc_correct": False,
+                "reason": "Missing model raw output",
+                "raw_response": skip_reason,
+            }
+
+        context = _build_sections({"Source SQL": reference_sql})
+        response = self._generate(
+            _DOCUMENTATION_PROMPT.format(
+                context=context,
+                mongodb_query=mongodb_query.strip(),
+                generated_output=generated_output,
+            )
+        )
+        result = self._parse_documentation_response(response)
+        result["overall_correct"] = result["doc_correct"]
         return result
 
     def evaluate_tend_sample(
@@ -401,6 +536,29 @@ class QwenEvaluator:
                 self.evaluate_sql2nosql_sample(
                     predicted_mongodb_query=sample.get("predicted_mongodb_query", ""),
                     reference_mongodb_query=sample.get("reference_mongodb_query", ""),
+                    reference_sql=sample.get("reference_sql", sample.get("ground_truth", "")),
+                )
+            )
+        return results
+
+    def evaluate_documentation_batch(
+        self,
+        samples: list[dict[str, str]],
+    ) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
+        for sample in samples:
+            results.append(
+                self.evaluate_documentation_sample(
+                    mongodb_query=sample.get(
+                        "mongodb_query", sample.get("predicted_mongodb_query", "")
+                    ),
+                    raw_output=sample.get(
+                        "doc_raw_output", sample.get("raw_output", "")
+                    ),
+                    reference_sql=sample.get("reference_sql", sample.get("ground_truth", "")),
+                    predicted_documentation=sample.get(
+                        "predicted_documentation", sample.get("documentation", "")
+                    ),
                 )
             )
         return results
@@ -429,6 +587,22 @@ class QwenEvaluator:
         return {
             "query_correct_rate": query_correct / total,
             "overall_correct_rate": query_correct / total,
+            "count": total,
+        }
+
+    @staticmethod
+    def summarize_documentation(results: list[dict[str, Any]]) -> dict[str, Any]:
+        total = len(results)
+        if total == 0:
+            return {
+                "doc_correct_rate": 0.0,
+                "overall_correct_rate": 0.0,
+                "count": 0,
+            }
+        doc_correct = sum(1 for result in results if result.get("doc_correct"))
+        return {
+            "doc_correct_rate": doc_correct / total,
+            "overall_correct_rate": doc_correct / total,
             "count": total,
         }
 

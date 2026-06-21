@@ -1,6 +1,6 @@
 model:
   # name and storage paths come from .env (MODEL_NAME, MODELS_BASE_DIR, etc.)
-  max_length: 512
+  max_length: 2048
   device: "auto"  # auto (cuda > mps > cpu), cuda, mps, cpu
 
 generation:
@@ -11,12 +11,6 @@ generation:
   do_sample: false
   decoding_strategy: "greedy"  # greedy, beam
   seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
-
-text2sql:
-  prompt_template: "auto"  # auto, default, causal, seq2seq
-
-sql2nosql:
-  prompt_template: "auto"  # auto, default, causal, seq2seq
 
 datasets:
   spider: {}  # cache_dir, repo_url, dataset_url set from .env

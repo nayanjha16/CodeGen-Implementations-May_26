@@ -9,7 +9,9 @@ from typing import Any
 import yaml
 from dotenv import load_dotenv
 
-from src.utils.paths import get_project_root
+from src.utils.paths import get_checkpoint_path, get_project_root
+
+TRAINING_TASKS = frozenset({"text2sql", "sql2nosql", "nosql2doc"})
 
 
 def _load_env() -> None:
@@ -54,6 +56,11 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     )
     if os.environ.get("MODEL_CHECKPOINT"):
         model_cfg["checkpoint"] = os.environ["MODEL_CHECKPOINT"]
+    if os.environ.get("MODEL_ADAPTER"):
+        model_cfg["adapter"] = os.environ["MODEL_ADAPTER"]
+
+    training_cfg = _ensure_dict(config, "training")
+    _ensure_dict(config, "lora")
 
     datasets_cfg = _ensure_dict(config, "datasets")
     spider_cfg = _ensure_dict(datasets_cfg, "spider")
@@ -68,6 +75,10 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     eval_cfg = _ensure_dict(config, "evaluation")
     eval_cfg["bertscore_model"] = os.environ.get("BERTSCORE_MODEL_NAME")
     eval_cfg["qwen_evaluator_model"] = os.environ.get("QWEN_EVALUATOR_MODEL_NAME")
+
+    # Apply model.max_length as default training max_length when not set in YAML.
+    if training_cfg.get("max_length") is None:
+        training_cfg["max_length"] = model_cfg.get("max_length", 2048)
 
     return config
 
@@ -146,3 +157,34 @@ def get_bird_dataset_url(config: dict[str, Any] | None = None) -> str:
     if not url:
         return _require_env("BIRD_DATASET_URL")
     return url
+
+
+def get_training_config(config: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Return the training section from config with env-aware defaults."""
+    if config is None:
+        config = load_config()
+    return dict(config.get("training", {}))
+
+
+def get_lora_config(config: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Return the LoRA section from config."""
+    if config is None:
+        config = load_config()
+    return dict(config.get("lora", {}))
+
+
+def get_adapter_name(config: dict[str, Any] | None = None) -> str | None:
+    """Return configured adapter task name from env/config, if set."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return os.environ.get("MODEL_ADAPTER") or config.get("model", {}).get("adapter")
+
+
+def get_adapter_path(task: str, config: dict[str, Any] | None = None) -> Path:
+    """Resolve the LoRA adapter directory for a task under models/checkpoints/."""
+    normalized = task.strip().lower()
+    if normalized not in TRAINING_TASKS:
+        allowed = ", ".join(sorted(TRAINING_TASKS))
+        raise ValueError(f"Unknown training task '{task}'. Expected one of: {allowed}")
+    return get_checkpoint_path(normalized)

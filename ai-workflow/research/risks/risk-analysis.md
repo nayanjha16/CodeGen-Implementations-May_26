@@ -1,122 +1,108 @@
-# Risk Analysis — CodeGen Studio
+# Risk Analysis — PEFT / LoRA Initiative
 
-Severity legend: **High** (security/correctness/blocking), **Medium** (reliability/perf),
-**Low** (maintainability/polish).
+Severity legend: **High** (blocking/correctness), **Medium** (reliability/quality),
+**Low** (polish/maintainability).
 
-## 1. Security Risks
+## 1. Data Risks
 
-### [High] Arbitrary SQL execution via `/execute-query`
-`SQLExecutor.execute` runs any SQL string the caller provides, against any `db_path` the
-caller provides. The `/execute-query` endpoint exposes this with no auth, no allow-list,
-and no sandboxing. A caller can run destructive DML/DDL or read arbitrary SQLite files on
-the host.
-- **Files**: `src/api/main.py` (`execute_query`), `src/text2sql/sql_executor.py`.
-- **Mitigation**: restrict to SELECT, validate/whitelist `db_path` under a data root, run
-  read-only connections (`mode=ro`), add auth, set query timeouts.
+### [High] Training data is essentially empty
+`data/TEND/` holds only **10 train + 10 validation rows** (smoke-test output). LoRA on 10
+examples will overfit instantly and learn nothing generalizable.
+- **Mitigation**: regenerate the **full Spider train split (~7k)** and a real validation
+  split via `python scripts/run_all_tend.py`. Budget time — Qwen documentation generation
+  is slow on CPU/MPS. Consider `--no-doc`/`--no-eval` for the SQL tasks and a separate doc
+  pass, or generate docs only for the subset used for nosql2doc.
 
-### [High] Arbitrary file path disclosure via `db_path`
-Both `/execute-query` and `/interactive-query` accept caller-supplied filesystem paths,
-allowing probing/reading of any `.sqlite`/`.db` file the server process can access.
-- **Mitigation**: resolve and confine paths to a configured data directory; reject
-  absolute/`..` paths.
+### [Medium] Documentation targets are model-generated, not gold
+The `documentation` column is produced by **Qwen2.5-0.5B-Instruct**, not human-authored.
+Training a model to imitate a 0.5B model's output caps quality at the teacher and can
+amplify its errors/hallucinations. The Qwen semantic judge is the *same* family — circular.
+- **Mitigation**: treat doc supervision as **distillation**; sample-audit targets; consider
+  a stronger teacher or the rule-based `ReferenceDocumentationBuilder` as an alternative
+  reference. Report metrics against both teacher and rule-based reference.
 
-### [Medium] No API hardening
-No authentication, CORS policy, rate limiting, or request-size limits. Large prompts could
-drive memory/CPU exhaustion (model + BERTScore downloads).
-- **Mitigation**: add API key/auth, CORS config, body-size and concurrency limits.
+### [Medium] sql2nosql / nosql2doc targets inherit rule-based converter limits
+`nosql_query` comes from `SQLToNoSQLTranslator` (sql-mongo-converter), which warns/omits
+JOIN, HAVING, UNION, subqueries, and aggregation accumulators. The LoRA model will learn
+those gaps as "correct."
+- **Mitigation**: filter training rows on `conversion_success` / `metadata` validity flags;
+  document covered SQL subset; exclude rows with conversion warnings for the sql2nosql
+  target if precision matters.
 
-### [Low] EXPLAIN via f-string
-`SQLValidator.validate_with_sqlite` builds `EXPLAIN {sql}` by string interpolation. It is
-`EXPLAIN`-only (no execution) but still unsanitized; combined with the executor it
-reinforces the injection surface.
+### [Medium] Train/eval leakage and split hygiene
+Only one timestamped CSV exists per split. If training and evaluation draw from the same
+generated file (or overlapping Spider DBs), metrics will be optimistic.
+- **Mitigation**: define fixed train/validation/test CSVs; ensure `db_id` disjointness or
+  at least row disjointness; seed and freeze the split.
 
-## 2. Correctness / Functional Risks
+## 2. Technical / Correctness Risks
 
-### [High] Per-request model reload in `/interactive-query`
-`interactive_query` constructs a **new** `QueryEngine` on every call, which builds a new
-`SQLGenerator` → new `CodeGenModel`. The first `generate()` then reloads the ~700MB model
-from scratch per request (the `lru_cache` singletons used by other endpoints are bypassed).
-- **Files**: `src/api/main.py` (`interactive_query`), `src/query_engine/engine.py`.
-- **Impact**: severe latency/memory churn under any real use.
-- **Mitigation**: cache a singleton `QueryEngine` (e.g. `@lru_cache`) like the other deps.
+### [High] No training infrastructure exists
+There is no `Trainer`, no dataset/collator, no `peft` dependency. Everything is new code
+on an untested path.
+- **Mitigation**: build incrementally — dataset builder → tiny overfit test (1 batch) →
+  full run. Reuse HF `Trainer`/`trl.SFTTrainer` rather than hand-rolling loops.
 
-### [High] `SpiderLoader._download_spider_data` can raise `NameError`
-In the nested-folder copy branch, `import shutil` only runs `if dest.exists()`, but
-`shutil.copytree(...)` is called unconditionally afterward. When `item.is_dir()` and the
-destination does **not** exist, `shutil` is undefined → `NameError`.
-- **File**: `datasets/spider_loader.py` (~lines 86–96).
-- **Mitigation**: move `import shutil` to module top.
+### [High] Causal vs seq2seq divergence
+Six candidate base models span both families. LoRA `task_type`, target modules, label
+masking, and the generation path all differ. A config that works for Qwen will silently
+mistrain T5 (or vice versa).
+- **Mitigation**: branch on `is_seq2seq_model()`; maintain per-family `target_modules`
+  defaults; validate target modules exist via `model.named_modules()` before training.
 
-### [Medium] `gdown` referenced but not declared
-`spider_loader` imports `gdown` for the full Spider data mirror; it is **not** in
-`requirements.txt`. The `requests` fallback hits a Google Drive URL that returns an HTML
-confirmation page, not the zip → corrupt/failed extraction.
-- **Mitigation**: add `gdown` to requirements or document a manual data path.
+### [Medium] Adapter-aware loading not implemented
+`resolve_model_path()`/`CodeGenModel.load()` assume a **full** model dir (`config.json` +
+weights). A LoRA checkpoint is just `adapter_config.json` + adapter weights and will fail
+to load as-is.
+- **Mitigation**: detect `adapter_config.json` and load via `PeftModel.from_pretrained`,
+  or `merge_and_unload()` and save a merged full model for the existing path.
 
-### [Medium] `datasets/` shadows the HuggingFace `datasets` package
-`requirements.txt` pins `datasets>=2.16.0`, but the local top-level `datasets/` package
-shadows it on `sys.path`. Any code doing `from datasets import load_dataset` would import
-the local package instead.
-- **Mitigation**: rename local package (e.g. `data_loaders/`) or drop the unused HF dep.
+### [Medium] Prompt drift between training and inference
+If the trainer constructs prompts differently from the runtime `PromptBuilder`s, the
+fine-tuned model underperforms at eval despite low training loss.
+- **Mitigation**: import and call the exact prompt builders in the dataset builder; add a
+  test asserting train prompt == eval prompt for a sample.
 
-### [Medium] SQL extraction collapses multi-line SQL
-`SQLGenerator._extract_sql` returns the first SQL-like *line* when no code fence is present,
-truncating multi-line generated queries.
-- **Mitigation**: capture from the first SQL keyword to statement terminator/end.
+### [Medium] Tokenization / truncation of long schemas
+SQL DDL schemas are long; with `max_length=2048` and `truncation_side="left"`, the target
+(SQL/Mongo/doc) at the *end* of a concatenated causal sequence can be truncated away,
+producing empty/garbage labels.
+- **Mitigation**: compute prompt+target lengths; truncate the *schema* region, never the
+  target; log/skip examples exceeding the budget.
 
-### [Medium] NoSQL translator coverage gaps
-- WHERE regex fallback only splits on `AND` (no `OR`, `IN`, `LIKE`, `BETWEEN`).
-- GROUP BY emits only `$group._id` — no aggregation accumulators (`$sum`, `$avg`, count).
-- JOIN/HAVING/UNION/subqueries are warned but unsupported.
-- Comparison parsing in `_parse_comparison` is heuristic and can mis-assign left/right.
-- **Mitigation**: document scope clearly (already partly warned) and/or extend rules.
+### [Low] Stop-string / extraction logic assumes base behavior
+`SQLGenerator`/`DocumentationGenerator` post-process raw output with regex heuristics tuned
+to base models. A fine-tuned model's cleaner output should still pass, but edge cases differ.
+- **Mitigation**: re-validate extraction on fine-tuned outputs.
 
-### [Medium] Inconsistent MLflow tracking stores
-Config uses `sqlite:///mlflow.db`; `demo_presentation.py` passes a **directory**
-(`ROOT/'mlruns'`); docker-compose's MLflow server uses a `/mlruns` file store. These three
-can produce **separate, non-mergeable** experiment histories.
-- **Mitigation**: standardize on one backend store URI across config/scripts/compose.
+## 3. Resource / Performance Risks
 
-### [Low] `GenerateSQLRequest.schema` shadows Pydantic
-Naming a field `schema` shadows `BaseModel.schema()` and triggers Pydantic warnings; could
-break tooling that calls `.schema()`.
-- **Mitigation**: rename to `db_schema` with an alias for backward-compatible JSON.
+- **[High] bitsandbytes / QLoRA is CUDA-only** — unavailable on the macOS/MPS dev host.
+  Do not make 4-bit a hard dependency.
+  - **Mitigation**: default to plain LoRA (fp16/bf16/fp32); gate QLoRA behind a CUDA check.
+- **[Medium] MPS/CPU training is slow and memory-bound** — starcoder2-3b LoRA may not fit
+  or will be very slow on a laptop.
+  - **Mitigation**: start with 0.35–0.5B models (codegen-350M, Qwen2.5-Coder-0.5B); reserve
+    3B for CUDA.
+- **[Medium] Qwen doc-generation cost** to build the dataset dominates wall-clock for the
+  nosql2doc track.
+  - **Mitigation**: cache generated CSVs; generate docs once and reuse.
+- **[Low] MPS dtype quirks** — some ops unsupported in fp16 on MPS; may need fp32.
 
-### [Low] `/interactive-query` uses raw params, not a request model
-Unlike the other POST endpoints, it declares `question`, `schema`, `db_path` as function
-args → FastAPI treats them as **query** params, inconsistent with the JSON-body endpoints.
-- **Mitigation**: introduce an `InteractiveQueryRequest` Pydantic model.
+## 4. Process / Reproducibility Risks
 
-## 3. Performance / Scalability Risks
+- **[Medium] Stale research/docs** — the prior research described FastAPI/Streamlit/
+  `query_engine` that no longer exist; planning off stale docs wastes effort. (Addressed:
+  these deliverables refreshed to current state.)
+- **[Medium] MLflow store consistency** — `configs/default.yaml` uses
+  `sqlite:///mlflow.db`; ensure training and eval log to the *same* store for comparison.
+- **[Low] `.gitignore`** excludes models/data artifacts; adapters under
+  `models/checkpoints/` may be ignored — confirm intended versioning/sharing strategy.
 
-- **[Medium] No true batch inference** — `generate_batch` loops example-by-example; benchmarks
-  on Spider/BIRD will be slow.
-- **[Medium] No execution timeouts** — long/heavy SQL can hang the executor and the API
-  worker.
-- **[Medium] BERTScore/CodeBLEU heavy** — first call downloads models; per-call cost is
-  high and silently falls back to token overlap on failure (metrics can become inconsistent
-  across environments without notice).
-- **[Low] Single-process serving** — no worker/concurrency guidance; model is not
-  thread-safe under concurrent requests.
+## 5. Summary of Top Risks to Address First
 
-## 4. Tech Debt / Maintainability
-
-- **[Medium] No CI** — no automated quality gate for linting or regression checks.
-- **[Medium] No dedicated regression suite** — real-model and full-download integration
-  regressions can go uncaught.
-- **[Low] Hard-coded sample data in Streamlit eval charts** — the "Evaluation Dashboard"
-  shows fabricated numbers rather than live MLflow runs; misleading in demos.
-- **[Low] Duplicated reference example sets** — `run_baseline_eval.py` and
-  `demo_presentation.py` each define their own near-identical benchmark examples.
-- **[Low] `__init__.py` exports minimal** — most packages expose nothing; consumers rely on
-  deep imports.
-
-## 5. Operational Risks
-
-- **[Medium] Network dependency** — first run downloads model + datasets; offline/airgapped
-  environments need pre-staged caches.
-- **[Low] `.gitignore` excludes `*.db`/`*.sqlite`/`mlruns/`** — sample DB and MLflow runs are
-  regenerated, not versioned (intended, but means clean clones have no results until
-  scripts run; Dockerfile mitigates by running `setup_sample_db.py` at build).
-- **[Low] Cross-platform path handling** — mostly handled (Pathlib, URI normalization), but
-  PowerShell instructions hard-code a user-specific path in the README.
+1. Regenerate full TEND training data (data volume). **[High]**
+2. Build training infra with HF `Trainer`/`trl`; overfit-test first. **[High]**
+3. Handle causal vs seq2seq branching correctly. **[High]**
+4. Implement adapter-aware loading. **[Medium]**
+5. Guarantee prompt parity train↔inference. **[Medium]**

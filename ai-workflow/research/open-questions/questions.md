@@ -1,75 +1,167 @@
-# Open Questions — CodeGen Studio
+# Open Questions — PEFT / LoRA Initiative
 
-Questions to resolve before planning/implementation. Grouped by theme; each notes why it
-matters and the current code-based assumption.
+Resolve before/early in planning. Each notes why it matters and the current assumption.
 
-## 1. Project Scope & Goals
+---
 
-1. **Is fine-tuning in scope?** `scripts/train.sh` is an explicit placeholder. Is the goal
-   to (a) stay a baseline/eval/demo, or (b) add a real training loop on Spider/BIRD?
-   *Impacts: dataset prep, GPU requirements, new modules.*
-2. **Is this primarily a teaching/demo artifact or a product?** The IIT Hyderabad demo
-   script and narrated output suggest education. Production hardening (auth, scaling) is
-   only worthwhile under the product framing.
-3. **What does "done" look like for the NoSQL track?** Is string generation sufficient, or
-   is real MongoDB execution + execution-accuracy expected?
+## ✅ Resolved Decisions (2026-06-21)
 
-## 2. Business Logic Ambiguities
+| # | Decision | Choice |
+|---|----------|--------|
+| Base model | Training base | **`Salesforce/codegen-350M-multi`** (causal LM) |
+| Q1 | Adapter strategy | **One LoRA adapter per task** (text2sql / sql2nosql / nosql2doc) |
+| Q3 | LoRA vs QLoRA | **Plain LoRA only** (no QLoRA / bitsandbytes) |
+| Q4 | Full FT vs LoRA | **LoRA only — no full fine-tuning** |
+| Q5 | Training corpus | **Full Spider train + held-out validation; BIRD later** |
+| Q6 | Quality-flag filter | **Train only on rows where `overall_correct == True`** |
+| Q10/Q11 | Hyperparameters & target modules | **Finalized — see config block below** |
+| Q12 | Sequence-length budget | **Reserve target first: `max_length=2048`, `max_target_tokens=256` → prompt budget = 1792** |
+| Q14 | Adapter storage & loading | **Do NOT merge — keep adapters separate, load by task intent** |
+| Q18 | Primary metric per task | **LLM judge + AST/structural gates** — headline `qwen_correct_rate`; see per-task detail below |
+| Q21 | Target training hardware | **Auto-detect at runtime** — CUDA → MPS → CPU via `resolve_device()`; must run on any machine |
+| Q22 | Dependency additions | **`peft` + `trl`** in `requirements.txt` (installed via `environment.yml`); no `bitsandbytes` |
 
-4. **Execution accuracy when no DBs are present** — `evaluate_all` only computes execution
-   accuracy when `db_paths` are provided; otherwise it is silently absent. Should missing
-   DBs be an error, a warning, or a logged skip?
-5. **Reference SQL source for Spider** — `_standardize` uses `query` then falls back to
-   `sql`. Spider's `sql` field is a structured dict, not text. Is the text `query` field
-   always the intended gold reference?
-6. **BIRD schema is evidence-only** — BIRD examples carry `db_id` + `evidence` as the
-   "schema" (no column listing). Is that intentional for prompting, or should full table
-   schemas be loaded for BIRD like Spider?
-7. **GROUP BY semantics in NoSQL** — should aggregation produce accumulators
-   (`$sum`/`$avg`/count) inferred from SELECT, or is grouping-by-key alone acceptable?
+### Q18 — Primary success metric (per task)
 
-## 3. Unclear / Inconsistent APIs
+Composite evaluation via existing `QwenEvaluator` + syntax/structural checks (not EM, exec acc,
+ROUGE-L, or BERTScore as pass/fail criteria):
 
-8. **`/interactive-query` parameter style** — should it accept a JSON body (like the other
-   POST endpoints) instead of query params? Current behavior is inconsistent.
-9. **`GenerateSQLRequest.schema` field name** — acceptable to rename (e.g. `db_schema`)
-   given it shadows Pydantic's `BaseModel.schema()`? Any external clients depending on the
-   `schema` key?
-10. **MLflow backend store of record** — config (`sqlite:///mlflow.db`), demo
-    (`mlruns/` directory), and compose (`/mlruns` file store) disagree. Which is canonical?
-11. **Decoding strategy default** — config sets `decoding_strategy: greedy` with
-    `num_beams: 4`; beam is only used if explicitly selected. Is greedy the intended default
-    for reported baselines?
+| Task | Headline metric | LLM judge field | AST / structural gates |
+|------|-----------------|-----------------|------------------------|
+| text2sql | `qwen_correct_rate` | `sql_correct` (Qwen) | `SQLValidator` syntax + completeness; exact-match short-circuit; table-mismatch rejection |
+| sql2nosql | `qwen_correct_rate` | `query_correct` (Qwen) | MongoDB shell syntax validity; parsed `structural_equivalence` (filter/projection/collection) as diagnostic |
+| nosql2doc | `qwen_correct_rate` | `doc_correct` (Qwen) | Empty/invalid output rejection; doc structural validity checks |
 
-## 4. Data & Environment
+Secondary metrics (BLEU, ROUGE-L, BERTScore, token-F1, exec acc) remain logged for analysis
+but do **not** define run success.
 
-12. **Spider full-data download** — the gdown Google Drive mirror is unpinned and `gdown`
-    is undeclared. What is the supported, reproducible way to obtain Spider databases?
-13. **Local `datasets/` vs HF `datasets`** — is the HF `datasets` dependency actually used
-    anywhere? If not, can the dependency be dropped to avoid the name shadow?
-14. **Target hardware** — CPU-only acceptable for baselines, or is CUDA assumed? Affects
-    timeouts, batch sizes, and which metrics (BERTScore) are practical.
-15. **Offline operation** — must the system run without network (pre-staged model/dataset
-    caches), or is download-on-first-run acceptable?
+### Q21 — Target training hardware
 
-## 5. Edge Cases
+**No fixed hardware target.** Training and inference pick the best available backend at
+runtime and must remain runnable on any machine:
 
-16. **Multi-line / multi-statement generated SQL** — how should `_extract_sql` handle
-    outputs with multiple statements or SQL spanning several lines?
-17. **WHERE with OR / IN / LIKE / BETWEEN** — the regex fallback only handles `AND`-joined
-    simple comparisons. Are these constructs required for the target queries?
-18. **Empty / non-SELECT model output** — current behavior returns the first non-empty line
-    as "SQL". Should non-SQL output be flagged/rejected instead?
-19. **Result-set comparison with NULLs / unhashable types** — `_normalize_rows` sorts on
-    `row.items()`; mixed types or `None` ordering could raise or misrank. Tolerance needed?
-20. **Concurrency** — is the model expected to serve concurrent requests? It is not
-    thread-safe as written; do we need a queue/worker model?
+1. **`device: auto`** (default in `configs/default.yaml`) → `src/utils/device.resolve_device()`
+2. **Priority:** CUDA (if available) → MPS (Apple Silicon) → CPU (universal fallback)
+3. **Override:** optional config / CLI `--device cuda|mps|cpu` for forced runs or debugging
+4. **Precision:** keep fp32 (no bf16/fp16 flags in training config) for cross-device compatibility;
+   CUDA may still benefit from larger effective batch sizes; CPU runs may need a smaller
+   `per_device_train_batch_size` if OOM — tune at runtime, not baked into the plan
 
-## 6. Quality Gates
+LoRA on `codegen-350M-multi` is feasible on all three backends; wall-clock varies by device.
 
-21. **Required test coverage threshold** — README mentions coverage targets but no minimum
-    is enforced. What coverage gate (if any) should CI enforce?
-22. **Is an integration test against the real model desired**, or is full mocking the
-    intended testing strategy (for speed/CI)?
-23. **Expected baseline metric ranges** — are there target numbers the 350M baseline should
-    reproduce (for regression detection), or is the harness purely exploratory?
+### Finalized `configs/default.yaml` block
+
+```yaml
+model:
+  name: Salesforce/codegen-350M-multi
+
+training:
+  task_type: CAUSAL_LM
+
+  learning_rate: 2e-4
+  weight_decay: 0.01
+
+  epochs: 5
+
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 8
+
+  gradient_accumulation_steps: 4   # effective batch size = 32
+
+  warmup_ratio: 0.05
+
+  lr_scheduler_type: cosine
+
+  max_grad_norm: 1.0
+
+  fp16: false
+  bf16: false                      # full-precision (fp32) — MPS/CPU friendly
+
+lora:
+  enabled: true
+
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+
+  bias: none
+
+  target_modules:
+    - qkv_proj
+    - out_proj
+
+evaluation:
+  max_new_tokens: 256
+```
+
+> **Verify before first run:** confirm `qkv_proj` and `out_proj` are the actual attention
+> module names in `CodeGenForCausalLM` via `model.named_modules()`. If LoRA reports zero
+> trainable params, the names are wrong.
+
+---
+
+## Still Open
+
+## 1. Scope & Strategy
+
+*(All resolved — see table above.)*
+
+## 2. Data
+
+6. ~~**Filter on quality flags?**~~ **RESOLVED:** keep only rows where
+   **`overall_correct == True`** (Qwen judged both schema and query equivalence correct).
+   This is the single training filter; it implicitly requires `conversion_success` too.
+   *Caveat: tighter filter = fewer rows, and `overall_correct` is a 0.5B-model judgment —
+   monitor surviving row count after regenerating the full Spider train split.*
+7. **Documentation supervision source** — train against the Qwen-generated `documentation`
+   column (distillation) or the rule-based `ReferenceDocumentationBuilder` output, or both?
+8. **Train/validation/test split definition** — how to guarantee disjointness (row-level
+   vs `db_id`-level) and freeze it for reproducible comparison? (Spider train → train;
+   Spider dev/validation → held-out eval.)
+9. **Dataset size target** — full ~7k, or a curated high-quality subset? Trade-off between
+   coverage and generation cost/quality (Qwen doc generation is the bottleneck).
+
+## 3. Training Configuration
+
+12. ~~**Sequence length budget**~~ **RESOLVED — reserve target space first:**
+    `max_length = 2048`, `max_target_tokens = 256` → **prompt budget = 2048 − 256 =
+    1792 tokens**. Truncate the *prompt* (schema region) to ≤1792 tokens; never truncate
+    the target. Skip/log any example whose target exceeds 256 tokens.
+13. **Loss masking** — confirm prompt tokens masked to `-100` so loss is computed on the
+    target completion only.
+
+## 4. Integration & Tooling
+
+14. ~~**Adapter storage & loading**~~ **RESOLVED — do NOT merge.** Keep each task's LoRA
+    adapter separate under `models/checkpoints/<task>/` (`adapter_config.json` +
+    `adapter_model.safetensors`) and **load by intent (task)** via
+    `PeftModel.from_pretrained(base, adapter_dir)`. Requires an adapter-aware path in
+    `model_loader` that detects `adapter_config.json` and wraps the cached base model
+    (see Q17). Preserves swappability; base model stays untouched in `models/base/`.
+15. **CLI / entry point** — new `scripts/train_lora.py` and `src/training/` package; args
+    for task, data path, output adapter dir (base model + hyperparameters come from config).
+16. **Trainer choice** — HF `Trainer` (manual collator) vs `trl.SFTTrainer` (adds `trl`
+    dep, handles packing/masking).
+17. **Eval integration** — reuse `BenchmarkRunner` with the fine-tuned model; need a way to
+    point it at a per-task adapter (likely an adapter-aware path in `model_loader`).
+
+## 5. Success Criteria
+
+18. ~~**Primary metric per task**~~ **RESOLVED:** **LLM judge + AST/structural gates** —
+    headline metric is **`qwen_correct_rate`** per task (see resolved table above). Reuses
+    `src/evaluation/qwen_evaluator.py` and existing evaluators; EM / exec acc / ROUGE-L /
+    BERTScore are secondary diagnostics only.
+19. **Minimum acceptable lift** over baseline to call a run successful?
+20. **Comparison protocol** — same eval set, same decoding strategy, logged to the same
+    MLflow store as the baseline runs in `results/`.
+
+## 6. Environment
+
+21. ~~**Target training hardware**~~ **RESOLVED:** **auto-detect CUDA → MPS → CPU** via
+    existing `resolve_device()` (`device: auto` in config); optional override; must run on
+    any machine (see Q21 detail above).
+22. ~~**Dependency additions**~~ **RESOLVED:** add **`peft>=0.11.0`** and **`trl>=0.9.0`**
+    to `requirements.txt` (pulled in by `environment.yml` pip install). **`bitsandbytes`**
+    not added — plain LoRA only (Q3).
+23. **Adapter versioning** — should trained adapters be committed/shared, or treated as
+    regenerable artifacts (current `.gitignore` ignores most of `models/`)?

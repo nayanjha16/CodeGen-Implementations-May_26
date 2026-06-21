@@ -2,48 +2,57 @@
 
 ## Current Phase
 
-- **Phase**: Research — **COMPLETE**
-- **Next phase**: Planning
-- **Date**: 2026-06-13
-- **Implementation performed**: None (research is analysis-only)
+- **Phase**: Implementation — **Stage 1 complete**
+- **Active stage**: Stage 2 — SFT Dataset Builder (next)
+- **Date**: 2026-06-21
+
+## Initiative
+
+Add **parameter-efficient fine-tuning (LoRA)** for three tasks — **text2sql**,
+**sql2nosql**, **nosql2doc** — trained on the TEND dataset (`data/TEND/`).
+
+## Approval
+
+- **Status**: APPROVED (2026-06-21)
+- **Stage 0**: Skipped — user will regenerate full TEND data later
 
 ## Phase Checklist
 
 | Phase | Status |
 |-------|--------|
 | Research | ✅ Complete |
-| Planning | ⏭️ Next |
-| Implementation | ⬜ Not started |
+| Planning | ✅ Complete |
+| Approval | ✅ Approved |
+| Implementation Stage 1 (Foundation) | ✅ Complete |
+| Implementation Stage 2 (Dataset builder) | ⏭️ Next |
+| Implementation Stages 3–6 | ⬜ Pending |
 | Validation | ⬜ Not started |
 | Optimization | ⬜ Not started |
 
-## Research Deliverables (all written)
+## Stage 1 Artifacts
 
-| Deliverable | Path |
-|-------------|------|
-| Executive Summary | `ai-workflow/research/summaries/project-summary.md` |
-| Executive Summary (synced) | `ai-workflow/context/project-summary.md` |
-| Architecture Map | `ai-workflow/research/architecture/architecture-map.md` |
-| Architecture Map (synced) | `ai-workflow/context/architecture-map.md` |
-| Requirements Analysis | `ai-workflow/research/requirements/requirements-analysis.md` |
-| Risk Report | `ai-workflow/research/risks/risk-analysis.md` |
-| Open Questions | `ai-workflow/research/open-questions/questions.md` |
-| Current State (baseline) | `ai-workflow/context/current-state.md` |
-| Workflow Status (this file) | `ai-workflow/context/workflow-status.md` |
+| Artifact | Path |
+|----------|------|
+| Stage log | `ai-workflow/implementation/stage-logs/stage-1.md` |
+| Code report | `ai-workflow/implementation/generated-code-reports/stage-1-report.md` |
+| Pre-flight script | `scripts/inspect_lora_modules.py` |
 
-## Handoff to Planning
+## Locked Decisions
 
-Planning should:
+- Base model: `Salesforce/codegen-350M-multi`
+- Adapter save path: `models/checkpoints/<task>/`
+- LoRA target_modules: `qkv_proj`, `out_proj` (verified)
+- Plain LoRA fp32; one adapter per task; no merge
 
-1. Resolve the **Open Questions** (`ai-workflow/research/open-questions/questions.md`),
-   prioritizing scope (fine-tuning? product vs demo? NoSQL execution?).
-2. Triage the **High-severity risks** first (arbitrary SQL execution, per-request model
-   reload, Spider download `NameError`).
-3. Use the **Requirements Analysis** missing-features list to scope any new work.
-4. Treat the **Architecture Map** as the integration reference (no import cycles; DI-based;
-   heavy deps deferred).
+## Next Steps (Stage 2)
 
-## Notes
+1. `src/training/prompt_factory.py` — wire existing prompt builders
+2. `src/training/tend_dataset.py` — CSV → HuggingFace Dataset
+3. `src/training/filters.py` — `overall_correct == True` filter
+4. `tests/training/test_prompt_parity.py`
 
-- No source code was modified during research.
-- Tests were not executed during research.
+## Reference
+
+- Feature plan: `ai-workflow/planning/feature-plans/lora-finetuning-plan.md`
+- Task breakdown: `ai-workflow/planning/task-breakdowns/lora-finetuning-tasks.md`
+- Current state: `ai-workflow/context/current-state.md`

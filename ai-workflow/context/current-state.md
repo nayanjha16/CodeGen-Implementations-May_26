@@ -1,53 +1,45 @@
 # Current State — CodeGen Studio
 
-> Baseline established during the **research** phase. No implementation/changes made yet.
+> Updated after **Stage 1 implementation** (2026-06-21).
 
 ## Snapshot
 
-- **Date**: 2026-06-13
-- **Phase**: Project reorganized for separation of concerns
-- **Layout**: All Python packages under `src/`; UI in `apps/`; data artifacts in `data/` subdirs; Docker in `docker/`
+- **Date**: 2026-06-21
+- **Phase**: Implementation — **Stage 1 complete**, Stage 2 next
+- **Approval**: APPROVED (`lora-finetuning-approval.md`); Stage 0 skipped (user will run data prep later)
+- **Base model**: `Salesforce/codegen-350M-multi`
 
-## What Exists
+## Stage 1 Deliverables (done)
 
-A feature-complete baseline/evaluation/demo system for `Salesforce/codegen-350M-multi`:
+- `configs/default.yaml` — `training:` + `lora:` blocks (fp32, LoRA r=16, target_modules verified)
+- `src/utils/config.py` — `get_training_config()`, `get_lora_config()`, `get_adapter_path(task)`, `get_adapter_name()`
+- `src/training/` — package skeleton with `TaskType` enum
+- `scripts/inspect_lora_modules.py` — pre-flight check (1.97M trainable params on codegen-350M)
+- `.env.example` — `MODEL_ADAPTER` documented; adapters save to `models/checkpoints/<task>/`
 
-- **Text-to-SQL**: prompt builder, model wrapper (greedy/beam), generator, validator,
-  executor — all implemented.
-- **SQL→NoSQL**: rule-based MongoDB translator (SELECT/WHERE/ORDER BY/LIMIT/GROUP BY) +
-  evaluator — implemented, with documented gaps (JOIN/HAVING/UNION/aggregations).
-- **Query engine**: full interactive pipeline orchestrator — implemented.
-- **Datasets**: Spider + BIRD loaders (auto-download) and preprocessing — implemented.
-- **Evaluation**: full metric suite (EM, exec acc, syntax validity, BLEU, ROUGE-L,
-  BERTScore, CodeBLEU), benchmark runner, MLflow tracker — implemented.
-- **Serving**: FastAPI (6 endpoints) + Streamlit (4 pages) — implemented.
-- **Tooling**: scripts (setup/baseline/demo + shell launchers), Docker/compose, notebooks
-  — implemented.
+## Pending (next stages)
 
-## Known Gaps (no fixes applied)
+| Stage | Work | Status |
+|-------|------|--------|
+| 0 | Full TEND data + `manifest.json` | ⏸ Deferred by user |
+| 2 | SFT dataset builder + prompt parity tests | ⬜ Next |
+| 3 | LoRA trainer + `train_lora.py` | ⬜ |
+| 4 | PEFT adapter loading in `model_loader` | ⬜ |
+| 5 | Train three adapters | ⬜ |
+| 6 | Eval integration + comparison | ⬜ |
 
-- No fine-tuning/training loop (`scripts/train.sh` is a placeholder).
-- No real MongoDB execution (translator emits strings only).
-- No CI; no dedicated regression suite for real-model generation.
-- Streamlit eval charts use hard-coded sample data.
+## Known Gaps (remaining)
 
-## Notable Issues Found (for planning, not yet addressed)
-
-- **High**: `/execute-query` + caller-supplied `db_path` = arbitrary SQL execution / file
-  access (no auth/sandbox).
-- **High**: `/interactive-query` rebuilds `QueryEngine` per call → repeated model reloads.
-- **High**: `SpiderLoader._download_spider_data` can raise `NameError` (shutil import
-  inside a conditional).
-- **Medium**: `gdown` used but not in `requirements.txt`; MLflow store URI inconsistent across config/scripts/compose.
-- (Full list: `ai-workflow/research/risks/risk-analysis.md`.)
+- No `tend_dataset.py` or training loop yet
+- No adapter-aware model loading
+- Training data: existing smoke CSVs only (`data/TEND/spider_*_0621_*.csv`)
 
 ## Validation Status
 
-- Unit tests were not executed during research (analysis only).
-- No code modified.
+- Stage 1 pre-flight: ✅ `inspect_lora_modules.py` passed
+- No unit test suite yet (`tests/training/` — planned Stage 2+)
 
-## Environment Assumptions
+## Environment
 
-- Python 3.11; `PYTHONPATH` must include project root.
-- Network needed for first-run model/dataset downloads (~700MB model).
-- SQLite-based execution; CPU-capable (slow) or CUDA.
+- Python 3.11 (`conda` env `ai`)
+- Run scripts with project conda env or ensure `requirements.txt` installed

@@ -1,144 +1,140 @@
-# Architecture Map — CodeGen Studio
+# Architecture Map — CodeGen Studio (PEFT / LoRA Research)
+
+> Current architecture as of 2026-06-21, oriented toward adding LoRA PEFT for the three
+> tasks: **text2sql**, **sql2nosql**, **nosql2doc**.
 
 ## 1. Module Overview
 
 | Package | Module | Responsibility |
 |---------|--------|----------------|
-| `src.models` | `model_loader.py` | `CodeGenModel` HF wrapper; `load_model()` factory. Lazy load, device resolve, greedy/beam generation. |
-| `src.text2sql` | `prompt_builder.py` | `PromptBuilder` — schema+question → prompt; batch; template name for tracking. |
-| | `sql_generator.py` | `SQLGenerator` — orchestrates model + prompt; extracts SQL from raw output (regex/code-fence). |
-| | `sql_validator.py` | `SQLValidator` — syntax (sqlparse), completeness (parens, SELECT/FROM), SQLite `EXPLAIN`. |
-| | `sql_executor.py` | `SQLExecutor` — run SQL on SQLite; order-independent result comparison. |
-| `src.sql2nosql` | `translator.py` | `SQLToNoSQLTranslator` — SQL→MongoDB find()/aggregate(); warnings for unsupported. |
-| | `evaluator.py` | `NoSQLEvaluator` — translation accuracy (exact/token-F1), structural equivalence. |
-| `src.query_engine` | `engine.py` | `QueryEngine` — full pipeline: generate→validate→execute→translate→explain. |
-| `src.api` | `main.py` | FastAPI app; 6 endpoints; `lru_cache` singletons. |
-| | `schemas.py` | Pydantic request/response models. |
-| `src.utils` | `config.py` | `load_config()` YAML loader; `get_project_root()`. |
-| | `seeds.py` | `set_seeds()` for random/numpy/torch. |
-| | `logging.py` | `setup_logging()` — "codegen" logger. |
-| `datasets` | `spider_loader.py` | `SpiderLoader` — download (GitHub + gdown mirror), schema parse, splits, DB path resolve. |
-| | `bird_loader.py` | `BirdLoader` — download (DAMO-ConvAI), evidence schema, splits, DB path resolve. |
-| | `preprocess.py` | `DatasetPreprocessor`, `clean_sql/clean_question`, `compute_statistics`. |
-| `evaluation` | `metrics.py` | `EvaluationMetrics` — EM, exec acc, syntax validity, BLEU, ROUGE-L, BERTScore, CodeBLEU. |
-| | `benchmark.py` | `BenchmarkRunner` — dataset eval + MLflow logging; `run_spider`/`run_bird`. |
-| | `mlflow_tracker.py` | `MLflowTracker` — URI normalization, run/param/metric logging. |
-| `streamlit_app` | `app.py` | 4-page UI consuming core modules directly. |
+| `src.models` | `model_loader.py` | `CodeGenModel` HF wrapper; `load_model()`; `ensure_model_cached()`; `resolve_model_path()` (checkpoint > base); `is_seq2seq_model()`. Lazy load, device resolve, greedy/beam, stop-strings. |
+| `src.text2sql` | `prompt_builder.py` | `PromptBuilder` — schema+question → SQL prompt (`SQL:` suffix). |
+| | `sql_generator.py` | `SQLGenerator` — model + prompt → SQL; multi-line extraction; stop strings. |
+| | `sql_validator.py` / `sql_executor.py` | sqlparse + SQLite EXPLAIN validation; SQLite execution + result comparison. |
+| `src.sql2nosql` | `prompt_builder.py` | `NoSQLPromptBuilder` — SQL + Mongo schema → Mongo-query prompt. |
+| | `nosql_generator.py` | `NoSQLGenerator` — model → MongoDB shell query; `_parse_collection`. |
+| | `translator.py` | `SQLToNoSQLTranslator` — rule-based SQL→Mongo (reference/gold path). |
+| | `evaluator.py` | `NoSQLEvaluator` — query-level metrics + structural equivalence. |
+| `src.documentation` | `prompt_builder.py` | `DocumentationPromptBuilder` — Mongo query+schema+question → doc prompt. |
+| | `doc_generator.py` | `DocumentationGenerator` — model → plain-English doc; heavy output sanitizing; reference fallback. |
+| | `evaluator.py` / `reference_builder.py` | `DocumentationEvaluator` (structure + text metrics); `ReferenceDocumentationBuilder` (rule-based reference doc). |
+| `src.evaluation` | `metrics.py` | `EvaluationMetrics` — EM, exec acc, syntax, BLEU, ROUGE-L, BERTScore, CodeBLEU, token-F1. |
+| | `benchmark.py` | `BenchmarkRunner` — runs all 3 tasks; logs to MLflow. |
+| | `mlflow_tracker.py` / `qwen_evaluator.py` | MLflow logging; Qwen LLM-as-judge. |
+| `src.datasets` | `spider_loader.py` / `bird_loader.py` | Download + standardize `{question, schema, sql, db_id}`. |
+| | `preprocess.py` | Cleaning, splitting, statistics. |
+| `src.utils` | `config.py`, `device.py`, `paths.py`, `seeds.py`, `logging.py`, `schema_conversion.py` | Config/`.env`, device resolve, model/data/checkpoint paths, seeds, logging, `derive_mongo_schema_json`. |
+| `TEND` | `build_tend_dataset.py` | `TENDDatasetBuilder` — Spider → CSV with all task columns + doc + judge. |
+| | `run_tend.py` / `scripts/run_all_tend.py` | CLI to generate train/validation CSVs. |
+| | `qwen_doc_generator.py` / `qwen_evaluator.py` | Qwen documentation + semantic judge. |
 
 ## 2. Dependency Graph (import direction)
 
 ```
-                         configs/default.yaml
-                                  |
-                          src.utils.config
-                                  |
-        +-------------------------+--------------------------+
-        |                         |                          |
-   src.models            src.text2sql.prompt_builder   src.utils.seeds
-        |                         |                          |
-        +-----------> src.text2sql.sql_generator <----------+
-                                  |
-   src.text2sql.sql_validator     |     src.text2sql.sql_executor
-                 \                |                /
-                  \               |               /
-                   +-----> src.query_engine.engine <----- src.sql2nosql.translator
-                                  |
-                                  |                         src.sql2nosql.evaluator
-                                  v
-                            src.api.main  <----- src.api.schemas
-                                  ^                  ^
-                                  |                  |
-                         evaluation.metrics    evaluation.benchmark
-                                  ^                  |   |
-                                  |                  |   +--> evaluation.mlflow_tracker
-                            (used by)                |
-                                  |                  +--> datasets.spider_loader / bird_loader
-                          streamlit_app.app          |
-                                                 datasets.preprocess (standalone)
+            configs/default.yaml + .env
+                      |
+                src.utils.config / paths / device
+                      |
+            +---------+-----------------------------+
+            |                                        |
+      src.models.model_loader            src.utils.schema_conversion
+            |                                        |
+   +--------+-----------+--------------------+       |
+   |                    |                    |       |
+src.text2sql       src.sql2nosql       src.documentation
+ (PromptBuilder,    (NoSQLPrompt,       (DocPrompt,
+  SQLGenerator)      NoSQLGenerator,     DocGenerator,
+                     translator)         evaluator)
+   \                    |                    /
+    \                   |                   /
+     +-----> src.evaluation.benchmark.BenchmarkRunner <-----+
+                      |                |
+            src.evaluation.metrics    src.evaluation.mlflow_tracker
+                      ^
+                      |
+        src.datasets.spider_loader / bird_loader
+
+TEND.build_tend_dataset --> src.sql2nosql.translator, src.utils.schema_conversion,
+                            TEND.qwen_doc_generator, TEND.qwen_evaluator
+                          --> data/TEND/*.csv  (the LoRA training source)
 ```
 
 Key properties:
+- **No circular imports.** Heavy deps (`torch`, `transformers`, metric libs) imported at
+  call time.
+- **DI throughout** — generators/benchmark accept injected collaborators (easy to add a
+  trainer that reuses prompt builders).
+- **Config + `.env` flow down**; `MODEL_NAME` and all paths come from `.env`.
 
-- **No circular imports.** `evaluation.metrics` lazily imports `src.text2sql.{validator,
-  executor}` inside methods (avoids load-time cycles and heavy deps).
-- **Heavy deps deferred**: `torch`/`transformers` imported inside `CodeGenModel.load()` /
-  `generate()`; metric libs imported inside each metric method with try/except fallbacks.
-- **Config flows down** from `configs/default.yaml` via `load_config()` into generators,
-  engine, benchmark, and tracker.
+## 3. The Three Tasks — Data Contract
 
-## 3. Service Boundaries (runtime processes)
+The TEND CSV is the single supervised source. Each task maps columns to `(input, target)`
+and **must reuse the existing prompt builder** so train-time and eval-time prompts match.
 
-| Service | Entry point | Port | Depends on |
-|---------|-------------|------|-----------|
-| REST API | `uvicorn src.api.main:app` | 8000 | core `src.*`, `evaluation.metrics`, config |
-| Streamlit UI | `streamlit run streamlit_app/app.py` | 8501 | core `src.*`, `evaluation.metrics`, config |
-| MLflow server | `mlflow server` (compose) / local SQLite store | 5000 | `mlruns/` volume / `mlflow.db` |
+| Task | Prompt builder | Input columns | Target column |
+|------|----------------|---------------|---------------|
+| **text2sql** | `src.text2sql.PromptBuilder.build(question, schema)` | `question`, `sql_schema` | `sql_query` |
+| **sql2nosql** | `src.sql2nosql.NoSQLPromptBuilder.build(sql_query, schema, nosql_schema)` | `sql_query`, `nosql_schema` | `nosql_query` |
+| **nosql2doc** | `src.documentation.DocumentationPromptBuilder.build(mongodb_query, schema, nosql_schema, question)` | `nosql_query`, `nosql_schema`, `question` | `documentation` |
 
-The API and UI are **independent** front ends that both import the same core library code
-directly (the Streamlit UI does **not** call the API over HTTP). Docker Compose runs all
-three as separate containers sharing `./data` and `./mlruns` volumes.
+CSV columns present: `source, db_id, question, sql_schema, sql_query, nosql_schema,
+nosql_query, documentation, metadata, conversion_success, schema_correct, query_correct,
+overall_correct, schema_reason, query_reason, evaluation_response`.
 
-## 4. Data Flow
+## 4. Where LoRA Plugs In (proposed integration points)
 
-### Interactive query (`QueryEngine.process`)
 ```
-question, schema, [db_path]
-   │
-   ▼
-SQLGenerator.generate ── PromptBuilder.build ──> CodeGenModel.generate (HF) ──> raw text
-   │                                                                  │
-   │                                              _extract_sql (regex/code-fence)
-   ▼
-sql ──> SQLValidator.validate (sqlparse + SQLite EXPLAIN)
-   │
-   ├─(valid & db_path)──> SQLExecutor.execute (SQLite) ──> rows
-   │
-   ├──> SQLToNoSQLTranslator.translate ──> mongodb_query + warnings
-   │
-   ▼
-_explain ──> human-readable string
-   │
-   ▼
-{question, schema, sql, raw_model_output, validation, execution, nosql, explanation}
-```
-
-### Benchmark evaluation (`BenchmarkRunner.run_on_dataset`)
-```
-SpiderLoader/BirdLoader.load_split ──> standardized examples [{question, schema, sql, db_id}]
-   │  (capped at config.evaluation.max_samples)
-   ▼
-SQLGenerator.generate_batch ──> predictions [{sql, ...}]
-   │
-   ▼
-db_resolver(db_id) ──> per-example SQLite db_paths
-   │
-   ▼
-EvaluationMetrics.evaluate_all(predictions, references, db_paths)
-   │   ├─ exact_match (normalized sqlparse)
-   │   ├─ syntax_validity (SQLValidator)
-   │   ├─ execution_accuracy (SQLExecutor.compare_results)
-   │   ├─ bleu / rouge_l / bertscore (with token-overlap fallback)
-   │   └─ codebleu {codebleu, ngram, syntax, semantic}
-   ▼
-MLflowTracker.log_evaluation ──> mlflow.db (params + metrics) ──> run_id
+data/TEND/*.csv
+      │  (new) TEND→SFT dataset builder: row -> {"prompt": builder.build(...),
+      │                                          "target": row[target_col]}
+      ▼
+(new) src.training.dataset  ── tokenize: prompt + target, mask prompt tokens in labels
+      │
+      ▼
+(new) src.training.lora_trainer  ── peft.LoraConfig + get_peft_model(base)
+      │                              Trainer / SFTTrainer; per-task adapter
+      ▼
+models/checkpoints/<task>_<model>_lora/   (adapter_config.json + adapter_model.safetensors)
+      │
+      ▼
+src.models.model_loader.CodeGenModel.load()  ── (new) if adapter present:
+      │   PeftModel.from_pretrained(base, adapter_dir)  [or merge_and_unload]
+      ▼
+src.evaluation.benchmark.BenchmarkRunner  ── same metrics as baseline → results/ + MLflow
 ```
 
-### Dataset standardization
-Both loaders normalize raw benchmark JSON into a common schema:
-`{question, schema, sql, db_id[, difficulty]}`. Spider builds schema strings from
-`tables.json` (`Table name(col type, ...)`); BIRD synthesizes schema hints from `db_id` +
-`evidence`. `DatasetPreprocessor` further cleans whitespace/semicolons, splits, and
-computes corpus statistics.
+Integration touch points (no rewrites required, mostly additive):
+1. **`requirements.txt`** — add `peft` (and optional `trl`, `bitsandbytes` for CUDA QLoRA).
+2. **New `src/training/`** package — dataset builder, LoRA config, train loop, CLI script
+   under `scripts/`.
+3. **`src/models/model_loader.py`** — extend `load()`/`resolve_model_path()` to detect a
+   PEFT adapter dir (`adapter_config.json`) and wrap the base with `PeftModel`. Today the
+   checkpoint path assumes a *full* model dir (`config.json` + weights).
+4. **`configs/default.yaml`** — add a `training:`/`lora:` block (rank, alpha, dropout,
+   target_modules, lr, epochs, batch size, per-task target column).
+5. **Reuse** prompt builders and `BenchmarkRunner` unchanged for evaluation.
 
-## 5. Cross-cutting Concerns
+## 5. Model-Type Branching (causal vs seq2seq)
 
-- **Configuration**: single YAML (`configs/default.yaml`) → `load_config()`; cached via
-  `@lru_cache` in API.
-- **Reproducibility**: `set_seeds()` (random/numpy/torch) called in `BenchmarkRunner` and
-  scripts; seeds in config (all 42).
-- **Logging**: shared `"codegen"` logger (`setup_logging`), used for warnings in loaders
-  and translator.
-- **Graceful degradation**: every external metric library and the model are optional at
-  runtime — failures fall back to token overlap / lazy errors rather than import crashes.
-- **Testability**: constructors accept injected collaborators, enabling lightweight mocking
-  and integration scaffolding.
+`is_seq2seq_model()` already distinguishes T5/BART (encoder-decoder) from causal LMs.
+LoRA must branch on this:
+
+| Aspect | Causal (codegen, Qwen, starcoder2) | Seq2seq (t5-base/large) |
+|--------|-----------------------------------|-------------------------|
+| HF class | `AutoModelForCausalLM` | `AutoModelForSeq2SeqLM` |
+| PEFT task_type | `CAUSAL_LM` | `SEQ_2_SEQ_LM` |
+| LoRA target modules | `q_proj,k_proj,v_proj,o_proj` (Qwen/llama-like), `qkv_proj`/`c_attn` (codegen/starcoder vary) | `q,v` (T5 attention) |
+| Labels | prompt+target concatenated, prompt tokens masked (-100) | target only as decoder labels |
+
+This branching is the main correctness-sensitive part of the design.
+
+## 6. Cross-cutting Concerns
+
+- **Reproducibility:** `set_seeds()` (random/numpy/torch, all 42) — call before training.
+- **Device:** `resolve_device()` → cuda > mps > cpu. **bitsandbytes 4-bit/QLoRA is
+  CUDA-only**; on the macOS/MPS dev host use plain LoRA in fp16/fp32.
+- **Caching:** models cached under `models/base/<slug>/` with `.downloaded` marker;
+  checkpoints under `models/checkpoints/`.
+- **Graceful degradation:** metric libs optional with token-overlap fallback.
+
+This map is synced to `ai-workflow/context/architecture-map.md`.

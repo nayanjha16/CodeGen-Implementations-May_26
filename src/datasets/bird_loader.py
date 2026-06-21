@@ -161,25 +161,80 @@ class BirdLoader:
         self._resolved_data_dir = resolved
         return self._resolved_data_dir
 
-    def _schema_from_evidence(self, example: dict) -> str:
-        """Extract schema hints from BIRD evidence and db_id."""
+    def _tables_path(self, data_dir: Path, split: str) -> Path | None:
+        """Resolve tables metadata file for a dataset split."""
+        split_files = {
+            "train": ["train_tables.json"],
+            "validation": ["dev_tables.json"],
+            "dev": ["dev_tables.json"],
+            "test": ["test_tables.json", "dev_tables.json"],
+        }
+        for filename in split_files.get(split, []):
+            candidate = data_dir / filename
+            if candidate.exists():
+                return candidate
+        return None
+
+    def _load_tables(self, data_dir: Path, split: str) -> dict[str, str]:
+        """Build database_id -> schema string mapping from BIRD tables metadata."""
+        tables_path = self._tables_path(data_dir, split)
+        if tables_path is None:
+            return {}
+
+        with open(tables_path, encoding="utf-8") as f:
+            tables_data = json.load(f)
+
+        schemas: dict[str, str] = {}
+        for db in tables_data:
+            db_id = db["db_id"]
+            lines = []
+            table_names = db.get("table_names_original", db.get("table_names", []))
+            column_names = db.get(
+                "column_names_original", db.get("column_names", [])
+            )
+            column_types = db.get("column_types", [])
+            for table_idx, table in enumerate(table_names):
+                cols = []
+                for col_pos, (col_table_idx, col_name) in enumerate(column_names):
+                    if col_table_idx != table_idx:
+                        continue
+                    col_type = ""
+                    if col_pos < len(column_types):
+                        col_type = f" {column_types[col_pos]}"
+                    cols.append(f"{col_name}{col_type}".strip())
+                lines.append(f"Table {table}({', '.join(cols)})")
+            schemas[db_id] = "\n".join(lines)
+        return schemas
+
+    def _build_schema(
+        self, db_id: str, evidence: str, schemas: dict[str, str]
+    ) -> str:
+        """Combine table/column schema with optional BIRD evidence hints."""
         parts = []
-        if example.get("db_id"):
-            parts.append(f"Database: {example['db_id']}")
-        if example.get("evidence"):
-            parts.append(f"Evidence: {example['evidence']}")
+        table_schema = schemas.get(db_id, "").strip()
+        if table_schema:
+            parts.append(table_schema)
+        elif db_id:
+            parts.append(f"Database: {db_id}")
+        if evidence:
+            parts.append(f"Evidence: {evidence}")
         return "\n".join(parts)
 
-    def _standardize(self, examples: list[dict]) -> list[dict[str, str]]:
+    def _standardize(
+        self, examples: list[dict], schemas: dict[str, str]
+    ) -> list[dict[str, str]]:
         """Convert raw BIRD examples to standard format."""
         standardized = []
         for ex in examples:
+            db_id = ex.get("db_id", "")
             standardized.append(
                 {
                     "question": ex.get("question", ""),
-                    "schema": self._schema_from_evidence(ex),
+                    "schema": self._build_schema(
+                        db_id, ex.get("evidence", ""), schemas
+                    ),
                     "sql": ex.get("SQL", ex.get("sql", "")),
-                    "db_id": ex.get("db_id", ""),
+                    "db_id": db_id,
                     "difficulty": ex.get("difficulty", ""),
                 }
             )
@@ -188,6 +243,7 @@ class BirdLoader:
     def load_split(self, split: str = "train") -> list[dict[str, str]]:
         """Load train, validation (dev), or test split."""
         data_dir = self._resolve_data_dir()
+        schemas = self._load_tables(data_dir, split)
 
         split_map = {
             "train": ["train.json"],
@@ -210,7 +266,7 @@ class BirdLoader:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
-        return self._standardize(data)
+        return self._standardize(data, schemas)
 
     def load(self) -> dict[str, list[dict[str, str]]]:
         """Load all available splits."""

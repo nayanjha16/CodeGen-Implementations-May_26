@@ -1,0 +1,23 @@
+Run HumanEval Extension (→ +Java using real HumanEval-X tests)
+problem_id	flag	n_attempts	ast_jaccard_cross	fail_reason
+15	HumanEval/100	True	1	0.1538	
+16	HumanEval/130	True	1	0.1467	
+17	HumanEval/125	False	3	0.1414	Exception in thread "main" java.lang.Assertion...
+18	HumanEval/69	True	1	0.3958	
+19	HumanEval/12	True	1	0.2500	
+
+
+HumanEval-X Extension (→ +NL via double round-trip)
+
+problem_id	flag	n_attempts	ast_jaccard_py	ast_jaccard_java	fail_reason
+15	hex/100	True	2	0.171875	0.517241	
+16	hex/130	False	3	0.741379	0.648352	py round-trip: FAIL 4/6 | java round-trip: \ta...
+17	hex/125	False	3	0.555556	0.000000	java round-trip: Exception in thread "main" ja...
+18	hex/69	True	1	0.563218	0.772727	
+19	hex/12	True	1	0.485294	1.000000	
+
+summary
+dataset  n_total  n_flag_true  pct_flag_true  mean_attempts  mean_jaccard_cross
+          humaneval       20           18           90.0           1.20               0.202
+               mbpp       20           19           95.0           1.25               0.231
+humaneval_x_py2java       20           14           70.0           1.70                 NaN

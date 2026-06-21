@@ -25,7 +25,8 @@ if str(ROOT) not in sys.path:
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 
 from TEND.paths import get_tend_output_dir
-from TEND.qwen_evaluator import DEFAULT_MODEL, QwenTENDEvaluator
+from TEND.qwen_doc_generator import QwenDocumentationGenerator
+from TEND.qwen_evaluator import QwenTENDEvaluator, get_qwen_evaluator_model_name
 from TEND.run_tend import run_tend_split
 from TEND.spider_source import SpiderSource
 
@@ -66,9 +67,14 @@ def main() -> int:
         help="Skip Qwen evaluation and only generate converted dataset rows.",
     )
     parser.add_argument(
+        "--no-doc",
+        action="store_true",
+        help="Skip Qwen documentation generation for MongoDB queries.",
+    )
+    parser.add_argument(
         "--model",
         default=None,
-        help="HuggingFace model id for evaluation (default: TEND default model).",
+        help="HuggingFace model id (default: QWEN_EVALUATOR_MODEL_NAME).",
     )
     parser.add_argument(
         "--verbose",
@@ -85,8 +91,9 @@ def main() -> int:
     _configure_logging(args.verbose)
 
     splits = ["validation" if split == "dev" else split for split in args.splits]
-    model_name = args.model or DEFAULT_MODEL
+    model_name = args.model or get_qwen_evaluator_model_name()
     evaluate = not args.no_eval
+    generate_documentation = not args.no_doc
     total = len(splits)
 
     print(f"TEND output directory: {get_tend_output_dir()}")
@@ -97,6 +104,10 @@ def main() -> int:
         print(f"Model:   {model_name} (loaded once, shared across splits)")
     else:
         print("Evaluation: disabled (--no-eval)")
+    if generate_documentation:
+        print(f"Documentation: enabled with {model_name}")
+    else:
+        print("Documentation: disabled (--no-doc)")
 
     if args.dry_run:
         for split in splits:
@@ -111,10 +122,16 @@ def main() -> int:
         return 0
 
     evaluator: QwenTENDEvaluator | None = None
-    if evaluate:
+    doc_generator: QwenDocumentationGenerator | None = None
+    if evaluate or generate_documentation:
         print(f"\nLoading Qwen model once: {model_name}")
         evaluator = QwenTENDEvaluator(model_name=model_name)
         evaluator.load()
+        if generate_documentation:
+            doc_generator = QwenDocumentationGenerator(
+                model_name=model_name,
+                evaluator=evaluator,
+            )
         print("Model loaded and ready.")
 
     print("\nLoading Spider tables once ...")
@@ -136,8 +153,10 @@ def main() -> int:
                 split=split,
                 max_samples=args.max_samples,
                 evaluate=evaluate,
+                generate_documentation=generate_documentation,
                 model_name=model_name,
                 evaluator=evaluator,
+                doc_generator=doc_generator,
                 spider_source=spider_source,
                 tables_by_db=tables_by_db,
                 translator=translator,

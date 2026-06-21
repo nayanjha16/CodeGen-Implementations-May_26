@@ -1,4 +1,4 @@
-"""SQL query to MongoDB query conversion for TEND pipeline."""
+"""SQL query to MongoDB query conversion for the TEND pipeline."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ def convert_query(
     sql_query: str,
     translator: SQLToNoSQLTranslator | None = None,
 ) -> dict[str, Any]:
-    """Convert a SQL query into MongoDB shell syntax and structured parts."""
+    """Convert SQL to MongoDB shell syntax via sql-mongo-converter."""
     tr = translator or SQLToNoSQLTranslator()
     result = tr.translate(sql_query)
     return {

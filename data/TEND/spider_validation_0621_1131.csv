@@ -1,0 +1,787 @@
+source,db_id,question,sql_schema,sql_query,nosql_schema,nosql_query,documentation,metadata,conversion_success,schema_correct,query_correct,overall_correct,schema_reason,query_reason,evaluation_response
+spider,concert_singer,How many singers do we have?,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);",SELECT count(*) FROM singer,"{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)","The MongoDB query retrieves the count of unique singer IDs across all concerts. The group stage groups the data by null, which means it will aggregate over all documents (i.e., all concert entries). The sum operator is used to calculate the total number of songs played per concert.","{""aggregations"": 1, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 0, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""How many singers do we have?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,The MongoDB query uses aggregation framework which simplifies complex queries.,"{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses aggregation framework which simplifies complex queries.""
+}"
+spider,concert_singer,What is the total number of singers?,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);",SELECT count(*) FROM singer,"{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.aggregate(
+[
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""count"": {
+        ""$sum"": 1
+      }
+    }
+  }
+]
+)","The MongoDB query retrieves the count of unique singer IDs across all concerts. The group stage groups the data by _id, which represents the concert ID. The sum operator then sums up the values associated with each group, effectively counting the number of unique singers.","{""aggregations"": 1, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 1, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What is the total number of singers?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,The MongoDB query uses aggregation framework which simplifies complex queries.,"{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses aggregation framework which simplifies complex queries.""
+}"
+spider,concert_singer,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT name ,  country ,  age FROM singer ORDER BY age DESC","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.find(
+  {},
+  {
+  ""name"": 1,
+  ""country"": 1,
+  ""age"": 1
+}
+)","The MongoDB query retrieves the following information: - **Collection Name**: singer - **Operation Type**: Find **Business Meaning**: This query selects specific fields from the singer document based on the specified filters. It returns the name, country, and age of all singers who have been active in concerts (i.e., their concert IDs are non-zero). **Filters**: - **Filtering Fields**: - name: The name of the singer - country: The country of origin - age: The age of the singer **Joins**: -...","{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 2, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""Show name, country, age for all singers ordered by age from the oldest to the youngest."", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.""
+}"
+spider,concert_singer,"What are the names, countries, and ages for every singer in descending order of age?","CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT name ,  country ,  age FROM singer ORDER BY age DESC","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.find(
+  {},
+  {
+  ""name"": 1,
+  ""country"": 1,
+  ""age"": 1
+}
+)",The MongoDB query retrieves the following information: - **Collection Name**: singer - **Operation Type**: Find **Business Meaning**: This query selects specific fields from the singer document within the concert collection. It returns all records (rows) with the following attributes: - **Name**: The name of the singer - **Country**: The country of origin of the singer - **Age**: The age of the singer **Filters**: - **Filtering**: None - **Joins**: None - **Aggregations**: None -...,"{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 3, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What are the names, countries, and ages for every singer in descending order of age?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.""
+}"
+spider,concert_singer,"What is the average, minimum, and maximum age of all singers from France?","CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg_1"": {
+        ""$avg"": ""$age""
+      },
+      ""min_2"": {
+        ""$min"": ""$age""
+      },
+      ""max_3"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)","The MongoDB query retrieves the average, minimum, and maximum ages of all singers who are from France. It uses the match stage to filter records where the country field is set to ""France"". The group stage then groups the results by _id, calculating the average (avg), minimum (min), and maximum (max) values of the age field for each singer.","{""aggregations"": 3, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 4, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What is the average, minimum, and maximum age of all singers from France?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,The MongoDB query uses aggregation framework which simplifies complex queries.,"{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses aggregation framework which simplifies complex queries.""
+}"
+spider,concert_singer,"What is the average, minimum, and maximum age for all French singers?","CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.aggregate(
+[
+  {
+    ""$match"": {
+      ""country"": ""France""
+    }
+  },
+  {
+    ""$group"": {
+      ""_id"": null,
+      ""avg_1"": {
+        ""$avg"": ""$age""
+      },
+      ""min_2"": {
+        ""$min"": ""$age""
+      },
+      ""max_3"": {
+        ""$max"": ""$age""
+      }
+    }
+  }
+]
+)","The MongoDB query retrieves the following information: - **Collection Name**: singer - **Operation Type**: Aggregation Pipeline **Business Meaning**: This query selects the average, minimum, and maximum ages for all singers who are from France using the match stage to filter the data based on the country being ""France"". **Filters**: - The match stage filters the documents to include only those whose country field equals ""France"". **Joins**: - No Joins are performed in this query.","{""aggregations"": 3, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 5, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What is the average, minimum, and maximum age for all French singers?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,The MongoDB query uses aggregation framework which simplifies complex queries.,"{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses aggregation framework which simplifies complex queries.""
+}"
+spider,concert_singer,Show the name and the release year of the song by the youngest singer.,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.find(
+  {},
+  {
+  ""song_name"": 1,
+  ""song_release_year"": 1
+}
+).limit(1)",The MongoDB query retrieves the name and release year of the youngest singer from the singer collection. It uses the find operator to search for documents in the singer collection. The limit operator is used to limit the number of results to 1.,"{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 6, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""Show the name and the release year of the song by the youngest singer."", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.""
+}"
+spider,concert_singer,What are the names and release years for all the songs of the youngest singer?,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);","SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1","{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.find(
+  {},
+  {
+  ""song_name"": 1,
+  ""song_release_year"": 1
+}
+).limit(1)","The MongoDB query retrieves the names and release years of all the songs of the youngest singer. It uses the find command with no filter, join, aggregation, calculation, grouping, sorting, projection, limit, or distinct selection. The result includes the song name and its corresponding release year.","{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 7, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What are the names and release years for all the songs of the youngest singer?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses subqueries and joins, which can make it harder to understand and maintain.""
+}"
+spider,concert_singer,What are all distinct countries where singers above age 20 are from?,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);",SELECT DISTINCT country FROM singer WHERE age  >  20,"{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.distinct(
+  ""country"",
+  {
+  ""age"": {
+    ""$gt"": 20
+  }
+}
+)",The MongoDB query retrieves all distinct countries where singers aged 20 or older are from. The country column contains the distinct values of these countries.,"{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 8, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What are all distinct countries where singers above age 20 are from?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses a subquery to filter the countries based on the `age` condition, which is not directly supported in MongoDB.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses a subquery to filter the countries based on the `age` condition, which is not directly supported in MongoDB.""
+}"
+spider,concert_singer,What are  the different countries with singers above age 20?,"CREATE TABLE stadium (
+    Stadium_ID REAL PRIMARY KEY,
+    Location TEXT,
+    Name TEXT,
+    Capacity REAL,
+    Highest REAL,
+    Lowest REAL,
+    Average REAL
+);
+
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_ID REAL PRIMARY KEY,
+    concert_Name TEXT,
+    Theme TEXT,
+    Stadium_ID TEXT,
+    Year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_ID REAL PRIMARY KEY,
+    Singer_ID TEXT
+);",SELECT DISTINCT country FROM singer WHERE age  >  20,"{
+  ""concert"": {
+    ""Stadium_ID"": ""string"",
+    ""Theme"": ""string"",
+    ""Year"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_Name"": ""string""
+  },
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""singer_in_concert"": {
+    ""Singer_ID"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""concert_ID"": ""number""
+  },
+  ""stadium"": {
+    ""Average"": ""number"",
+    ""Capacity"": ""number"",
+    ""Highest"": ""number"",
+    ""Location"": ""string"",
+    ""Lowest"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}","db.singer.distinct(
+  ""country"",
+  {
+  ""age"": {
+    ""$gt"": 20
+  }
+}
+)",Reads from the singer collection via distinct. It returns distinct values for the requested field.,"{""aggregations"": 0, ""conversion_success"": true, ""conversion_warnings"": [], ""from_clauses"": 1, ""index"": 9, ""joins"": 0, ""nosql_query_valid"": true, ""nosql_schema_valid"": true, ""question"": ""What are  the different countries with singers above age 20?"", ""sql_query_valid"": true, ""sql_schema_valid"": true, ""tables"": 4}",True,True,True,True,The SQL schema is more concise and easier to read than the MongoDB schema.,"The MongoDB query uses a subquery to filter the countries based on the `age` condition, which is not directly supported in MongoDB.","{
+  ""schema_correct"": true,
+  ""query_correct"": true,
+  ""schema_reason"": ""The SQL schema is more concise and easier to read than the MongoDB schema."",
+  ""query_reason"": ""The MongoDB query uses a subquery to filter the countries based on the `age` condition, which is not directly supported in MongoDB.""
+}"

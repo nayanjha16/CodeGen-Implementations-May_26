@@ -12,7 +12,8 @@ from typing import Any
 
 from TEND.build_tend_dataset import TENDDatasetBuilder
 from TEND.paths import ensure_project_on_path, get_tend_output_dir
-from TEND.qwen_evaluator import DEFAULT_MODEL, QwenTENDEvaluator
+from TEND.qwen_doc_generator import QwenDocumentationGenerator
+from TEND.qwen_evaluator import QwenTENDEvaluator, get_qwen_evaluator_model_name
 from TEND.spider_source import SpiderSource
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 
@@ -50,9 +51,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Skip Qwen evaluation and only generate converted dataset rows.",
     )
     parser.add_argument(
+        "--no-doc",
+        action="store_true",
+        help="Skip Qwen documentation generation for MongoDB queries.",
+    )
+    parser.add_argument(
         "--model",
-        default=DEFAULT_MODEL,
-        help="HuggingFace model id for evaluation.",
+        default=None,
+        help=(
+            "HuggingFace model id for evaluation and documentation "
+            "(default: QWEN_EVALUATOR_MODEL_NAME)."
+        ),
     )
     parser.add_argument(
         "--output",
@@ -74,9 +83,11 @@ def run_tend_split(
     split: str,
     max_samples: int | None = None,
     evaluate: bool = True,
-    model_name: str = DEFAULT_MODEL,
+    generate_documentation: bool = True,
+    model_name: str | None = None,
     output_path: Path | None = None,
     evaluator: QwenTENDEvaluator | None = None,
+    doc_generator: QwenDocumentationGenerator | None = None,
     spider_source: SpiderSource | None = None,
     tables_by_db: dict[str, dict[str, Any]] | None = None,
     translator: SQLToNoSQLTranslator | None = None,
@@ -87,8 +98,10 @@ def run_tend_split(
         split=split,
         max_samples=max_samples,
         evaluate=evaluate,
+        generate_documentation=generate_documentation,
         model_name=model_name,
         evaluator=evaluator,
+        doc_generator=doc_generator,
         spider_source=spider_source,
         tables_by_db=tables_by_db,
         translator=translator,
@@ -112,13 +125,23 @@ def main(argv: list[str] | None = None) -> int:
     output_dir = get_tend_output_dir()
     print(f"TEND output directory: {output_dir}")
 
+    model_name = args.model or get_qwen_evaluator_model_name()
+    generate_documentation = not args.no_doc
+    doc_generator: QwenDocumentationGenerator | None = None
+    if generate_documentation:
+        print(f"Loading Qwen model for documentation: {model_name}")
+        doc_generator = QwenDocumentationGenerator(model_name=model_name)
+        doc_generator.load()
+
     run_tend_split(
         dataset=args.dataset,
         split=split,
         max_samples=args.max_samples,
         evaluate=not args.no_eval,
-        model_name=args.model,
+        generate_documentation=generate_documentation,
+        model_name=model_name,
         output_path=args.output,
+        doc_generator=doc_generator,
     )
     return 0
 

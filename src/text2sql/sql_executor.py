@@ -59,6 +59,7 @@ def build_documentation_prompt(
     config: dict[str, Any] | None = None,
     model_name: str | None = None,
     nosql_schema: str | None = None,
+    question: str = "",
 ) -> str:
     """Build a MongoDB query documentation prompt."""
     from src.documentation.prompt_builder import DocumentationPromptBuilder
@@ -70,6 +71,7 @@ def build_documentation_prompt(
         mongodb_query,
         schema,
         nosql_schema=nosql_schema,
+        question=question,
     )
 
 

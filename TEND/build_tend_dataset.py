@@ -14,7 +14,8 @@ from tqdm import tqdm
 from src.sql2nosql.translator import SQLToNoSQLTranslator
 
 from TEND.paths import build_output_csv_path
-from TEND.qwen_evaluator import DEFAULT_MODEL, QwenTENDEvaluator
+from TEND.qwen_doc_generator import QwenDocumentationGenerator
+from TEND.qwen_evaluator import QwenTENDEvaluator, get_qwen_evaluator_model_name
 from TEND.schema_to_sql import generate_sql_schema, generate_sql_schema_from_spider_schema
 from TEND.spider_source import SpiderSource
 from TEND.sql_schema_to_mongo_schema import convert_schema_json
@@ -29,6 +30,26 @@ from TEND.validator import (
 
 logger = logging.getLogger("tend")
 
+DOCUMENTATION_COLUMN = "documentation"
+_BASE_FIELD_ORDER = [
+    "source",
+    "db_id",
+    "question",
+    "sql_schema",
+    "sql_query",
+    "nosql_schema",
+    "nosql_query",
+    DOCUMENTATION_COLUMN,
+    "metadata",
+    "conversion_success",
+    "schema_correct",
+    "query_correct",
+    "overall_correct",
+    "schema_reason",
+    "query_reason",
+    "evaluation_response",
+]
+
 
 class TENDDatasetBuilder:
     """Generate and evaluate TEND-style SQL/NoSQL dataset rows."""
@@ -39,8 +60,10 @@ class TENDDatasetBuilder:
         split: str = "train",
         max_samples: int | None = None,
         evaluate: bool = True,
-        model_name: str = DEFAULT_MODEL,
+        generate_documentation: bool = True,
+        model_name: str | None = None,
         evaluator: QwenTENDEvaluator | None = None,
+        doc_generator: QwenDocumentationGenerator | None = None,
         spider_source: SpiderSource | None = None,
         tables_by_db: dict[str, dict[str, Any]] | None = None,
         translator: SQLToNoSQLTranslator | None = None,
@@ -49,8 +72,10 @@ class TENDDatasetBuilder:
         self.split = split
         self.max_samples = max_samples
         self.evaluate = evaluate
-        self.model_name = model_name
+        self.generate_documentation = generate_documentation
+        self.model_name = model_name or get_qwen_evaluator_model_name()
         self._evaluator = evaluator
+        self._doc_generator = doc_generator
         self._spider_source = spider_source or SpiderSource()
         self._tables_by_db = tables_by_db
         self._translator = translator
@@ -103,6 +128,14 @@ class TENDDatasetBuilder:
             self._translator = SQLToNoSQLTranslator()
         return self._translator
 
+    def _get_doc_generator(self) -> QwenDocumentationGenerator:
+        if self._doc_generator is None:
+            self._doc_generator = QwenDocumentationGenerator(
+                model_name=self.model_name,
+                evaluator=self._evaluator,
+            )
+        return self._doc_generator
+
     def build_row(self, sample: dict[str, str], index: int) -> dict[str, Any]:
         """Convert one source sample into a TEND dataset row."""
         sql_schema = self._sql_schema_for_sample(sample)
@@ -141,6 +174,15 @@ class TENDDatasetBuilder:
             "metadata": json.dumps(metadata, sort_keys=True),
             "conversion_success": conversion_check["conversion_success"],
         }
+
+        if self.generate_documentation:
+            doc_result = self._get_doc_generator().generate(
+                mongodb_query=nosql_query,
+                nosql_schema=nosql_schema,
+                schema=sql_schema,
+                question=sample.get("question", ""),
+            )
+            row[DOCUMENTATION_COLUMN] = doc_result["documentation"]
 
         if self.evaluate:
             evaluation = self._get_evaluator().evaluate_tend_sample(
@@ -182,11 +224,21 @@ class TENDDatasetBuilder:
         return output
 
     @staticmethod
+    def ordered_fieldnames(rows: list[dict[str, Any]]) -> list[str]:
+        """Return stable CSV column order with documentation after nosql_query."""
+        if not rows:
+            return list(_BASE_FIELD_ORDER)
+        present = set().union(*(row.keys() for row in rows))
+        ordered = [field for field in _BASE_FIELD_ORDER if field in present]
+        extras = sorted(present.difference(ordered))
+        return ordered + extras
+
+    @staticmethod
     def _write_csv(output: Path, rows: list[dict[str, Any]]) -> None:
         if not rows:
             output.write_text("", encoding="utf-8")
             return
-        fieldnames = list(rows[0].keys())
+        fieldnames = TENDDatasetBuilder.ordered_fieldnames(rows)
         with open(output, "w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
@@ -213,4 +265,75 @@ class TENDDatasetBuilder:
             summary["schema_correct_rate"] = _mean_bool("schema_correct")
             summary["query_correct_rate"] = _mean_bool("query_correct")
             summary["overall_correct_rate"] = _mean_bool("overall_correct")
+        if DOCUMENTATION_COLUMN in rows[0]:
+            filled = sum(
+                1 for row in rows if str(row.get(DOCUMENTATION_COLUMN, "")).strip()
+            )
+            summary["documentation_fill_rate"] = filled / total if total else 0.0
         return summary
+
+    @staticmethod
+    def update_documentation_in_rows(
+        rows: list[dict[str, Any]],
+        doc_generator: QwenDocumentationGenerator,
+        *,
+        force: bool = False,
+        max_samples: int | None = None,
+    ) -> int:
+        """Backfill documentation for existing TEND rows; returns rows updated."""
+        updated = 0
+        limit = len(rows) if max_samples is None else min(max_samples, len(rows))
+        for index in tqdm(range(limit), desc="TEND documentation"):
+            row = rows[index]
+            if not force and str(row.get(DOCUMENTATION_COLUMN, "")).strip():
+                continue
+            doc_result = doc_generator.generate(
+                mongodb_query=str(row.get("nosql_query", "")),
+                nosql_schema=str(row.get("nosql_schema", "")),
+                schema=str(row.get("sql_schema", "")),
+                question=str(row.get("question", "")),
+            )
+            row[DOCUMENTATION_COLUMN] = doc_result["documentation"]
+            updated += 1
+        return updated
+
+    @staticmethod
+    def update_csv_documentation(
+        csv_path: Path,
+        doc_generator: QwenDocumentationGenerator,
+        *,
+        output_path: Path | None = None,
+        force: bool = False,
+        max_samples: int | None = None,
+    ) -> Path:
+        """Add or refresh documentation column in an existing TEND CSV."""
+        with open(csv_path, encoding="utf-8", newline="") as f:
+            rows = list(csv.DictReader(f))
+        if not rows:
+            raise RuntimeError(f"No rows found in {csv_path}")
+
+        updated = TENDDatasetBuilder.update_documentation_in_rows(
+            rows,
+            doc_generator,
+            force=force,
+            max_samples=max_samples,
+        )
+
+        destination = output_path or csv_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        TENDDatasetBuilder._write_csv(destination, rows)
+
+        summary = TENDDatasetBuilder.summarize_csv(destination)
+        summary_path = destination.with_suffix(".summary.json")
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        logger.info(
+            "Updated documentation for %d/%d rows in %s",
+            updated,
+            len(rows),
+            destination,
+        )
+        print(
+            f"Updated documentation for {updated}/{len(rows)} rows: {destination}"
+        )
+        print(f"Summary saved: {summary_path}")
+        return destination

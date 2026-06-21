@@ -5,6 +5,7 @@ model:
 
 generation:
   max_new_tokens: 256
+  documentation_max_new_tokens: 96
   temperature: 0.7
   top_p: 0.95
   num_beams: 4

@@ -49,6 +49,11 @@ class DocumentationEvaluator:
         if len(text) < 20:
             return {"valid": False, "reason": "Documentation is too short"}
 
+        from src.documentation.doc_generator import documentation_contains_code
+
+        if documentation_contains_code(text):
+            return {"valid": False, "reason": "Documentation contains code"}
+
         if re.search(r"db\.\w+\.(find|aggregate|distinct|countDocuments)\s*\(", text):
             return {"valid": False, "reason": "Documentation contains raw MongoDB code"}
 

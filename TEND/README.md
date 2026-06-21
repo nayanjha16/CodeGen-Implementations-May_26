@@ -73,7 +73,7 @@ For each Spider sample, `TENDDatasetBuilder.build_row()` runs the following pipe
 | 1 | `spider_source.py` | Load `question`, `sql`, `db_id` from a split JSON file (`train_spider.json`, `dev.json`, etc.) |
 | 2 | `schema_to_sql.py` | Build SQL DDL from `tables.json` for the sample's `db_id` |
 | 3 | `sql_schema_to_mongo_schema.py` | Parse DDL → MongoDB collection schema JSON (`_id: ObjectId` + typed fields) |
-| 4 | `sql_to_mongo.py` | Call `SQLToNoSQLTranslator` in `src/sql2nosql/` → Mongo shell `find()` / `aggregate()` |
+| 4 | `sql_to_mongo.py` | Call `SQLToNoSQLTranslator` (`sql-mongo-converter`) → Mongo shell `find()` / `aggregate()` |
 | 5 | `validator.py` | Rule-based checks: CREATE TABLE count, SELECT shape, JSON schema, `db.*` query pattern |
 | 6 | `build_tend_dataset.py` | Assemble row + metadata (joins, aggregations, validation flags) |
 | 7 | `qwen_evaluator.py` *(optional)* | Qwen judges semantic equivalence of schema and query pairs |
@@ -110,7 +110,7 @@ Spider sample (question, sql, db_id)
 | `spider_source.py` | Read Spider splits and `tables.json` from local cache (no network) |
 | `schema_to_sql.py` | Spider `tables.json` entry → `CREATE TABLE` DDL |
 | `sql_schema_to_mongo_schema.py` | SQL DDL → per-collection Mongo type map |
-| `sql_to_mongo.py` | Thin wrapper around `SQLToNoSQLTranslator` |
+| `sql_to_mongo.py` | Thin wrapper around `sql-mongo-converter` via `SQLToNoSQLTranslator` |
 | `validator.py` | Lightweight structural validation helpers |
 | `qwen_evaluator.py` | Qwen chat prompt, generation, JSON parsing, equivalence scores |
 | `paths.py` | `data/TEND` output paths and timestamped CSV naming |
@@ -385,11 +385,11 @@ Use structural flags for pipeline health; use Qwen scores for semantic quality s
 
 ## SQL → Mongo Conversion Notes
 
-Query translation delegates to `src/sql2nosql/translator.py` (sqlparse-based):
+Query translation delegates to `src/sql2nosql/translator.py`, a thin wrapper around the [`sql-mongo-converter`](https://pypi.org/project/sql-mongo-converter/) PyPI package (`sql_to_mongo`).
 
-**Supported patterns:** `SELECT`, `WHERE`, `ORDER BY`, `LIMIT`, `GROUP BY`, common aggregates (`COUNT`, `AVG`, `MIN`, `MAX`, `SUM`)
+**Supported patterns:** `SELECT`, `WHERE` (including `BETWEEN`, `IN`, `LIKE`, `OR`), `ORDER BY`, `LIMIT`, `GROUP BY`, `HAVING`, aggregates, `DISTINCT`, and `JOIN` (via aggregation `$lookup`)
 
-**Limited / warned:** `JOIN`, `HAVING`, `UNION` — may produce warnings or incomplete translation
+**Limited / warned:** `UNION` and non-SELECT statements (mutations are disabled for TEND dataset generation)
 
 Schema conversion (`sql_schema_to_mongo_schema.py`) maps each SQL table to a Mongo collection with `_id: ObjectId` and typed fields. It does not embed relationships (no automatic nesting for FKs); see `TEND.md` for planned heuristics.
 

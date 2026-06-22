@@ -132,3 +132,53 @@ def construct_stage3_prompt(task):
         f"### Response:\n"
     )
     return prompt
+    
+    
+# =====================================================================
+# EXPERIMENT 2: MODULAR PIPELINE PROMPT ROUTINE (NEW)
+# =====================================================================
+import json
+
+def load_schema_context_map(collections_json_path):
+    """
+    Parses collections.json into a structural scannable text mapping:
+    db_id -> "Collection1(field1, field2) | Collection2(field1)"
+    """
+    with open(collections_json_path, "r", encoding="utf-8") as f:
+        schema_data = json.load(f)
+        
+    schema_map = {}
+    for db in schema_data:
+        db_id = db["db_id"]
+        collections = db["collection_names"]
+        columns = db["column_names"]
+        
+        grouped_collections = {i: [] for i in range(len(collections))}
+        for col in columns:
+            col_idx = col[0]
+            col_name = col[1]
+            if col_idx in grouped_collections:
+                grouped_collections[col_idx].append(col_name)
+        
+        collection_strings = []
+        for idx, col_name in enumerate(collections):
+            fields = ", ".join(grouped_collections[idx])
+            collection_strings.append(f"{col_name}({fields})")
+            
+        schema_map[db_id] = " | ".join(collection_strings)
+    return schema_map
+
+def construct_nosql_prompt(sql_query, db_id, schema_context_map):
+    """
+    Constructs a schema-grounded prompt matching the fine-tuning format exactly.
+    """
+    schema_info = schema_context_map.get(db_id, "Unknown schema footprint")
+    
+    prompt = (
+        f"### Instruction:\n"
+        f"Using the database schema provided, translate the SQL query into an executable MongoDB NoSQL query.\n"
+        f"### Schema:\n{schema_info}\n"
+        f"### SQL:\n{sql_query}\n"
+        f"### Response:\n"
+    )
+    return prompt

@@ -23,19 +23,32 @@ STAGE4_MODEL_ID = "Salesforce/codegen-350M-mono"
 STAGE4_CHECKPOINT_PATH = "./codegen_lora_sql_checkpoints_r16/results/codegen_lora_sql/checkpoint-2190"
 STAGE4_OUTPUT_PATH = "outputs/stage4_schema_lora_r16/stage4_schema_lora_predictions.json"
 
-# =====================================================================
-# STAGE 4 SCHEMA-GROUNDED EXPERIMENT CONFIGURATION (MATCHED STYLE) - TRY3
-# =====================================================================
-STAGE4_MODEL_ID = "Salesforce/codegen-350M-mono"
-# 💡 Written exactly like Stage 3 to maintain absolute structural alignment:
-STAGE4_TRY3_CHECKPOINT_PATH = "./stage4_model_weights_checkpoint_2190"
-STAGE4_TRY3_OUTPUT_PATH = "outputs/stage4_schema_lora_r16_try3/stage4_schema_lora_predictions.json"
 
 # =====================================================================
 # SHARED ENVIRONMENT CONFIGURATIONS
 # =====================================================================
 DATASET_PATH = "data/spider/dev.json"
 TABLES_PATH = "data/spider/tables.json"
+
+
+# =====================================================================
+# STAGE 4 SCHEMA-GROUNDED EXPERIMENT CONFIGURATION (MATCHED STYLE) - TRY3
+# =====================================================================
+STAGE4_MODEL_ID = "Salesforce/codegen-350M-mono"
+# 📁 Aligned to your new models folder structure:
+STAGE4_TRY3_CHECKPOINT_PATH = "./models/stage4_model_weights_checkpoint_2190"
+STAGE4_TRY3_OUTPUT_PATH = "outputs/stage4_schema_lora_r16_try3/stage4_schema_lora_predictions.json"
+
+# =====================================================================
+# EXPERIMENT 2: DUAL-STAGE MODULAR PIPELINE CONFIGURATION (SQL -> NoSQL)
+# =====================================================================
+DOCSPIDER_DEV_PATH = "docspider/docspider_ground_truth_dataset/dev.json"
+# 📁 Ensure this path is explicitly exported:
+DOCSPIDER_COLLECTIONS_PATH = "docspider/docspider_ground_truth_dataset/collections.json"
+
+EXP2_NOSQL_CHECKPOINT_PATH = "./models/stage5_model_weights_checkpoint-1265"
+EXP2_PIPELINE_OUTPUT_PATH = "outputs/experiment2_pipeline_results/pipeline_predictions.json"
+
 
 MAX_NEW_TOKENS = 150
 TEMPERATURE = 0.0  

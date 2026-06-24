@@ -10,7 +10,7 @@ Original file is located at
  1. Load the CoDocGen model to generate documentation for a function
  2. Method that uses the CoDocModel model to generate documentation of the given code (as string)
  3. Load the the-stack dataset and extract only the C++ and python code from it.
- 4. load the github/tree-sitter to create abstract syntax trees of given code and language
+ 4. load the github/tree-sitter to create abstract syntax trees of given code and languauge
  5. Create ASTs for the given code.
 
 Install all the necessary packages
@@ -76,78 +76,6 @@ class SingletonMeta(type):
             )
 
         return cls._instances[cls]
-
-
-'''
-This code here is to allow scaling of rope embed_positions
-'''
-import torch
-
-def scale_position_ids(position_ids: torch.Tensor, scale: float = 2.0):
-    """
-    Safe RoPE scaling function
-    Prevents index-out-of-bound AND implements RoPE scaling.
-    """
-
-    return (position_ids.float() / scale).long()
-
-# Patch embed_positions (Critical for CodeGen)
-def patch_embed_positions(model, scale: float = 2.0):
-    """
-    Expands embedding table so indexing remains valid.
-    This avoids lookup crash.
-    """
-
-    import torch
-    import torch.nn.functional as F
-
-    attn = model.transformer.h[0].attn
-    emb = attn.embed_positions  # THIS is correct now
-
-    old_len, dim = emb.shape
-    new_len = int(old_len * scale)
-
-    emb = emb.T.unsqueeze(0)  # [1, dim, seq]
-    emb = F.interpolate(emb, size=new_len, mode="linear", align_corners=True)
-    emb = emb.squeeze(0).T
-
-    # assign back to ALL layers (important)
-    for block in model.transformer.h:
-        block.attn.embed_positions = torch.nn.Parameter(emb)
-
-    model.config.n_positions = new_len
-
-    return model
-
-# STEP 3 — Fix KV-cache position drift (VERY IMPORTANT)
-# Without this, generation breaks after ~500–1000 tokens.
-
-def adjust_position_ids_for_cache(position_ids, past_length: int, scale: float = 2.0):
-    """
-    Keeps KV cache consistent during generation.
-    """
-
-    return ((position_ids + past_length).float() / scale).long()
-
-#Step 4: Full Inference patch
-def enable_codegen_long_context(model, scale: float = 2.0):
-
-    # 1. extend embedding space
-    model = patch_embed_positions(model, scale)
-
-    # 2. store scaling factor
-    model.rope_scale = scale
-
-    return model
-
-# Monkey path for the hugging face generate hook
-def forward_patch(self, *args, **kwargs):
-    if "position_ids" in kwargs:
-        kwargs["position_ids"] = (
-            kwargs["position_ids"].float() / self.rope_scale
-        ).long()
-
-    return self._orig_forward(*args, **kwargs)
 
 """ # Singleton for the CodeGeneration"""
 
@@ -747,7 +675,6 @@ class FilteredDataset(metaclass=SingletonMeta):
         self._python_iter = iter(self._python_dataset_stream)
         self._cpp_iter = iter(self._cpp_dataset_stream)
         self._current_dataset_selector = 0 # Reset selector for alternating iteration
-
         # Print dataset lengths
         python_len = len(self._python_dataset_stream) if hasattr(self._python_dataset_stream, '__len__') else "streaming"
         cpp_len = len(self._cpp_dataset_stream) if hasattr(self._cpp_dataset_stream, '__len__') else "streaming"
@@ -1073,6 +1000,61 @@ def materialize_and_enrich_dataset(
 
     return materialized_dataset
 
+if False:
+  # Example usage:
+  # Ensure FilteredDataset is initialized
+  filtered_dataset = FilteredDataset()
+
+  # --- Demonstrate local documentation update before full materialization ---
+  print("\n--- Demonstrating local documentation update ---")
+  # Fetch a sample record to get its hexsha
+  sample_record = None
+  filtered_dataset.reset_iterator()
+  for i, record in enumerate(filtered_dataset):
+      if record['is_processable_code'] and record.get('hexsha'):
+          sample_record = record
+          break
+
+  if sample_record:
+      original_hexsha = sample_record['hexsha']
+      print(f"Original documentation for record {original_hexsha[:10]}...: {sample_record['documentation']}")
+      new_doc = "This is a manually updated documentation for a test record to check local cache handling."
+      filtered_dataset.update_documentation(original_hexsha, new_doc)
+      print(f"Updated documentation locally for record {original_hexsha[:10]}...")
+
+      # Iterate again to confirm the local update is visible
+      print("Confirming local update in next iteration:")
+      filtered_dataset.reset_iterator()
+      for i, record in enumerate(filtered_dataset):
+          if record.get('hexsha') == original_hexsha:
+              print(f"Fetched record {original_hexsha[:10]}... has documentation: {record['documentation']}")
+              break
+
+  # --- Now, materialize and enrich the dataset ---
+  # For demonstration, let's process a small number of samples
+  # For the full dataset, remove num_samples_to_process=100
+  num_samples_to_process_full = 100
+  full_enriched_dataset = materialize_and_enrich_dataset(
+      filtered_dataset,
+      num_samples_to_process=num_samples_to_process_full,
+      force_reprocess=True # Set to False if you want to load existing cache
+  )
+
+  print(f"\nSuccessfully created/loaded a fully enriched dataset with {len(full_enriched_dataset)} samples.")
+  print("First sample from fully enriched dataset (should contain documentation and AST string):")
+  print(full_enriched_dataset[0])
+
+  # If the sample_record's hexsha was processed, its documentation should reflect the update
+  if sample_record:
+      print(f"\nChecking if locally updated doc for {original_hexsha[:10]}... is in the materialized dataset:")
+      found_in_materialized = False
+      for record in full_enriched_dataset:
+          if record.get('hexsha') == original_hexsha:
+              print(f"Materialized record {original_hexsha[:10]}... has documentation: {record['documentation']}")
+              found_in_materialized = True
+              break
+      if not found_in_materialized:
+          print(f"Record {original_hexsha[:10]}... was not found in the {num_samples_to_process_full} samples processed.")
 
 import os
 from datasets import Dataset
@@ -1247,15 +1229,7 @@ class BaselineData(metaclass=SingletonMeta):
 
         # When using Salesforce/codegen-350M-multi for translation tasks, this usually happens because of an unconfigured pad token or a context window overflow
         self._model_codegen.config.pad_token_id = self._model_codegen.config.eos_token_id
-
-        # Scale the position embeddings, RoPE
-        self._model_codegen = enable_codegen_long_context(self._model_codegen, scale=2.0)
-        # Apply the Monkey Path for the position ids.
-        self._model_codegen._orig_forward = self._model_codegen.forward
-        self._model_codegen.forward = forward_patch.__get__(self._model_codegen)
-        self._model_codegen.rope_scale = 2.0
-
-        print("Code generation model loaded with scaled RoPE position embeddings .")
+        print("Code generation model loaded.")
 
     def _generate_code_from_model(self, input_text: str, target_lang: str, is_cpp_to_py: bool = False) -> str:
         """
@@ -1398,39 +1372,6 @@ class BaselineData(metaclass=SingletonMeta):
                         print(f"DEBUG - wpe weight min/max: {wpe.weight.min().item():.4f} / {wpe.weight.max().item():.4f}")
                 else:
                     print("DEBUG - No wpe found, checking for rotary embeddings...")
-
-                # Check the rotary position embedding cache
-                if hasattr(self._model_codegen.transformer, 'h'):
-                    first_block = self._model_codegen.transformer.h[0]
-                    if hasattr(first_block, 'attn') and hasattr(first_block.attn, 'rotary_emb'):
-                        rotary_emb = first_block.attn.rotary_emb
-                        print(f"DEBUG - rotary_emb type: {type(rotary_emb)}")
-                        if hasattr(rotary_emb, 'embed_positions'):
-                            embed_positions = rotary_emb.embed_positions
-                            print(f"DEBUG - embed_positions shape: {embed_positions.shape}")
-                            print(f"DEBUG - embed_positions max index: {embed_positions.shape[0] - 1}")
-
-                            # RoPE scaling: extend the cache using interpolation
-                            # This is better than simple repetition for maintaining positional accuracy
-                            required_size = seq_len + max_new_tokens
-                            if embed_positions.shape[0] < required_size:
-                                print(f"WARNING: embed_positions size ({embed_positions.shape[0]}) < required ({required_size})")
-                                print(f"Extending rotary embedding cache using RoPE scaling")
-
-                                # Calculate scaling factor
-                                scaling_factor = required_size / embed_positions.shape[0]
-                                print(f"DEBUG - RoPE scaling factor: {scaling_factor:.4f}")
-
-                                # Extend using linear interpolation
-                                with torch.no_grad():
-                                    extension = torch.nn.functional.interpolate(
-                                        embed_positions.unsqueeze(0).transpose(1, 2),
-                                        size=required_size,
-                                        mode='linear',
-                                        align_corners=False
-                                    ).transpose(1, 2).squeeze(0)
-                                    rotary_emb.embed_positions = torch.nn.Parameter(extension)
-                                    print(f"DEBUG - extended embed_positions shape: {rotary_emb.embed_positions.shape}")
 
                 output_ids = self._model_codegen.generate(
                     input_ids,
@@ -1914,12 +1855,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 model_name_codegen = "Salesforce/codegen-350M-multi"
-
-
-# The LORA fine tuning version of the position embeddings
-def prepare_position_ids_for_training(position_ids, scale=2.0):
-    return (position_ids.float() / scale).long()
-
 
 # Load tokenizer and model for codegen
 tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)

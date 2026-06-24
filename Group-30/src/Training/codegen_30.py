@@ -10,7 +10,7 @@ Original file is located at
  1. Load the CoDocGen model to generate documentation for a function
  2. Method that uses the CoDocModel model to generate documentation of the given code (as string)
  3. Load the the-stack dataset and extract only the C++ and python code from it.
- 4. load the github/tree-sitter to create abstract syntx trees of given code and lanugage
+ 4. load the github/tree-sitter to create abstract syntax trees of given code and language
  5. Create ASTs for the given code.
 
 Install all the necessary packages
@@ -31,6 +31,11 @@ Install all the necessary packages
 
 #from google.colab import userdata
 import os
+# Force CPU to wait for GPU
+#os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+# Described debug output from GPU
+os.environ["TORCH_USE_CUDA_DSA"] = "1"
+
 import gc #Added for memory cleanup
 from dotenv import load_dotenv
 
@@ -72,6 +77,78 @@ class SingletonMeta(type):
 
         return cls._instances[cls]
 
+
+'''
+This code here is to allow scaling of rope embed_positions
+'''
+import torch
+
+def scale_position_ids(position_ids: torch.Tensor, scale: float = 2.0):
+    """
+    Safe RoPE scaling function
+    Prevents index-out-of-bound AND implements RoPE scaling.
+    """
+
+    return (position_ids.float() / scale).long()
+
+# Patch embed_positions (Critical for CodeGen)
+def patch_embed_positions(model, scale: float = 2.0):
+    """
+    Expands embedding table so indexing remains valid.
+    This avoids lookup crash.
+    """
+
+    import torch
+    import torch.nn.functional as F
+
+    attn = model.transformer.h[0].attn
+    emb = attn.embed_positions  # THIS is correct now
+
+    old_len, dim = emb.shape
+    new_len = int(old_len * scale)
+
+    emb = emb.T.unsqueeze(0)  # [1, dim, seq]
+    emb = F.interpolate(emb, size=new_len, mode="linear", align_corners=True)
+    emb = emb.squeeze(0).T
+
+    # assign back to ALL layers (important)
+    for block in model.transformer.h:
+        block.attn.embed_positions = torch.nn.Parameter(emb)
+
+    model.config.n_positions = new_len
+
+    return model
+
+# STEP 3 — Fix KV-cache position drift (VERY IMPORTANT)
+# Without this, generation breaks after ~500–1000 tokens.
+
+def adjust_position_ids_for_cache(position_ids, past_length: int, scale: float = 2.0):
+    """
+    Keeps KV cache consistent during generation.
+    """
+
+    return ((position_ids + past_length).float() / scale).long()
+
+#Step 4: Full Inference patch
+def enable_codegen_long_context(model, scale: float = 2.0):
+
+    # 1. extend embedding space
+    model = patch_embed_positions(model, scale)
+
+    # 2. store scaling factor
+    model.rope_scale = scale
+
+    return model
+
+# Monkey path for the hugging face generate hook
+def forward_patch(self, *args, **kwargs):
+    if "position_ids" in kwargs:
+        kwargs["position_ids"] = (
+            kwargs["position_ids"].float() / self.rope_scale
+        ).long()
+
+    return self._orig_forward(*args, **kwargs)
+
 """ # Singleton for the CodeGeneration"""
 
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
@@ -98,14 +175,19 @@ class QwenModelBase(metaclass=SingletonMeta):
             if self.device == 'cuda':
                 # Use bfloat16 for Qwen (more stable than float16)
                 try:
+                    # Clear GPU cache before loading
+                    torch.cuda.empty_cache()
                     QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
                                                               torch_dtype=torch.bfloat16,
-                                                              device_map="auto")
+                                                              device_map="auto",
+                                                              use_safetensors=True)
                 except Exception as e:
                     print(f"bfloat16 loading failed, trying float32: {e}")
+                    torch.cuda.empty_cache()
                     QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name,
                                                               torch_dtype=torch.float32,
-                                                              device_map="auto")
+                                                              device_map="auto",
+                                                              use_safetensors=True)
             else:
                 QwenModelBase._model = AutoModelForCausalLM.from_pretrained(self._model_name)
                 QwenModelBase._model.to(self.device)
@@ -177,7 +259,7 @@ class CodeDocumentationGenerator(QwenModelBase):
 
       # Use safer generation parameters to avoid probability tensor errors
       generated_ids = None
-      try:
+      if True: #try:
           with torch.no_grad():
               generated_ids = self._model.generate(
                   **model_inputs,
@@ -185,38 +267,44 @@ class CodeDocumentationGenerator(QwenModelBase):
                   do_sample=False,  # Use greedy decoding for stability
                   temperature=1.0,
               )
-      except RuntimeError as e:
-          error_msg = str(e)
-          print(f"Qwen generation error: {error_msg[:200]}")
-          if "probability tensor" in error_msg or "inf" in error_msg or "nan" in error_msg or "device-side assert" in error_msg:
-              print("Retrying with safer settings...")
-              try:
-                  # Clear CUDA cache
-                  if torch.cuda.is_available():
-                      torch.cuda.empty_cache()
+    #   except RuntimeError as e:
+    #       error_msg = str(e)
+    #       print(f"Qwen generation error: {error_msg[:200]}")
+    #       if "probability tensor" in error_msg or "inf" in error_msg or "nan" in error_msg or "device-side assert" in error_msg:
+    #           print("Retrying with safer settings...")
+    #           try:
+    #               # Clear CUDA cache safely
+    #               if torch.cuda.is_available():
+    #                   try:
+    #                       torch.cuda.empty_cache()
+    #                   except RuntimeError:
+    #                       pass  # GPU in bad state, continue anyway
 
-                  # Retry with even safer settings
-                  with torch.no_grad():
-                      generated_ids = self._model.generate(
-                          **model_inputs,
-                          max_new_tokens=256,
-                          do_sample=False,
-                          temperature=0.7,
-                      )
-              except RuntimeError as e2:
-                  print(f"Second attempt failed: {e2[:200]}")
-                  # Final fallback: CPU
-                  print("Falling back to CPU...")
-                  self._model.to('cpu')
-                  model_inputs = {k: v.to('cpu') for k, v in model_inputs.items()}
-                  with torch.no_grad():
-                      generated_ids = self._model.generate(
-                          **model_inputs,
-                          max_new_tokens=256,
-                          do_sample=False,
-                      )
-          else:
-              raise
+    #               # Retry with even safer settings
+    #               with torch.no_grad():
+    #                   generated_ids = self._model.generate(
+    #                       **model_inputs,
+    #                       max_new_tokens=256,
+    #                       do_sample=False,
+    #                       temperature=0.7,
+    #                   )
+    #           except RuntimeError as e2:
+    #               print(f"Second attempt failed: {e2[:200]}")
+    #               # Final fallback: CPU
+    #               print("Falling back to CPU...")
+    #               try:
+    #                   self._model.to('cpu')
+    #               except Exception:
+    #                   pass  # Model dispatched with accelerate, can't move
+    #               model_inputs = {k: v.to('cpu') for k, v in model_inputs.items()}
+    #               with torch.no_grad():
+    #                   generated_ids = self._model.generate(
+    #                       **model_inputs,
+    #                       max_new_tokens=256,
+    #                       do_sample=False,
+    #                   )
+    #       else:
+    #           raise
 
       if generated_ids is None:
           return "Error: Documentation generation failed"
@@ -241,112 +329,6 @@ class CodeDocumentationGenerator(QwenModelBase):
       response = decoded[0]
       return response
 
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  # Test the documentation generation
-  sample_code = """
-  def factorial(n):
-      if n == 0:
-          return 1
-      else:
-          return n * factorial(n-1)
-  """
-
-  print("Generating documentation for the following code:")
-  print(sample_code)
-
-"""### Test the Code Documentation Generator"""
-
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  generator = CodeDocumentationGenerator()
-
-if 'flag_demo_code_generation' in globals() and flag_demo_code_generation:
-  print("\nGenerated Documentation 2:")
-  documentation = generator.generate_documentation(sample_code)
-  print(documentation)
-
-"""# Obsolete TestLoad and Filter Code Dataset
-
-A function to load a `bigcode/the-stack` dataset and filter it to include only C++ and Python code. The `language` column has the type of laguage
-"""
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  from datasets import load_dataset, interleave_datasets
-
-  def load_and_filter_code_dataset(languages:list =None):
-      """
-      Loads a code dataset and filters it by specified languages.
-
-      Args:
-          dataset_name (str): The name of the dataset to load (e.g., "codeparrot/github-code").
-          languages (list): A list of programming languages to filter by (e.g., ['C++', 'Python']).
-                            If None, no language filtering is applied.
-
-      Returns:
-          datasets.Dataset: The filtered dataset.
-      """
-      dataset_name ="bigcode/the-stack-dedup"
-      languages_and_dataset = [
-                                {
-                                    'language':'python',
-                                    'dataset':None
-                                },
-                                {
-                                    'language':'cpp',
-                                    'dataset':None
-                                }
-                              ]
-
-      print(f"Loading dataset: {dataset_name}")
-      train_dataset = None
-
-      for i in range(len(languages_and_dataset)):
-        language = languages_and_dataset[i]['language']
-        print(f"Fetching dataset for '{language}' language")
-        # 2. Merge them into one combined stream
-        # probabilities=[0.5, 0.5] mixes them evenly (1 Python, 1 C++, 1 Python...)
-        languages_and_dataset[i]['dataset'] = load_dataset(dataset_name,
-                                        data_dir = f"data/{language}",
-                                        split="train",
-                                        streaming=True,
-                                          token=True)
-
-
-      return languages_and_dataset
-
-"""### Obsolete Test: Loading and Filtering Code
-
-Use the `load_and_filter_code_dataset` function to get only C++ and Python code from the `codeparrot/github-code` dataset.
-"""
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  try:
-      cpp_python_dataset = load_and_filter_code_dataset()
-
-      print(next(iter(cpp_python_dataset[0]['dataset'])))
-      print(next(iter(cpp_python_dataset[1]['dataset'])))
-      # print("\nFirst example from filtered dataset (showing language and a snippet of code):")
-      # first_example_filtered = next(iter(cpp_python_dataset))
-      # print(f"---\nLanguage: {first_example_filtered.get('lang', 'N/A')}\nCode Snippet: {first_example_filtered.get('content', 'N/A')[:200]}...")
-
-      # The original intent was to get 5 examples, but for streaming datasets,
-      # directly indexing or taking len() can be problematic. Iterating explicitly is safer.
-      # Let's just confirm the first example for now.
-
-  except RuntimeError as e:
-      if "Dataset scripts are no longer supported" in str(e):
-          print(f"\nError loading dataset: {e}")
-          print("\nIt appears the `codeparrot/github-code` dataset cannot be loaded directly via script anymore.")
-          print("To fix this, please modify the `load_and_filter_code_dataset` function in cell `CnarbxKBNomR`.")
-          print("You might need to specify a `config_name` (e.g., 'all' or 'code_x_m') and potentially use `streaming=True` if the dataset is very large, like so:")
-          print("    `dataset = load_dataset(dataset_name, 'all', split=\"train\", streaming=True)`")
-          print("Alternatively, you might need to find a different version of the dataset or a more compatible dataset for demonstration purposes.")
-      else:
-        raise e
-
-if 'flag_dataset_load_and_filtering' in globals() and flag_dataset_load_and_filtering:
-  print("\nFirst example from cpp_python_dataset (using next(iter())):\n")
-  first_example = next(iter(cpp_python_dataset))
-  print(first_example)
 
 """# Singleton for AST Generation and Comparison
 
@@ -509,47 +491,6 @@ class AST(metaclass=SingletonMeta):
           return '  ' * current_indent
 
       _print_node_recursive(tree.root_node, indent)
-
-"""### Test: Generating ASTs
-
-Test the AST generator and comparator for C++ and python using the AST class.
-"""
-
-if 'flag_ast_generation_and_test' in globals() and flag_ast_generation_and_test:
-  # Example 1: Python Code
-  python_code = """
-  def greet(name):
-      print(f"Hello, {name}!")
-  """
-
-
-  ast = AST()
-  print("Generating AST for Python code:")
-  python_ast = ast.generate_ast(python_code, 'python')
-  ast_str = ast.to_str(python_ast)
-  print("--\n", ast_str)
-  if python_ast:
-      ast.print_ast_tree(python_ast)
-
-  print("\n" + "="*50 + "\n")
-
-  # Example 2: C++ Code
-  cpp_code = b"""
-  #include <iostream>
-
-  int main() {
-      std::cout << "Hello from C++!" << std::endl;
-      return 0;
-  }
-  """
-
-  print("Generating AST for C++ code:")
-  cpp_ast = ast.generate_ast(cpp_code, 'cpp')
-  if cpp_ast:
-      ast.print_ast_tree(cpp_ast)
-
-  score = ast.compare_ast(python_ast, cpp_ast)
-  print(f"\nAST Similarity Score: {score}")
 
 """# GraphCodeBERTScorer for Semantic Code Similarity
 
@@ -806,6 +747,14 @@ class FilteredDataset(metaclass=SingletonMeta):
         self._python_iter = iter(self._python_dataset_stream)
         self._cpp_iter = iter(self._cpp_dataset_stream)
         self._current_dataset_selector = 0 # Reset selector for alternating iteration
+
+        # Print dataset lengths
+        python_len = len(self._python_dataset_stream) if hasattr(self._python_dataset_stream, '__len__') else "streaming"
+        cpp_len = len(self._cpp_dataset_stream) if hasattr(self._cpp_dataset_stream, '__len__') else "streaming"
+        print(f"Python dataset length: {python_len}")
+        print(f"C++ dataset length: {cpp_len}")
+        if python_len != "streaming" and cpp_len != "streaming":
+            print(f"Total dataset length: {python_len + cpp_len}")
 
     def reset_iterator(self):
         """
@@ -1124,61 +1073,6 @@ def materialize_and_enrich_dataset(
 
     return materialized_dataset
 
-if False:
-  # Example usage:
-  # Ensure FilteredDataset is initialized
-  filtered_dataset = FilteredDataset()
-
-  # --- Demonstrate local documentation update before full materialization ---
-  print("\n--- Demonstrating local documentation update ---")
-  # Fetch a sample record to get its hexsha
-  sample_record = None
-  filtered_dataset.reset_iterator()
-  for i, record in enumerate(filtered_dataset):
-      if record['is_processable_code'] and record.get('hexsha'):
-          sample_record = record
-          break
-
-  if sample_record:
-      original_hexsha = sample_record['hexsha']
-      print(f"Original documentation for record {original_hexsha[:10]}...: {sample_record['documentation']}")
-      new_doc = "This is a manually updated documentation for a test record to check local cache handling."
-      filtered_dataset.update_documentation(original_hexsha, new_doc)
-      print(f"Updated documentation locally for record {original_hexsha[:10]}...")
-
-      # Iterate again to confirm the local update is visible
-      print("Confirming local update in next iteration:")
-      filtered_dataset.reset_iterator()
-      for i, record in enumerate(filtered_dataset):
-          if record.get('hexsha') == original_hexsha:
-              print(f"Fetched record {original_hexsha[:10]}... has documentation: {record['documentation']}")
-              break
-
-  # --- Now, materialize and enrich the dataset ---
-  # For demonstration, let's process a small number of samples
-  # For the full dataset, remove num_samples_to_process=100
-  num_samples_to_process_full = 100
-  full_enriched_dataset = materialize_and_enrich_dataset(
-      filtered_dataset,
-      num_samples_to_process=num_samples_to_process_full,
-      force_reprocess=True # Set to False if you want to load existing cache
-  )
-
-  print(f"\nSuccessfully created/loaded a fully enriched dataset with {len(full_enriched_dataset)} samples.")
-  print("First sample from fully enriched dataset (should contain documentation and AST string):")
-  print(full_enriched_dataset[0])
-
-  # If the sample_record's hexsha was processed, its documentation should reflect the update
-  if sample_record:
-      print(f"\nChecking if locally updated doc for {original_hexsha[:10]}... is in the materialized dataset:")
-      found_in_materialized = False
-      for record in full_enriched_dataset:
-          if record.get('hexsha') == original_hexsha:
-              print(f"Materialized record {original_hexsha[:10]}... has documentation: {record['documentation']}")
-              found_in_materialized = True
-              break
-      if not found_in_materialized:
-          print(f"Record {original_hexsha[:10]}... was not found in the {num_samples_to_process_full} samples processed.")
 
 import os
 from datasets import Dataset
@@ -1233,23 +1127,6 @@ def create_and_cache_filtered_subset(filtered_dataset_instance: FilteredDataset,
     print(f"Cached dataset saved to {cached_file_path}")
     return cached_dataset
 
-# Example usage (wrapped to prevent automatic execution):
-if __name__ == "__main__" or 'flag_cache_dataset_example' in globals() and flag_cache_dataset_example:
-    # Ensure FilteredDataset is initialized
-    filtered_dataset = FilteredDataset()
-
-    # Create and cache a subset of 100 processable samples
-    num_samples = 100
-    cached_filtered_subset = create_and_cache_filtered_subset(filtered_dataset, num_samples)
-
-    print(f"\nSuccessfully created/loaded a cached dataset with {len(cached_filtered_subset)} samples.")
-    print("First 2 samples from cached dataset:")
-    for i in range(min(2, len(cached_filtered_subset))):
-        print(cached_filtered_subset[i])
-
-    # Now, you can iterate over 'cached_filtered_subset' multiple times very efficiently.
-    # You can also apply further transformations or filtering to this non-streaming dataset.
-
 """# Baseline
 use the codegen-350m-multi model, and for each record in the dataset:
 1. generte the documentation
@@ -1277,6 +1154,7 @@ import os
 
 class BaselineData(metaclass=SingletonMeta):
     _initialized = False # Class-level flag for singleton initialization
+    _preferred_device = None  # Class-level device preference (can be set externally)
 
     def __init__(self):
         """
@@ -1288,7 +1166,11 @@ class BaselineData(metaclass=SingletonMeta):
             return
         BaselineData._initialized = True
 
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu' # Determine device
+        # Use preferred device if set, otherwise auto-detect
+        if BaselineData._preferred_device:
+            self.device = BaselineData._preferred_device
+        else:
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f"Initializing BaselineData singleton using device: {self.device}...")
 
         # Initialize dependencies internally as per user request to decouple FilteredDataset
@@ -1309,20 +1191,71 @@ class BaselineData(metaclass=SingletonMeta):
         """
         model_name_codegen = "Salesforce/codegen-350M-multi"
         print(f"Loading code generation model: {model_name_codegen} on {self.device}...")
+
+        # Force GPU reset before loading
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+                torch.cuda.reset_peak_memory_stats()
+            except RuntimeError:
+                pass
+
         self._tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
+        self._tokenizer_codegen.pad_token = self._tokenizer_codegen.eos_token
         # Ensure pad_token_id is explicitly set, common for causal models where EOS is used for padding
         if self._tokenizer_codegen.pad_token_id is None:
             self._tokenizer_codegen.pad_token_id = self._tokenizer_codegen.eos_token_id
 
         if self.device == 'cuda':
             # Use float32 for stability (float16 can cause index out of bounds issues)
-            self._model_codegen = AutoModelForCausalLM.from_pretrained(model_name_codegen,
-                                                                       torch_dtype=torch.float32,
-                                                                       device_map="auto")
+            # Load model with device_map="auto" which handles GPU placement automatically
+            # This avoids the .to() call that triggers CUDA index errors
+
+            # Clear any corrupted cache first
+            import shutil
+            from pathlib import Path
+            cache_dir = Path.home() / ".cache" / "huggingface" / "hub"
+            codegen_cache = list(cache_dir.glob("*codegen*")) if cache_dir.exists() else []
+            for item in codegen_cache:
+                try:
+                    if item.is_dir():
+                        shutil.rmtree(item)
+                    else:
+                        item.unlink()
+                    print(f"Cleared corrupted cache: {item}")
+                except Exception as ex:
+                    print(f"Could not clear cache {item}: {ex}")
+
+            try:
+                print(f"Loading model {model_name_codegen} to GPU...")
+                self._model_codegen = AutoModelForCausalLM.from_pretrained(
+                    model_name_codegen,
+                    torch_dtype=torch.float32,
+                    device_map="auto",
+                    trust_remote_code=False
+                )
+                print(f"Model loaded successfully. Config: {self._model_codegen.config}")
+                self._model_codegen.eval()
+            except RuntimeError as e:
+                error_msg = str(e)
+                print(f"Model loading error: {error_msg[:500]}")
+                raise
         else:
             self._model_codegen = AutoModelForCausalLM.from_pretrained(model_name_codegen)
             self._model_codegen.to(self.device)
-        print("Code generation model loaded.")
+
+        # When using Salesforce/codegen-350M-multi for translation tasks, this usually happens because of an unconfigured pad token or a context window overflow
+        self._model_codegen.config.pad_token_id = self._model_codegen.config.eos_token_id
+
+        # Scale the position embeddings, RoPE
+        self._model_codegen = enable_codegen_long_context(self._model_codegen, scale=2.0)
+        # Apply the Monkey Path for the position ids.
+        self._model_codegen._orig_forward = self._model_codegen.forward
+        self._model_codegen.forward = forward_patch.__get__(self._model_codegen)
+        self._model_codegen.rope_scale = 2.0
+
+        print("Code generation model loaded with scaled RoPE position embeddings .")
 
     def _generate_code_from_model(self, input_text: str, target_lang: str, is_cpp_to_py: bool = False) -> str:
         """
@@ -1341,15 +1274,22 @@ class BaselineData(metaclass=SingletonMeta):
         else:
             prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
 
+        # Store prompt for potential re-tokenization during retries
+        original_prompt = prompt
+
         # Option 1 & 2: Reduced max_new_tokens and added memory cleanup
         max_new_tokens = 128  # Reduced from 256 to prevent CUDA errors
 
         # Get model's max position embeddings to prevent CUDA index out of bounds errors
         model_max_length = getattr(self._model_codegen.config, 'max_position_embeddings', 2048)
-        # Use a safety margin to ensure position IDs never exceed the limit
-        max_input_length = min(model_max_length - max_new_tokens, 512)  # Cap at 512 for safety
+        n_positions = getattr(self._model_codegen.config, 'n_positions', model_max_length)
+        print(f"Model config - max_position_embeddings: {model_max_length}, n_positions: {n_positions}")
+        print(f"Model config - hidden_size: {self._model_codegen.config.hidden_size}")
+        # Ensure total sequence (input + output) doesn't exceed model's max position embeddings
+        # Use a very conservative limit to prevent position index out of bounds
+        max_input_length = min(model_max_length - max_new_tokens - 100, 256)  # Extra safety margin
 
-        inputs = self._tokenizer_codegen(prompt, return_tensors="pt").to(self.device)
+        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=256, padding=True).to(self.device)
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
 
@@ -1371,9 +1311,21 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Validate input token IDs are within valid range
         vocab_size = self._model_codegen.config.vocab_size
+        print(f"Model vocab_size: {vocab_size}")
+
+        # Check for NaN or inf values in input_ids
+        if torch.isnan(input_ids).any() or torch.isinf(input_ids).any():
+            print("Warning: Input contains NaN or inf values, replacing with zeros")
+            input_ids = torch.where(torch.isnan(input_ids) | torch.isinf(input_ids), torch.zeros_like(input_ids), input_ids)
+
+        # Validate and clip token IDs to valid range
         if torch.any(input_ids >= vocab_size) or torch.any(input_ids < 0):
-            print(f"Warning: Input contains invalid token IDs. Clipping to valid range [0, {vocab_size-1}]")
+            invalid_count = torch.sum((input_ids >= vocab_size) | (input_ids < 0)).item()
+            print(f"Warning: Input contains {invalid_count} invalid token IDs. Clipping to valid range [0, {vocab_size-1}]")
             input_ids = torch.clamp(input_ids, 0, vocab_size - 1)
+
+        # Ensure all token IDs are valid integers
+        input_ids = input_ids.long()
 
         # Ensure position IDs don't exceed model's max position embeddings
         # This prevents CUDA index out of bounds errors in attention layers
@@ -1384,100 +1336,203 @@ class BaselineData(metaclass=SingletonMeta):
             attention_mask = attention_mask[:, :model_max_length - 1]
             seq_len = input_ids.shape[1]
 
-        # Check for NaN or inf values in tensors
-        if torch.isnan(input_ids).any() or torch.isinf(input_ids).any():
-            print("Warning: Input contains NaN or inf values, replacing with zeros")
-            input_ids = torch.where(torch.isnan(input_ids) | torch.isinf(input_ids), torch.zeros_like(input_ids), input_ids)
+        # Additional safety: ensure total sequence length (input + output) fits within model
+        total_seq_len = seq_len + max_new_tokens
+        if total_seq_len >= model_max_length:
+            print(f"Warning: Total sequence length {total_seq_len} would exceed model max {model_max_length}. Reducing max_new_tokens.")
+            max_new_tokens = max(10, model_max_length - seq_len - 10)  # Extra safety margin, minimum 10 tokens
 
         # Use torch.no_grad() for inference to save memory and avoid gradient computation issues
+        self._model_codegen.eval()  # Ensure model is in eval mode
+        print(f"Max New Tokens for CodeGen: {max_new_tokens}")
+
+        # Debug: Print tensor information before generation
+        print(f"DEBUG - input_ids shape: {input_ids.shape}, dtype: {input_ids.dtype}")
+        print(f"DEBUG - input_ids min/max: {input_ids.min().item()}/{input_ids.max().item()}")
+        print(f"DEBUG - input_ids first 10 values: {input_ids[0, :10].tolist()}")
+        print(f"DEBUG - input_ids indices with value >= vocab_size: {(input_ids >= vocab_size).nonzero()}")
+        print(f"DEBUG - attention_mask shape: {attention_mask.shape}, dtype: {attention_mask.dtype}")
+        print(f"DEBUG - attention_mask sum: {attention_mask.sum().item()}")
+
+        # Check for potential position embedding issues
+        print(f"DEBUG - seq_len: {seq_len}, max_new_tokens: {max_new_tokens}, total_seq_len: {seq_len + max_new_tokens}")
+        print(f"DEBUG - model_max_length: {model_max_length}")
+
+        # Validate that position embeddings won't overflow
+        max_position_embeddings = getattr(self._model_codegen.config, 'max_position_embeddings', 2048)
+        if seq_len + max_new_tokens > max_position_embeddings:
+            print(f"WARNING: Total sequence length {seq_len + max_new_tokens} exceeds position embedding limit {max_position_embeddings}")
+
         with torch.no_grad():
-            try:
+            if True: #try:
+                # Use greedy decoding for stability (do_sample=False avoids numerical issues)
+                print("self._model_codegen.generate: Start")
+                # Create explicit position_ids to prevent index out of bounds
+                position_ids = torch.arange(input_ids.shape[1], dtype=torch.long, device=self.device).unsqueeze(0)
+
+                # Debug: Check position_ids bounds
+                print(f"DEBUG - position_ids shape: {position_ids.shape}, dtype: {position_ids.dtype}")
+                print(f"DEBUG - position_ids range: {position_ids.min().item()} to {position_ids.max().item()}")
+                print(f"DEBUG - max_position_embeddings: {max_position_embeddings}")
+
+                # Check if position_ids would cause index out of bounds
+                if position_ids.max().item() >= max_position_embeddings:
+                    print(f"ERROR: position_ids max ({position_ids.max().item()}) >= max_position_embeddings ({max_position_embeddings})")
+                    # Truncate position_ids to valid range
+                    position_ids = torch.clamp(position_ids, 0, max_position_embeddings - 1)
+                    print(f"DEBUG - position_ids clamped to: {position_ids.min().item()} to {position_ids.max().item()}")
+
+                # Check model's actual position embedding size
+                actual_pos_emb_size = self._model_codegen.transformer.wpe.num_embeddings if hasattr(self._model_codegen.transformer, 'wpe') else 'unknown'
+                print(f"DEBUG - model's actual position embedding size: {actual_pos_emb_size}")
+
+                # Warn if there's a mismatch
+                if actual_pos_emb_size != 'unknown' and actual_pos_emb_size < max_position_embeddings:
+                    print(f"WARNING: Model's actual position embedding size ({actual_pos_emb_size}) < config max_position_embeddings ({max_position_embeddings})")
+
+                # Check for rotary position embeddings (used in codegen)
+                if hasattr(self._model_codegen.transformer, 'wpe'):
+                    wpe = self._model_codegen.transformer.wpe
+                    print(f"DEBUG - wpe type: {type(wpe)}, shape: {wpe.weight.shape if hasattr(wpe, 'weight') else 'N/A'}")
+                    if hasattr(wpe, 'weight'):
+                        print(f"DEBUG - wpe weight min/max: {wpe.weight.min().item():.4f} / {wpe.weight.max().item():.4f}")
+                else:
+                    print("DEBUG - No wpe found, checking for rotary embeddings...")
+
+                # Check the rotary position embedding cache
+                if hasattr(self._model_codegen.transformer, 'h'):
+                    first_block = self._model_codegen.transformer.h[0]
+                    if hasattr(first_block, 'attn') and hasattr(first_block.attn, 'rotary_emb'):
+                        rotary_emb = first_block.attn.rotary_emb
+                        print(f"DEBUG - rotary_emb type: {type(rotary_emb)}")
+                        if hasattr(rotary_emb, 'embed_positions'):
+                            embed_positions = rotary_emb.embed_positions
+                            print(f"DEBUG - embed_positions shape: {embed_positions.shape}")
+                            print(f"DEBUG - embed_positions max index: {embed_positions.shape[0] - 1}")
+
+                            # RoPE scaling: extend the cache using interpolation
+                            # This is better than simple repetition for maintaining positional accuracy
+                            required_size = seq_len + max_new_tokens
+                            if embed_positions.shape[0] < required_size:
+                                print(f"WARNING: embed_positions size ({embed_positions.shape[0]}) < required ({required_size})")
+                                print(f"Extending rotary embedding cache using RoPE scaling")
+
+                                # Calculate scaling factor
+                                scaling_factor = required_size / embed_positions.shape[0]
+                                print(f"DEBUG - RoPE scaling factor: {scaling_factor:.4f}")
+
+                                # Extend using linear interpolation
+                                with torch.no_grad():
+                                    extension = torch.nn.functional.interpolate(
+                                        embed_positions.unsqueeze(0).transpose(1, 2),
+                                        size=required_size,
+                                        mode='linear',
+                                        align_corners=False
+                                    ).transpose(1, 2).squeeze(0)
+                                    rotary_emb.embed_positions = torch.nn.Parameter(extension)
+                                    print(f"DEBUG - extended embed_positions shape: {rotary_emb.embed_positions.shape}")
+
                 output_ids = self._model_codegen.generate(
                     input_ids,
                     attention_mask=attention_mask,
+                    position_ids=position_ids,
                     max_new_tokens=max_new_tokens,
-                    do_sample=True,
-                    top_k=50,
+                    do_sample=False,  # Use greedy decoding for stability
                     num_return_sequences=1,
                     pad_token_id=self._tokenizer_codegen.eos_token_id
                 )
-            except RuntimeError as e:
-                error_msg = str(e)
-                is_cuda_error = any(err in error_msg for err in [
-                    "CUBLAS_STATUS_EXECUTION_FAILED",
-                    "index out of bounds",
-                    "device-side assert",
-                    "CUDA error"
-                ])
+                print("self._model_codegen.generate: Done")
+            # except RuntimeError as e:
+            #     error_msg = str(e)
+            #     is_cuda_error = any(err in error_msg for err in [
+            #         "CUBLAS_STATUS_EXECUTION_FAILED",
+            #         "index out of bounds",
+            #         "device-side assert",
+            #         "CUDA error"
+            #     ])
 
-                if is_cuda_error:
-                    # Option 2: Clear GPU cache and retry with even smaller tokens
-                    print(f"CUDA error encountered, clearing cache and retrying...")
-                    try:
-                        if torch.cuda.is_available():
-                            torch.cuda.empty_cache()
-                            gc.collect()
-                    except RuntimeError:
-                        # GPU is in bad state, try to reset
-                        print("GPU in bad state, attempting reset...")
-                        torch.cuda.synchronize()  # Force sync to clear any pending errors
-                        gc.collect()
+                # if is_cuda_error:
+                #     # Option 2: Clear GPU cache and retry with even smaller tokens
+                #     print(f"CUDA error encountered, clearing cache and retrying...")
+                #     try:
+                #         if torch.cuda.is_available():
+                #             torch.cuda.empty_cache()
+                #             gc.collect()
+                #     except RuntimeError:
+                #         # GPU is in bad state, try to reset
+                #         print("GPU in bad state, attempting reset...")
+                #         try:
+                #             torch.cuda.synchronize()  # Force sync to clear any pending errors
+                #         except RuntimeError:
+                #             pass  # Ignore if synchronize also fails
+                #         gc.collect()
 
-                    # Retry strategies
-                    retry_strategies = [
-                        # Strategy 1: Reduced tokens, no sampling
-                        {"max_new_tokens": 64, "do_sample": False},
-                        # Strategy 2: Greedy with very small tokens
-                        {"max_new_tokens": 32, "do_sample": False},
-                        # Strategy 3: Truncated input
-                        {"max_new_tokens": 64, "do_sample": False, "truncate": True},
-                    ]
+                #     # Retry strategies
+                #     retry_strategies = [
+                #         {"name": "Strategy 1: Reduced tokens, no sampling",
+                #           "max_new_tokens": 64, "do_sample": False},
+                #         {"name":"Strategy 2: Greedy with very small tokens",
+                #           "max_new_tokens": 32, "do_sample": False},
+                #         {"name" :" Strategy 3: Truncated input with re-tokenization",
+                #           "max_new_tokens": 64, "do_sample": False, "retokenize": True},
+                #     ]
 
-                    output_ids = None
-                    for i, strategy in enumerate(retry_strategies):
-                        try:
-                            gen_input_ids = input_ids
-                            gen_attention = attention_mask
+                #     output_ids = None
+                #     for i, strategy in enumerate(retry_strategies):
+                #         try:
+                #             gen_input_ids = input_ids
+                #             gen_attention = attention_mask
 
-                            if strategy.get("truncate", False):
-                                # Use model's max length or 512, whichever is smaller
-                                truncate_len = min(512, model_max_length - strategy["max_new_tokens"])
-                                gen_input_ids = input_ids[:, -truncate_len:] if input_ids.shape[1] > truncate_len else input_ids
-                                gen_attention = attention_mask[:, -truncate_len:] if attention_mask.shape[1] > truncate_len else attention_mask
+                #             if strategy.get("retokenize", False):
+                #                 # Re-tokenize to get fresh tensors
+                #                 print("Re-tokenizing input for retry...")
+                #                 fresh_inputs = self._tokenizer_codegen(original_prompt, return_tensors="pt").to(self.device)
+                #                 gen_input_ids = fresh_inputs["input_ids"]
+                #                 gen_attention = fresh_inputs["attention_mask"]
+                #                 # Truncate if needed
+                #                 truncate_len = min(256, model_max_length - strategy["max_new_tokens"])
+                #                 if gen_input_ids.shape[1] > truncate_len:
+                #                     gen_input_ids = gen_input_ids[:, -truncate_len:]
+                #                     gen_attention = gen_attention[:, -truncate_len:]
+                #             elif strategy.get("truncate", False):
+                #                 # Use model's max length or 512, whichever is smaller
+                #                 truncate_len = min(512, model_max_length - strategy["max_new_tokens"])
+                #                 gen_input_ids = input_ids[:, -truncate_len:] if input_ids.shape[1] > truncate_len else input_ids
+                #                 gen_attention = attention_mask[:, -truncate_len:] if attention_mask.shape[1] > truncate_len else attention_mask
 
-                            output_ids = self._model_codegen.generate(
-                                gen_input_ids,
-                                attention_mask=gen_attention,
-                                max_new_tokens=strategy["max_new_tokens"],
-                                do_sample=strategy["do_sample"],
-                                num_return_sequences=1,
-                                pad_token_id=self._tokenizer_codegen.eos_token_id
-                            )
-                            print(f"Strategy {i+1} succeeded")
-                            break
-                        except RuntimeError as e2:
-                            print(f"Strategy {i+1} failed: {e2}")
-                            continue
+                #             output_ids = self._model_codegen.generate(
+                #                 gen_input_ids,
+                #                 attention_mask=gen_attention,
+                #                 max_new_tokens=strategy["max_new_tokens"],
+                #                 do_sample=strategy["do_sample"],
+                #                 num_return_sequences=1,
+                #                 pad_token_id=self._tokenizer_codegen.eos_token_id
+                #             )
+                #             print(f"Strategy {i+1} {strategy.get('name',' ')} succeeded")
+                #             break
+                #         except RuntimeError as e2:
+                #             print(f"Strategy {i+1} {strategy.get('name',' ')} failed: {e2}")
+                #             continue
 
-                    if output_ids is None:
-                        # Final fallback: Move model to CPU and try
-                        print("All GPU strategies failed, trying CPU fallback...")
-                        try:
-                            self._model_codegen.to('cpu')
-                            self.device = 'cpu'
-                            output_ids = self._model_codegen.generate(
-                                input_ids.to('cpu'),
-                                attention_mask=attention_mask.to('cpu'),
-                                max_new_tokens=64,
-                                do_sample=False,
-                                num_return_sequences=1,
-                                pad_token_id=self._tokenizer_codegen.eos_token_id
-                            )
-                        except Exception as cpu_error:
-                            print(f"CPU fallback also failed: {cpu_error}")
-                            return "# Error: Generation failed due to CUDA errors"
-                else:
-                    raise e
+                #     if output_ids is None:
+                #         # Final fallback: Use CPU tensors with the model still on GPU
+                #         # (model dispatched with accelerate can't be moved)
+                #         print("All GPU strategies failed, trying CPU tensors on GPU model...")
+                #         try:
+                #             # Put tensors on CPU and let the model handle it
+                #             output_ids = self._model_codegen.generate(
+                #                 input_ids,  # Keep on GPU, let accelerate handle it
+                #                 attention_mask=attention_mask,
+                #                 max_new_tokens=32,
+                #                 do_sample=False,
+                #                 num_return_sequences=1,
+                #                 pad_token_id=self._tokenizer_codegen.eos_token_id
+                #             )
+                #         except Exception as cpu_error:
+                #             print(f"CPU tensor fallback also failed: {cpu_error}")
+                #             return "# Error: Generation failed"
+                # else:
+                #     raise e
 
         if output_ids is None or len(output_ids) == 0 or output_ids[0] is None:
             print("Warning: No output generated, returning empty string")
@@ -1532,6 +1587,12 @@ class BaselineData(metaclass=SingletonMeta):
                   the best AST, GCB, and average scores for the NL->C++->Python translation.
         """
         print(f"\nStarting baseline computation for {num_records if num_records is not None else 'all'} records (each with {num_tries} tries per phase)...")
+        # Reset GPU state before starting
+        if torch.cuda.is_available():
+            print(f"\nSynchronizing CUDA and empty cache")
+            torch.cuda.synchronize()
+            torch.cuda.empty_cache()
+
         results = []
         processed_count = 0
 
@@ -1560,7 +1621,7 @@ class BaselineData(metaclass=SingletonMeta):
 
             print(f"  Generating documentation for {original_hexsha[:8]}...")
             # Generate documentation for Phase 1
-            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code)
+            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
 
             print(f"  Generating code from documentation...")
             # Generate code from the generated documentation using the base model
@@ -1582,6 +1643,9 @@ class BaselineData(metaclass=SingletonMeta):
             print(f"  Computing semantic similarity...")
             try:
                 semantic_similarity_phase1 = self._graphcodebert_scorer.score(original_code, generated_code_phase1)
+            except RuntimeError as e:
+                print(f"  GCB comparison CUDA error: {e}")
+                semantic_similarity_phase1 = 0.0
             except Exception as e:
                 print(f"  GCB comparison error: {e}")
                 semantic_similarity_phase1 = 0.0
@@ -1640,13 +1704,16 @@ class BaselineData(metaclass=SingletonMeta):
                             generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_python_code, language)
                             ast_similarity_phase2 = self._ast_processor.compare_ast(original_ast, generated_ast_phase2)
                         except Exception as e:
-                            # print(f"Skipping AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
+                            print(f"Forcing AST Similarity to : AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
                             ast_similarity_phase2 = 0.0
 
                         try:
                             semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_python_code)
+                        except RuntimeError as e:
+                            print(f"Forcing  GCB comparison for {original_hexsha} (Phase 2) to 0 due to CUDA error: {e}")
+                            semantic_similarity_phase2 = 0.0
                         except Exception as e:
-                            # print(f"Skipping GCB comparison for {original_hexsha} (Phase 2) due to error: {e}")
+                            print(f"Forcing GCB comparison for {original_hexsha} (Phase 2) to 0 due to error: {e}")
                             semantic_similarity_phase2 = 0.0
 
                         current_average_score_phase2 = (ast_similarity_phase2 + semantic_similarity_phase2) / 2.0
@@ -1676,8 +1743,13 @@ class BaselineData(metaclass=SingletonMeta):
 
                 # Option 2: Clear GPU cache after each record to prevent memory fragmentation
                 if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                    gc.collect()
+                    try:
+                        print("Clear GPU cache after each record to prevent memory fragmentation")
+                        torch.cuda.empty_cache()
+                        gc.collect()
+                    except RuntimeError:
+                        print("GPU is in bad state, skip cache clearing")
+                        pass
 
                 record_result = {
                     'hexsha': original_hexsha,
@@ -1700,46 +1772,27 @@ class BaselineData(metaclass=SingletonMeta):
 
         return results
 
-# if 'flag_baseline_data_test' in globals() and flag_baseline_data_test:
-#   # Example Usage:
-#   # Initialize the BaselineData singleton
-#   baseline_evaluator = BaselineData()
-
-#   # Run the baseline computation for a small number of records (e.g., 5 records, 2 tries each)
-#   num_records_to_process = 5
-#   num_generation_tries = 2
-
-#   print(f"\nStarting baseline evaluation for {num_records_to_process} records with {num_generation_tries} tries each...")
-
-#   baseline_results = baseline_evaluator.compute_baseline(
-#       num_records=num_records_to_process,
-#       num_tries=num_generation_tries
-#   )
-
-#   print("\nBaseline Evaluation Results:")
-#   for res in baseline_results:
-#       print(f"  Hexsha: {res['hexsha'][:10]}..., AST Score: {res['best_ast_score']:.4f}, GCB Score: {res['best_graphcodebert_score']:.4f}, Average Score: {res['best_average_score']:.4f}")
-
-#   # Verify that the FilteredDataset has been updated
-#   print("\nVerifying updates in FilteredDataset:")
-#   # Access the FilteredDataset instance managed by BaselineData
-#   filtered_dataset_instance = baseline_evaluator._filtered_dataset
-#   filtered_dataset_instance.reset_iterator()
-
-#   checked_count = 0
-#   for record in filtered_dataset_instance:
-#       if checked_count >= num_records_to_process: # Check first 'num_records_to_process' that are actually processable
-#           break
-#       # Only print records that were actually processed and updated by the baseline evaluator
-#       if record.get('hexsha') in [res['hexsha'] for res in baseline_results]:
-#           print(f"  Record {record['hexsha'][:10]}...: Doc updated? {bool(record['documentation'])}, AST Score: {record['ast_score']:.4f}, GCB Score: {record['graphcodebert_score']:.4f}, Avg Score: {record['average_score']:.4f}")
-#           checked_count += 1
-
 from typing import Optional # Added import
 import os
 
-print("\n--- Starting Baseline Evaluation for the entire dataset ---")
+# Set environment variables to help with CUDA errors
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # For better error reporting
+
+# Check if GPU is in a usable state
+def is_gpu_usable():
+    """Check if GPU is in a usable state."""
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try a simple CUDA operation
+        test_tensor = torch.zeros(1, device='cuda')
+        _ = test_tensor + 1
+        return True
+    except RuntimeError:
+        return False
+
+print("\n--- Starting Baseline Evaluation for the entire dataset ---")
 
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized ---
 # This is crucial in interactive environments where class definitions might be re-run
@@ -1756,6 +1809,11 @@ for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBER
         cls_to_reset._initialized_qwen = False
 print("Singleton states reset.")
 # --- END FIX ---
+
+# Check GPU health and force CPU if needed
+if torch.cuda.is_available() and not is_gpu_usable():
+    print("WARNING: GPU is in bad state, forcing CPU mode for this run")
+    BaselineData._preferred_device = 'cpu'
 
 # Instantiate the BaselineData singleton
 baseline_evaluator = BaselineData()
@@ -1857,6 +1915,12 @@ import torch
 
 model_name_codegen = "Salesforce/codegen-350M-multi"
 
+
+# The LORA fine tuning version of the position embeddings
+def prepare_position_ids_for_training(position_ids, scale=2.0):
+    return (position_ids.float() / scale).long()
+
+
 # Load tokenizer and model for codegen
 tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
 # Ensure pad_token_id is explicitly set for the global tokenizer
@@ -1865,9 +1929,13 @@ if tokenizer_codegen.pad_token_id is None:
 
 model_codegen = AutoModelForCausalLM.from_pretrained(
     model_name_codegen,
-    dtype=torch.float16, # Load in half-precision as requested
-    device_map="auto"
+    torch_dtype=torch.float32,
+    device_map="auto",
+    trust_remote_code=False
 )
+tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
+model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
+
 for name, module in model_codegen.named_modules():
     print(name)
 
@@ -1970,7 +2038,7 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
     documentation = record.get('documentation')
     if not documentation or not documentation.strip():
         # Fallback to generating documentation if not present or empty
-        documentation = documentation_generator.generate_documentation(record['content'])
+        documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
         if not documentation.strip():
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
             continue

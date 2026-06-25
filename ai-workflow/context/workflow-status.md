@@ -3,33 +3,27 @@
 ## Active Initiative — TENDv2 (Ollama)
 
 - **Phase**: Implementation — chunked pipeline complete (2026-06-24)
-- **Summary**: Ollama-powered TEND v2 — codegen `qwen2.5-coder:3b`, judge `qwen3:4b`.
-- **Plan**: `ai-workflow/planning/feature-plans/tendv2-ollama-plan.md`
-- **Chunked pipeline plan**: `ai-workflow/planning/feature-plans/tendv2-chunked-pipeline-plan.md`
-- **Roadmap**: `ai-workflow/planning/implementation-roadmaps/tendv2-roadmap.md`,
-  `implementation-roadmaps/tendv2-chunked-roadmap.md`
-- **Approval**: `tendv2-ollama-approval.md` (approved);
-  `tendv2-chunked-pipeline-approval.md` (approved — implemented)
+- Plan: `ai-workflow/planning/feature-plans/tendv2-ollama-plan.md`
 
 ---
 
-## Current Phase
+## LoRA Fine-Tuning Initiative
 
-- **Phase**: Implementation — **Stage 1 complete**
-- **Active stage**: Stage 2 — SFT Dataset Builder (next)
-- **Date**: 2026-06-21
+- **Phase**: Implementation — **Stage 4 complete**
+- **Active stage**: Stage 5 — Full training runs (next)
+- **Date**: 2026-06-25
 
-## Initiative
+### Initiative
 
 Add **parameter-efficient fine-tuning (LoRA)** for three tasks — **text2sql**,
-**sql2nosql**, **nosql2doc** — trained on the TEND dataset (`data/TEND/`).
+**sql2nosql**, **nosql2doc** — trained on **spider + bird train** from HF TEND
+(`care2achieve/tend`).
 
-## Approval
+### Approval
 
 - **Status**: APPROVED (2026-06-21)
-- **Stage 0**: Skipped — user will regenerate full TEND data later
 
-## Phase Checklist
+### Phase Checklist
 
 | Phase | Status |
 |-------|--------|
@@ -37,35 +31,37 @@ Add **parameter-efficient fine-tuning (LoRA)** for three tasks — **text2sql**,
 | Planning | ✅ Complete |
 | Approval | ✅ Approved |
 | Implementation Stage 1 (Foundation) | ✅ Complete |
-| Implementation Stage 2 (Dataset builder) | ⏭️ Next |
-| Implementation Stages 3–6 | ⬜ Pending |
+| Implementation Stage 2 (Dataset builder) | ✅ Complete |
+| Implementation Stage 3 (LoRA trainer) | ✅ Complete |
+| Implementation Stage 4 (Adapter loading) | ✅ Complete |
+| Implementation Stages 5–6 | ⬜ Pending |
 | Validation | ⬜ Not started |
 | Optimization | ⬜ Not started |
 
-## Stage 1 Artifacts
+### Stage 4 Artifacts
 
 | Artifact | Path |
 |----------|------|
-| Stage log | `ai-workflow/implementation/stage-logs/stage-1.md` |
-| Code report | `ai-workflow/implementation/generated-code-reports/stage-1-report.md` |
-| Pre-flight script | `scripts/inspect_lora_modules.py` |
+| Stage log | `ai-workflow/implementation/stage-logs/stage-4.md` |
+| Code report | `ai-workflow/implementation/generated-code-reports/stage-4-report.md` |
+| Adapter load tests | `tests/training/test_adapter_load.py` |
 
-## Locked Decisions
+### Locked Decisions
 
 - Base model: `Salesforce/codegen-350M-multi`
+- Training data: **spider train + bird train** (10,697 rows)
+- Eval data: **spider test + bird test** (1,625 rows)
 - Adapter save path: `models/checkpoints/<task>/`
-- LoRA target_modules: `qkv_proj`, `out_proj` (verified)
-- Plain LoRA fp32; one adapter per task; no merge
+- Loading: base from `models/base/`, adapter via `load_model(adapter=<task>)`
 
-## Next Steps (Stage 2)
+### Next Steps (Stage 5)
 
-1. `src/training/prompt_factory.py` — wire existing prompt builders
-2. `src/training/tend_dataset.py` — CSV → HuggingFace Dataset
-3. `src/training/filters.py` — `overall_correct == True` filter
-4. `tests/training/test_prompt_parity.py`
+1. Train text2sql adapter: `python scripts/train_lora.py --task text2sql`
+2. Train sql2nosql adapter
+3. Train nosql2doc adapter
+4. Each saves to `models/checkpoints/<task>/` with `run_metadata.json`
 
-## Reference
+### Reference
 
 - Feature plan: `ai-workflow/planning/feature-plans/lora-finetuning-plan.md`
-- Task breakdown: `ai-workflow/planning/task-breakdowns/lora-finetuning-tasks.md`
 - Current state: `ai-workflow/context/current-state.md`

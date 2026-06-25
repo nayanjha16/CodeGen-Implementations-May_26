@@ -6,12 +6,13 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from src.utils.config import get_model_name, load_config
+from src.utils.config import get_adapter_name, get_adapter_path, get_model_name, load_config
 from src.utils.device import resolve_device
 from src.utils.paths import (
     ensure_storage_dirs,
     get_checkpoint_path,
     get_model_cache_dir,
+    resolve_project_path,
 )
 
 logger = logging.getLogger("codegen")
@@ -68,14 +69,64 @@ def ensure_model_cached(
     return cache_dir
 
 
+def is_adapter_dir(path: str | Path) -> bool:
+    """Return True when ``path`` contains a PEFT LoRA adapter."""
+    return (Path(path) / "adapter_config.json").is_file()
+
+
+def resolve_adapter_path(
+    adapter: str | None = None,
+    adapter_path: str | Path | None = None,
+    task: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> Path | None:
+    """Resolve a LoRA adapter directory under ``models/checkpoints/<task>/``.
+
+    Resolution order:
+    1. Explicit ``adapter_path`` (absolute, project-relative, or checkpoint name)
+    2. ``adapter`` or ``task`` argument
+    3. ``MODEL_ADAPTER`` env / ``model.adapter`` config key
+    """
+    if adapter_path is not None:
+        path = Path(adapter_path)
+        if not path.is_absolute():
+            checkpoint_candidate = get_checkpoint_path(path.name)
+            if is_adapter_dir(checkpoint_candidate):
+                path = checkpoint_candidate
+            else:
+                path = resolve_project_path(adapter_path)
+    else:
+        adapter_name = adapter or task or get_adapter_name(config)
+        if not adapter_name:
+            return None
+        path = get_adapter_path(adapter_name, config)
+
+    if not path.exists():
+        raise FileNotFoundError(f"Adapter directory not found: {path}")
+    if not is_adapter_dir(path):
+        raise FileNotFoundError(
+            f"Adapter directory '{path}' is missing adapter_config.json."
+        )
+    logger.info("Using LoRA adapter at %s", path)
+    return path
+
+
 def resolve_model_path(config: dict[str, Any] | None = None) -> Path:
-    """Resolve local model path: checkpoint if configured, otherwise cached base model."""
+    """Resolve local full-model path: checkpoint if configured, otherwise cached base model.
+
+    LoRA adapter directories are resolved separately via ``resolve_adapter_path()``.
+    """
     config = config or load_config()
     model_cfg = config.get("model", {})
 
     checkpoint = model_cfg.get("checkpoint") or None
     if checkpoint:
         checkpoint_path = get_checkpoint_path(checkpoint)
+        if is_adapter_dir(checkpoint_path):
+            raise ValueError(
+                f"Checkpoint '{checkpoint}' is a LoRA adapter directory. "
+                "Use load_model(adapter=...) or MODEL_ADAPTER instead of MODEL_CHECKPOINT."
+            )
         if checkpoint_path.exists() and (checkpoint_path / "config.json").exists():
             logger.info("Using checkpoint at %s", checkpoint_path)
             return checkpoint_path
@@ -123,7 +174,11 @@ def count_input_tokens(
 
 
 class CodeGenModel:
-    """Wrapper for HuggingFace CodeGen models with configurable generation."""
+    """Wrapper for HuggingFace CodeGen models with configurable generation.
+
+    When ``adapter_path`` is set, the base weights are loaded from ``models/base/``
+    and a PEFT LoRA adapter is applied on top for inference.
+    """
 
     def __init__(
         self,
@@ -131,6 +186,7 @@ class CodeGenModel:
         device: str = "auto",
         max_length: int = 2048,
         model_path: str | Path | None = None,
+        adapter_path: str | Path | None = None,
         config: dict[str, Any] | None = None,
     ):
         self.model_name = model_name
@@ -138,10 +194,13 @@ class CodeGenModel:
         self.device = resolve_device(device)
         self.config = config
         self.model_path = Path(model_path) if model_path else None
+        self.adapter_path = Path(adapter_path) if adapter_path else None
         self.tokenizer = None
         self.model = None
         self._loaded = False
         self._seq2seq = is_seq2seq_model(model_name)
+        if self.adapter_path is not None and self._seq2seq:
+            raise ValueError("LoRA adapters are supported for causal LM models only.")
 
     @staticmethod
     def _build_stop_string_criteria(
@@ -173,6 +232,11 @@ class CodeGenModel:
             return self.model_path
         return resolve_model_path(self.config)
 
+    def _resolve_tokenizer_path(self) -> Path:
+        if self.adapter_path is not None:
+            return ensure_model_cached(self.model_name)
+        return self._resolve_local_path()
+
     def load(self) -> None:
         """Load model and tokenizer from local cache (download first if needed)."""
         if self._loaded:
@@ -183,14 +247,44 @@ class CodeGenModel:
 
         transformers_logging.set_verbosity_error()
 
-        local_path = self._resolve_local_path()
-        load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
-        logger.info("Loading model %s from %s on %s", self.model_name, local_path, self.device)
-        self.tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
-        model_cls = AutoModelForSeq2SeqLM if self._seq2seq else AutoModelForCausalLM
-        self.model = model_cls.from_pretrained(local_path, **load_kwargs)
+        tokenizer_path = self._resolve_tokenizer_path()
+        load_kwargs = (
+            {"local_files_only": True} if is_model_cached(tokenizer_path) else {}
+        )
+        logger.info(
+            "Loading model %s from %s on %s%s",
+            self.model_name,
+            tokenizer_path,
+            self.device,
+            f" with adapter {self.adapter_path}" if self.adapter_path else "",
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, **load_kwargs)
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
+
+        if self.adapter_path is not None:
+            if not is_adapter_dir(self.adapter_path):
+                raise FileNotFoundError(
+                    f"LoRA adapter not found at {self.adapter_path} "
+                    "(expected adapter_config.json)."
+                )
+            from peft import PeftModel
+
+            base_model = AutoModelForCausalLM.from_pretrained(
+                tokenizer_path,
+                **load_kwargs,
+            )
+            self.model = PeftModel.from_pretrained(
+                base_model,
+                str(self.adapter_path),
+                is_trainable=False,
+            )
+        else:
+            local_path = self._resolve_local_path()
+            load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
+            model_cls = AutoModelForSeq2SeqLM if self._seq2seq else AutoModelForCausalLM
+            self.model = model_cls.from_pretrained(local_path, **load_kwargs)
+
         self.model.to(self.device)
         self.model.eval()
         self._loaded = True
@@ -263,16 +357,32 @@ def load_model(
     device: str | None = None,
     max_length: int | None = None,
     eager: bool = False,
+    adapter: str | None = None,
+    adapter_path: str | Path | None = None,
+    task: str | None = None,
 ) -> CodeGenModel:
-    """Factory function to create and optionally load a CodeGen model."""
+    """Create and optionally load a CodeGen model, with optional LoRA adapter.
+
+    Args:
+        adapter: Task name whose adapter lives under ``models/checkpoints/<task>/``.
+        adapter_path: Explicit adapter directory (overrides ``adapter`` / env).
+        task: Alias for ``adapter``.
+    """
     config = config or load_config()
     model_cfg = config.get("model", {})
     model_name = get_model_name(config)
+    resolved_adapter = resolve_adapter_path(
+        adapter=adapter,
+        adapter_path=adapter_path,
+        task=task,
+        config=config,
+    )
 
     model = CodeGenModel(
         model_name=model_name,
         device=device or model_cfg.get("device", "auto"),
         max_length=max_length or model_cfg.get("max_length", 2048),
+        adapter_path=resolved_adapter,
         config=config,
     )
     if eager:

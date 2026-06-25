@@ -32,6 +32,10 @@ seeds:
 # LoRA fine-tuning (Salesforce/codegen-350M-multi, causal LM)
 training:
   task_type: CAUSAL_LM
+  datasets: [spider, bird]         # HF TEND configs combined for training
+  split: train
+  eval_datasets: [spider, bird]    # held-out eval during training
+  eval_split: test
   max_length: 2048              # total sequence budget (matches model.max_length)
   max_target_tokens: 256        # reserve for completion; prompt budget = 1792
   learning_rate: 2.0e-4

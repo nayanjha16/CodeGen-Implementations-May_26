@@ -41,6 +41,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import gc #Added for memory cleanup
 from dotenv import load_dotenv
 
+# Debug flag - set to True to enable debug output
+DEBUG_FLAG = False
+
 # Load all environment variables from the .env file
 
 
@@ -81,7 +84,7 @@ class SingletonMeta(type):
 
 """ # Singleton for the CodeGeneration"""
 
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM, BatchEncoding
 import torch
 
 class QwenModelBase(metaclass=SingletonMeta):
@@ -185,18 +188,19 @@ class CodeDocumentationGenerator(QwenModelBase):
       input_len = model_inputs.input_ids.shape[1]
       if input_len >= max_pos:
           print(f"Warning: Input length {input_len} >= model max {max_pos}. Truncating.")
-          model_inputs = {k: v[:, :max_pos-1] for k, v in model_inputs.items() if k in ['input_ids', 'attention_mask']}
+          truncated = {k: v[:, :max_pos-1] for k, v in model_inputs.items() if k in ['input_ids', 'attention_mask']}
+          model_inputs = BatchEncoding(truncated)
 
       # Use safer generation parameters to avoid probability tensor errors
       generated_ids = None
       if True: #try:
-          with torch.no_grad():
-              generated_ids = self._model.generate(
-                  **model_inputs,
-                  max_new_tokens=max_length,
-                  do_sample=False,  # Use greedy decoding for stability
-                  temperature=1.0,
-              )
+        with torch.no_grad():
+            generated_ids = self._model.generate(
+                **model_inputs,
+                max_new_tokens=max_length,
+                do_sample=False,  # Use greedy decoding for stability
+                temperature=1.0,
+            )
     #   except RuntimeError as e:
     #       error_msg = str(e)
     #       print(f"Qwen generation error: {error_msg[:200]}")
@@ -247,11 +251,9 @@ class CodeDocumentationGenerator(QwenModelBase):
           # If it's a ModelOutput object
           generated_ids = generated_ids.input_ids
 
-      # Ensure we have the right format for slicing
-      if isinstance(generated_ids, torch.Tensor):
-          generated_ids = generated_ids
-
-      generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids) ]
+      # Get input length and slice generated_ids to remove input tokens
+      input_len = model_inputs.input_ids.shape[1]
+      generated_ids = generated_ids[:, input_len:]
 
       decoded = self._tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
       if not decoded:
@@ -564,7 +566,10 @@ class LLMJudge(QwenModelBase):
 
         with torch.no_grad():
           generated_ids = self._model.generate(**model_inputs, max_new_tokens=512, temperature=0.1)
-        generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids) ]
+
+        # Get input length and slice generated_ids to remove input tokens
+        input_len = model_inputs.input_ids.shape[1]
+        generated_ids = generated_ids[:, input_len:]
 
         decoded = self._tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
         if not decoded:
@@ -1323,16 +1328,18 @@ class BaselineData(metaclass=SingletonMeta):
         print(f"Max New Tokens for CodeGen: {max_new_tokens}")
 
         # Debug: Print tensor information before generation
-        print(f"DEBUG - input_ids shape: {input_ids.shape}, dtype: {input_ids.dtype}")
-        print(f"DEBUG - input_ids min/max: {input_ids.min().item()}/{input_ids.max().item()}")
-        print(f"DEBUG - input_ids first 10 values: {input_ids[0, :10].tolist()}")
-        print(f"DEBUG - input_ids indices with value >= vocab_size: {(input_ids >= vocab_size).nonzero()}")
-        print(f"DEBUG - attention_mask shape: {attention_mask.shape}, dtype: {attention_mask.dtype}")
-        print(f"DEBUG - attention_mask sum: {attention_mask.sum().item()}")
+        if DEBUG_FLAG:
+            print(f"DEBUG - input_ids shape: {input_ids.shape}, dtype: {input_ids.dtype}")
+            print(f"DEBUG - input_ids min/max: {input_ids.min().item()}/{input_ids.max().item()}")
+            print(f"DEBUG - input_ids first 10 values: {input_ids[0, :10].tolist()}")
+            print(f"DEBUG - input_ids indices with value >= vocab_size: {(input_ids >= vocab_size).nonzero()}")
+            print(f"DEBUG - attention_mask shape: {attention_mask.shape}, dtype: {attention_mask.dtype}")
+            print(f"DEBUG - attention_mask sum: {attention_mask.sum().item()}")
 
         # Check for potential position embedding issues
-        print(f"DEBUG - seq_len: {seq_len}, max_new_tokens: {max_new_tokens}, total_seq_len: {seq_len + max_new_tokens}")
-        print(f"DEBUG - model_max_length: {model_max_length}")
+        if DEBUG_FLAG:
+            print(f"DEBUG - seq_len: {seq_len}, max_new_tokens: {max_new_tokens}, total_seq_len: {seq_len + max_new_tokens}")
+            print(f"DEBUG - model_max_length: {model_max_length}")
 
         # Validate that position embeddings won't overflow
         max_position_embeddings = getattr(self._model_codegen.config, 'max_position_embeddings', 2048)
@@ -1353,14 +1360,16 @@ class BaselineData(metaclass=SingletonMeta):
 
                 # Check if position_ids would cause index out of bounds
                 if False: #position_ids.max().item() >= max_position_embeddings:
-                    print(f"ERROR: position_ids max ({position_ids.max().item()}) >= max_position_embeddings ({max_position_embeddings})")
-                    # Truncate position_ids to valid range
-                    position_ids = torch.clamp(position_ids, 0, max_position_embeddings - 1)
-                    print(f"DEBUG - position_ids clamped to: {position_ids.min().item()} to {position_ids.max().item()}")
+                    if DEBUG_FLAG:
+                        print(f"ERROR: position_ids max ({position_ids.max().item()}) >= max_position_embeddings ({max_position_embeddings})")
+                        # Truncate position_ids to valid range
+                        position_ids = torch.clamp(position_ids, 0, max_position_embeddings - 1)
+                        print(f"DEBUG - position_ids clamped to: {position_ids.min().item()} to {position_ids.max().item()}")
 
                 # Check model's actual position embedding size
                 actual_pos_emb_size = self._model_codegen.transformer.wpe.num_embeddings if hasattr(self._model_codegen.transformer, 'wpe') else 'unknown'
-                print(f"DEBUG - model's actual position embedding size: {actual_pos_emb_size}")
+                if DEBUG_FLAG:
+                    print(f"DEBUG - model's actual position embedding size: {actual_pos_emb_size}")
 
                 # Warn if there's a mismatch
                 if actual_pos_emb_size != 'unknown' and actual_pos_emb_size < max_position_embeddings:
@@ -1369,24 +1378,27 @@ class BaselineData(metaclass=SingletonMeta):
                 # Check for rotary position embeddings (used in codegen)
                 if hasattr(self._model_codegen.transformer, 'wpe'):
                     wpe = self._model_codegen.transformer.wpe
-                    print(f"DEBUG - wpe type: {type(wpe)}, shape: {wpe.weight.shape if hasattr(wpe, 'weight') else 'N/A'}")
-                    if hasattr(wpe, 'weight'):
-                        print(f"DEBUG - wpe weight min/max: {wpe.weight.min().item():.4f} / {wpe.weight.max().item():.4f}")
+                    if DEBUG_FLAG:
+                        print(f"DEBUG - wpe type: {type(wpe)}, shape: {wpe.weight.shape if hasattr(wpe, 'weight') else 'N/A'}")
+                        if hasattr(wpe, 'weight'):
+                            print(f"DEBUG - wpe weight min/max: {wpe.weight.min().item():.4f} / {wpe.weight.max().item():.4f}")
                 else:
-                    print("DEBUG - No wpe found, checking for rotary embeddings...")
+                    if DEBUG_FLAG:
+                        print("DEBUG - No wpe found, checking for rotary embeddings...")
 
                 import transformers
-                print(f"Transformers Version: {transformers.__version__}")
-                print(f"DEBUG - attention_mask.dtype: {attention_mask.dtype}")
-                print(f"DEBUG - attention_mask.device: {attention_mask.device}")
-                #print(f"DEBUG - past_key_values: {type(past_key_values)}")
-                print("DEBUG - n_positions:", self._model_codegen.config.n_positions)
-                print("DEBUG - input length:", input_ids.shape[1])
-                print("DEBUG - max_new_tokens:", max_new_tokens)
-                print("DEBUG - total:", input_ids.shape[1] + max_new_tokens)
-                print(f"DEBUG - {input_ids.shape[1]} + {max_new_tokens} > {self._model_codegen.config.n_positions}")
-                print("CUDA devices:", torch.cuda.device_count())
-                print("Model parameters on device:", next(self._model_codegen.parameters()).device)
+                if DEBUG_FLAG:
+                    print(f"Transformers Version: {transformers.__version__}")
+                    print(f"DEBUG - attention_mask.dtype: {attention_mask.dtype}")
+                    print(f"DEBUG - attention_mask.device: {attention_mask.device}")
+                    #print(f"DEBUG - past_key_values: {type(past_key_values)}")
+                    print("DEBUG - n_positions:", self._model_codegen.config.n_positions)
+                    print("DEBUG - input length:", input_ids.shape[1])
+                    print("DEBUG - max_new_tokens:", max_new_tokens)
+                    print("DEBUG - total:", input_ids.shape[1] + max_new_tokens)
+                    print(f"DEBUG - {input_ids.shape[1]} + {max_new_tokens} > {self._model_codegen.config.n_positions}")
+                    print("CUDA devices:", torch.cuda.device_count())
+                    print("Model parameters on device:", next(self._model_codegen.parameters()).device)
                 output_ids = self._model_codegen.generate(
                     input_ids,
                     attention_mask=attention_mask,

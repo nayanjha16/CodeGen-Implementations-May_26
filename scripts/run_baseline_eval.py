@@ -44,6 +44,7 @@ from src.evaluation.ollama_judge import OllamaJudge
 from src.models.model_loader import is_model_cached
 from src.text2sql.sql_executor import build_text2sql_prompt
 from src.utils.config import (
+    get_adapter_path,
     get_bertscore_model_name,
     get_model_name,
     get_ollama_judge_model,
@@ -156,12 +157,17 @@ def run_tend_baseline(
     log_mlflow: bool = False,
     *,
     use_gold_validation: bool = True,
+    adapter_run: str | None = None,
 ) -> dict:
     """Run baseline on TEND data (Spider gold validation by default)."""
     config = load_config()
     config["evaluation"]["max_samples"] = max_samples
     set_seeds(config)
-    runner = BenchmarkRunner(config=config, enable_mlflow=log_mlflow)
+    runner = BenchmarkRunner(
+        config=config,
+        enable_mlflow=log_mlflow,
+        adapter_run=adapter_run,
+    )
     return runner.run_tend(
         config=tend_config,
         split=split,
@@ -211,6 +217,14 @@ def main() -> None:
         action="store_true",
         help="Skip Ollama semantic judge for detail CSVs and metrics",
     )
+    parser.add_argument(
+        "--version",
+        "--name",
+        "--adapter-run",
+        dest="adapter_run",
+        default=None,
+        help="LoRA checkpoint run under models/checkpoints/<run>/ (e.g. v1).",
+    )
     args = parser.parse_args()
 
     config = load_config()
@@ -227,9 +241,18 @@ def main() -> None:
         split_label = args.split
     output_name = args.output or build_results_run_name(
         dataset=dataset_label,
-        model_name=model_name,
+        model_name=(
+            f"{model_name.split('/')[-1]}_lora-{args.adapter_run}"
+            if args.adapter_run
+            else model_name
+        ),
     )
-    print(f"Baseline Evaluation: {model_name}")
+    eval_label = "LoRA Evaluation" if args.adapter_run else "Baseline Evaluation"
+    print(f"{eval_label}: {model_name}")
+    if args.adapter_run:
+        print(f"Adapter run: {args.adapter_run}")
+        for task in ("text2sql", "sql2nosql", "nosql2doc"):
+            print(f"  {task}: {get_adapter_path(task, config, run=args.adapter_run)}")
     print(f"Ollama Judge: {judge_model_name}")
     if use_gold_validation:
         print(
@@ -259,6 +282,7 @@ def main() -> None:
         args.max_samples,
         log_mlflow=args.mlflow,
         use_gold_validation=use_gold_validation,
+        adapter_run=args.adapter_run,
     )
 
     print_metrics(
@@ -349,6 +373,8 @@ def main() -> None:
         json.dump(
             {
                 "model": model_name,
+                "adapter_run": args.adapter_run,
+                "run_type": "lora" if args.adapter_run else "baseline",
                 "judge_model": judge_model_name if use_judge else None,
                 "dataset": result["dataset"],
                 "text2sql": text2sql_metrics,

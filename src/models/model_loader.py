@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from src.utils.config import get_adapter_name, get_adapter_path, get_model_name, load_config
+from src.utils.config import get_adapter_name, get_adapter_path, get_adapter_run, get_model_name, load_config
 from src.utils.device import resolve_device
 from src.utils.paths import (
     ensure_storage_dirs,
@@ -99,7 +99,7 @@ def resolve_adapter_path(
         adapter_name = adapter or task or get_adapter_name(config)
         if not adapter_name:
             return None
-        path = get_adapter_path(adapter_name, config)
+        path = get_adapter_path(adapter_name, config, run=get_adapter_run(config))
 
     if not path.exists():
         raise FileNotFoundError(f"Adapter directory not found: {path}")

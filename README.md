@@ -1,37 +1,44 @@
 # CodeGen – Interactive Database Querying Using Small Code Language Models
 
-A modular, reproducible, research-oriented project for evaluating small code language models on database query generation and translation tasks.
+A modular, reproducible, research-oriented project for evaluating and fine-tuning small code language models on database query generation and translation tasks.
 
-**Default model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configurable via `.env`)
+**Default base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configurable via `.env`)
 
 ## Features
 
 - **Natural Language → SQL** generation with greedy and beam search decoding
 - **SQL → MongoDB** model-based conversion with gold references from TEND
+- **NoSQL → Documentation** generation (nosql2doc)
+- **LoRA fine-tuning** — one task-specific adapter per pipeline stage (text2sql, sql2nosql, nosql2doc)
 - **Benchmark evaluation** on the [TEND silver dataset](https://huggingface.co/datasets/care2achieve/tend) (Spider + BIRD configs)
-- **Metrics**: Exact Match, Execution Accuracy, BLEU, ROUGE-L, BERTScore, CodeBLEU
+- **Metrics**: Exact Match, Execution Accuracy, BLEU, ROUGE-L, BERTScore, CodeBLEU, Ollama semantic judge
 - **MLflow** experiment tracking
 - **Local caching** — models and datasets download once, then reuse from disk
 
 ## Project Structure
 
 ```
-CodeGen-Studio/
-├── src/                     # Application source code
+CodeGen-Implementations-May_26/
+├── src/
 │   ├── text2sql/            # Prompt builder, generator, validator, executor
 │   ├── sql2nosql/           # SQL to MongoDB generation + evaluation
-│   ├── models/              # HuggingFace model loader (with local cache)
+│   ├── documentation/       # nosql2doc prompt builder
+│   ├── models/              # HuggingFace model loader (base + LoRA adapters)
 │   ├── datasets/            # TEND Hugging Face loader, preprocessing
-│   ├── evaluation/          # Metrics, benchmarks, MLflow tracking
+│   ├── training/            # LoRA trainer, SFT dataset builder, collator
+│   ├── evaluation/          # Metrics, benchmarks, MLflow, Ollama judge
 │   └── utils/               # Config, paths, logging, seeds
 ├── models/
-│   ├── base/                # Downloaded HuggingFace models (cached once)
-│   └── checkpoints/         # Fine-tuned model checkpoints from training
-├── data/                    # Dataset reference docs (DATASETS.md)
+│   ├── base/                # Downloaded HuggingFace base models (cached once)
+│   └── checkpoints/         # LoRA adapter weights (one dir per task)
+├── data/
+│   ├── spider_gold_validation.jsonl   # Frozen 50-example eval set
+│   └── DATASETS.md
 ├── results/                 # Evaluation output (metrics.json, details.csv)
-├── configs/                 # YAML configuration (generation, evaluation)
-├── scripts/                 # Setup and evaluation scripts
-├── .env.example             # Environment variable template
+├── tests/training/          # Unit + smoke tests for LoRA pipeline
+├── configs/default.yaml     # Generation, evaluation, training, LoRA settings
+├── scripts/                 # Setup, training, evaluation, verification
+├── .env.example
 └── requirements.txt
 ```
 
@@ -40,7 +47,6 @@ CodeGen-Studio/
 ### 1. Install Dependencies
 
 ```bash
-# Create and activate conda environment (recommended)
 conda create -n ai python=3.11 -y
 conda activate ai
 pip install -r requirements.txt
@@ -57,8 +63,6 @@ $env:PYTHONPATH = (Get-Location).Path
 
 ### 2. Configure Environment
 
-Copy the template and set your model name:
-
 ```bash
 cp .env.example .env
 ```
@@ -70,150 +74,377 @@ Edit `.env` — at minimum set `MODEL_NAME` and `BERTSCORE_MODEL_NAME`:
 MODEL_NAME=Salesforce/codegen-350M-multi
 BERTSCORE_MODEL_NAME=distilbert-base-uncased
 
-# Optional: use a fine-tuned checkpoint instead of the base model
-# MODEL_CHECKPOINT=my-run-epoch-3
+# Optional: load a LoRA adapter at inference time
+# MODEL_ADAPTER=text2sql
 
 # Local storage paths (defaults shown)
 MODELS_BASE_DIR=models/base
 MODELS_CHECKPOINTS_DIR=models/checkpoints
 TEND_DATASET_ID=care2achieve/tend
 TEND_CACHE_DIR=data/cache/tend
-TEND_CACHE_DIR=data/cache/tend
 RESULTS_DIR=results
+
+# Ollama semantic judge (used in baseline eval detail CSVs)
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_JUDGE_MODEL=qwen3:4b
+OLLAMA_TIMEOUT=120
 ```
 
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `MODEL_NAME` | HuggingFace base model identifier (**required**) | — |
+| `BERTSCORE_MODEL_NAME` | BERTScore metric model (**required**) | — |
+| `MODEL_ADAPTER` | Task name whose LoRA adapter to load (`text2sql`, `sql2nosql`, `nosql2doc`) | — |
+| `MODELS_BASE_DIR` | Where base models are cached | `models/base` |
+| `MODELS_CHECKPOINTS_DIR` | Where LoRA adapters are stored | `models/checkpoints` |
+| `TEND_DATASET_ID` | Hugging Face TEND dataset id | `care2achieve/tend` |
+| `TEND_CACHE_DIR` | Local cache for TEND JSONL splits | `data/cache/tend` |
+| `SPIDER_GOLD_VALIDATION_PATH` | Frozen Spider gold validation JSONL | `data/spider_gold_validation.jsonl` |
+| `RESULTS_DIR` | Evaluation output directory | `results` |
+| `OLLAMA_BASE_URL` | Ollama API URL for semantic judge | `http://localhost:11434` |
+| `OLLAMA_JUDGE_MODEL` | Ollama model for semantic correctness | `qwen3:4b` |
 
-| Variable                 | Description                                 | Default              |
-| ------------------------ | ------------------------------------------- | -------------------- |
-| `MODEL_NAME`             | HuggingFace model identifier (**required**) | —                    |
-| `BERTSCORE_MODEL_NAME`   | BERTScore metric model (**required**)       | —                    |
-| `MODEL_CHECKPOINT`       | Checkpoint name under `models/checkpoints/` | —                    |
-| `MODELS_BASE_DIR`        | Where base models are cached                | `models/base`        |
-| `MODELS_CHECKPOINTS_DIR` | Where training checkpoints are stored       | `models/checkpoints` |
-| `TEND_DATASET_ID`        | Hugging Face TEND dataset id                | `care2achieve/tend`  |
-| `TEND_CACHE_DIR`         | Local cache for TEND JSONL splits             | `~/.cache/codegen/tend` |
-| `RESULTS_DIR`            | Evaluation output directory                 | `results`            |
+YAML settings in `configs/default.yaml` cover generation, evaluation limits, training hyperparameters, and LoRA config. Model name and storage paths always come from `.env`.
 
+---
 
-YAML settings in `configs/default.yaml` cover generation parameters, evaluation limits, and seeds. Model name and storage paths always come from `.env`.
+## Recommended Workflow
 
-## Scripts
+Run these steps in order for a full baseline → train → evaluate cycle:
 
-### `run_baseline_eval.py` — Baseline Model Evaluation
+```bash
+# 0. Pre-flight: verify LoRA target modules on the base model
+python scripts/inspect_lora_modules.py
 
-The primary evaluation script. Runs the configured model on the TEND Hugging Face dataset and computes all metrics.
+# 1. Smoke-test TEND dataset loading
+python scripts/test_tend_loader.py
 
-**Metrics computed:** Exact Match, Execution Accuracy, Syntax Validity, BLEU, ROUGE-L, BERTScore, CodeBLEU
+# 2. Run unit + smoke tests (fast, ~1–2 min)
+python -m unittest discover -s tests/training -v
 
-#### TEND benchmark (Hugging Face)
+# 3. Baseline evaluation (base model, no adapter)
+python scripts/run_baseline_eval.py --max-samples 50
 
-Loads [care2achieve/tend](https://huggingface.co/datasets/care2achieve/tend) via `src/datasets/tend_loader.py`. Gold SQL, MongoDB queries, and documentation come from the published silver dataset.
+# 4. Smoke-check SFT dataset builder
+python scripts/build_sft_dataset.py
+
+# 5. Train one task (smoke run)
+python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
+
+# 6. Full training (all three tasks)
+python scripts/train_all_lora.py --no-mlflow
+
+# 7. Verify adapter artifacts
+python scripts/verify_lora_adapters.py
+
+# 8. Evaluate with LoRA adapter
+MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
+```
+
+---
+
+## Testing
+
+### Unit and smoke tests
+
+All training tests live under `tests/training/`:
+
+| Test file | What it checks |
+| --------- | -------------- |
+| `test_prompt_parity.py` | Training prompts match runtime `PromptBuilder`s; dataset filters; token budget ≤ 2048 |
+| `test_overfit_smoke.py` | LoRA trainer overfits 5 rows, writes `adapter_config.json` + weights |
+| `test_adapter_load.py` | Trains tiny adapters per task; `load_model(adapter_path=...)` generates non-empty output |
+| `test_adapter_verify.py` | Adapter verification helper reports missing files correctly |
+
+```bash
+# Run all training tests
+python -m unittest discover -s tests/training -v
+
+# Run a subset (fast sanity check)
+python -m unittest tests.training.test_prompt_parity tests.training.test_overfit_smoke -v
+
+# Single test
+python -m unittest tests.training.test_overfit_smoke.OverfitSmokeTest -v
+```
+
+The overfit smoke test trains 5 Spider rows for 10 epochs and expects `train_loss < 1.5`. Adapter load tests train 3 rows per task and verify generation works.
+
+### Dataset integration smoke test
 
 ```bash
 python scripts/test_tend_loader.py
-python scripts/run_baseline_eval.py --tend-config spider --split test --max-samples 20
-python scripts/run_baseline_eval.py --tend-config bird --split train --max-samples 50
 ```
 
-#### Log results to MLflow
+Loads Spider + BIRD train/test splits from Hugging Face (or cache) and validates required TEND fields. Also checks the 50-row frozen gold validation set.
+
+### SFT dataset builder smoke test
 
 ```bash
-python scripts/run_baseline_eval.py --tend-config spider --mlflow
-python scripts/run_baseline_eval.py --tend-config bird --max-samples 10 --mlflow
+python scripts/build_sft_dataset.py
 ```
 
-#### Save results to a named run folder
+Builds 50-row samples for each task (`text2sql`, `sql2nosql`, `nosql2doc`) from combined Spider + BIRD train data and prints filter/token statistics.
+
+### LoRA pre-flight check
+
+Before training, confirm `lora.target_modules` in `configs/default.yaml` match the base model architecture:
 
 ```bash
-python scripts/run_baseline_eval.py --tend-config spider --output tend_spider_baseline
+python scripts/inspect_lora_modules.py
+python scripts/inspect_lora_modules.py --model Salesforce/codegen-350M-multi
 ```
 
-Creates `results/spider_baseline/` containing:
+Prints attention module suffixes and confirms trainable parameter count > 0. For CodeGen-350M the configured modules are `qkv_proj` and `out_proj`.
 
-- `metrics.json` — aggregate metrics
-- `details.csv` — per-sample prompts, outputs, and scores
+---
 
-#### All options
+## Training (LoRA Fine-Tuning)
 
+LoRA fine-tuning trains **one adapter per task** on the causal LM base model (`MODEL_NAME`). Base weights stay frozen in `models/base/`; only adapter weights are saved under `models/checkpoints/<task>/`.
 
-| Flag            | Default                 | Description                                        |
-| --------------- | ----------------------- | -------------------------------------------------- |
-| `--tend-config` | `spider`                | TEND subset: `spider` or `bird`                    |
-| `--split`       | `test`                  | TEND split: `train` or `test` (`test` = source dev) |
-| `--max-samples` | `5`                     | Number of examples to evaluate                     |
-| `--mlflow`      | off                     | Log metrics to MLflow                              |
-| `--output`      | `baseline_eval_results` | Run name; outputs go to `results/<name>/`          |
+### Supported tasks
 
+| Task | Target field | Training prompt ends with |
+| ---- | ------------ | ------------------------- |
+| `text2sql` | `sql` | `\n\nSQL:` |
+| `sql2nosql` | `nosql_query` | `\n\nMongoDB:` |
+| `nosql2doc` | `documentation` | `\n\nDocumentation:` |
 
-#### Example output
+### Training data
 
-```
-Baseline Evaluation: Salesforce/codegen-350M-multi
-Dataset: tend | Max samples: 10
+By default, training loads **Spider + BIRD train** rows from Hugging Face TEND (`~10,697` combined rows). Held-out eval during training uses **Spider + BIRD test** splits. Override with `--train-csv` / `--eval-csv` (CSV or JSONL).
 
-============================================================
-  Text-to-SQL (tend_spider_test)
-============================================================
-  Exact Match Accuracy          : 0.1000
-  Execution Accuracy            : 0.2000
-  Syntax Validity Rate          : 0.9000
-  BLEU                          : 0.3500
-  ...
-  Run saved: results/baseline_eval_results
-    metrics: results/baseline_eval_results/metrics.json
-    details: results/baseline_eval_results/details.csv
+### Sequence budget
+
+Configured in `configs/default.yaml`:
+
+```yaml
+training:
+  max_length: 2048           # total sequence budget (matches model.max_length)
+  max_target_tokens: 256     # reserve for completion; prompt budget ≈ 1791
 ```
 
-#### What happens on first run
+Long prompts are truncated from the **start** (schema head dropped, question + tail kept) so the supervised target is never cut. Only ~0.02% of rows exceed the budget at 2048 tokens.
 
-1. **Model** — checks `models/base/<model-slug>/` for a cached copy; if missing, downloads from HuggingFace and saves locally
-2. **Dataset** — loads TEND from Hugging Face on first use, then reuses cached JSONL under `TEND_CACHE_DIR` (default `~/.cache/codegen/tend`)
-3. **Evaluation** — generates SQL/MongoDB/docs, compares against TEND gold fields, computes all metrics
-4. **Results** — prints metrics to terminal and saves JSON/CSVs to `results/`
-
-#### Using a fine-tuned checkpoint
-
-After training, save your checkpoint under `models/checkpoints/<run-name>/` (must contain `config.json` and model weights). Then set in `.env`:
+### Train a single task
 
 ```bash
-MODEL_CHECKPOINT=my-run-epoch-3
+# Full training (default: 5 epochs, spider+bird train/eval)
+python scripts/train_lora.py --task text2sql
+
+# Smoke / debug run
+python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
+
+# Override device or output directory
+python scripts/train_lora.py --task sql2nosql --device mps --output-dir models/checkpoints/sql2nosql_v2
+
+# Custom training data
+python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --eval-csv data/my_eval.jsonl
 ```
 
-The loader uses the checkpoint instead of the base model.
+| Flag | Default | Description |
+| ---- | ------- | ----------- |
+| `--task` | *(required)* | `text2sql`, `sql2nosql`, or `nosql2doc` |
+| `--train-csv` | HF spider+bird train | Optional CSV/JSONL training rows |
+| `--eval-csv` | HF spider+bird test | Optional CSV/JSONL eval rows |
+| `--output-dir` | `models/checkpoints/<task>/` | Adapter output directory |
+| `--max-samples` | all rows | Limit rows for smoke/debug |
+| `--epochs` | `5` (from config) | Override epoch count |
+| `--device` | `auto` | `auto`, `cuda`, `mps`, or `cpu` |
+| `--config` | `configs/default.yaml` | Alternate YAML config |
+| `--no-mlflow` | off | Disable MLflow logging |
+
+### Train all tasks
+
+```bash
+# Train text2sql → sql2nosql → nosql2doc sequentially
+python scripts/train_all_lora.py
+
+# Smoke run
+python scripts/train_all_lora.py --max-samples 50 --epochs 1 --no-mlflow
+
+# Run baseline eval first, then train
+python scripts/train_all_lora.py --run-baseline --baseline-max-samples 50
+
+# Dry run (print planned tasks)
+python scripts/train_all_lora.py --dry-run
+```
+
+After all tasks complete, `train_all_lora.py` verifies adapter artifacts and writes a timestamped summary JSON to `models/checkpoints/training_summary_<timestamp>.json`.
+
+### Training hyperparameters (`configs/default.yaml`)
+
+```yaml
+training:
+  datasets: [spider, bird]
+  split: train
+  eval_datasets: [spider, bird]
+  eval_split: test
+  max_length: 2048
+  max_target_tokens: 256
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  epochs: 5
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 4   # effective batch size = 32
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  fp16: false
+  bf16: false
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  bias: none
+  target_modules:
+    - qkv_proj
+    - out_proj
+```
+
+Training uses TRL `SFTTrainer` with **completion-only loss** (prompt tokens masked). Each run writes:
+
+```
+models/checkpoints/text2sql/
+├── adapter_config.json
+├── adapter_model.safetensors
+└── run_metadata.json          # train/eval loss, filter stats, token stats
+```
+
+### Verify trained adapters
+
+```bash
+python scripts/verify_lora_adapters.py
+python scripts/verify_lora_adapters.py --task text2sql
+python scripts/verify_lora_adapters.py --no-require-metadata
+```
+
+Checks for `adapter_config.json`, `adapter_model.safetensors`, and optionally `run_metadata.json`.
+
+### Training wall-clock notes
+
+| Device | Approx. time per task (full 10k rows, 5 epochs) |
+| ------ | ----------------------------------------------- |
+| CUDA GPU | Hours (fastest) |
+| Apple MPS | ~10–15+ hours per task |
+| CPU | Very slow; use `--max-samples` for smoke tests |
+
+Use `--max-samples 50 --epochs 1 --no-mlflow` to validate the pipeline before committing to a full run.
+
+---
+
+## Evaluation
+
+### `run_baseline_eval.py` — Primary evaluation script
+
+Evaluates the configured model (base or LoRA adapter) on all three tasks. By default uses the **frozen Spider gold validation set** (`data/spider_gold_validation.jsonl`, 50 examples).
+
+```bash
+# Default: 50 gold validation examples, all three tasks
+python scripts/run_baseline_eval.py
+
+# Limit samples
+python scripts/run_baseline_eval.py --max-samples 20
+
+# Log to MLflow
+python scripts/run_baseline_eval.py --mlflow
+
+# Named output folder under results/
+python scripts/run_baseline_eval.py --output my_baseline_run
+
+# Skip Ollama semantic judge (faster, no Ollama required)
+python scripts/run_baseline_eval.py --no-judge
+
+# Evaluate full Hugging Face TEND split instead of gold validation
+python scripts/run_baseline_eval.py --full-split --split test --tend-config spider
+```
+
+| Flag | Default | Description |
+| ---- | ------- | ----------- |
+| `--tend-config` | `spider` | TEND subset: `spider` or `bird` |
+| `--split` | `test` | TEND split when `--full-split` is set |
+| `--full-split` | off | Use full HF split instead of gold validation |
+| `--max-samples` | `50` | Number of examples |
+| `--mlflow` | off | Log metrics to MLflow |
+| `--output` | auto-generated | Run folder name under `results/` |
+| `--no-judge` | off | Skip Ollama semantic judge |
+
+**Metrics computed:** Exact Match, Execution Accuracy, Syntax Validity, BLEU, ROUGE-L, BERTScore, CodeBLEU, Ollama judge correct rate.
+
+Output per run:
+
+```
+results/<run_name>/
+├── metrics.json
+├── text2sql_details.csv
+├── sql2nosql_details.csv
+└── documentation_details.csv
+```
+
+#### Evaluate with a LoRA adapter
+
+Set `MODEL_ADAPTER` in `.env` or inline:
+
+```bash
+MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
+MODEL_ADAPTER=sql2nosql python scripts/run_baseline_eval.py --max-samples 50
+MODEL_ADAPTER=nosql2doc python scripts/run_baseline_eval.py --max-samples 50
+```
+
+The loader applies the adapter from `models/checkpoints/<task>/` on top of the base model in `models/base/`.
+
+### `run_all_baseline_eval.py` — Multi-model comparison
+
+Runs baseline eval across a hardcoded list of models on the gold validation set:
+
+```bash
+python scripts/run_all_baseline_eval.py
+python scripts/run_all_baseline_eval.py --max-samples 50
+python scripts/run_all_baseline_eval.py --dry-run
+python scripts/run_all_baseline_eval.py --list-models
+python scripts/run_all_baseline_eval.py --no-judge
+```
+
+Output folder format: `spider_gold_validation_<model>_<DDMM>_<HHMM>/`
 
 ---
 
 ## Local Caching
 
-Assets are downloaded once and reused on every subsequent run.
-
-### Models
+### Base models
 
 ```
 models/base/Salesforce__codegen-350M-multi/
 ├── config.json
-├── model.safetensors (or pytorch_model.bin)
+├── model.safetensors
 ├── tokenizer files
 └── .downloaded          # cache marker
-
-models/base/distilbert-base-uncased/   # BERTScore model (BERTSCORE_MODEL_NAME)
-├── config.json
-├── model.safetensors
-└── .downloaded
 ```
 
-- Checked before every load via `config.json` + `.downloaded`
-- Downloaded from HuggingFace only when missing
-- Configured by `MODEL_NAME` in `.env`
-- BERTScore metric model cached the same way under `models/base/` via `BERTSCORE_MODEL_NAME`
+Checked before every load. Downloaded from HuggingFace only when missing. Configured by `MODEL_NAME` in `.env`.
+
+### LoRA adapters (training output)
+
+```
+models/checkpoints/
+├── text2sql/
+│   ├── adapter_config.json
+│   ├── adapter_model.safetensors
+│   └── run_metadata.json
+├── sql2nosql/
+└── nosql2doc/
+```
+
+Set `MODEL_ADAPTER=text2sql` in `.env` to load an adapter at inference time.
 
 ### TEND dataset (Hugging Face)
 
-- Loaded via `src/datasets/tend_loader.py` from `TEND_DATASET_ID` (default `care2achieve/tend`)
-- Cached locally as standardized JSONL under `TEND_CACHE_DIR` (default `~/.cache/codegen/tend`, or e.g. `data/cache/tend` in `.env`)
+- Loaded via `src/datasets/tend_loader.py` from `TEND_DATASET_ID`
+- Cached as standardized JSONL under `TEND_CACHE_DIR`
 - Configurations: `spider`, `bird`
 - Splits: `train`, `test` (`test` = source validation/dev)
-- Standardized format includes gold `sql`, `nosql_query`, and `documentation`
 
 ```
 data/cache/tend/care2achieve__tend/spider/train.jsonl
@@ -225,60 +456,50 @@ from src.datasets.tend_loader import TENDLoader
 
 loader = TENDLoader(config="spider")
 examples = loader.load_split("test")
-print(examples[0]["question"], examples[0]["nosql_query"])
+print(examples[0]["question"], examples[0]["sql"])
 ```
-
-### Checkpoints (training output)
-
-```
-models/checkpoints/
-└── my-run-epoch-3/
-    ├── config.json
-    └── model weights
-```
-
-Set `MODEL_CHECKPOINT=my-run-epoch-3` in `.env` to load a checkpoint instead of the base model.
 
 ---
 
 ## Configuration
 
-### Environment (`.env`) — models, datasets, and paths
+### Environment (`.env`) — models, adapters, datasets, paths
 
-All model names, dataset URLs, and storage paths are configured here. Never hardcoded in scripts.
-
-```bash
-MODEL_NAME=Salesforce/codegen-350M-multi
-BERTSCORE_MODEL_NAME=distilbert-base-uncased
-MODELS_BASE_DIR=models/base
-MODELS_CHECKPOINTS_DIR=models/checkpoints
-TEND_DATASET_ID=care2achieve/tend
-TEND_CACHE_DIR=data/cache/tend
-```
+All model names, adapter selection, dataset URLs, and storage paths are configured here.
 
 ### YAML (`configs/default.yaml`) — runtime behavior
 
 ```yaml
 model:
-  max_length: 512
-  device: "auto"       # auto, cuda, cpu
+  max_length: 2048
+  device: "auto"       # auto (cuda > mps > cpu), cuda, mps, cpu
 
 generation:
   max_new_tokens: 256
-  temperature: 0.2
-  decoding_strategy: "greedy"  # greedy, beam
+  documentation_max_new_tokens: 96
+  temperature: 0.7
+  decoding_strategy: "greedy"
 
 evaluation:
-  max_samples: 100
+  batch_size: 8
+  max_samples: 50
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"
 
-seeds:
-  random: 42
-  numpy: 42
-  torch: 42
+training:
+  max_length: 2048
+  max_target_tokens: 256
+  epochs: 5
+  learning_rate: 2.0e-4
+  # ... see full file for LoRA and batch settings
+
+lora:
+  target_modules: [qkv_proj, out_proj]
+  r: 16
+  lora_alpha: 32
 ```
 
-To use a different HuggingFace model, change `MODEL_NAME` in `.env` and delete the old cache folder under `models/base/` if needed.
+To use a different HuggingFace base model, change `MODEL_NAME` in `.env`, run `inspect_lora_modules.py` to verify LoRA target modules, and update `lora.target_modules` in the YAML if needed.
 
 ---
 
@@ -286,60 +507,63 @@ To use a different HuggingFace model, change `MODEL_NAME` in `.env` and delete t
 
 See [data/DATASETS.md](data/DATASETS.md) for TEND field definitions, split naming, and loading examples.
 
+| Dataset | Use |
+| ------- | --- |
+| TEND (HF `care2achieve/tend`) | LoRA training (spider + bird train/test) |
+| `data/spider_gold_validation.jsonl` | Frozen 50-example baseline evaluation |
+
 ---
 
 ## Evaluation Metrics
 
-
-| Metric             | Description                      |
-| ------------------ | -------------------------------- |
-| Exact Match        | Normalized SQL string equality   |
-| Execution Accuracy | Result set comparison on SQLite  |
-| Syntax Validity    | Valid SQL structure rate         |
-| BLEU               | N-gram overlap                   |
-| ROUGE-L            | Longest common subsequence       |
-| BERTScore          | Contextual embedding similarity  |
-| CodeBLEU           | n-gram + syntax + semantic match |
-
+| Metric | Description |
+| ------ | ----------- |
+| Exact Match | Normalized SQL string equality |
+| Execution Accuracy | Result set comparison on SQLite |
+| Syntax Validity | Valid SQL structure rate |
+| BLEU | N-gram overlap |
+| ROUGE-L | Longest common subsequence |
+| BERTScore | Contextual embedding similarity |
+| CodeBLEU | n-gram + syntax + semantic match |
+| Judge Correct Rate | Ollama semantic equivalence (optional) |
 
 ---
 
 ## MLflow Tracking
 
-```bash
-# After running with --mlflow flag
-mlflow ui --backend-store-uri sqlite:///mlflow.db
+Training and evaluation runs can log to MLflow when enabled:
 
-# Or for mlruns directory
-mlflow ui --backend-store-uri mlruns
+```bash
+python scripts/train_lora.py --task text2sql          # MLflow on by default
+python scripts/run_baseline_eval.py --mlflow
+
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
-Tracked per run: model name, dataset, prompt template, decoding strategy, all metrics.
+Tracked per run: model name, task, hyperparameters, train/eval loss, all evaluation metrics.
 
 ---
 
 ## Reproducibility
 
-Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All evaluation scripts call `set_seeds(config)` before running.
-
-```bash
-python scripts/run_baseline_eval.py --tend-config spider --max-samples 10
-```
+Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All evaluation and training scripts call `set_seeds(config)` before running.
 
 ---
 
 ## Troubleshooting
 
-
-| Issue                             | Fix                                                                                  |
-| --------------------------------- | ------------------------------------------------------------------------------------ |
-| `MODEL_NAME is not set`           | Run `cp .env.example .env` and set `MODEL_NAME`                                      |
-| `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env`                         |
-| Model re-downloads every run      | Check `models/base/<slug>/.downloaded` exists; ensure write permissions              |
-| Out of memory on GPU              | Set `device: "cpu"` in `configs/default.yaml` or use `--max-samples 5`               |
-| Checkpoint not found              | Ensure `models/checkpoints/<name>/config.json` exists and `MODEL_CHECKPOINT` matches |
-| `ModuleNotFoundError: src`        | Export `PYTHONPATH=$(pwd)` from project root                                         |
-
+| Issue | Fix |
+| ----- | --- |
+| `MODEL_NAME is not set` | Run `cp .env.example .env` and set `MODEL_NAME` |
+| `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env` |
+| `ModuleNotFoundError: src` | Export `PYTHONPATH=$(pwd)` from project root |
+| Model re-downloads every run | Check `models/base/<slug>/.downloaded` exists; ensure write permissions |
+| Out of memory on GPU/MPS | Reduce `--max-samples`, set `--device cpu`, or lower `per_device_train_batch_size` in config |
+| Zero trainable LoRA params | Run `inspect_lora_modules.py`; fix `lora.target_modules` in config |
+| Adapter not found | Ensure `models/checkpoints/<task>/adapter_config.json` exists; set `MODEL_ADAPTER=<task>` |
+| Ollama judge fails | Start Ollama locally or pass `--no-judge` to skip semantic scoring |
+| Token length warnings during training | Update to latest code; prompts are truncated to 2048 before SFT tokenization |
+| Training very slow on Mac | Expected on MPS/CPU; use smoke runs (`--max-samples 50 --epochs 1`) to validate first |
 
 ---
 

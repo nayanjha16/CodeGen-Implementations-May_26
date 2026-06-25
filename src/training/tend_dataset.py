@@ -20,6 +20,9 @@ from src.utils.config import get_model_name, get_training_config, load_config
 
 logger = logging.getLogger("codegen.training")
 
+# TRL appends EOS during dataset preparation; reserve one slot in the token budget.
+_EOS_TOKEN_RESERVE = 1
+
 
 @dataclass
 class SFTBuildResult:
@@ -101,13 +104,14 @@ def _truncate_prompt_tokens(
     max_length: int,
     max_target_tokens: int,
     token_stats: TokenStats,
-) -> str | None:
+) -> tuple[str, str] | None:
+    """Return (truncated_prompt, prompt+target) or None when the row is too long."""
     target_ids = tokenizer.encode(target, add_special_tokens=False)
     if len(target_ids) > max_target_tokens:
         token_stats.skipped_too_long_target += 1
         return None
 
-    prompt_budget = max_length - len(target_ids)
+    prompt_budget = max_length - len(target_ids) - _EOS_TOKEN_RESERVE
     if prompt_budget <= 0:
         token_stats.skipped_too_long_target += 1
         return None
@@ -124,7 +128,7 @@ def _truncate_prompt_tokens(
         target_tokens=len(target_ids),
         total_tokens=total_tokens,
     )
-    return text
+    return prompt, text
 
 
 def build_sft_examples(
@@ -148,25 +152,28 @@ def build_sft_examples(
         filtered_rows = filtered_rows[: max(0, max_samples)]
 
     tok = _resolve_tokenizer(cfg, tokenizer)
+    # We enforce max_length ourselves; avoid spurious warnings on long raw prompts.
+    tok.model_max_length = max(int(tok.model_max_length or 0), max_length * 4)
     stats = filter_stats or FilterStats()
     tokens = token_stats or TokenStats()
 
     examples: list[dict[str, str]] = []
     for row in filtered_rows:
-        prompt = build_training_prompt(row, task, config=cfg)
+        raw_prompt = build_training_prompt(row, task, config=cfg)
         target = build_training_target(row, task)
-        text = _truncate_prompt_tokens(
-            prompt,
+        truncated = _truncate_prompt_tokens(
+            raw_prompt,
             target,
             tok,
             max_length=max_length,
             max_target_tokens=max_target_tokens,
             token_stats=tokens,
         )
-        if text is None:
+        if truncated is None:
             stats.record_skip("sequence_too_long")
             continue
 
+        prompt, text = truncated
         examples.append(
             {
                 "id": row.get("id", ""),

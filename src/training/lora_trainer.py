@@ -13,6 +13,7 @@ from src.training.lora_config import build_lora_config
 from src.training.mlflow_utils import TrainingMLflowLogger
 from src.training.tend_dataset import build_sft_dataset, load_tend_eval_rows, load_tend_training_rows
 from src.utils.config import get_adapter_path, get_model_name, get_training_config, load_config
+from src.utils.paths import resolve_adapter_run_name
 from src.utils.device import resolve_device
 from src.utils.seeds import set_seeds
 
@@ -25,10 +26,13 @@ class TrainLoraResult:
 
     task: str
     output_dir: Path
+    checkpoint_run: str
     train_rows: int
     eval_rows: int
     train_loss: float | None
     eval_loss: float | None
+    best_eval_loss: float | None
+    train_runtime: float | None
     mlflow_run_id: str | None
     metadata_path: Path
 
@@ -125,10 +129,16 @@ def _build_sft_config(
         max_length=int(training_cfg.get("max_length", 2048)),
         truncation_mode="keep_start",
         completion_only_loss=True,
+        loss_type="chunked_nll",
         dataset_text_field="text",
         logging_steps=10,
+        logging_dir=str(output_dir / "logs"),
         save_strategy="epoch",
         eval_strategy="no" if skip_eval else "epoch",
+        load_best_model_at_end=not skip_eval,
+        metric_for_best_model="eval_loss" if not skip_eval else None,
+        greater_is_better=False if not skip_eval else None,
+        save_total_limit=1,
         report_to="none",
         seed=int((training_cfg.get("seed") or 42)),
         use_cpu=device == "cpu",
@@ -141,26 +151,34 @@ def _write_run_metadata(
     *,
     task: str,
     model_name: str,
+    checkpoint_run: str,
     output_dir: Path,
     train_rows: int,
     eval_rows: int,
     train_loss: float | None,
     eval_loss: float | None,
+    best_eval_loss: float | None,
+    train_runtime: float | None,
     mlflow_run_id: str | None,
     filter_stats: dict[str, Any],
     token_stats: dict[str, Any],
+    log_history: list[dict[str, Any]] | None = None,
 ) -> Path:
     metadata = {
         "task": task,
         "model_name": model_name,
+        "checkpoint_run": checkpoint_run,
         "adapter_path": str(output_dir),
         "train_rows": train_rows,
         "eval_rows": eval_rows,
         "train_loss": train_loss,
         "eval_loss": eval_loss,
+        "best_eval_loss": best_eval_loss,
+        "train_runtime_seconds": train_runtime,
         "mlflow_run_id": mlflow_run_id,
         "filter_stats": filter_stats,
         "token_stats": token_stats,
+        "log_history": log_history or [],
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
@@ -176,6 +194,7 @@ def train_lora(
     train_csv: str | Path | None = None,
     eval_csv: str | Path | None = None,
     output_dir: str | Path | None = None,
+    run: str | None = None,
     max_samples: int | None = None,
     device: str | None = None,
     epochs: int | None = None,
@@ -196,7 +215,12 @@ def train_lora(
     if is_seq2seq_model(model_name):
         raise ValueError(f"{model_name} is seq2seq; causal LM training only.")
 
-    resolved_output = Path(output_dir) if output_dir is not None else get_adapter_path(task, cfg)
+    resolved_output = (
+        Path(output_dir)
+        if output_dir is not None
+        else get_adapter_path(task, cfg, run=run)
+    )
+    checkpoint_run = resolve_adapter_run_name(run)
     resolved_output.mkdir(parents=True, exist_ok=True)
 
     resolved_device = resolve_device(device or cfg.get("model", {}).get("device", "auto"))
@@ -245,6 +269,10 @@ def train_lora(
     _ensure_tokenizer_pad_token(tokenizer)
 
     model = AutoModelForCausalLM.from_pretrained(local_path, local_files_only=True)
+    if tokenizer.pad_token_id is not None:
+        model.config.pad_token_id = tokenizer.pad_token_id
+    if tokenizer.bos_token_id is not None:
+        model.config.bos_token_id = tokenizer.bos_token_id
     if resolved_device != "cpu":
         model = model.to(resolved_device)
 
@@ -271,10 +299,20 @@ def train_lora(
     trainer.save_model(str(resolved_output))
 
     train_loss = getattr(train_output, "training_loss", None)
+    train_runtime = None
+    if getattr(train_output, "metrics", None):
+        train_runtime = train_output.metrics.get("train_runtime")
+
     eval_loss = None
+    best_eval_loss = None
     if eval_dataset is not None:
         eval_metrics = trainer.evaluate()
         eval_loss = eval_metrics.get("eval_loss")
+        best_eval_loss = trainer.state.best_metric
+        if best_eval_loss is None and eval_loss is not None:
+            best_eval_loss = float(eval_loss)
+
+    log_history = list(trainer.state.log_history) if trainer.state.log_history else []
 
     mlflow_run_id: str | None = None
     if enable_mlflow:
@@ -283,6 +321,8 @@ def train_lora(
             metrics["train_loss"] = float(train_loss)
         if eval_loss is not None:
             metrics["eval_loss"] = float(eval_loss)
+        if best_eval_loss is not None:
+            metrics["best_eval_loss"] = float(best_eval_loss)
 
         mlflow_logger = TrainingMLflowLogger(cfg)
         mlflow_run_id = mlflow_logger.log_training_run(
@@ -306,14 +346,18 @@ def train_lora(
         resolved_output / "run_metadata.json",
         task=task,
         model_name=model_name,
+        checkpoint_run=checkpoint_run,
         output_dir=resolved_output,
         train_rows=train_result.row_count,
         eval_rows=eval_row_count,
         train_loss=train_loss,
         eval_loss=eval_loss,
+        best_eval_loss=best_eval_loss,
+        train_runtime=float(train_runtime) if train_runtime is not None else None,
         mlflow_run_id=mlflow_run_id,
         filter_stats=train_result.filter_stats,
         token_stats=train_result.token_stats,
+        log_history=log_history,
     )
 
     adapter_config = resolved_output / "adapter_config.json"
@@ -324,20 +368,24 @@ def train_lora(
         raise FileNotFoundError(f"Missing adapter weights after training: {adapter_weights}")
 
     logger.info(
-        "LoRA training complete: task=%s train_loss=%s eval_loss=%s adapter=%s",
+        "LoRA training complete: task=%s train_loss=%s eval_loss=%s best_eval=%s adapter=%s",
         task,
         train_loss,
         eval_loss,
+        best_eval_loss,
         resolved_output,
     )
 
     return TrainLoraResult(
         task=task,
         output_dir=resolved_output,
+        checkpoint_run=checkpoint_run,
         train_rows=train_result.row_count,
         eval_rows=eval_row_count,
         train_loss=train_loss,
         eval_loss=eval_loss,
+        best_eval_loss=best_eval_loss,
+        train_runtime=float(train_runtime) if train_runtime is not None else None,
         mlflow_run_id=mlflow_run_id,
         metadata_path=metadata_path,
     )

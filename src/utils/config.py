@@ -166,10 +166,26 @@ def get_adapter_name(config: dict[str, Any] | None = None) -> str | None:
     return os.environ.get("MODEL_ADAPTER") or config.get("model", {}).get("adapter")
 
 
-def get_adapter_path(task: str, config: dict[str, Any] | None = None) -> Path:
-    """Resolve the LoRA adapter directory for a task under models/checkpoints/."""
+def get_adapter_run(config: dict[str, Any] | None = None) -> str | None:
+    """Return configured adapter run folder (version/name) from env/config, if set."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return os.environ.get("MODEL_ADAPTER_RUN") or config.get("model", {}).get("adapter_run")
+
+
+def get_adapter_path(
+    task: str,
+    config: dict[str, Any] | None = None,
+    *,
+    run: str | None = None,
+) -> Path:
+    """Resolve the LoRA adapter directory under ``models/checkpoints/<run>/<task>/``."""
+    from src.utils.paths import get_adapter_checkpoint_path
+
     normalized = task.strip().lower()
     if normalized not in TRAINING_TASKS:
         allowed = ", ".join(sorted(TRAINING_TASKS))
         raise ValueError(f"Unknown training task '{task}'. Expected one of: {allowed}")
-    return get_checkpoint_path(normalized)
+    resolved_run = run if run is not None else get_adapter_run(config)
+    return get_adapter_checkpoint_path(normalized, resolved_run)

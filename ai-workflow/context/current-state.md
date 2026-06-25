@@ -1,6 +1,6 @@
 # Current State — CodeGen Studio
 
-> Updated after **Stage 4 implementation** (2026-06-25).
+> Updated after **Stage 5 implementation** (2026-06-25).
 
 ## Active Initiative — TENDv2 (Ollama) — 2026-06-24
 
@@ -12,36 +12,27 @@
 ## LoRA Fine-Tuning Initiative
 
 - **Date**: 2026-06-25
-- **Phase**: Implementation — **Stage 4 complete**, Stage 5 next
+- **Phase**: Implementation — **Stage 5 complete**, Stage 6 next
 - **Approval**: APPROVED (`lora-finetuning-approval.md`)
 - **Base model**: `Salesforce/codegen-350M-multi`
 
-### Stage 1 Deliverables (done)
+### Stage 1–4 (done)
 
-- Config, training package skeleton, `inspect_lora_modules.py`
+Foundation, dataset builder, trainer, adapter loading — all complete.
 
-### Stage 2 Deliverables (done)
+### Stage 5 Deliverables (done)
 
-- SFT dataset builder (HF spider + bird train, 10,697 rows)
-- Prompt parity tests green
-
-### Stage 3 Deliverables (done)
-
-- LoRA trainer, `train_lora.py` CLI, overfit smoke test green
-
-### Stage 4 Deliverables (done)
-
-- `is_adapter_dir()`, `resolve_adapter_path()` in `model_loader.py`
-- `CodeGenModel.load()` wraps base + PEFT adapter
-- `load_model(adapter=..., adapter_path=..., task=...)` + `MODEL_ADAPTER` env
-- `tests/training/test_adapter_load.py` — load + generate for all three tasks
+- `scripts/train_all_lora.py` — batch train + optional baseline + summary JSON
+- `scripts/verify_lora_adapters.py` — verify adapter artifacts per run
+- `src/training/adapter_verify.py` — verification helpers
+- **Trained adapters:** `models/checkpoints/v1/` (text2sql, sql2nosql, nosql2doc)
+- Verify: `python scripts/verify_lora_adapters.py --version v1` ✅
 
 ### Pending (next stages)
 
 | Stage | Work | Status |
 |-------|------|--------|
-| 5 | Train three adapters (full runs) | ⬜ Next |
-| 6 | Eval integration + comparison | ⬜ |
+| 6 | Eval integration + LoRA vs baseline comparison | ⬜ Next |
 
 ### Training data (locked)
 
@@ -50,15 +41,23 @@
 | Train | spider train + bird train (HF TEND) | 10,697 |
 | Eval | spider test + bird test (HF TEND) | 1,625 |
 
+### Note on full corpus
+
+Run `v1` used a **50-row subset** per task to validate the full pipeline. For full-corpus training:
+
+```bash
+python scripts/train_all_lora.py --version 2506-full
+```
+
+Expect long wall-clock on MPS (use CUDA for faster runs).
+
 ## Validation Status
 
-- Stage 1 pre-flight: ✅
-- Stage 2 prompt parity + dataset builder: ✅
-- Stage 3 overfit smoke + adapter output: ✅
-- Stage 4 adapter load + generation: ✅
-- No full training run yet
+- Stages 1–4: ✅
+- Stage 5 adapter artifacts (`v1`): ✅
+- Stage 6 eval comparison: ⬜ Not started
 
 ## Environment
 
 - Python 3.11+ (`conda` env `ai`)
-- TRL 1.6.0, PEFT adapter loading via `PeftModel.from_pretrained`
+- Adapter layout: `models/checkpoints/<run>/<task>/`

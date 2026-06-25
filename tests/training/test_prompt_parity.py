@@ -81,6 +81,37 @@ class DatasetFilterTest(unittest.TestCase):
             build_training_target(rows[0], "text2sql"),
         )
 
+    def test_prompt_respects_max_length_budget(self) -> None:
+        from src.models.model_loader import load_tokenizer
+        from src.utils.config import get_training_config
+
+        config = load_config()
+        training_cfg = get_training_config(config)
+        max_length = int(training_cfg["max_length"])
+        tokenizer = load_tokenizer(config=config)
+
+        rows = TENDLoader(config="spider").load_split("train")[:50]
+        examples, _, _ = build_sft_examples(
+            rows,
+            "nosql2doc",
+            config=config,
+            tokenizer=tokenizer,
+            max_samples=50,
+        )
+        self.assertGreater(len(examples), 0)
+        for example in examples:
+            prompt_tokens = len(
+                tokenizer.encode(example["prompt"], add_special_tokens=False)
+            )
+            target_tokens = len(
+                tokenizer.encode(example["target"], add_special_tokens=False)
+            )
+            self.assertLessEqual(
+                prompt_tokens + target_tokens,
+                max_length - 1,
+                msg="prompt+target must leave room for TRL's appended EOS",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

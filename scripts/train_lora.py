@@ -37,7 +37,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output-dir",
         default=None,
-        help="Adapter output directory (default: models/checkpoints/<task>/).",
+        help="Adapter output directory (default: models/checkpoints/<run>/<task>/).",
+    )
+    parser.add_argument(
+        "--version",
+        "--name",
+        dest="run",
+        default=None,
+        help="Checkpoint run folder under models/checkpoints/ (default: DDMM, e.g. 2506).",
     )
     parser.add_argument(
         "--max-samples",
@@ -66,7 +73,6 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Disable MLflow logging.",
     )
-    return parser
 
 
 def main() -> int:
@@ -74,7 +80,7 @@ def main() -> int:
     config_path = Path(args.config) if args.config else None
     config = load_config(config_path)
 
-    output_dir = args.output_dir or str(get_adapter_path(args.task, config))
+    output_dir = args.output_dir or str(get_adapter_path(args.task, config, run=args.run))
 
     result = train_lora(
         args.task,
@@ -82,6 +88,7 @@ def main() -> int:
         train_csv=args.train_csv,
         eval_csv=args.eval_csv,
         output_dir=output_dir,
+        run=args.run,
         max_samples=args.max_samples,
         device=args.device,
         epochs=args.epochs,
@@ -93,6 +100,7 @@ def main() -> int:
     print(f"Eval rows: {result.eval_rows}")
     print(f"Train loss: {result.train_loss}")
     print(f"Eval loss: {result.eval_loss}")
+    print(f"Best eval loss: {result.best_eval_loss}")
     print(f"Adapter: {result.output_dir}")
     print(f"Metadata: {result.metadata_path}")
     if result.mlflow_run_id:

@@ -10,13 +10,33 @@ from src.documentation.evaluator import DocumentationEvaluator
 from src.documentation.reference_builder import ReferenceDocumentationBuilder
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.mlflow_tracker import MLflowTracker
+from src.models.model_loader import CodeGenModel, load_model
 from src.sql2nosql.evaluator import NoSQLEvaluator
 from src.sql2nosql.nosql_generator import NoSQLGenerator
 from src.text2sql.sql_generator import SQLGenerator
-from src.utils.config import load_config
+from src.training.tasks import TRAINING_TASKS
+from src.utils.config import get_adapter_path, load_config
 from src.utils.seeds import set_seeds
 
 logger = logging.getLogger("codegen")
+
+
+def load_task_model(
+    task: str,
+    config: dict[str, Any],
+    *,
+    adapter_run: str | None = None,
+    eager: bool = True,
+) -> CodeGenModel:
+    """Load base model with a task-specific LoRA adapter when ``adapter_run`` is set."""
+    normalized = task.strip().lower()
+    if normalized not in TRAINING_TASKS:
+        allowed = ", ".join(sorted(TRAINING_TASKS))
+        raise ValueError(f"Unknown task '{task}'. Expected one of: {allowed}")
+    if adapter_run:
+        adapter_path = get_adapter_path(normalized, config, run=adapter_run)
+        return load_model(config=config, adapter_path=adapter_path, eager=eager)
+    return load_model(config=config, eager=eager)
 
 
 class BenchmarkRunner:
@@ -33,20 +53,47 @@ class BenchmarkRunner:
         doc_evaluator: DocumentationEvaluator | None = None,
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
+        adapter_run: str | None = None,
     ):
         self.config = config or load_config()
         set_seeds(self.config)
-        self.sql_generator = sql_generator or SQLGenerator(config=self.config)
+        self.adapter_run = adapter_run
+
+        if sql_generator is not None:
+            self.sql_generator = sql_generator
+        elif adapter_run:
+            text2sql_model = load_task_model("text2sql", self.config, adapter_run=adapter_run)
+            self.sql_generator = SQLGenerator(model=text2sql_model, config=self.config)
+        else:
+            self.sql_generator = SQLGenerator(config=self.config)
+
         self.metrics = metrics or EvaluationMetrics()
         self.nosql_evaluator = nosql_evaluator or NoSQLEvaluator()
-        self.nosql_generator = nosql_generator or NoSQLGenerator(
-            model=self.sql_generator.model,
-            config=self.config,
-        )
-        self.doc_generator = doc_generator or DocumentationGenerator(
-            model=self.sql_generator.model,
-            config=self.config,
-        )
+
+        if nosql_generator is not None:
+            self.nosql_generator = nosql_generator
+        elif adapter_run:
+            sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
+            self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
+        else:
+            self.nosql_generator = NoSQLGenerator(
+                model=self.sql_generator.model,
+                config=self.config,
+            )
+
+        if doc_generator is not None:
+            self.doc_generator = doc_generator
+        elif adapter_run:
+            nosql2doc_model = load_task_model("nosql2doc", self.config, adapter_run=adapter_run)
+            self.doc_generator = DocumentationGenerator(
+                model=nosql2doc_model,
+                config=self.config,
+            )
+        else:
+            self.doc_generator = DocumentationGenerator(
+                model=self.sql_generator.model,
+                config=self.config,
+            )
         self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
         self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
@@ -326,18 +373,26 @@ class BenchmarkRunner:
 
         run_id = None
         if self.tracker:
+            extra_params: dict[str, Any] = {
+                "max_samples": len(samples),
+                "decoding_strategy": self.config.get("generation", {}).get(
+                    "decoding_strategy", "greedy"
+                ),
+            }
+            if self.adapter_run:
+                extra_params["run_type"] = "lora"
+                extra_params["adapter_run"] = self.adapter_run
+                for task in ("text2sql", "sql2nosql", "nosql2doc"):
+                    extra_params[f"adapter_path_{task}"] = str(
+                        get_adapter_path(task, self.config, run=self.adapter_run)
+                    )
             run_id = self.tracker.log_evaluation(
                 model_name=self.config.get("model", {}).get("name", "codegen"),
                 dataset=dataset_name,
                 prompt_template=self.sql_generator.prompt_builder.get_template_name(),
                 metrics=eval_metrics,
                 nosql_metrics=nosql_metrics,
-                extra_params={
-                    "max_samples": len(samples),
-                    "decoding_strategy": self.config.get("generation", {}).get(
-                        "decoding_strategy", "greedy"
-                    ),
-                },
+                extra_params=extra_params,
             )
 
         return {

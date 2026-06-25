@@ -87,6 +87,26 @@ def get_model_cache_dir(model_name: str) -> Path:
     return get_models_base_dir() / model_slug(model_name)
 
 
+def default_adapter_run_name(when: datetime | None = None) -> str:
+    """Return DDMM folder name for a checkpoint run when no version/name is supplied."""
+    return (when or datetime.now()).strftime("%d%m")
+
+
+def resolve_adapter_run_name(run: str | None = None, when: datetime | None = None) -> str:
+    """Sanitize a checkpoint run segment, defaulting to DDMM when empty."""
+    fallback = default_adapter_run_name(when)
+    if run is None or not str(run).strip():
+        return fallback
+    return _safe_run_name_segment(str(run), fallback=fallback)
+
+
+def get_adapter_checkpoint_path(task: str, run: str | None = None) -> Path:
+    """Resolve ``models/checkpoints/<run>/<task>/`` for LoRA adapter output."""
+    normalized = task.strip().lower()
+    run_name = resolve_adapter_run_name(run)
+    return get_models_checkpoints_dir() / run_name / normalized
+
+
 def get_checkpoint_path(checkpoint_name: str) -> Path:
     """Resolve a checkpoint directory under models/checkpoints/."""
     return get_models_checkpoints_dir() / checkpoint_name

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.training.tasks import TaskType, format_task_prompt
+
 
 class DocumentationPromptBuilder:
     """Build prompts that explain MongoDB shell queries in plain English."""
@@ -77,11 +79,12 @@ Documentation:
                 f"{question_text}\n\n"
             )
 
-        return self.template.format(
+        prompt = self.template.format(
             question_section=question_section,
             mongodb_schema=mongo_schema,
             mongodb_query=mongodb_query.strip(),
         ).strip()
+        return format_task_prompt(TaskType.NOSQL2DOC.value, prompt)
 
     def get_template_name(self) -> str:
         """Return template identifier for experiment tracking."""

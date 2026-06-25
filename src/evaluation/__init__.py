@@ -1,6 +1,6 @@
 from .benchmark import BenchmarkRunner
 from .metrics import EvaluationMetrics
-from .qwen_evaluator import DEFAULT_MODEL, QwenEvaluator
+from .ollama_judge import DEFAULT_JUDGE_MODEL, OllamaJudge
 from .mlflow_tracker import MLflowTracker
 
-__all__ = ["EvaluationMetrics", "BenchmarkRunner", "MLflowTracker"]
+__all__ = ["EvaluationMetrics", "BenchmarkRunner", "MLflowTracker", "OllamaJudge"]

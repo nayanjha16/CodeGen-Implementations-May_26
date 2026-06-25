@@ -1,0 +1,2071 @@
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,judge_sql_correct,judge_reason,judge_raw_response
+0,"What is the average, minimum, and maximum age of all singers from France?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+Question:
+What is the average, minimum, and maximum age of all singers from France?
+
+SQL:",154,"SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France';
+
+Answer: SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France';","SELECT AVG(Age), MIN(Age), MAX(Age) FROM singer WHERE Country = 'France';",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,"Both queries use the same base table (singer), columns (Age), filter (Country = 'France'), and perform the same aggregations (AVG, MIN, MAX). The only differences are case sensitivity, whitespace, and alias names which are ignored per rules.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (singer), columns (Age), filter (Country = 'France'), and perform the same aggregations (AVG, MIN, MAX). The only differences are case sensitivity, whitespace, and alias names which are ignored per rules.""
+}"
+1,Show all countries and the number of singers in each country.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+Question:
+Show all countries and the number of singers in each country.
+
+SQL:",150,"SELECT Country, COUNT(*) FROM singer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 10;","SELECT Country, COUNT(*) FROM singer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 10;",True,"SELECT country ,  count(*) FROM singer GROUP BY country",False,Predicted SQL has ORDER BY COUNT(*) DESC and LIMIT 10 which are not in ground truth SQL,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL has ORDER BY COUNT(*) DESC and LIMIT 10 which are not in ground truth SQL""
+}"
+2,How many singers are from each country?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Country TEXT,
+    Song_Name TEXT,
+    Song_release_year TEXT,
+    Age REAL,
+    Is_male TEXT
+);
+
+Question:
+How many singers are from each country?
+
+SQL:",146,"SELECT Country, COUNT(*) FROM singer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1;","SELECT Country, COUNT(*) FROM singer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1;",True,"SELECT country ,  count(*) FROM singer GROUP BY country",False,"Predicted SQL has LIMIT 1 which restricts to top 1 country, but ground truth SQL does not have limit and returns all countries.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL has LIMIT 1 which restricts to top 1 country, but ground truth SQL does not have limit and returns all countries.""
+}"
+3,List the maximum weight and type for each type of pet.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Pets (
+    PetID REAL PRIMARY KEY,
+    PetType TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+List the maximum weight and type for each type of pet.
+
+SQL:",136,"SELECT PetType, MAX(weight) FROM Pets GROUP BY PetType;
+
+Answer: SELECT PetType, MAX(weight) FROM Pets GROUP BY PetType;","SELECT PetType, MAX(weight) FROM Pets GROUP BY PetType;",True,"SELECT max(weight) ,  petType FROM pets GROUP BY petType",True,"Both queries group by PetType, use MAX(weight), and return the same columns with correct aggregation. Differences in case and whitespace are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries group by PetType, use MAX(weight), and return the same columns with correct aggregation. Differences in case and whitespace are ignored.""
+}"
+4,What is the id and weight of every pet who is older than 1?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Pets (
+    PetID REAL PRIMARY KEY,
+    PetType TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What is the id and weight of every pet who is older than 1?
+
+SQL:",140,"SELECT PetID, weight FROM Pets WHERE pet_age > 1;","SELECT PetID, weight FROM Pets WHERE pet_age > 1;",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",True,"Both queries select PetID and weight from Pets where pet_age > 1; case, whitespace, and alias differences are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries select PetID and weight from Pets where pet_age > 1; case, whitespace, and alias differences are ignored.""
+}"
+5,What is the last name of the student who has a cat that is 3 years old?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Student (
+    StuID REAL PRIMARY KEY,
+    LName TEXT,
+    Fname TEXT,
+    Age REAL,
+    Sex TEXT,
+    Major REAL,
+    Advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE Has_Pet (
+    StuID REAL,
+    PetID REAL
+);
+
+CREATE TABLE Pets (
+    PetID REAL PRIMARY KEY,
+    PetType TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What is the last name of the student who has a cat that is 3 years old?
+
+SQL:",205,SELECT LName FROM Student WHERE StuID IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets WHERE PetType = 'cat' AND pet_age = 3)) ORDER BY StuID DESC LIMIT 1;,SELECT LName FROM Student WHERE StuID IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets WHERE PetType = 'cat' AND pet_age = 3)) ORDER BY StuID DESC LIMIT 1;,True,SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat',False,"Predicted SQL uses IN with subqueries but ground truth uses explicit JOINs; also, the column names in ground truth are lowercase (student, has_pet, pets) while predicted uses uppercase (Student, Has_Pet, Pets) but the rules state to ignore case differences. However, the main difference is the use of subqueries vs. explicit JOINs which might affect the result if the schema has multiple records with same StuID, but the question asks for the last name of the student who has a cat that is 3 years old, and both queries should return the same student. The ground truth uses explicit JOINs and the predicted uses subqueries, but the logic is equivalent. Wait, the rules say to ignore formatting differences (case, whitespace, alias names) when the logic matches. So the main difference is the use of subqueries vs. explicit JOINs. However, the ground truth query uses 'pet_age' = 3 and 'pettype' = 'cat', while predicted uses 'pet_age = 3' and 'PetType = 'cat'. The columns are the same, but the ground truth has a typo in the column names? Let me check: In the ground truth SQL, it says 'T3.pet_age  =  3 AND T3.pettype  =  'cat' ' - the column names are pet_age and pettype (lowercase). In the schema, the column names are pet_age and PetType (capital P). Wait, the schema says: Pets (PetID REAL PRIMARY KEY, PetType TEXT, pet_age REAL, weight REAL). So PetType is capitalized, pet_age is lowercase. The ground truth query uses 'pettype' which is a typo (should be 'PetType'), but the problem says to ignore formatting differences. However, the main issue is that the predicted SQL uses IN with subqueries, while the ground truth uses explicit JOINs. But the problem states that if the logic matches, ignore formatting. However, the problem says: 'They must use the same base table(s), columns, filters, aggregations, ordering, and limits.' The predicted SQL has an ORDER BY StuID DESC LIMIT 1, which is correct for 'last' (highest order by StuID). The ground truth does not have an ORDER BY or LIMIT, but the question asks for 'the last name of the student' (singular), so the ground truth might be missing the LIMIT. Wait, the ground truth SQL is: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'. This query does not have an ORDER BY or LIMIT, so it might return multiple rows if there are multiple students with a cat that is 3 years old. But the question asks for 'the last name of the student' (singular), so the ground truth should have LIMIT 1. However, the problem says the ground truth SQL is as given, and the predicted has LIMIT 1. Let me re-read the problem: the ground truth SQL is provided as: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'. The problem says the ground truth SQL is that. But the question asks for 'the last name of the student' (singular), so the ground truth should have LIMIT 1. However, the problem states that the ground truth SQL is given as is, so we have to assume it's correct. Wait, no: the problem says ","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses IN with subqueries but ground truth uses explicit JOINs; also, the column names in ground truth are lowercase (student, has_pet, pets) while predicted uses uppercase (Student, Has_Pet, Pets) but the rules state to ignore case differences. However, the main difference is the use of subqueries vs. explicit JOINs which might affect the result if the schema has multiple records with same StuID, but the question asks for the last name of the student who has a cat that is 3 years old, and both queries should return the same student. The ground truth uses explicit JOINs and the predicted uses subqueries, but the logic is equivalent. Wait, the rules say to ignore formatting differences (case, whitespace, alias names) when the logic matches. So the main difference is the use of subqueries vs. explicit JOINs. However, the ground truth query uses 'pet_age' = 3 and 'pettype' = 'cat', while predicted uses 'pet_age = 3' and 'PetType = 'cat'. The columns are the same, but the ground truth has a typo in the column names? Let me check: In the ground truth SQL, it says 'T3.pet_age  =  3 AND T3.pettype  =  'cat' ' - the column names are pet_age and pettype (lowercase). In the schema, the column names are pet_age and PetType (capital P). Wait, the schema says: Pets (PetID REAL PRIMARY KEY, PetType TEXT, pet_age REAL, weight REAL). So PetType is capitalized, pet_age is lowercase. The ground truth query uses 'pettype' which is a typo (should be 'PetType'), but the problem says to ignore formatting differences. However, the main issue is that the predicted SQL uses IN with subqueries, while the ground truth uses explicit JOINs. But the problem states that if the logic matches, ignore formatting. However, the problem says: 'They must use the same base table(s), columns, filters, aggregations, ordering, and limits.' The predicted SQL has an ORDER BY StuID DESC LIMIT 1, which is correct for 'last' (highest order by StuID). The ground truth does not have an ORDER BY or LIMIT, but the question asks for 'the last name of the student' (singular), so the ground truth might be missing the LIMIT. Wait, the ground truth SQL is: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'. This query does not have an ORDER BY or LIMIT, so it might return multiple rows if there are multiple students with a cat that is 3 years old. But the question asks for 'the last name of the student' (singular), so the ground truth should have LIMIT 1. However, the problem says the ground truth SQL is as given, and the predicted has LIMIT 1. Let me re-read the problem: the ground truth SQL is provided as: SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'. The problem says the ground truth SQL is that. But the question asks for 'the last name of the student' (singular), so the ground truth should have LIMIT 1. However, the problem states that the ground truth SQL is given as is, so we have to assume it's correct. Wait, no: the problem says ""}"
+6,"What is the full name of each car maker, along with its id and how many models it produces?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE car_makers (
+    Id REAL PRIMARY KEY,
+    Maker TEXT,
+    FullName TEXT,
+    Country TEXT
+);
+
+CREATE TABLE model_list (
+    ModelId REAL PRIMARY KEY,
+    Maker REAL,
+    Model TEXT
+);
+
+Question:
+What is the full name of each car maker, along with its id and how many models it produces?
+
+SQL:",165,"SELECT Maker, FullName, COUNT(*) AS ModelCount FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker GROUP BY Maker ORDER BY ModelCount DESC LIMIT 10;","SELECT Maker, FullName, COUNT(*) AS ModelCount FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker GROUP BY Maker ORDER BY ModelCount DESC LIMIT 10;",True,"SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",False,"Predicted SQL uses wrong column names (Maker instead of FullName and Id) and incorrect grouping (by Maker instead of Id), and does not handle the relationship correctly between tables.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses wrong column names (Maker instead of FullName and Id) and incorrect grouping (by Maker instead of Id), and does not handle the relationship correctly between tables.""
+}"
+7,What is the average miles per gallon(mpg) of the cars with 4 cylinders?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE cars_data (
+    Id REAL PRIMARY KEY,
+    MPG TEXT,
+    Cylinders REAL,
+    Edispl REAL,
+    Horsepower TEXT,
+    Weight REAL,
+    Accelerate REAL,
+    Year REAL
+);
+
+Question:
+What is the average miles per gallon(mpg) of the cars with 4 cylinders?
+
+SQL:",162,"SELECT AVG(MPG) FROM cars_data WHERE Cylinders = 4;
+
+Answer: SELECT AVG(MPG) FROM cars_data WHERE Cylinders = 4;",SELECT AVG(MPG) FROM cars_data WHERE Cylinders = 4;,True,SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;,True,"Both queries use the same base table (cars_data), columns (MPG, Cylinders), filter (Cylinders = 4), aggregation (AVG(MPG)), and return the same results. Case and whitespace differences are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (cars_data), columns (MPG, Cylinders), filter (Cylinders = 4), aggregation (AVG(MPG)), and return the same results. Case and whitespace differences are ignored.""
+}"
+8,"In 1980, how many cars were made?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE cars_data (
+    Id REAL PRIMARY KEY,
+    MPG TEXT,
+    Cylinders REAL,
+    Edispl REAL,
+    Horsepower TEXT,
+    Weight REAL,
+    Accelerate REAL,
+    Year REAL
+);
+
+Question:
+In 1980, how many cars were made?
+
+SQL:",157,"SELECT COUNT(*) FROM cars_data WHERE Year = 1980;
+
+Answer: 1
+
+Explanation: The question asks for the number of cars made in 1980. Since the table only contains data for 1980, the answer is 1.",SELECT COUNT(*) FROM cars_data WHERE Year = 1980;,True,SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;,True,"Both queries use the same base table (cars_data), same columns (Year), same filter (Year = 198:0), same aggregation (COUNT(*)), and return the same results. Formatting differences (case, whitespace) are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (cars_data), same columns (Year), same filter (Year = 198:0), same aggregation (COUNT(*)), and return the same results. Formatting differences (case, whitespace) are ignored.""
+}"
+9,Which city has the most frequent destination airport?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE airports (
+    City TEXT,
+    AirportCode TEXT PRIMARY KEY,
+    AirportName TEXT,
+    Country TEXT,
+    CountryAbbrev TEXT
+);
+
+CREATE TABLE flights (
+    Airline REAL PRIMARY KEY,
+    FlightNo REAL,
+    SourceAirport TEXT,
+    DestAirport TEXT
+);
+
+Question:
+Which city has the most frequent destination airport?
+
+SQL:",165,"SELECT City, COUNT(*) FROM flights GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;","SELECT City, COUNT(*) FROM flights GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;",True,SELECT T1.City FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport GROUP BY T1.City ORDER BY count(*) DESC LIMIT 1,False,"Predicted SQL uses flights table directly for city grouping, but ground truth joins airports and flights tables to get city from airports. The ground truth query correctly links DestAirport (from flights) to AirportCode (from airports) to get city.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses flights table directly for city grouping, but ground truth joins airports and flights tables to get city from airports. The ground truth query correctly links DestAirport (from flights) to AirportCode (from airports) to get city.""
+}"
+10,Which airlines have departing flights from both APG and CVO airports?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE airlines (
+    uid REAL PRIMARY KEY,
+    Airline TEXT,
+    Abbreviation TEXT,
+    Country TEXT
+);
+
+CREATE TABLE flights (
+    Airline REAL PRIMARY KEY,
+    FlightNo REAL,
+    SourceAirport TEXT,
+    DestAirport TEXT
+);
+
+Question:
+Which airlines have departing flights from both APG and CVO airports?
+
+SQL:",165,"SELECT DISTINCT Airline FROM flights WHERE SourceAirport = 'APG' AND DestAirport = 'CVO' OR SourceAirport = 'CVO' AND DestAirport = 'APG';
+
+This SQL statement uses a combination of JOIN, COUNT, DISTINCT, and ORDER BY to retrieve the desired information. The SELECT statement selects all distinct airlines from the flights table where the source airport is either 'APG' or 'CVO' and the destination airport is either 'APG' or 'CVO'. The WHERE clause filters the results to only include flights where the source airport is either 'APG' or 'CVO' and the destination airport is either 'APG' or 'CVO'. The ORDER BY clause sorts the results by airline name in ascending order.",SELECT DISTINCT Airline FROM flights WHERE SourceAirport = 'APG' AND DestAirport = 'CVO' OR SourceAirport = 'CVO' AND DestAirport = 'APG';,True,"SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""APG"" INTERSECT SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""CVO""",False,"Predicted SQL uses flights table directly without joining with airlines table, while ground truth uses join between airlines and flights tables. Also, predicted SQL does not correctly handle the 'both APG and CVO' condition as it mixes source and destination airports in one WHERE clause without ensuring flights from both airports.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses flights table directly without joining with airlines table, while ground truth uses join between airlines and flights tables. Also, predicted SQL does not correctly handle the 'both APG and CVO' condition as it mixes source and destination airports in one WHERE clause without ensuring flights from both airports.""
+}"
+11,What is the number of employees from each city?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE employee (
+    Employee_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age REAL,
+    City TEXT
+);
+
+Question:
+What is the number of employees from each city?
+
+SQL:",132,"SELECT City, COUNT(*) FROM employee GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;","SELECT City, COUNT(*) FROM employee GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1;",True,"SELECT count(*) ,  city FROM employee GROUP BY city",False,"Predicted SQL uses LIMIT 1, which restricts to one city, but ground truth SQL does not have a limit and groups by city without restriction.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses LIMIT 1, which restricts to one city, but ground truth SQL does not have a limit and groups by city without restriction.""
+}"
+12,Count the number of employees for each city.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE employee (
+    Employee_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age REAL,
+    City TEXT
+);
+
+Question:
+Count the number of employees for each city.
+
+SQL:",131,"SELECT City, COUNT(*) FROM employee GROUP BY City ORDER BY City;","SELECT City, COUNT(*) FROM employee GROUP BY City ORDER BY City;",True,"SELECT count(*) ,  city FROM employee GROUP BY city",True,"Both queries group by city, count employees, and order by city. Aliases and whitespace differ but logic is equivalent.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries group by city, count employees, and order by city. Aliases and whitespace differ but logic is equivalent.""
+}"
+13,Show all template ids and number of documents using each template.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Documents (
+    Document_ID REAL PRIMARY KEY,
+    Template_ID REAL,
+    Document_Name TEXT,
+    Document_Description TEXT,
+    Other_Details TEXT
+);
+
+Question:
+Show all template ids and number of documents using each template.
+
+SQL:",142,"SELECT Template_ID, COUNT(*) FROM Documents GROUP BY Template_ID ORDER BY COUNT(*) DESC LIMIT 10;","SELECT Template_ID, COUNT(*) FROM Documents GROUP BY Template_ID ORDER BY COUNT(*) DESC LIMIT 10;",True,"SELECT template_id ,  count(*) FROM Documents GROUP BY template_id",False,Predicted SQL has ORDER BY COUNT(*) DESC and LIMIT 10 which are not in ground truth SQL,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL has ORDER BY COUNT(*) DESC and LIMIT 10 which are not in ground truth SQL""
+}"
+14,Show all template type codes with less than three templates.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Templates (
+    Template_ID REAL PRIMARY KEY,
+    Version_Number REAL,
+    Template_Type_Code TEXT,
+    Date_Effective_From TIME,
+    Date_Effective_To TIME,
+    Template_Details TEXT
+);
+
+Question:
+Show all template type codes with less than three templates.
+
+SQL:",151,"SELECT Template_Type_Code
+FROM Templates
+WHERE Template_Type_Code < 3
+ORDER BY Template_Type_Code;
+
+Answer: SELECT Template_Type_Code
+FROM Templates
+WHERE Template_Type_Code < 3
+ORDER BY Template_Type_Code;",SELECT Template_Type_Code FROM Templates WHERE Template_Type_Code < 3 ORDER BY Template_Type_Code;,True,SELECT template_type_code FROM Templates GROUP BY template_type_code HAVING count(*)  <  3,False,"Predicted SQL incorrectly filters on Template_Type_Code < 3 (a numeric condition) while Template_Type_Code is TEXT, and lacks GROUP BY/HAVING which is required to count templates per type","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL incorrectly filters on Template_Type_Code < 3 (a numeric condition) while Template_Type_Code is TEXT, and lacks GROUP BY/HAVING which is required to count templates per type""
+}"
+15,Show different hometown of teachers and the number of teachers from each hometown.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE teacher (
+    Teacher_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age TEXT,
+    Hometown TEXT
+);
+
+Question:
+Show different hometown of teachers and the number of teachers from each hometown.
+
+SQL:",137,"SELECT DISTINCT Teacher_ID, Hometown, COUNT(*) FROM teacher GROUP BY Hometown ORDER BY COUNT(*) DESC LIMIT 10;","SELECT DISTINCT Teacher_ID, Hometown, COUNT(*) FROM teacher GROUP BY Hometown ORDER BY COUNT(*) DESC LIMIT 10;",True,"SELECT Hometown ,  COUNT(*) FROM teacher GROUP BY Hometown",False,Predicted SQL uses DISTINCT on Teacher_ID and Hometown which is unnecessary; ground truth only groups by Hometown without DISTINCT and does not have ORDER BY or LIMIT,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses DISTINCT on Teacher_ID and Hometown which is unnecessary; ground truth only groups by Hometown without DISTINCT and does not have ORDER BY or LIMIT""
+}"
+16,List the most common hometown of teachers.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE teacher (
+    Teacher_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age TEXT,
+    Hometown TEXT
+);
+
+Question:
+List the most common hometown of teachers.
+
+SQL:",131,SELECT DISTINCT Hometown FROM teacher ORDER BY COUNT(*) DESC LIMIT 1;,SELECT DISTINCT Hometown FROM teacher ORDER BY COUNT(*) DESC LIMIT 1;,True,SELECT Hometown FROM teacher GROUP BY Hometown ORDER BY COUNT(*) DESC LIMIT 1,False,Predicted SQL uses DISTINCT which is unnecessary and may not be semantically equivalent to the ground truth query; ground truth uses GROUP BY which is required for counting per hometown.,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses DISTINCT which is unnecessary and may not be semantically equivalent to the ground truth query; ground truth uses GROUP BY which is required for counting per hometown.""
+}"
+17,Show names of teachers and the number of courses they teach.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE teacher (
+    Teacher_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age TEXT,
+    Hometown TEXT
+);
+
+CREATE TABLE course_arrange (
+    Course_ID REAL PRIMARY KEY,
+    Teacher_ID REAL,
+    Grade REAL
+);
+
+Question:
+Show names of teachers and the number of courses they teach.
+
+SQL:",158,"SELECT Name, COUNT(*) FROM teacher GROUP BY Teacher_ID ORDER BY COUNT(*) DESC LIMIT 10;","SELECT Name, COUNT(*) FROM teacher GROUP BY Teacher_ID ORDER BY COUNT(*) DESC LIMIT 10;",True,"SELECT T2.Name ,  COUNT(*) FROM course_arrange AS T1 JOIN teacher AS T2 ON T1.Teacher_ID  =  T2.Teacher_ID GROUP BY T2.Name",False,"Predicted query uses teacher table only instead of joining with course_arrange, and counts all teachers without grouping by name. Ground truth joins teacher and course_arrange to count courses per teacher.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted query uses teacher table only instead of joining with course_arrange, and counts all teachers without grouping by name. Ground truth joins teacher and course_arrange to count courses per teacher.""
+}"
+18,"Find the names of the visitors whose membership level is higher than 4, and order the results by the level from high to low.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE visitor (
+    ID REAL PRIMARY KEY,
+    Name TEXT,
+    Level_of_membership REAL,
+    Age REAL
+);
+
+Question:
+Find the names of the visitors whose membership level is higher than 4, and order the results by the level from high to low.
+
+SQL:",150,"SELECT Name FROM visitor WHERE Level_of_membership > 4 ORDER BY Level_of_membership DESC;
+
+Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE visitor (
+    ID REAL PRIMARY KEY,
+    Name TEXT,
+    Level_of_membership REAL,
+    Age REAL
+);
+
+Question:
+Find the names of the visitors whose membership level is higher than 4, and order the results by the level from high to low.
+
+SQL:",SELECT Name FROM visitor WHERE Level_of_membership > 4 ORDER BY Level_of_membership DESC;,True,SELECT name FROM visitor WHERE Level_of_membership  >  4 ORDER BY Level_of_membership DESC,True,"Both queries select Name from visitor where Level_of_membership > 4, order by Level_of_membership DESC. Differences in whitespace and case are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries select Name from visitor where Level_of_membership > 4, order by Level_of_membership DESC. Differences in whitespace and case are ignored.""
+}"
+19,What is the name of the museum that had no visitor yet?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE museum (
+    Museum_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Num_of_Staff REAL,
+    Open_Year TEXT
+);
+
+CREATE TABLE visit (
+    Museum_ID REAL PRIMARY KEY,
+    visitor_ID TEXT,
+    Num_of_Ticket REAL,
+    Total_spent REAL
+);
+
+Question:
+What is the name of the museum that had no visitor yet?
+
+SQL:",170,"SELECT Name FROM museum WHERE Num_of_Staff = 0;
+
+Answer: The name of the museum that had no visitor yet is ""Unknown"".",SELECT Name FROM museum WHERE Num_of_Staff = 0;,True,SELECT name FROM museum WHERE Museum_ID NOT IN (SELECT museum_id FROM visit),False,"Predicted query uses Num_of_Staff = 0 which is not related to visitors, while ground truth checks for museums with no entries in visit table.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted query uses Num_of_Staff = 0 which is not related to visitors, while ground truth checks for museums with no entries in visit table.""
+}"
+20,What is the total ticket expense of the visitors whose membership level is 1?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE visitor (
+    ID REAL PRIMARY KEY,
+    Name TEXT,
+    Level_of_membership REAL,
+    Age REAL
+);
+
+CREATE TABLE visit (
+    Museum_ID REAL PRIMARY KEY,
+    visitor_ID TEXT,
+    Num_of_Ticket REAL,
+    Total_spent REAL
+);
+
+Question:
+What is the total ticket expense of the visitors whose membership level is 1?
+
+SQL:",169,"SELECT SUM(Total_spent) FROM visit WHERE visitor_ID IN (SELECT visitor_ID FROM visitor WHERE Level_of_membership = 1);
+
+Answer: SELECT SUM(Total_spent) FROM visit WHERE visitor_ID IN (SELECT visitor_ID FROM visitor WHERE Level_of_membership = 1);",SELECT SUM(Total_spent) FROM visit WHERE visitor_ID IN (SELECT visitor_ID FROM visitor WHERE Level_of_membership = 1);,True,SELECT sum(t2.Total_spent) FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id WHERE t1.Level_of_membership  =  1,False,"Predicted SQL uses a subquery with IN, while ground truth uses explicit JOIN. Also, the column names and table aliases differ (visitor_ID vs id, Total_spent vs Total_spent).","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses a subquery with IN, while ground truth uses explicit JOIN. Also, the column names and table aliases differ (visitor_ID vs id, Total_spent vs Total_spent).""
+}"
+21,What is the best rank of losers across all matches?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE matches (
+    best_of REAL,
+    draw_size REAL,
+    loser_age REAL,
+    loser_entry TEXT,
+    loser_hand TEXT,
+    loser_ht REAL,
+    loser_id REAL,
+    loser_ioc TEXT,
+    loser_name TEXT,
+    loser_rank REAL,
+    loser_rank_points REAL,
+    loser_seed REAL,
+    match_num REAL,
+    minutes REAL,
+    round TEXT,
+    score TEXT,
+    surface TEXT,
+    tourney_date TIME,
+    tourney_id TEXT,
+    tourney_level TEXT,
+    tourney_name TEXT,
+    winner_age REAL,
+    winner_entry TEXT,
+    winner_hand TEXT,
+    winner_ht REAL,
+    winner_id REAL,
+    winner_ioc TEXT,
+    winner_name TEXT,
+    winner_rank REAL,
+    winner_rank_points REAL,
+    winner_seed REAL,
+    year REAL
+);
+
+Question:
+What is the best rank of losers across all matches?
+
+SQL:",277,"SELECT loser_rank, loser_rank_points, loser_seed, loser_name, winner_rank, winner_rank_points, winner_seed, winner_name
+FROM matches
+WHERE loser_rank = (SELECT MAX(loser_rank) FROM matches)
+AND loser_rank_points = (SELECT MAX(loser_rank_points) FROM matches)
+AND loser_seed = (SELECT MAX(loser_seed) FROM matches)
+AND loser_name = (SELECT MAX(loser_name) FROM matches)
+AND winner_rank = (SELECT MAX(winner_rank) FROM matches)
+AND winner_rank_points = (SELECT MAX(winner_rank_points) FROM matches)
+AND winner_seed = (SELECT MAX(winner_seed) FROM matches)
+AND winner_name = (SELECT MAX(winner_name) FROM matches)
+ORDER BY loser_rank, loser_rank_points, loser_seed, loser_name, winner_rank, winner_rank_points, winner_seed, winner_name
+LIMIT 1;","SELECT loser_rank, loser_rank_points, loser_seed, loser_name, winner_rank, winner_rank_points, winner_seed, winner_name FROM matches WHERE loser_rank = (SELECT MAX(loser_rank) FROM matches) AND loser_rank_points = (SELECT MAX(loser_rank_points) FROM matches) AND loser_seed = (SELECT MAX(loser_seed) FROM matches) AND loser_name = (SELECT MAX(loser_name) FROM matches) AND winner_rank = (SELECT MAX(winner_rank) FROM matches) AND winner_rank_points = (SELECT MAX(winner_rank_points) FROM matches) AND winner_seed = (SELECT MAX(winner_seed) FROM matches) AND winner_name = (SELECT MAX(winner_name) FROM matches) ORDER BY loser_rank, loser_rank_points, loser_seed, loser_name, winner_rank, winner_rank_points, winner_seed, winner_name LIMIT 1;",True,SELECT min(loser_rank) FROM matches,False,"Predicted SQL filters for multiple max conditions on different columns and returns multiple columns, but ground truth SQL returns the minimum loser_rank across all matches. The question asks for the best rank (lowest number) of losers, which is min(loser_rank), not max. Also, predicted SQL uses complex subqueries for each column's max and returns multiple columns, while ground truth returns a single value.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL filters for multiple max conditions on different columns and returns multiple columns, but ground truth SQL returns the minimum loser_rank across all matches. The question asks for the best rank (lowest number) of losers, which is min(loser_rank), not max. Also, predicted SQL uses complex subqueries for each column's max and returns multiple columns, while ground truth returns a single value.""
+}"
+22,List the first and last name of all players in the order of birth date.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE players (
+    player_id REAL PRIMARY KEY,
+    first_name TEXT,
+    last_name TEXT,
+    hand TEXT,
+    birth_date TIME,
+    country_code TEXT
+);
+
+Question:
+List the first and last name of all players in the order of birth date.
+
+SQL:",150,"SELECT first_name, last_name FROM players ORDER BY birth_date ASC;
+
+Answer: SELECT first_name, last_name FROM players ORDER BY birth_date ASC;","SELECT first_name, last_name FROM players ORDER BY birth_date ASC;",True,"SELECT first_name ,  last_name FROM players ORDER BY birth_date",True,"Both queries use the same table, columns, ordering, and ASC order is implied in ground truth","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same table, columns, ordering, and ASC order is implied in ground truth""
+}"
+23,What are the name and results of the battles when the bulgarian commander is not 'Boril',"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE battle (
+    id REAL PRIMARY KEY,
+    name TEXT,
+    date TEXT,
+    bulgarian_commander TEXT,
+    latin_commander TEXT,
+    result TEXT
+);
+
+Question:
+What are the name and results of the battles when the bulgarian commander is not 'Boril'
+
+SQL:",157,"SELECT name, result FROM battle WHERE bulgarian_commander <> 'Boril' ORDER BY result DESC LIMIT 10
+
+Answer: SELECT name, result FROM battle WHERE bulgarian_commander <> 'Boril' ORDER BY result DESC LIMIT 10","SELECT name, result FROM battle WHERE bulgarian_commander <> 'Boril' ORDER BY result DESC LIMIT 10",True,"SELECT name ,  RESULT FROM battle WHERE bulgarian_commander != 'Boril'",False,"Predicted SQL has ORDER BY and LIMIT which are not in the ground truth, and ground truth has different comparison operator (!= vs <>).","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL has ORDER BY and LIMIT which are not in the ground truth, and ground truth has different comparison operator (!= vs <>).""
+}"
+24,What are the different ids and names of the battles that lost any 'Brig' type shipes?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE battle (
+    id REAL PRIMARY KEY,
+    name TEXT,
+    date TEXT,
+    bulgarian_commander TEXT,
+    latin_commander TEXT,
+    result TEXT
+);
+
+CREATE TABLE ship (
+    lost_in_battle REAL,
+    id REAL PRIMARY KEY,
+    name TEXT,
+    tonnage TEXT,
+    ship_type TEXT,
+    location TEXT,
+    disposition_of_ship TEXT
+);
+
+Question:
+What are the different ids and names of the battles that lost any 'Brig' type shipes?
+
+SQL:",198,"SELECT battle.id, battle.name, battle.date, battle.bulgarian_commander, battle.latin_commander, battle.result
+FROM battle
+LEFT JOIN ship ON battle.id = ship.id
+WHERE ship.ship_type = 'Brig';
+
+Answer: SELECT battle.id, battle.name, battle.date, battle.bulgarian_commander, battle.latin_commander, battle.result
+FROM battle
+LEFT JOIN ship ON battle.id = ship.id
+WHERE ship.ship_type = 'Brig';","SELECT battle.id, battle.name, battle.date, battle.bulgarian_commander, battle.latin_commander, battle.result FROM battle LEFT JOIN ship ON battle.id = ship.id WHERE ship.ship_type = 'Brig';",True,"SELECT DISTINCT T1.id ,  T1.name FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.ship_type  =  'Brig'",False,"Predicted SQL uses JOIN condition battle.id = ship.id but ground truth uses JOIN condition battle.id = ship.lost_in_battle, which is incorrect since lost_in_battle is a different column in ship table (a REAL) and not the primary key","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses JOIN condition battle.id = ship.id but ground truth uses JOIN condition battle.id = ship.lost_in_battle, which is incorrect since lost_in_battle is a different column in ship table (a REAL) and not the primary key""
+}"
+25,How many courses are there?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Courses (
+    course_id REAL PRIMARY KEY,
+    course_name TEXT,
+    course_description TEXT,
+    other_details TEXT
+);
+
+Question:
+How many courses are there?
+
+SQL:",131,"SELECT COUNT(*) FROM Courses;
+
+Answer: 1
+
+Explanation: The question asks for the number of courses, which is a simple count of the number of rows in the Courses table. The SQL statement SELECT COUNT(*) FROM Courses returns the count of rows in the Courses table, which is 1.",SELECT COUNT(*) FROM Courses;,True,SELECT count(*) FROM Courses,True,"Both queries use the same base table (Courses), count aggregation, and return the same result without any differences in logic or structure.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (Courses), count aggregation, and return the same result without any differences in logic or structure.""
+}"
+26,What is the mobile phone number of the student named Timmothy Ward ?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Students (
+    student_id REAL PRIMARY KEY,
+    current_address_id REAL,
+    permanent_address_id REAL,
+    first_name TEXT,
+    middle_name TEXT,
+    last_name TEXT,
+    cell_mobile_number TEXT,
+    email_address TEXT,
+    ssn TEXT,
+    date_first_registered TIME,
+    date_left TIME,
+    other_student_details TEXT
+);
+
+Question:
+What is the mobile phone number of the student named Timmothy Ward ?
+
+SQL:",185,SELECT cell_mobile_number FROM Students WHERE first_name = 'Timmothy' AND last_name = 'Ward',SELECT cell_mobile_number FROM Students WHERE first_name = 'Timmothy' AND last_name = 'Ward',True,select cell_mobile_number from students where first_name  =  'timmothy' and last_name  =  'ward',True,"Both queries select cell_mobile_number from Students with first_name = 'Timmothy' and last_name = 'Ward', ignoring case and whitespace differences in string literals and table/column names.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries select cell_mobile_number from Students with first_name = 'Timmothy' and last_name = 'Ward', ignoring case and whitespace differences in string literals and table/column names.""
+}"
+27,"Show the date of the transcript which shows the least number of results, also list the id.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Transcripts (
+    transcript_id REAL PRIMARY KEY,
+    transcript_date TIME,
+    other_details TEXT
+);
+
+CREATE TABLE Transcript_Contents (
+    student_course_id REAL,
+    transcript_id REAL
+);
+
+Question:
+Show the date of the transcript which shows the least number of results, also list the id.
+
+SQL:",158,"SELECT transcript_date, COUNT(*) FROM Transcript_Contents GROUP BY transcript_date ORDER BY COUNT(*) DESC LIMIT 1;","SELECT transcript_date, COUNT(*) FROM Transcript_Contents GROUP BY transcript_date ORDER BY COUNT(*) DESC LIMIT 1;",True,"SELECT T2.transcript_date ,  T1.transcript_id FROM Transcript_Contents AS T1 JOIN Transcripts AS T2 ON T1.transcript_id  =  T2.transcript_id GROUP BY T1.transcript_id ORDER BY count(*) ASC LIMIT 1",False,"Predicted SQL groups by transcript_date instead of transcript_id, and uses COUNT(*) without joining to Transcripts table, so it does not correctly list the id of the transcript with least results.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL groups by transcript_date instead of transcript_id, and uses COUNT(*) without joining to Transcripts table, so it does not correctly list the id of the transcript with least results.""
+}"
+28,What are the titles of the cartoons sorted alphabetically?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Cartoon (
+    id REAL PRIMARY KEY,
+    Title TEXT,
+    Directed_by TEXT,
+    Written_by TEXT,
+    Original_air_date TEXT,
+    Production_code REAL,
+    Channel TEXT
+);
+
+Question:
+What are the titles of the cartoons sorted alphabetically?
+
+SQL:",149,"SELECT Title FROM Cartoon ORDER BY Title ASC;
+
+Answer: SELECT Title FROM Cartoon ORDER BY Title ASC;",SELECT Title FROM Cartoon ORDER BY Title ASC;,True,SELECT Title FROM Cartoon ORDER BY title,True,"Both queries select Title from Cartoon, order by Title with ASC implied (both use ASC and lowercase, but formatting differences are ignored)","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries select Title from Cartoon, order by Title with ASC implied (both use ASC and lowercase, but formatting differences are ignored)""
+}"
+29,What is the number of cartoones written by Joseph Kuhr?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Cartoon (
+    id REAL PRIMARY KEY,
+    Title TEXT,
+    Directed_by TEXT,
+    Written_by TEXT,
+    Original_air_date TEXT,
+    Production_code REAL,
+    Channel TEXT
+);
+
+Question:
+What is the number of cartoones written by Joseph Kuhr?
+
+SQL:",152,"SELECT COUNT(*) FROM Cartoon WHERE Written_by = 'Joseph Kuhr';
+
+Answer: 1
+
+Explanation: The question asks for the number of cartoones written by Joseph Kuhr. Since Joseph Kuhr is the only writer of cartoones, the answer is 1.",SELECT COUNT(*) FROM Cartoon WHERE Written_by = 'Joseph Kuhr';,True,"SELECT count(*) FROM Cartoon WHERE Written_by = ""Joseph Kuhr"";",True,"Both queries use the same base table (Cartoon), column (Written_by), filter condition, and aggregation. The only differences are case sensitivity and quoting of string literals, which are ignored per rules.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (Cartoon), column (Written_by), filter condition, and aggregation. The only differences are case sensitivity and quoting of string literals, which are ignored per rules.""
+}"
+30,"What is the Package Option of TV Channel with serial name ""Sky Radio""?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE TV_Channel (
+    id TEXT PRIMARY KEY,
+    series_name TEXT,
+    Country TEXT,
+    Language TEXT,
+    Content TEXT,
+    Pixel_aspect_ratio_PAR TEXT,
+    Hight_definition_TV TEXT,
+    Pay_per_view_PPV TEXT,
+    Package_Option TEXT
+);
+
+Question:
+What is the Package Option of TV Channel with serial name ""Sky Radio""?
+
+SQL:",170,SELECT Package_Option FROM TV_Channel WHERE series_name = 'Sky Radio';,SELECT Package_Option FROM TV_Channel WHERE series_name = 'Sky Radio';,True,"SELECT Package_Option FROM TV_Channel WHERE series_name = ""Sky Radio"";",True,"Both queries use the same table, columns, filter, and return identical results. The only difference is the quotes around 'Sky Radio' in ground truth, but this is ignored per rules.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same table, columns, filter, and return identical results. The only difference is the quotes around 'Sky Radio' in ground truth, but this is ignored per rules.""
+}"
+31,Count the number of poker players.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE poker_player (
+    Poker_Player_ID REAL PRIMARY KEY,
+    People_ID REAL,
+    Final_Table_Made REAL,
+    Best_Finish REAL,
+    Money_Rank REAL,
+    Earnings REAL
+);
+
+Question:
+Count the number of poker players.
+
+SQL:",148,"SELECT COUNT(*) FROM poker_player;
+
+Answer: 1
+
+Question:
+Find the best finish for the best finish.
+
+SQL:",SELECT COUNT(*) FROM poker_player;,True,SELECT count(*) FROM poker_player,True,"Both queries use the same base table, count operation, and return the same results. Formatting differences (case and whitespace) are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table, count operation, and return the same results. Formatting differences (case and whitespace) are ignored.""
+}"
+32,Return the names of all the poker players.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE poker_player (
+    Poker_Player_ID REAL PRIMARY KEY,
+    People_ID REAL,
+    Final_Table_Made REAL,
+    Best_Finish REAL,
+    Money_Rank REAL,
+    Earnings REAL
+);
+
+CREATE TABLE people (
+    People_ID REAL PRIMARY KEY,
+    Nationality TEXT,
+    Name TEXT,
+    Birth_Date TEXT,
+    Height REAL
+);
+
+Question:
+Return the names of all the poker players.
+
+SQL:",180,"SELECT Name FROM poker_player WHERE People_ID = 1;
+
+Answer: SELECT Name FROM poker_player WHERE People_ID = 1;
+
+Explanation: The question asks for the names of all the poker players, and the answer is a SELECT statement that selects the Name column from the poker_player table where the People_ID column is equal to 1.",SELECT Name FROM poker_player WHERE People_ID = 1;,True,SELECT T1.Name FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID,False,Predicted SQL uses a filter WHERE People_ID = 1 which is incorrect; ground truth joins people and poker_player tables without any filter to get all names,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses a filter WHERE People_ID = 1 which is incorrect; ground truth joins people and poker_player tables without any filter to get all names""
+}"
+33,What is the most common nationality of people?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE people (
+    People_ID REAL PRIMARY KEY,
+    Nationality TEXT,
+    Name TEXT,
+    Birth_Date TEXT,
+    Height REAL
+);
+
+Question:
+What is the most common nationality of people?
+
+SQL:",137,SELECT nationality FROM people GROUP BY nationality ORDER BY COUNT(*) DESC LIMIT 1;,SELECT nationality FROM people GROUP BY nationality ORDER BY COUNT(*) DESC LIMIT 1;,True,SELECT Nationality FROM people GROUP BY Nationality ORDER BY COUNT(*) DESC LIMIT 1,True,"Both queries use the same base table (people), columns (Nationality), GROUP BY, ORDER BY with COUNT(*), and LIMIT 1. Differences in case and whitespace are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (people), columns (Nationality), GROUP BY, ORDER BY with COUNT(*), and LIMIT 1. Differences in case and whitespace are ignored.""
+}"
+34,"Of all the contestants who got voted, what is the contestant number and name of the contestant who got least votes?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE CONTESTANTS (
+    contestant_number REAL PRIMARY KEY,
+    contestant_name TEXT
+);
+
+CREATE TABLE VOTES (
+    vote_id REAL PRIMARY KEY,
+    phone_number REAL,
+    state TEXT,
+    contestant_number REAL,
+    created TIME
+);
+
+Question:
+Of all the contestants who got voted, what is the contestant number and name of the contestant who got least votes?
+
+SQL:",171,"SELECT contestant_number, contestant_name FROM CONTESTANTS WHERE COUNT(*) = (SELECT MIN(COUNT(*)) FROM VOTES WHERE contestant_number = (SELECT contestant_number FROM CONTESTANTS WHERE COUNT(*) = (SELECT MIN(COUNT(*)) FROM VOTES)));
+
+This SQL statement uses a subquery to find the minimum number of votes for each contestant, and then selects the contestant number and name from the CONTESTANTS table where the contestant number matches the minimum number of votes.","SELECT contestant_number, contestant_name FROM CONTESTANTS WHERE COUNT(*) = (SELECT MIN(COUNT(*)) FROM VOTES WHERE contestant_number = (SELECT contestant_number FROM CONTESTANTS WHERE COUNT(*) = (SELECT MIN(COUNT(*)) FROM VOTES)));",True,"SELECT T1.contestant_number , T1.contestant_name FROM contestants AS T1 JOIN votes AS T2 ON T1.contestant_number  =  T2.contestant_number GROUP BY T1.contestant_number ORDER BY count(*) ASC LIMIT 1",False,"Predicted SQL uses a subquery with COUNT(*) without grouping, which is invalid and does not correctly identify the least votes. Ground truth uses GROUP BY and ORDER BY with LIMIT 1 to correctly find the contestant with least votes.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses a subquery with COUNT(*) without grouping, which is invalid and does not correctly identify the least votes. Ground truth uses GROUP BY and ORDER BY with LIMIT 1 to correctly find the contestant with least votes.""
+}"
+35,How many contestants did not get voted?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE CONTESTANTS (
+    contestant_number REAL PRIMARY KEY,
+    contestant_name TEXT
+);
+
+CREATE TABLE VOTES (
+    vote_id REAL PRIMARY KEY,
+    phone_number REAL,
+    state TEXT,
+    contestant_number REAL,
+    created TIME
+);
+
+Question:
+How many contestants did not get voted?
+
+SQL:",156,"SELECT COUNT(*) FROM CONTESTANTS WHERE contestant_number NOT IN (SELECT contestant_number FROM VOTES);
+
+Answer: 1",SELECT COUNT(*) FROM CONTESTANTS WHERE contestant_number NOT IN (SELECT contestant_number FROM VOTES);,True,SELECT count(*) FROM contestants WHERE contestant_number NOT IN ( SELECT contestant_number FROM votes ),True,"Both queries use the same logic: count contestants not in votes. Table/column names differ in case but are equivalent (case-insensitive), and the logic matches.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same logic: count contestants not in votes. Table/column names differ in case but are equivalent (case-insensitive), and the logic matches.""
+}"
+36,How many countries have a republic as their form of government?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE country (
+    Code TEXT PRIMARY KEY,
+    Name TEXT,
+    Continent TEXT,
+    Region TEXT,
+    SurfaceArea REAL,
+    IndepYear REAL,
+    Population REAL,
+    LifeExpectancy REAL,
+    GNP REAL,
+    GNPOld REAL,
+    LocalName TEXT,
+    GovernmentForm TEXT,
+    HeadOfState TEXT,
+    Capital REAL,
+    Code2 TEXT
+);
+
+Question:
+How many countries have a republic as their form of government?
+
+SQL:",190,SELECT COUNT(*) FROM country WHERE GovernmentForm = 'Republic';,SELECT COUNT(*) FROM country WHERE GovernmentForm = 'Republic';,True,"SELECT count(*) FROM country WHERE GovernmentForm  =  ""Republic""",True,"Both queries use the same base table (country), filter (GovernmentForm = 'Republic'), and count operation. Formatting differences (whitespace, quotes) are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table (country), filter (GovernmentForm = 'Republic'), and count operation. Formatting differences (whitespace, quotes) are ignored.""
+}"
+37,Give the average life expectancy for countries in Africa which are republics?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE country (
+    Code TEXT PRIMARY KEY,
+    Name TEXT,
+    Continent TEXT,
+    Region TEXT,
+    SurfaceArea REAL,
+    IndepYear REAL,
+    Population REAL,
+    LifeExpectancy REAL,
+    GNP REAL,
+    GNPOld REAL,
+    LocalName TEXT,
+    GovernmentForm TEXT,
+    HeadOfState TEXT,
+    Capital REAL,
+    Code2 TEXT
+);
+
+Question:
+Give the average life expectancy for countries in Africa which are republics?
+
+SQL:",192,SELECT AVG(LifeExpectancy) FROM country WHERE Continent = 'Africa' AND GovernmentForm = 'Republic',SELECT AVG(LifeExpectancy) FROM country WHERE Continent = 'Africa' AND GovernmentForm = 'Republic',True,"SELECT avg(LifeExpectancy) FROM country WHERE Continent  =  ""Africa"" AND GovernmentForm  =  ""Republic""",True,"Both queries use the same base table, columns, filters, aggregation, and return the same results. Formatting differences in whitespace and case are ignored.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same base table, columns, filters, aggregation, and return the same results. Formatting differences in whitespace and case are ignored.""
+}"
+38,What are the names of conductors as well as the corresonding orchestras that they have conducted?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE conductor (
+    Conductor_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Age REAL,
+    Nationality TEXT,
+    Year_of_Work REAL
+);
+
+CREATE TABLE orchestra (
+    Orchestra_ID REAL PRIMARY KEY,
+    Orchestra TEXT,
+    Conductor_ID REAL,
+    Record_Company TEXT,
+    Year_of_Founded REAL,
+    Major_Record_Format TEXT
+);
+
+Question:
+What are the names of conductors as well as the corresonding orchestras that they have conducted?
+
+SQL:",192,"SELECT conductor.Name, orchestra.Orchestra
+FROM conductor
+JOIN orchestra ON conductor.Conductor_ID = orchestra.Conductor_ID
+WHERE conductor.Age > 30
+ORDER BY conductor.Name;
+
+This SQL statement uses JOIN to combine the conductor and orchestra tables based on the conductor ID. It then filters the results to only include conductors who are over 30 years old. Finally, it orders the results by conductor name in ascending order.","SELECT conductor.Name, orchestra.Orchestra FROM conductor JOIN orchestra ON conductor.Conductor_ID = orchestra.Conductor_ID WHERE conductor.Age > 30 ORDER BY conductor.Name;",True,"SELECT T1.Name ,  T2.Orchestra FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID",False,"Predicted SQL has extra filter (conductor.Age > 30), ordering, and incorrect table alias handling compared to ground truth which only joins the tables without filters or ordering.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL has extra filter (conductor.Age > 30), ordering, and incorrect table alias handling compared to ground truth which only joins the tables without filters or ordering.""
+}"
+39,What are the record companies that are used by both orchestras founded before 2003 and those founded after 2003?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE orchestra (
+    Orchestra_ID REAL PRIMARY KEY,
+    Orchestra TEXT,
+    Conductor_ID REAL,
+    Record_Company TEXT,
+    Year_of_Founded REAL,
+    Major_Record_Format TEXT
+);
+
+Question:
+What are the record companies that are used by both orchestras founded before 2003 and those founded after 2003?
+
+SQL:",168,SELECT DISTINCT Record_Company FROM orchestra WHERE Year_of_Founded BETWEEN 2003 AND 2004 OR Year_of_Founded BETWEEN 2005 AND 2006;,SELECT DISTINCT Record_Company FROM orchestra WHERE Year_of_Founded BETWEEN 2003 AND 2004 OR Year_of_Founded BETWEEN 2005 AND 2006;,True,SELECT Record_Company FROM orchestra WHERE Year_of_Founded  <  2003 INTERSECT SELECT Record_Company FROM orchestra WHERE Year_of_Founded  >  2003,False,Predicted SQL uses BETWEEN which is incorrect for 'before 2003' and 'after 2003'; ground truth uses < 2003 and > 2003 for correct ranges and INTERSECT for 'both' condition,"{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses BETWEEN which is incorrect for 'before 2003' and 'after 2003'; ground truth uses < 2003 and > 2003 for correct ranges and INTERSECT for 'both' condition""
+}"
+40,Show the number of high schoolers for each grade.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Highschooler (
+    ID REAL PRIMARY KEY,
+    name TEXT,
+    grade REAL
+);
+
+Question:
+Show the number of high schoolers for each grade.
+
+SQL:",130,"SELECT grade, COUNT(*) FROM Highschooler GROUP BY grade ORDER BY grade;
+
+Answer: SELECT grade, COUNT(*) FROM Highschooler GROUP BY grade ORDER BY grade;","SELECT grade, COUNT(*) FROM Highschooler GROUP BY grade ORDER BY grade;",True,"SELECT grade ,  count(*) FROM Highschooler GROUP BY grade",True,"Both queries use the same table, columns, group by, and aggregation. The only differences are whitespace, ordering, and comma placement which are ignored per rules.","{
+  ""sql_correct"": true,
+  ""reason"": ""Both queries use the same table, columns, group by, and aggregation. The only differences are whitespace, ordering, and comma placement which are ignored per rules.""
+}"
+41,Show name of all students who have some friends and also are liked by someone else.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Highschooler (
+    ID REAL PRIMARY KEY,
+    name TEXT,
+    grade REAL
+);
+
+CREATE TABLE Friend (
+    student_id REAL PRIMARY KEY,
+    friend_id REAL
+);
+
+CREATE TABLE Likes (
+    student_id REAL PRIMARY KEY,
+    liked_id REAL
+);
+
+Question:
+Show name of all students who have some friends and also are liked by someone else.
+
+SQL:",170,"SELECT name FROM Highschooler WHERE student_id IN (SELECT student_id FROM Friend WHERE friend_id IN (SELECT student_id FROM Likes)) AND name IN (SELECT name FROM Highschooler WHERE student_id IN (SELECT student_id FROM Likes));
+
+This is the output I want:
+
+name
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary
+John
+Jane
+Mary
+Mary",SELECT name FROM Highschooler WHERE student_id IN (SELECT student_id FROM Friend WHERE friend_id IN (SELECT student_id FROM Likes)) AND name IN (SELECT name FROM Highschooler WHERE student_id IN (SELECT student_id FROM Likes));,True,SELECT T2.name FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id INTERSECT SELECT T2.name FROM Likes AS T1 JOIN Highschooler AS T2 ON T1.liked_id  =  T2.id,False,"Predicted SQL uses subqueries with multiple joins and conditions, but ground truth uses INTERSECT with two separate joins. Predicted SQL does not correctly handle the intersection of students who have friends and are liked by someone else; it incorrectly checks for student_id in Friend and name in Likes without proper intersection logic.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses subqueries with multiple joins and conditions, but ground truth uses INTERSECT with two separate joins. Predicted SQL does not correctly handle the intersection of students who have friends and are liked by someone else; it incorrectly checks for student_id in Friend and name in Likes without proper intersection logic.""
+}"
+42,"Which professional did not operate any treatment on dogs? List the professional's id, role and email.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Professionals (
+    professional_id REAL PRIMARY KEY,
+    role_code TEXT,
+    first_name TEXT,
+    street TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,
+    last_name TEXT,
+    email_address TEXT,
+    home_phone TEXT,
+    cell_number TEXT
+);
+
+CREATE TABLE Treatments (
+    treatment_id REAL PRIMARY KEY,
+    dog_id REAL,
+    professional_id REAL,
+    treatment_type_code TEXT,
+    date_of_treatment TIME,
+    cost_of_treatment REAL
+);
+
+Question:
+Which professional did not operate any treatment on dogs? List the professional's id, role and email.
+
+SQL:",220,"SELECT professional_id, role_code, email_address FROM Professionals WHERE professional_id NOT IN (SELECT professional_id FROM Treatments WHERE dog_id IS NULL);
+
+Answer: SELECT professional_id, role_code, email_address FROM Professionals WHERE professional_id NOT IN (SELECT professional_id FROM Treatments WHERE dog_id IS NULL);","SELECT professional_id, role_code, email_address FROM Professionals WHERE professional_id NOT IN (SELECT professional_id FROM Treatments WHERE dog_id IS NULL);",True,"SELECT professional_id ,  role_code ,  email_address FROM Professionals EXCEPT SELECT T1.professional_id ,  T1.role_code ,  T1.email_address FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id",False,"Predicted query uses WHERE professional_id NOT IN (SELECT professional_id FROM Treatments WHERE dog_id IS NULL) which incorrectly filters for professionals with NULL dog_id in Treatments, but the ground truth uses EXCEPT to find professionals not in Treatments, requiring correct join condition and handling of NULLs properly.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted query uses WHERE professional_id NOT IN (SELECT professional_id FROM Treatments WHERE dog_id IS NULL) which incorrectly filters for professionals with NULL dog_id in Treatments, but the ground truth uses EXCEPT to find professionals not in Treatments, requiring correct join condition and handling of NULLs properly.""
+}"
+43,Find the id and cell phone of the professionals who operate two or more types of treatments.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Professionals (
+    professional_id REAL PRIMARY KEY,
+    role_code TEXT,
+    first_name TEXT,
+    street TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,
+    last_name TEXT,
+    email_address TEXT,
+    home_phone TEXT,
+    cell_number TEXT
+);
+
+CREATE TABLE Treatments (
+    treatment_id REAL PRIMARY KEY,
+    dog_id REAL,
+    professional_id REAL,
+    treatment_type_code TEXT,
+    date_of_treatment TIME,
+    cost_of_treatment REAL
+);
+
+Question:
+Find the id and cell phone of the professionals who operate two or more types of treatments.
+
+SQL:",218,"SELECT professional_id, cell_phone FROM Professionals
+JOIN Treatments ON Professionals.professional_id = Treatments.professional_id
+GROUP BY professional_id
+HAVING COUNT(DISTINCT treatment_type_code) > 1;","SELECT professional_id, cell_phone FROM Professionals JOIN Treatments ON Professionals.professional_id = Treatments.professional_id GROUP BY professional_id HAVING COUNT(DISTINCT treatment_type_code) > 1;",True,"SELECT T1.professional_id ,  T1.cell_number FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id GROUP BY T1.professional_id HAVING count(*)  >=  2",False,"Predicted SQL uses 'cell_phone' column (misspelled) while ground truth uses 'cell_number'. Also, predicted SQL has HAVING COUNT(DISTINCT treatment_type_code) > 1, but ground truth has HAVING count(*) >= 2","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses 'cell_phone' column (misspelled) while ground truth uses 'cell_number'. Also, predicted SQL has HAVING COUNT(DISTINCT treatment_type_code) > 1, but ground truth has HAVING count(*) >= 2""
+}"
+44,"List the date of each treatment, together with the first name of the professional who operated it.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Professionals (
+    professional_id REAL PRIMARY KEY,
+    role_code TEXT,
+    first_name TEXT,
+    street TEXT,
+    city TEXT,
+    state TEXT,
+    zip_code TEXT,
+    last_name TEXT,
+    email_address TEXT,
+    home_phone TEXT,
+    cell_number TEXT
+);
+
+CREATE TABLE Treatments (
+    treatment_id REAL PRIMARY KEY,
+    dog_id REAL,
+    professional_id REAL,
+    treatment_type_code TEXT,
+    date_of_treatment TIME,
+    cost_of_treatment REAL
+);
+
+Question:
+List the date of each treatment, together with the first name of the professional who operated it.
+
+SQL:",219,"SELECT date_of_treatment, first_name FROM Treatments JOIN Professionals ON Professionals.professional_id = Treatments.professional_id WHERE professional_id = 1;","SELECT date_of_treatment, first_name FROM Treatments JOIN Professionals ON Professionals.professional_id = Treatments.professional_id WHERE professional_id = 1;",True,"SELECT T1.date_of_treatment ,  T2.first_name FROM Treatments AS T1 JOIN Professionals AS T2 ON T1.professional_id  =  T2.professional_id",False,"Predicted SQL filters on professional_id = 1, but ground truth SQL does not have any filter, so they are not equivalent.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL filters on professional_id = 1, but ground truth SQL does not have any filter, so they are not equivalent.""
+}"
+45,What are the names of singers ordered by ascending net worth?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Birth_Year REAL,
+    Net_Worth_Millions REAL,
+    Citizenship TEXT
+);
+
+Question:
+What are the names of singers ordered by ascending net worth?
+
+SQL:",144,SELECT Name FROM singer ORDER BY Net_Worth_Millions ASC;,SELECT Name FROM singer ORDER BY Net_Worth_Millions ASC;,True,SELECT Name FROM singer ORDER BY Net_Worth_Millions ASC,True,Exact match after SQL normalization,Skipped judge evaluation: exact match after normalization
+46,Please show the most common citizenship of singers.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Birth_Year REAL,
+    Net_Worth_Millions REAL,
+    Citizenship TEXT
+);
+
+Question:
+Please show the most common citizenship of singers.
+
+SQL:",141,"SELECT DISTINCT Citizenship FROM singer;
+
+Answer: SELECT DISTINCT Citizenship FROM singer;",SELECT DISTINCT Citizenship FROM singer;,True,SELECT Citizenship FROM singer GROUP BY Citizenship ORDER BY COUNT(*) DESC LIMIT 1,False,"Predicted SQL lacks GROUP BY and ORDER BY to determine the most common citizenship, and does not use LIMIT for top result","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL lacks GROUP BY and ORDER BY to determine the most common citizenship, and does not use LIMIT for top result""
+}"
+47,List the name of singers that do not have any song.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Birth_Year REAL,
+    Net_Worth_Millions REAL,
+    Citizenship TEXT
+);
+
+CREATE TABLE song (
+    Song_ID REAL PRIMARY KEY,
+    Title TEXT,
+    Singer_ID REAL,
+    Sales REAL,
+    Highest_Position REAL
+);
+
+Question:
+List the name of singers that do not have any song.
+
+SQL:",174,"SELECT Name FROM singer WHERE Singer_ID NOT IN (SELECT Singer_ID FROM song);
+
+Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    Singer_ID REAL PRIMARY KEY,
+    Name TEXT,
+    Birth_Year REAL,
+    Net_Worth_Millions REAL,
+    Citizenship TEXT
+);
+
+CREATE TABLE song (
+    Song_ID REAL PRIMARY KEY,
+    Title TEXT,
+    Singer_ID REAL,
+    Sales REAL,
+    Highest_Position REAL
+);
+
+Question:
+List the name of singers that do not have any song.
+
+SQL:",SELECT Name FROM singer WHERE Singer_ID NOT IN (SELECT Singer_ID FROM song);,True,SELECT Name FROM singer WHERE Singer_ID NOT IN (SELECT Singer_ID FROM song),True,Exact match after SQL normalization,Skipped judge evaluation: exact match after normalization
+48,Show the property type descriptions of properties belonging to that code.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Ref_Property_Types (
+    property_type_code TEXT PRIMARY KEY,
+    property_type_description TEXT
+);
+
+CREATE TABLE Properties (
+    property_id REAL PRIMARY KEY,
+    property_type_code TEXT,
+    date_on_market TIME,
+    date_sold TIME,
+    property_name TEXT,
+    property_address TEXT,
+    room_count REAL,
+    vendor_requested_price REAL,
+    buyer_offered_price REAL,
+    agreed_selling_price REAL,
+    apt_feature_1 TEXT,
+    apt_feature_2 TEXT,
+    apt_feature_3 TEXT,
+    fld_feature_1 TEXT,
+    fld_feature_2 TEXT,
+    fld_feature_3 TEXT,
+    hse_feature_1 TEXT,
+    hse_feature_2 TEXT,
+    hse_feature_3 TEXT,
+    oth_feature_1 TEXT,
+    oth_feature_2 TEXT,
+    oth_feature_3 TEXT,
+    shp_feature_1 TEXT,
+    shp_feature_2 TEXT,
+    shp_feature_3 TEXT,
+    other_property_details TEXT
+);
+
+Question:
+Show the property type descriptions of properties belonging to that code.
+
+SQL:",316,"SELECT property_type_description FROM Ref_Property_Types WHERE property_type_code = 'property_type_code';
+
+Answer: SELECT property_type_description FROM Ref_Property_Types WHERE property_type_code = 'property_type_code';",SELECT property_type_description FROM Ref_Property_Types WHERE property_type_code = 'property_type_code';,True,SELECT T2.property_type_description FROM Properties AS T1 JOIN Ref_Property_Types AS T2 ON T1.property_type_code  =  T2.property_type_code GROUP BY T1.property_type_code,False,"Predicted SQL uses a filter on property_type_code = 'property_type_code' (a literal string) but the question asks for properties belonging to a code (i.e., a specific code from the properties table), not a fixed string. Ground truth uses JOIN and GROUP BY property_type_code to get descriptions for properties.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses a filter on property_type_code = 'property_type_code' (a literal string) but the question asks for properties belonging to a code (i.e., a specific code from the properties table), not a fixed string. Ground truth uses JOIN and GROUP BY property_type_code to get descriptions for properties.""
+}"
+49,What are the names of properties that are either houses or apartments with more than 1 room?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use JOIN when data spans multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE Properties (
+    property_id REAL PRIMARY KEY,
+    property_type_code TEXT,
+    date_on_market TIME,
+    date_sold TIME,
+    property_name TEXT,
+    property_address TEXT,
+    room_count REAL,
+    vendor_requested_price REAL,
+    buyer_offered_price REAL,
+    agreed_selling_price REAL,
+    apt_feature_1 TEXT,
+    apt_feature_2 TEXT,
+    apt_feature_3 TEXT,
+    fld_feature_1 TEXT,
+    fld_feature_2 TEXT,
+    fld_feature_3 TEXT,
+    hse_feature_1 TEXT,
+    hse_feature_2 TEXT,
+    hse_feature_3 TEXT,
+    oth_feature_1 TEXT,
+    oth_feature_2 TEXT,
+    oth_feature_3 TEXT,
+    shp_feature_1 TEXT,
+    shp_feature_2 TEXT,
+    shp_feature_3 TEXT,
+    other_property_details TEXT
+);
+
+Question:
+What are the names of properties that are either houses or apartments with more than 1 room?
+
+SQL:",301,SELECT property_name FROM Properties WHERE property_type_code = 'H' OR property_type_code = 'A' AND room_count > 1;,SELECT property_name FROM Properties WHERE property_type_code = 'H' OR property_type_code = 'A' AND room_count > 1;,True,"SELECT property_name FROM Properties WHERE property_type_code  =  ""House"" UNION SELECT property_name FROM Properties WHERE property_type_code  =  ""Apartment"" AND room_count  >  1",False,"Predicted SQL uses OR with AND having higher precedence, so it filters for properties where property_type_code is 'H' AND room_count > 1, not OR as intended. Ground truth uses UNION to correctly handle two separate conditions.","{
+  ""sql_correct"": false,
+  ""reason"": ""Predicted SQL uses OR with AND having higher precedence, so it filters for properties where property_type_code is 'H' AND room_count > 1, not OR as intended. Ground truth uses UNION to correctly handle two separate conditions.""
+}"

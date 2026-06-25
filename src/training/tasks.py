@@ -24,3 +24,9 @@ class TaskType(str, Enum):
             raise ValueError(
                 f"Unknown training task '{value}'. Expected one of: {allowed}"
             ) from exc
+
+
+def format_task_prompt(task: str, prompt: str) -> str:
+    """Prefix a generation prompt with the LoRA task identifier."""
+    task_name = TaskType.from_str(task).value
+    return f"Task: {task_name}\n\n{prompt.lstrip()}"

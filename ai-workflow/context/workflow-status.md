@@ -1,5 +1,18 @@
 # Workflow Status — CodeGen Studio
 
+## Active Initiative — TENDv2 (Ollama)
+
+- **Phase**: Implementation — chunked pipeline complete (2026-06-24)
+- **Summary**: Ollama-powered TEND v2 — codegen `qwen2.5-coder:3b`, judge `qwen3:4b`.
+- **Plan**: `ai-workflow/planning/feature-plans/tendv2-ollama-plan.md`
+- **Chunked pipeline plan**: `ai-workflow/planning/feature-plans/tendv2-chunked-pipeline-plan.md`
+- **Roadmap**: `ai-workflow/planning/implementation-roadmaps/tendv2-roadmap.md`,
+  `implementation-roadmaps/tendv2-chunked-roadmap.md`
+- **Approval**: `tendv2-ollama-approval.md` (approved);
+  `tendv2-chunked-pipeline-approval.md` (approved — implemented)
+
+---
+
 ## Current Phase
 
 - **Phase**: Implementation — **Stage 1 complete**

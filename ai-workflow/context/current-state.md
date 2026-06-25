@@ -2,6 +2,22 @@
 
 > Updated after **Stage 1 implementation** (2026-06-21).
 
+## Active Initiative — TENDv2 (Ollama) — 2026-06-24
+
+- **Phase**: Chunked/resumable pipeline **implemented** (2026-06-24).
+- **Goal**: `TENDv2/` mirrors `TENDv1/` but uses local Ollama models —
+  `qwen2.5-coder:3b` (Mongo schema/query + documentation) and `qwen3:4b` (judge).
+- **Key pieces**: shared `src/llm/ollama_client.py` (async+sync), async pipeline
+  with bounded concurrency, incremental CSV writes to `data/TENDv2/`.
+- **Datasets**: Spider first, then BIRD (train/test).
+- **New (2026-06-24)**: Chunked pipeline implemented — 500-record JSON chunks,
+  resumable bronze processing, stable merged CSVs (no timestamps).
+- Plan: `feature-plans/tendv2-chunked-pipeline-plan.md` (approved via implement request).
+- Stage log: `implementation/stage-logs/tendv2-chunked-pipeline.md`
+
+---
+
+
 ## Snapshot
 
 - **Date**: 2026-06-21

@@ -7,8 +7,8 @@ A modular, reproducible, research-oriented project for evaluating small code lan
 ## Features
 
 - **Natural Language → SQL** generation with greedy and beam search decoding
-- **SQL → MongoDB** rule-based translation (SELECT, WHERE, ORDER BY, LIMIT, GROUP BY)
-- **Benchmark evaluation** on Spider and BirdBench datasets
+- **SQL → MongoDB** model-based conversion with gold references from TEND
+- **Benchmark evaluation** on the [TEND silver dataset](https://huggingface.co/datasets/care2achieve/tend) (Spider + BIRD configs)
 - **Metrics**: Exact Match, Execution Accuracy, BLEU, ROUGE-L, BERTScore, CodeBLEU
 - **MLflow** experiment tracking
 - **Local caching** — models and datasets download once, then reuse from disk
@@ -19,19 +19,15 @@ A modular, reproducible, research-oriented project for evaluating small code lan
 CodeGen-Studio/
 ├── src/                     # Application source code
 │   ├── text2sql/            # Prompt builder, generator, validator, executor
-│   ├── sql2nosql/           # SQL to MongoDB translator
+│   ├── sql2nosql/           # SQL to MongoDB generation + evaluation
 │   ├── models/              # HuggingFace model loader (with local cache)
-│   ├── datasets/            # Spider & BIRD loaders, preprocessing
+│   ├── datasets/            # TEND Hugging Face loader, preprocessing
 │   ├── evaluation/          # Metrics, benchmarks, MLflow tracking
 │   └── utils/               # Config, paths, logging, seeds
 ├── models/
 │   ├── base/                # Downloaded HuggingFace models (cached once)
 │   └── checkpoints/         # Fine-tuned model checkpoints from training
-├── data/
-│   ├── spider/              # Spider dataset (downloaded once)
-│   ├── bird/                # BIRD dataset (downloaded once)
-│   ├── processed/           # Preprocessed dataset exports
-│   └── samples/             # Sample SQLite databases
+├── data/                    # Dataset reference docs (DATASETS.md)
 ├── results/                 # Evaluation output (metrics.json, details.csv)
 ├── configs/                 # YAML configuration (generation, evaluation)
 ├── scripts/                 # Setup and evaluation scripts
@@ -80,12 +76,10 @@ BERTSCORE_MODEL_NAME=distilbert-base-uncased
 # Local storage paths (defaults shown)
 MODELS_BASE_DIR=models/base
 MODELS_CHECKPOINTS_DIR=models/checkpoints
-DATA_DIR=data
-SPIDER_DATA_DIR=data/spider
-BIRD_DATA_DIR=data/bird
-SPIDER_REPO_URL=https://github.com/taoyds/spider/archive/refs/heads/master.zip
-SPIDER_DATASET_URL=https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ
-BIRD_DATASET_URL=https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip
+TEND_DATASET_ID=care2achieve/tend
+TEND_CACHE_DIR=data/cache/tend
+TEND_CACHE_DIR=data/cache/tend
+RESULTS_DIR=results
 ```
 
 
@@ -96,67 +90,42 @@ BIRD_DATASET_URL=https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip
 | `MODEL_CHECKPOINT`       | Checkpoint name under `models/checkpoints/` | —                    |
 | `MODELS_BASE_DIR`        | Where base models are cached                | `models/base`        |
 | `MODELS_CHECKPOINTS_DIR` | Where training checkpoints are stored       | `models/checkpoints` |
-| `DATA_DIR`               | Root data directory                         | `data`               |
-| `SPIDER_DATA_DIR`        | Spider dataset location                     | `data/spider`        |
-| `BIRD_DATA_DIR`          | BIRD dataset location                       | `data/bird`          |
-| `SPIDER_REPO_URL`        | Spider GitHub archive URL                   | —                    |
-| `SPIDER_DATASET_URL`     | Spider full dataset mirror URL              | —                    |
-| `BIRD_DATASET_URL`       | BIRD dataset archive URL                    | —                    |
+| `TEND_DATASET_ID`        | Hugging Face TEND dataset id                | `care2achieve/tend`  |
+| `TEND_CACHE_DIR`         | Local cache for TEND JSONL splits             | `~/.cache/codegen/tend` |
+| `RESULTS_DIR`            | Evaluation output directory                 | `results`            |
 
 
 YAML settings in `configs/default.yaml` cover generation parameters, evaluation limits, and seeds. Model name and storage paths always come from `.env`.
-
-### 3. Create Sample Database
-
-```bash
-python scripts/setup_sample_db.py
-```
-
-Creates `data/samples/students.db` with students, courses, and enrollments tables.
 
 ## Scripts
 
 ### `run_baseline_eval.py` — Baseline Model Evaluation
 
-The primary evaluation script. Runs the configured model on built-in examples or full benchmark datasets and computes all metrics.
+The primary evaluation script. Runs the configured model on the TEND Hugging Face dataset and computes all metrics.
 
 **Metrics computed:** Exact Match, Execution Accuracy, Syntax Validity, BLEU, ROUGE-L, BERTScore, CodeBLEU
 
-#### Quick baseline (no downloads, fastest)
+#### TEND benchmark (Hugging Face)
 
-Uses 3 built-in reference examples and the sample SQLite database. Good for verifying your setup.
-
-```bash
-python scripts/run_baseline_eval.py
-```
-
-#### Spider benchmark
-
-Downloads Spider dataset to `data/spider/` and model to `models/base/` on first run. Subsequent runs use the local cache.
+Loads [care2achieve/tend](https://huggingface.co/datasets/care2achieve/tend) via `src/datasets/tend_loader.py`. Gold SQL, MongoDB queries, and documentation come from the published silver dataset.
 
 ```bash
-python scripts/run_baseline_eval.py --dataset spider
-python scripts/run_baseline_eval.py --dataset spider --split validation --max-samples 20
-```
-
-#### BirdBench benchmark
-
-```bash
-python scripts/run_baseline_eval.py --dataset bird
-python scripts/run_baseline_eval.py --dataset bird --split validation --max-samples 50
+python scripts/test_tend_loader.py
+python scripts/run_baseline_eval.py --tend-config spider --split test --max-samples 20
+python scripts/run_baseline_eval.py --tend-config bird --split train --max-samples 50
 ```
 
 #### Log results to MLflow
 
 ```bash
-python scripts/run_baseline_eval.py --dataset spider --mlflow
-python scripts/run_baseline_eval.py --dataset bird --max-samples 10 --mlflow
+python scripts/run_baseline_eval.py --tend-config spider --mlflow
+python scripts/run_baseline_eval.py --tend-config bird --max-samples 10 --mlflow
 ```
 
 #### Save results to a named run folder
 
 ```bash
-python scripts/run_baseline_eval.py --dataset spider --output spider_baseline
+python scripts/run_baseline_eval.py --tend-config spider --output tend_spider_baseline
 ```
 
 Creates `results/spider_baseline/` containing:
@@ -169,8 +138,8 @@ Creates `results/spider_baseline/` containing:
 
 | Flag            | Default                 | Description                                        |
 | --------------- | ----------------------- | -------------------------------------------------- |
-| `--dataset`     | `quick`                 | `quick` (built-in examples), `spider`, or `bird`   |
-| `--split`       | `validation`            | Dataset split: `train`, `validation`/`dev`, `test` |
+| `--tend-config` | `spider`                | TEND subset: `spider` or `bird`                    |
+| `--split`       | `test`                  | TEND split: `train` or `test` (`test` = source dev) |
 | `--max-samples` | `5`                     | Number of examples to evaluate                     |
 | `--mlflow`      | off                     | Log metrics to MLflow                              |
 | `--output`      | `baseline_eval_results` | Run name; outputs go to `results/<name>/`          |
@@ -180,11 +149,10 @@ Creates `results/spider_baseline/` containing:
 
 ```
 Baseline Evaluation: Salesforce/codegen-350M-multi
-Dataset: spider | Max samples: 10
-Note: First run downloads model and dataset to local models/ and data/ folders.
+Dataset: tend | Max samples: 10
 
 ============================================================
-  Baseline Results (spider_validation)
+  Text-to-SQL (tend_spider_test)
 ============================================================
   Exact Match Accuracy          : 0.1000
   Execution Accuracy            : 0.2000
@@ -198,10 +166,10 @@ Note: First run downloads model and dataset to local models/ and data/ folders.
 
 #### What happens on first run
 
-1. **Model** — checks `models/base/<model-slug>/` for a cached copy; if missing, downloads from HuggingFace (~700 MB for codegen-350M) and saves locally
-2. **Dataset** — checks `data/spider/` or `data/bird/` for a `.downloaded` marker; if missing, downloads and extracts the archive
-3. **Evaluation** — generates SQL, compares against gold queries, computes all metrics
-4. **Results** — prints metrics to terminal and saves JSON to `results/`
+1. **Model** — checks `models/base/<model-slug>/` for a cached copy; if missing, downloads from HuggingFace and saves locally
+2. **Dataset** — loads TEND from Hugging Face on first use, then reuses cached JSONL under `TEND_CACHE_DIR` (default `~/.cache/codegen/tend`)
+3. **Evaluation** — generates SQL/MongoDB/docs, compares against TEND gold fields, computes all metrics
+4. **Results** — prints metrics to terminal and saves JSON/CSVs to `results/`
 
 #### Using a fine-tuned checkpoint
 
@@ -239,29 +207,26 @@ models/base/distilbert-base-uncased/   # BERTScore model (BERTSCORE_MODEL_NAME)
 - Configured by `MODEL_NAME` in `.env`
 - BERTScore metric model cached the same way under `models/base/` via `BERTSCORE_MODEL_NAME`
 
-### Datasets
+### TEND dataset (Hugging Face)
+
+- Loaded via `src/datasets/tend_loader.py` from `TEND_DATASET_ID` (default `care2achieve/tend`)
+- Cached locally as standardized JSONL under `TEND_CACHE_DIR` (default `~/.cache/codegen/tend`, or e.g. `data/cache/tend` in `.env`)
+- Configurations: `spider`, `bird`
+- Splits: `train`, `test` (`test` = source validation/dev)
+- Standardized format includes gold `sql`, `nosql_query`, and `documentation`
 
 ```
-data/spider/
-├── dev.json
-├── train_spider.json
-├── tables.json
-├── database/
-├── spider_data/         # full dataset mirror (if needed)
-└── .downloaded          # cache marker
-
-data/bird/
-├── bird_data/
-│   ├── dev.json
-│   ├── dev_tables.json
-│   └── dev_databases/
-└── .downloaded          # cache marker
+data/cache/tend/care2achieve__tend/spider/train.jsonl
+data/cache/tend/care2achieve__tend/spider/test.jsonl
 ```
 
-- Checked before every load via `.downloaded` marker and data file presence
-- Downloaded only when missing
-- Storage paths: `SPIDER_DATA_DIR`, `BIRD_DATA_DIR` in `.env`
-- Download URLs: `SPIDER_REPO_URL`, `SPIDER_DATASET_URL`, `BIRD_DATASET_URL` in `.env`
+```python
+from src.datasets.tend_loader import TENDLoader
+
+loader = TENDLoader(config="spider")
+examples = loader.load_split("test")
+print(examples[0]["question"], examples[0]["nosql_query"])
+```
 
 ### Checkpoints (training output)
 
@@ -287,11 +252,8 @@ MODEL_NAME=Salesforce/codegen-350M-multi
 BERTSCORE_MODEL_NAME=distilbert-base-uncased
 MODELS_BASE_DIR=models/base
 MODELS_CHECKPOINTS_DIR=models/checkpoints
-SPIDER_DATA_DIR=data/spider
-BIRD_DATA_DIR=data/bird
-SPIDER_REPO_URL=https://github.com/taoyds/spider/archive/refs/heads/master.zip
-SPIDER_DATASET_URL=https://drive.google.com/uc?export=download&id=1TqleXec_OykOYFREKKtschzY29dUcVAQ
-BIRD_DATASET_URL=https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip
+TEND_DATASET_ID=care2achieve/tend
+TEND_CACHE_DIR=data/cache/tend
 ```
 
 ### YAML (`configs/default.yaml`) — runtime behavior
@@ -322,25 +284,7 @@ To use a different HuggingFace model, change `MODEL_NAME` in `.env` and delete t
 
 ## Datasets
 
-### Spider
-
-- Auto-downloads to `data/spider/` on first use
-- Standardized format: `{question, schema, sql, db_id}`
-- Splits: `train`, `validation` (dev), `test`
-
-### BirdBench
-
-- Auto-downloads to `data/bird/` on first use
-- Includes evidence and difficulty metadata
-- Splits: `train`, `validation` (dev), `test`
-
-```python
-from src.datasets.spider_loader import SpiderLoader
-
-loader = SpiderLoader()
-examples = loader.load_split("validation")
-print(examples[0])
-```
+See [data/DATASETS.md](data/DATASETS.md) for TEND field definitions, split naming, and loading examples.
 
 ---
 
@@ -379,7 +323,7 @@ Tracked per run: model name, dataset, prompt template, decoding strategy, all me
 Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All evaluation scripts call `set_seeds(config)` before running.
 
 ```bash
-python scripts/run_baseline_eval.py --dataset spider --max-samples 10
+python scripts/run_baseline_eval.py --tend-config spider --max-samples 10
 ```
 
 ---
@@ -392,7 +336,6 @@ python scripts/run_baseline_eval.py --dataset spider --max-samples 10
 | `MODEL_NAME is not set`           | Run `cp .env.example .env` and set `MODEL_NAME`                                      |
 | `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env`                         |
 | Model re-downloads every run      | Check `models/base/<slug>/.downloaded` exists; ensure write permissions              |
-| Dataset re-downloads every run    | Check `data/spider/.downloaded` or `data/bird/.downloaded` exists                    |
 | Out of memory on GPU              | Set `device: "cpu"` in `configs/default.yaml` or use `--max-samples 5`               |
 | Checkpoint not found              | Ensure `models/checkpoints/<name>/config.json` exists and `MODEL_CHECKPOINT` matches |
 | `ModuleNotFoundError: src`        | Export `PYTHONPATH=$(pwd)` from project root                                         |

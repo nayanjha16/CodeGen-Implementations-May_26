@@ -14,12 +14,12 @@ generation:
   seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
 
 datasets:
-  spider: {}  # cache_dir, repo_url, dataset_url set from .env
-  bird: {}     # cache_dir, dataset_url set from .env
+  tend: {}  # dataset_id set from TEND_DATASET_ID in .env
+  spider_gold_validation: data/spider_gold_validation.jsonl
 
 evaluation:
   batch_size: 8
-  max_samples: 100
+  max_samples: 50
   # bertscore_model set from BERTSCORE_MODEL_NAME in .env
   mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"

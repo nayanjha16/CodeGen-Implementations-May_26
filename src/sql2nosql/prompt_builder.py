@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.training.tasks import TaskType, format_task_prompt
+
 
 class NoSQLPromptBuilder:
     """Build prompts for converting SQL queries to MongoDB shell syntax."""
@@ -61,10 +63,11 @@ MongoDB:
         else:
             mongo_schema = nosql_schema.strip() or "{}"
 
-        return self.template.format(
+        prompt = self.template.format(
             mongodb_schema=mongo_schema,
             sql_query=sql_query.strip(),
         ).strip()
+        return format_task_prompt(TaskType.SQL2NOSQL.value, prompt)
 
     def get_template_name(self) -> str:
         """Return template identifier for experiment tracking."""

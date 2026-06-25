@@ -1,0 +1,2720 @@
+reference_sql,prompt,input_token_count,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,judge_query_correct,judge_reason,judge_raw_response
+"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'
+
+MongoDB:",203,"db.singer.aggregate([
+  { $match: { country: ""France"" } },
+  { $group: { _id: null, avg_age: { $avg: ""$age"" }, min_age: { $min: ""$age"" }, max_age: { $max: ""$age"" } } }
+])
+
+SQL:","db.singer.aggregate([
+  { $match: { country: ""France"" } },
+  { $group: { _id: null, avg_age: { $avg: ""$age"" }, min_age: { $min: ""$age"" }, max_age: { $max: ""$age"" } } }
+])","db.singer.aggregate([ { $match: { country: 'France' } }, { $group: { _id: null, avg_age: { $avg: '$age' }, min_age: { $min: '$age' }, max_age: { $max: '$age' } } } ])",,True,True,"Both queries compute the same aggregate values (avg, min, max age) for singers from France with identical filters, grouping logic, and field names. Minor syntax differences (quotes, whitespace) are ignored.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries compute the same aggregate values (avg, min, max age) for singers from France with identical filters, grouping logic, and field names. Minor syntax differences (quotes, whitespace) are ignored.""
+}"
+"SELECT country ,  count(*) FROM singer GROUP BY country","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT country ,  count(*) FROM singer GROUP BY country
+
+MongoDB:",191,"db.singer.aggregate([
+  { $group: { _id: ""$country"", count: { $sum: 1 } } }
+])
+
+SQL:","db.singer.aggregate([
+  { $group: { _id: ""$country"", count: { $sum: 1 } } }
+])","db.singer.aggregate([ { $group: { _id: '$country', count: { $sum: 1 } } } ])",,True,True,Both queries group by country and count records with identical aggregation logic and output structure.,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries group by country and count records with identical aggregation logic and output structure.""
+}"
+"SELECT country ,  count(*) FROM singer GROUP BY country","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT country ,  count(*) FROM singer GROUP BY country
+
+MongoDB:",191,"db.singer.aggregate([
+  { $group: { _id: ""$country"", count: { $sum: 1 } } }
+])
+
+SQL:","db.singer.aggregate([
+  { $group: { _id: ""$country"", count: { $sum: 1 } } }
+])","db.singer.aggregate([ { $group: { _id: '$country', count: { $sum: 1 } } } ])",,True,True,"Both queries use the same aggregation pipeline with identical grouping and count logic, producing the same output structure and values.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries use the same aggregation pipeline with identical grouping and count logic, producing the same output structure and values.""
+}"
+"SELECT max(weight) ,  petType FROM pets GROUP BY petType","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT max(weight) ,  petType FROM pets GROUP BY petType
+
+MongoDB:",178,"db.pets.aggregate([
+  { $group: { _id: ""$petType"", maxWeight: { $max: ""$weight"" } } }
+])
+
+SQL:","db.pets.aggregate([
+  { $group: { _id: ""$petType"", maxWeight: { $max: ""$weight"" } } }
+])","db.pets.aggregate([ { $group: { _id: '$pettype', max_weight: { $max: '$weight' } } } ])",,True,True,"Both queries group by petType, compute max weight, and use equivalent field names (case-insensitive and aliasing differences are acceptable)","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries group by petType, compute max weight, and use equivalent field names (case-insensitive and aliasing differences are acceptable)""
+}"
+"SELECT petid ,  weight FROM pets WHERE pet_age  >  1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT petid ,  weight FROM pets WHERE pet_age  >  1
+
+MongoDB:",180,"db.pets.find({pet_age: {$gt: 1}})
+
+SQL:",db.pets.find({pet_age: {$gt: 1}}),"db.pets.find( { ""pet_age"": { ""$gt"": 1 } }, { ""petid"": 1, ""weight"": 1 } )",,True,True,"Both queries return petid and weight for pets with pet_age > 1, ignoring formatting differences","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return petid and weight for pets with pet_age > 1, ignoring formatting differences""
+}"
+SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Has_Pet"": {
+    ""PetID"": ""number"",
+    ""StuID"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  },
+  ""Student"": {
+    ""Advisor"": ""number"",
+    ""Age"": ""number"",
+    ""Fname"": ""string"",
+    ""LName"": ""string"",
+    ""Major"": ""number"",
+    ""Sex"": ""string"",
+    ""StuID"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""city_code"": ""string""
+  }
+}
+
+SQL:
+SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'
+
+MongoDB:",337,"db.student.find({}).forEach(function(doc) {
+  console.log(doc.lname);
+});
+
+db.has_pet.find({}).forEach(function(doc) {
+  console.log(doc.pettype);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.pet_age);
+});
+
+db.student.find({}).forEach(function(doc) {
+  console.log(doc.stuid);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.petid);
+});
+
+db.has_pet.find({}).forEach(function(doc) {
+  console.log(doc.petid);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.pet_age);
+});
+
+db.student.find({}).forEach(function(doc) {
+  console.log(doc.stuid);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.petid);
+});
+
+db.has_pet.find({}).forEach(function(doc) {
+  console.log(doc.petid);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.pet_age);
+});
+
+db.student.find({}).forEach(function(doc) {
+  console.log(doc.stuid);
+});
+
+db.pets.find({}).forEach(function(doc) {
+  console.log(doc.petid);
+});
+
+db.has_pet.find({}).forEach(function(doc) {",db.student.find({}),"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""lname"":""$lname""}}])",,True,False,"Predicted query returns only student documents without joining with has_pet or pets, while reference query joins and filters for pets of age 3 and type 'cat'","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns only student documents without joining with has_pet or pets, while reference query joins and filters for pets of age 3 and type 'cat'""
+}"
+"SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""car_makers"": {
+    ""Country"": ""string"",
+    ""FullName"": ""string"",
+    ""Maker"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""model_list"": {
+    ""Maker"": ""number"",
+    ""Model"": ""string"",
+    ""ModelId"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;
+
+MongoDB:",236,"db.car_makers.aggregate([
+  { $unwind: ""$model_list"" },
+  { $group: { _id: ""$model_list.Maker"", count: { $sum: 1 } } }
+])
+
+SQL:","db.car_makers.aggregate([
+  { $unwind: ""$model_list"" },
+  { $group: { _id: ""$model_list.Maker"", count: { $sum: 1 } } }
+])","db.car_makers.aggregate([{""$lookup"":{""from"":""model_list"",""localField"":""id"",""foreignField"":""maker"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$id"",""fullname"":{""$first"":""$fullname""},""id"":{""$first"":""$id""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""fullname"":1,""id"":1,""count"":1}}])",,True,False,"Reference query groups by 'id' with full name and id fields, but predicted query groups by 'model_list.Maker' without full name or id fields","{
+  ""query_correct"": false,
+  ""reason"": ""Reference query groups by 'id' with full name and id fields, but predicted query groups by 'model_list.Maker' without full name or id fields""
+}"
+SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""cars_data"": {
+    ""Accelerate"": ""number"",
+    ""Cylinders"": ""number"",
+    ""Edispl"": ""number"",
+    ""Horsepower"": ""string"",
+    ""MPG"": ""string"",
+    ""Weight"": ""number"",
+    ""Year"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;
+
+MongoDB:",209,"db.cars_data.aggregate([
+  { $match: { Cylinders: 4 } },
+  { $group: { _id: null, avg_mpg: { $avg: ""$MPG"" } } }
+])
+
+SQL:","db.cars_data.aggregate([
+  { $match: { Cylinders: 4 } },
+  { $group: { _id: null, avg_mpg: { $avg: ""$MPG"" } } }
+])","db.CARS_DATA.aggregate( [ { ""$match"": { ""Cylinders"": 4 } }, { ""$group"": { ""_id"": null, ""avg"": { ""$avg"": ""$mpg"" } } } ] )",,True,True,"Both queries compute average MPG for cars with 4 cylinders, ignoring case differences in field names and output field names.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries compute average MPG for cars with 4 cylinders, ignoring case differences in field names and output field names.""
+}"
+SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""cars_data"": {
+    ""Accelerate"": ""number"",
+    ""Cylinders"": ""number"",
+    ""Edispl"": ""number"",
+    ""Horsepower"": ""string"",
+    ""MPG"": ""string"",
+    ""Weight"": ""number"",
+    ""Year"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;
+
+MongoDB:",208,"db.cars_data.countDocuments({year: 1980})
+
+SQL:",db.cars_data.countDocuments({year: 1980}),db.cars_data.countDocuments({ year: 1980 }),Model output is not valid MongoDB shell syntax,False,True,Both queries count documents where year=1980 with same filter and collection,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries count documents where year=1980 with same filter and collection""
+}"
+SELECT T1.City FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport GROUP BY T1.City ORDER BY count(*) DESC LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""airports"": {
+    ""AirportCode"": ""string"",
+    ""AirportName"": ""string"",
+    ""City"": ""string"",
+    ""Country"": ""string"",
+    ""CountryAbbrev"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""flights"": {
+    ""Airline"": ""number"",
+    ""DestAirport"": ""string"",
+    ""FlightNo"": ""number"",
+    ""SourceAirport"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T1.City FROM AIRPORTS AS T1 JOIN FLIGHTS AS T2 ON T1.AirportCode  =  T2.DestAirport GROUP BY T1.City ORDER BY count(*) DESC LIMIT 1
+
+MongoDB:",266,"db.airports.distinct(""City"")
+
+SQL:","db.airports.distinct(""City"")","db.airports.aggregate([{""$lookup"":{""from"":""flights"",""localField"":""airportcode"",""foreignField"":""destairport"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$city"",""city"":{""$first"":""$city""}}},{""$sort"":{""count"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""city"":1}}])",,True,False,"Predicted query returns distinct cities without filtering by flights, while reference query groups by city and limits to top city by flight count","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns distinct cities without filtering by flights, while reference query groups by city and limits to top city by flight count""
+}"
+"SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""APG"" INTERSECT SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""CVO""","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""airlines"": {
+    ""Abbreviation"": ""string"",
+    ""Airline"": ""string"",
+    ""Country"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""uid"": ""number""
+  },
+  ""flights"": {
+    ""Airline"": ""number"",
+    ""DestAirport"": ""string"",
+    ""FlightNo"": ""number"",
+    ""SourceAirport"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""APG"" INTERSECT SELECT T1.Airline FROM AIRLINES AS T1 JOIN FLIGHTS AS T2 ON T1.uid  =  T2.Airline WHERE T2.SourceAirport  =  ""CVO""
+
+MongoDB:",302,"db.airlines.join(db.flights, {T1.uid = T2.airline}, {T1.airline = T2.airline}, {T2.airline = T1.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline = T2.airline}, {T1.airline =",,"db.airlines.aggregate([{""$lookup"":{""from"":""flights"",""localField"":""uid"",""foreignField"":""airline"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""airline"":""$airline""}}])",Unable to extract MongoDB query from model output,False,False,Missing predicted or reference MongoDB query,Skipped judge evaluation: missing predicted or reference MongoDB query
+"SELECT count(*) ,  city FROM employee GROUP BY city","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""employee"": {
+    ""Age"": ""number"",
+    ""City"": ""string"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) ,  city FROM employee GROUP BY city
+
+MongoDB:",165,"db.employee.aggregate([
+  { $group: { _id: ""$city"", count: { $sum: 1 } } }
+])
+
+SQL:","db.employee.aggregate([
+  { $group: { _id: ""$city"", count: { $sum: 1 } } }
+])","db.employee.aggregate([ { $group: { _id: '$city', count: { $sum: 1 } } } ])",,True,True,"Both queries perform the same aggregation: group by city with count of employees. The only differences are syntax formatting and quote style, which are ignored per rules.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries perform the same aggregation: group by city with count of employees. The only differences are syntax formatting and quote style, which are ignored per rules.""
+}"
+"SELECT count(*) ,  city FROM employee GROUP BY city","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""employee"": {
+    ""Age"": ""number"",
+    ""City"": ""string"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) ,  city FROM employee GROUP BY city
+
+MongoDB:",165,"db.employee.aggregate([
+  { $group: { _id: ""$city"", count: { $sum: 1 } } }
+])
+
+SQL:","db.employee.aggregate([
+  { $group: { _id: ""$city"", count: { $sum: 1 } } }
+])","db.employee.aggregate([ { $group: { _id: '$city', count: { $sum: 1 } } } ])",,True,True,Both queries use the same aggregation pipeline for counting employees per city with identical grouping and sum logic.,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries use the same aggregation pipeline for counting employees per city with identical grouping and sum logic.""
+}"
+"SELECT template_id ,  count(*) FROM Documents GROUP BY template_id","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Documents"": {
+    ""Document_Description"": ""string"",
+    ""Document_ID"": ""number"",
+    ""Document_Name"": ""string"",
+    ""Other_Details"": ""string"",
+    ""Template_ID"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT template_id ,  count(*) FROM Documents GROUP BY template_id
+
+MongoDB:",186,"db.Documents.aggregate([
+  { $group: { _id: ""$template_id"", count: { $sum: 1 } } }
+])
+
+SQL:","db.Documents.aggregate([
+  { $group: { _id: ""$template_id"", count: { $sum: 1 } } }
+])","db.documents.aggregate([ { $group: { _id: '$template_id', count: { $sum: 1 } } } ])",,True,True,Both queries count template_id frequencies with same aggregation logic and output structure,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries count template_id frequencies with same aggregation logic and output structure""
+}"
+SELECT template_type_code FROM Templates GROUP BY template_type_code HAVING count(*)  <  3,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Templates"": {
+    ""Date_Effective_From"": ""string"",
+    ""Date_Effective_To"": ""string"",
+    ""Template_Details"": ""string"",
+    ""Template_ID"": ""number"",
+    ""Template_Type_Code"": ""string"",
+    ""Version_Number"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT template_type_code FROM Templates GROUP BY template_type_code HAVING count(*)  <  3
+
+MongoDB:",206,"db.Templates.distinct(""Template_Type_Code"")
+
+SQL:","db.Templates.distinct(""Template_Type_Code"")","db.templates.aggregate([ { $group: { _id: '$template_type_code', count: { $sum: 1 } } }, { $match: { count: { $lt: 3 } } } ])",,True,False,"Predicted query returns distinct values without filtering by count, while reference query filters distinct template_type_code with count < 3","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns distinct values without filtering by count, while reference query filters distinct template_type_code with count < 3""
+}"
+"SELECT Hometown ,  COUNT(*) FROM teacher GROUP BY Hometown","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""teacher"": {
+    ""Age"": ""string"",
+    ""Hometown"": ""string"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Hometown ,  COUNT(*) FROM teacher GROUP BY Hometown
+
+MongoDB:",168,"db.teacher.aggregate([
+  { $group: { _id: ""$Hometown"", count: { $sum: 1 } } }
+])
+
+SQL:","db.teacher.aggregate([
+  { $group: { _id: ""$Hometown"", count: { $sum: 1 } } }
+])","db.teacher.aggregate([ { $group: { _id: '$hometown', count: { $sum: 1 } } } ])",,True,True,"Both queries group by Hometown with count, ignoring case sensitivity differences in field name (hometown vs Hometown) and syntax style.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries group by Hometown with count, ignoring case sensitivity differences in field name (hometown vs Hometown) and syntax style.""
+}"
+SELECT Hometown FROM teacher GROUP BY Hometown ORDER BY COUNT(*) DESC LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""teacher"": {
+    ""Age"": ""string"",
+    ""Hometown"": ""string"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Hometown FROM teacher GROUP BY Hometown ORDER BY COUNT(*) DESC LIMIT 1
+
+MongoDB:",172,"db.teacher.aggregate([
+  { $group: { _id: ""$Hometown"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])
+
+SQL:","db.teacher.aggregate([
+  { $group: { _id: ""$Hometown"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])","db.teacher.aggregate([{""$group"":{""_id"":""$hometown"",""count"":{""$sum"":1}}},{""$sort"":{""count"":-1}},{""$limit"":1},{""$project"":{""hometown"":""$_id"",""_id"":0}}])",,True,True,"Both queries return the top hometown with highest count, ignoring projection differences in output field names","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return the top hometown with highest count, ignoring projection differences in output field names""
+}"
+"SELECT T2.Name ,  COUNT(*) FROM course_arrange AS T1 JOIN teacher AS T2 ON T1.Teacher_ID  =  T2.Teacher_ID GROUP BY T2.Name","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""course_arrange"": {
+    ""Course_ID"": ""number"",
+    ""Grade"": ""number"",
+    ""Teacher_ID"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""teacher"": {
+    ""Age"": ""string"",
+    ""Hometown"": ""string"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T2.Name ,  COUNT(*) FROM course_arrange AS T1 JOIN teacher AS T2 ON T1.Teacher_ID  =  T2.Teacher_ID GROUP BY T2.Name
+
+MongoDB:",233,"db.teacher.aggregate([
+  { $match: { ""Name"": ""John"" } },
+  { $group: { _id: ""$Name"", count: { $sum: 1 } } }
+])
+
+SQL:","db.teacher.aggregate([
+  { $match: { ""Name"": ""John"" } },
+  { $group: { _id: ""$Name"", count: { $sum: 1 } } }
+])","db.course_arrange.aggregate([{""$lookup"":{""from"":""teacher"",""localField"":""teacher_id"",""foreignField"":""teacher_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$j.name"",""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])",,True,False,"Predicted query filters for 'John' only, but reference query groups all teachers","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query filters for 'John' only, but reference query groups all teachers""
+}"
+SELECT name FROM visitor WHERE Level_of_membership  >  4 ORDER BY Level_of_membership DESC,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""visitor"": {
+    ""Age"": ""number"",
+    ""Level_of_membership"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT name FROM visitor WHERE Level_of_membership  >  4 ORDER BY Level_of_membership DESC
+
+MongoDB:",175,"db.visitor.find({Level_of_membership: {$gt: 4}}, {name: 1, _id: 0}).sort({Level_of_membership: -1})
+
+SQL:","db.visitor.find({Level_of_membership: {$gt: 4}}, {name: 1, _id: 0}).sort({Level_of_membership: -1})","db.visitor.find( { ""Level_of_membership"": { ""$gt"": 4 } }, { ""name"": 1 } )",,True,True,"Both queries filter Level_of_membership > 4, return name, sort descending by Level_of_membership with same limit (implicit 0) and projection (name only).","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries filter Level_of_membership > 4, return name, sort descending by Level_of_membership with same limit (implicit 0) and projection (name only).""
+}"
+SELECT name FROM museum WHERE Museum_ID NOT IN (SELECT museum_id FROM visit),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""museum"": {
+    ""Name"": ""string"",
+    ""Num_of_Staff"": ""number"",
+    ""Open_Year"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""visit"": {
+    ""Museum_ID"": ""number"",
+    ""Num_of_Ticket"": ""number"",
+    ""Total_spent"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""visitor_ID"": ""string""
+  }
+}
+
+SQL:
+SELECT name FROM museum WHERE Museum_ID NOT IN (SELECT museum_id FROM visit)
+
+MongoDB:",225,"db.museum.find({$not: {$in: {$elemMatch: {museum_id: {$in: db.visit.map(function(doc) { return doc.museum_id; })}}}}})
+
+SQL:",db.museum.find({$not: {$in: {$elemMatch: {museum_id: {$in: db.visit.map(function(doc) { return doc.museum_id; })}}}}}),"db.museum.aggregate([{""$lookup"":{""from"":""visit"",""localField"":""museum_id"",""foreignField"":""museum_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])",,True,False,Predicted query uses $elemMatch incorrectly for NOT IN; reference uses $lookup and $match for exclusion,"{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query uses $elemMatch incorrectly for NOT IN; reference uses $lookup and $match for exclusion""
+}"
+SELECT sum(t2.Total_spent) FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id WHERE t1.Level_of_membership  =  1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""visit"": {
+    ""Museum_ID"": ""number"",
+    ""Num_of_Ticket"": ""number"",
+    ""Total_spent"": ""number"",
+    ""_id"": ""ObjectId"",
+    ""visitor_ID"": ""string""
+  },
+  ""visitor"": {
+    ""Age"": ""number"",
+    ""Level_of_membership"": ""number"",
+    ""Name"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT sum(t2.Total_spent) FROM visitor AS t1 JOIN visit AS t2 ON t1.id  =  t2.visitor_id WHERE t1.Level_of_membership  =  1
+
+MongoDB:",247,"db.visitor.aggregate([
+  { $match: { Level_of_membership: 1 } },
+  { $group: { _id: null, Total_spent: { $sum: ""$Total_spent"" } } }
+])
+
+SQL:","db.visitor.aggregate([
+  { $match: { Level_of_membership: 1 } },
+  { $group: { _id: null, Total_spent: { $sum: ""$Total_spent"" } } }
+])","db.visitor.aggregate([{""$match"":{""level_of_membership"":1}},{""$lookup"":{""from"":""visit"",""localField"":""id"",""foreignField"":""visitor_id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""total_spent)"":""$j.total_spent)""}}])",,True,False,"Reference query joins visit collection and unwinds, while predicted query does not join or unwind, so output differs","{
+  ""query_correct"": false,
+  ""reason"": ""Reference query joins visit collection and unwinds, while predicted query does not join or unwind, so output differs""
+}"
+SELECT min(loser_rank) FROM matches,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""matches"": {
+    ""_id"": ""ObjectId"",
+    ""best_of"": ""number"",
+    ""draw_size"": ""number"",
+    ""loser_age"": ""number"",
+    ""loser_entry"": ""string"",
+    ""loser_hand"": ""string"",
+    ""loser_ht"": ""number"",
+    ""loser_id"": ""number"",
+    ""loser_ioc"": ""string"",
+    ""loser_name"": ""string"",
+    ""loser_rank"": ""number"",
+    ""loser_rank_points"": ""number"",
+    ""loser_seed"": ""number"",
+    ""match_num"": ""number"",
+    ""minutes"": ""number"",
+    ""round"": ""string"",
+    ""score"": ""string"",
+    ""surface"": ""string"",
+    ""tourney_date"": ""string"",
+    ""tourney_id"": ""string"",
+    ""tourney_level"": ""string"",
+    ""tourney_name"": ""string"",
+    ""winner_age"": ""number"",
+    ""winner_entry"": ""string"",
+    ""winner_hand"": ""string"",
+    ""winner_ht"": ""number"",
+    ""winner_id"": ""number"",
+    ""winner_ioc"": ""string"",
+    ""winner_name"": ""string"",
+    ""winner_rank"": ""number"",
+    ""winner_rank_points"": ""number"",
+    ""winner_seed"": ""number"",
+    ""year"": ""number""
+  }
+}
+
+SQL:
+SELECT min(loser_rank) FROM matches
+
+MongoDB:",400,"db.matches.aggregate([
+  { $group: { _id: null, min_rank: { $min: ""$loser_rank"" } } }
+])
+
+SQL:","db.matches.aggregate([
+  { $group: { _id: null, min_rank: { $min: ""$loser_rank"" } } }
+])","db.matches.aggregate( [ { ""$group"": { ""_id"": null, ""min"": { ""$min"": ""$loser_rank"" } } } ] )",,True,True,Both queries compute the minimum loser_rank value from matches collection with equivalent aggregation logic and output a single numeric value.,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries compute the minimum loser_rank value from matches collection with equivalent aggregation logic and output a single numeric value.""
+}"
+"SELECT first_name ,  last_name FROM players ORDER BY birth_date","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""players"": {
+    ""_id"": ""ObjectId"",
+    ""birth_date"": ""string"",
+    ""country_code"": ""string"",
+    ""first_name"": ""string"",
+    ""hand"": ""string"",
+    ""last_name"": ""string"",
+    ""player_id"": ""number""
+  }
+}
+
+SQL:
+SELECT first_name ,  last_name FROM players ORDER BY birth_date
+
+MongoDB:",193,"db.players.find({}).sort({birth_date: 1}).limit(10)
+
+SQL:",db.players.find({}).sort({birth_date: 1}).limit(10),"db.players.find({}, { first_name: 1, last_name: 1 }).sort({ birth_date: 1 })",,True,False,"Predicted query has no projection for first_name and last_name, so returns all fields instead of just those two","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query has no projection for first_name and last_name, so returns all fields instead of just those two""
+}"
+"SELECT name ,  RESULT FROM battle WHERE bulgarian_commander != 'Boril'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""battle"": {
+    ""_id"": ""ObjectId"",
+    ""bulgarian_commander"": ""string"",
+    ""date"": ""string"",
+    ""latin_commander"": ""string"",
+    ""name"": ""string"",
+    ""result"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  RESULT FROM battle WHERE bulgarian_commander != 'Boril'
+
+MongoDB:",192,"db.battle.find({bulgarian_commander: {$ne: 'Boril'}})
+
+SQL:",db.battle.find({bulgarian_commander: {$ne: 'Boril'}}),"db.battle.find( { ""bulgarian_commander"": { ""$ne"": ""Boril"" } }, { ""name"": 1, ""RESULT"": 1 } )",,True,True,"Both queries return all documents where bulgarian_commander is not 'Boril', with name and RESULT fields included.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return all documents where bulgarian_commander is not 'Boril', with name and RESULT fields included.""
+}"
+"SELECT DISTINCT T1.id ,  T1.name FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.ship_type  =  'Brig'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""battle"": {
+    ""_id"": ""ObjectId"",
+    ""bulgarian_commander"": ""string"",
+    ""date"": ""string"",
+    ""latin_commander"": ""string"",
+    ""name"": ""string"",
+    ""result"": ""string""
+  },
+  ""ship"": {
+    ""_id"": ""ObjectId"",
+    ""disposition_of_ship"": ""string"",
+    ""location"": ""string"",
+    ""lost_in_battle"": ""number"",
+    ""name"": ""string"",
+    ""ship_type"": ""string"",
+    ""tonnage"": ""string""
+  }
+}
+
+SQL:
+SELECT DISTINCT T1.id ,  T1.name FROM battle AS T1 JOIN ship AS T2 ON T1.id  =  T2.lost_in_battle WHERE T2.ship_type  =  'Brig'
+
+MongoDB:",283,"db.battle.distinct('id', { 'ship_type': 'Brig' })
+
+SQL:","db.battle.distinct('id', { 'ship_type': 'Brig' })","db.battle.aggregate([{""$match"":{""ship_type"":""Brig""}},{""$lookup"":{""from"":""ship"",""localField"":""id"",""foreignField"":""lost_in_battle"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""id"":""$id"",""name"":""$name""}}])",,True,False,"Predicted query returns distinct 'id' from battle where ship_type='Brig', but reference query returns distinct (id, name) pairs from battle joined with ship where ship_type='Brig'. The reference query includes 'name' field which is not in predicted query.","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns distinct 'id' from battle where ship_type='Brig', but reference query returns distinct (id, name) pairs from battle joined with ship where ship_type='Brig'. The reference query includes 'name' field which is not in predicted query.""
+}"
+SELECT count(*) FROM Courses,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Courses"": {
+    ""_id"": ""ObjectId"",
+    ""course_description"": ""string"",
+    ""course_id"": ""number"",
+    ""course_name"": ""string"",
+    ""other_details"": ""string""
+  }
+}
+
+SQL:
+SELECT count(*) FROM Courses
+
+MongoDB:",170,"db.Courses.countDocuments({})
+
+SQL:",db.Courses.countDocuments({}),db.courses.countDocuments({}),Model output is not valid MongoDB shell syntax,False,True,Both queries count the total number of documents in Courses collection with identical filter (empty object) and correct collection name (case-insensitive in MongoDB) but different casing in reference query (courses vs Courses).,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries count the total number of documents in Courses collection with identical filter (empty object) and correct collection name (case-insensitive in MongoDB) but different casing in reference query (courses vs Courses).""
+}"
+select cell_mobile_number from students where first_name  =  'timmothy' and last_name  =  'ward',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Students"": {
+    ""_id"": ""ObjectId"",
+    ""cell_mobile_number"": ""string"",
+    ""current_address_id"": ""number"",
+    ""date_first_registered"": ""string"",
+    ""date_left"": ""string"",
+    ""email_address"": ""string"",
+    ""first_name"": ""string"",
+    ""last_name"": ""string"",
+    ""middle_name"": ""string"",
+    ""other_student_details"": ""string"",
+    ""permanent_address_id"": ""number"",
+    ""ssn"": ""string"",
+    ""student_id"": ""number""
+  }
+}
+
+SQL:
+select cell_mobile_number from students where first_name  =  'timmothy' and last_name  =  'ward'
+
+MongoDB:",259,"db.students.find({first_name: 'timmothy', last_name: 'ward'})
+
+SQL:","db.students.find({first_name: 'timmothy', last_name: 'ward'})","db.students.find( { ""first_name"": ""timmothy"", ""last_name"": ""ward"" }, { ""cell_mobile_number"": 1 } )",,True,False,Reference query projects cell_mobile_number while predicted query returns all fields,"{
+  ""query_correct"": false,
+  ""reason"": ""Reference query projects cell_mobile_number while predicted query returns all fields""
+}"
+"SELECT T2.transcript_date ,  T1.transcript_id FROM Transcript_Contents AS T1 JOIN Transcripts AS T2 ON T1.transcript_id  =  T2.transcript_id GROUP BY T1.transcript_id ORDER BY count(*) ASC LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Transcript_Contents"": {
+    ""_id"": ""ObjectId"",
+    ""student_course_id"": ""number"",
+    ""transcript_id"": ""number""
+  },
+  ""Transcripts"": {
+    ""_id"": ""ObjectId"",
+    ""other_details"": ""string"",
+    ""transcript_date"": ""string"",
+    ""transcript_id"": ""number""
+  }
+}
+
+SQL:
+SELECT T2.transcript_date ,  T1.transcript_id FROM Transcript_Contents AS T1 JOIN Transcripts AS T2 ON T1.transcript_id  =  T2.transcript_id GROUP BY T1.transcript_id ORDER BY count(*) ASC LIMIT 1
+
+MongoDB:",250,"db.Transcript_Contents.aggregate([
+  { $group: { _id: ""$transcript_id"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])
+
+SQL:","db.Transcript_Contents.aggregate([
+  { $group: { _id: ""$transcript_id"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])","db.transcript_contents.aggregate([{""$lookup"":{""from"":""transcripts"",""localField"":""transcript_id"",""foreignField"":""transcript_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$j.transcript_id"",""transcript_date"":{""$first"":""$j.transcript_date""},""transcript_id"":{""$first"":""$transcript_id""}}},{""$sort"":{""count"":1}},{""$limit"":1},{""$project"":{""_id"":0,""transcript_date"":1,""transcript_id"":1}}])",,True,False,,"{
+  ""query_correct"": false,
+ "": "":
+  ""reason"""
+SELECT Title FROM Cartoon ORDER BY title,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Cartoon"": {
+    ""Channel"": ""string"",
+    ""Directed_by"": ""string"",
+    ""Original_air_date"": ""string"",
+    ""Production_code"": ""number"",
+    ""Title"": ""string"",
+    ""Written_by"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Title FROM Cartoon ORDER BY title
+
+MongoDB:",188,"db.Cartoon.find({}).sort({Title: 1})
+
+SQL:",db.Cartoon.find({}).sort({Title: 1}),"db.cartoon.find({}, { title: 1 }).sort({ title: 1 })",,True,True,"Both queries find all documents in 'Cartoon' collection, project title field, sort by title ascending, and return same output order with identical filtering and sorting logic.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries find all documents in 'Cartoon' collection, project title field, sort by title ascending, and return same output order with identical filtering and sorting logic.""
+}"
+"SELECT count(*) FROM Cartoon WHERE Written_by = ""Joseph Kuhr"";","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Cartoon"": {
+    ""Channel"": ""string"",
+    ""Directed_by"": ""string"",
+    ""Original_air_date"": ""string"",
+    ""Production_code"": ""number"",
+    ""Title"": ""string"",
+    ""Written_by"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM Cartoon WHERE Written_by = ""Joseph Kuhr"";
+
+MongoDB:",194,"db.Cartoon.countDocuments({Written_by: ""Joseph Kuhr""})
+
+SQL:","db.Cartoon.countDocuments({Written_by: ""Joseph Kuhr""})",db.cartoon.countDocuments({ 'written_by': 'Joseph Kuhr' }),Model output is not valid MongoDB shell syntax,False,True,"Both queries count documents where Written_by is 'Joseph Kuhr' with the same filter value, ignoring case differences in field names (written_by vs Written_by) and collection casing (Cartoon vs cartoon).","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries count documents where Written_by is 'Joseph Kuhr' with the same filter value, ignoring case differences in field names (written_by vs Written_by) and collection casing (Cartoon vs cartoon).""
+}"
+"SELECT Package_Option FROM TV_Channel WHERE series_name = ""Sky Radio"";","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""TV_Channel"": {
+    ""Content"": ""string"",
+    ""Country"": ""string"",
+    ""Hight_definition_TV"": ""string"",
+    ""Language"": ""string"",
+    ""Package_Option"": ""string"",
+    ""Pay_per_view_PPV"": ""string"",
+    ""Pixel_aspect_ratio_PAR"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""series_name"": ""string""
+  }
+}
+
+SQL:
+SELECT Package_Option FROM TV_Channel WHERE series_name = ""Sky Radio"";
+
+MongoDB:",217,"db.TV_Channel.aggregate([
+  { $match: { series_name: ""Sky Radio"" } },
+  { $project: { Package_Option: 1 } }
+])
+
+SQL:","db.TV_Channel.aggregate([
+  { $match: { series_name: ""Sky Radio"" } },
+  { $project: { Package_Option: 1 } }
+])","db.TV_Channel.find( { ""series_name"": ""Sky Radio"" }, { ""Package_Option"": 1 } )",,True,True,Both queries return documents with Package_Option field where series_name is 'Sky Radio' with same projection and filter.,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return documents with Package_Option field where series_name is 'Sky Radio' with same projection and filter.""
+}"
+SELECT count(*) FROM poker_player,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""poker_player"": {
+    ""Best_Finish"": ""number"",
+    ""Earnings"": ""number"",
+    ""Final_Table_Made"": ""number"",
+    ""Money_Rank"": ""number"",
+    ""People_ID"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM poker_player
+
+MongoDB:",185,"db.poker_player.countDocuments({})
+
+SQL:",db.poker_player.countDocuments({}),db.poker_player.countDocuments({}),Model output is not valid MongoDB shell syntax,False,True,Both queries are identical and count the same number of documents in poker_player collection,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries are identical and count the same number of documents in poker_player collection""
+}"
+SELECT T1.Name FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""people"": {
+    ""Birth_Date"": ""string"",
+    ""Height"": ""number"",
+    ""Name"": ""string"",
+    ""Nationality"": ""string"",
+    ""_id"": ""ObjectId""
+  },
+  ""poker_player"": {
+    ""Best_Finish"": ""number"",
+    ""Earnings"": ""number"",
+    ""Final_Table_Made"": ""number"",
+    ""Money_Rank"": ""number"",
+    ""People_ID"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T1.Name FROM people AS T1 JOIN poker_player AS T2 ON T1.People_ID  =  T2.People_ID
+
+MongoDB:",252,"db.people.find({}).forEach(function (doc) {
+  db.poker_player.find({People_ID: doc.People_ID}).forEach(function (doc) {
+    console.log(doc.Name);
+  });
+});
+
+SQL:",db.people.find({}),"db.people.aggregate([{""$lookup"":{""from"":""poker_player"",""localField"":""people_id"",""foreignField"":""people_id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""name"":""$name""}}])",,True,False,"The reference query joins with poker_player and unwinds the result, while the predicted query does not join or filter, so they return different data.","{
+  ""query_correct"": false,
+  ""reason"": ""The reference query joins with poker_player and unwinds the result, while the predicted query does not join or filter, so they return different data.""
+}"
+SELECT Nationality FROM people GROUP BY Nationality ORDER BY COUNT(*) DESC LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""people"": {
+    ""Birth_Date"": ""string"",
+    ""Height"": ""number"",
+    ""Name"": ""string"",
+    ""Nationality"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Nationality FROM people GROUP BY Nationality ORDER BY COUNT(*) DESC LIMIT 1
+
+MongoDB:",180,"db.people.aggregate([
+  { $group: { _id: ""$Nationality"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])
+
+SQL:","db.people.aggregate([
+  { $group: { _id: ""$Nationality"", count: { $sum: 1 } } },
+  { $sort: { count: -1 } },
+  { $limit: 1 }
+])","db.people.aggregate([{""$group"":{""_id"":""$nationality"",""count"":{""$sum"":1}}},{""$sort"":{""count"":-1}},{""$limit"":1},{""$project"":{""nationality"":""$_id"",""_id"":0}}])",,True,True,"Both queries return the top nationality with highest count. The reference query projects nationality as _id, but output field names don't matter as long as values match.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return the top nationality with highest count. The reference query projects nationality as _id, but output field names don't matter as long as values match.""
+}"
+"SELECT T1.contestant_number , T1.contestant_name FROM contestants AS T1 JOIN votes AS T2 ON T1.contestant_number  =  T2.contestant_number GROUP BY T1.contestant_number ORDER BY count(*) ASC LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""CONTESTANTS"": {
+    ""_id"": ""ObjectId"",
+    ""contestant_name"": ""string"",
+    ""contestant_number"": ""number""
+  },
+  ""VOTES"": {
+    ""_id"": ""ObjectId"",
+    ""contestant_number"": ""number"",
+    ""created"": ""string"",
+    ""phone_number"": ""number"",
+    ""state"": ""string"",
+    ""vote_id"": ""number""
+  }
+}
+
+SQL:
+SELECT T1.contestant_number , T1.contestant_name FROM contestants AS T1 JOIN votes AS T2 ON T1.contestant_number  =  T2.contestant_number GROUP BY T1.contestant_number ORDER BY count(*) ASC LIMIT 1
+
+MongoDB:",263,"db.contestants.join(db.votes, {T1.contestant_number = T2.contestant_number}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1}, {T2.contestant_number = 1}, {T1.contestant_number = 1},",,"db.contestants.aggregate([{""$lookup"":{""from"":""votes"",""localField"":""contestant_number"",""foreignField"":""contestant_number"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$j.contestant_number"",""contestant_number"":{""$first"":""$contestant_number""},""contestant_name"":{""$first"":""$contestant_name""}}},{""$sort"":{""count"":1}},{""$limit"":1},{""$project"":{""_id"":0,""contestant_number"":1,""contestant_name"":1}}])",Unable to extract MongoDB query from model output,False,False,Missing predicted or reference MongoDB query,Skipped judge evaluation: missing predicted or reference MongoDB query
+SELECT count(*) FROM contestants WHERE contestant_number NOT IN ( SELECT contestant_number FROM votes ),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""CONTESTANTS"": {
+    ""_id"": ""ObjectId"",
+    ""contestant_name"": ""string"",
+    ""contestant_number"": ""number""
+  },
+  ""VOTES"": {
+    ""_id"": ""ObjectId"",
+    ""contestant_number"": ""number"",
+    ""created"": ""string"",
+    ""phone_number"": ""number"",
+    ""state"": ""string"",
+    ""vote_id"": ""number""
+  }
+}
+
+SQL:
+SELECT count(*) FROM contestants WHERE contestant_number NOT IN ( SELECT contestant_number FROM votes )
+
+MongoDB:",223,"db.contestants.countDocuments({})
+
+SQL:",db.contestants.countDocuments({}),"db.contestants.aggregate([{""$lookup"":{""from"":""votes"",""localField"":""contestant_number"",""foreignField"":""contestant_number"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""count(*)"":1,""_id"":0}}])",Model output is not valid MongoDB shell syntax,False,False,"Predicted query counts all contestants regardless of votes, while reference query counts contestants with no votes.","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query counts all contestants regardless of votes, while reference query counts contestants with no votes.""
+}"
+"SELECT count(*) FROM country WHERE GovernmentForm  =  ""Republic""","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""country"": {
+    ""Capital"": ""number"",
+    ""Code"": ""string"",
+    ""Code2"": ""string"",
+    ""Continent"": ""string"",
+    ""GNP"": ""number"",
+    ""GNPOld"": ""number"",
+    ""GovernmentForm"": ""string"",
+    ""HeadOfState"": ""string"",
+    ""IndepYear"": ""number"",
+    ""LifeExpectancy"": ""number"",
+    ""LocalName"": ""string"",
+    ""Name"": ""string"",
+    ""Population"": ""number"",
+    ""Region"": ""string"",
+    ""SurfaceArea"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT count(*) FROM country WHERE GovernmentForm  =  ""Republic""
+
+MongoDB:",265,"db.country.countDocuments({GovernmentForm: ""Republic""})
+
+SQL:","db.country.countDocuments({GovernmentForm: ""Republic""})",db.country.countDocuments({ GovernmentForm: 'Republic' }),Model output is not valid MongoDB shell syntax,False,True,Both queries count documents where GovernmentForm is 'Republic' with same filter and collection; syntax differences in whitespace and quote style don't affect output.,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries count documents where GovernmentForm is 'Republic' with same filter and collection; syntax differences in whitespace and quote style don't affect output.""
+}"
+"SELECT avg(LifeExpectancy) FROM country WHERE Continent  =  ""Africa"" AND GovernmentForm  =  ""Republic""","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""country"": {
+    ""Capital"": ""number"",
+    ""Code"": ""string"",
+    ""Code2"": ""string"",
+    ""Continent"": ""string"",
+    ""GNP"": ""number"",
+    ""GNPOld"": ""number"",
+    ""GovernmentForm"": ""string"",
+    ""HeadOfState"": ""string"",
+    ""IndepYear"": ""number"",
+    ""LifeExpectancy"": ""number"",
+    ""LocalName"": ""string"",
+    ""Name"": ""string"",
+    ""Population"": ""number"",
+    ""Region"": ""string"",
+    ""SurfaceArea"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT avg(LifeExpectancy) FROM country WHERE Continent  =  ""Africa"" AND GovernmentForm  =  ""Republic""
+
+MongoDB:",277,"db.country.aggregate([
+  { $match: { Continent: ""Africa"", GovernmentForm: ""Republic"" } },
+  { $group: { _id: null, avgLifeExpectancy: { $avg: ""$LifeExpectancy"" } } }
+])
+
+SQL:","db.country.aggregate([
+  { $match: { Continent: ""Africa"", GovernmentForm: ""Republic"" } },
+  { $group: { _id: null, avgLifeExpectancy: { $avg: ""$LifeExpectancy"" } } }
+])","db.country.aggregate( [ { ""$match"": { ""Continent"": ""Africa"", ""GovernmentForm"": ""Republic"" } }, { ""$group"": { ""_id"": null, ""avg"": { ""$avg"": ""$LifeExpectancy"" } } } ] )",,True,True,"Both queries calculate the average LifeExpectancy for African Republics, with equivalent filters and aggregation logic. The output field name 'avgLifeExpectancy' vs 'avg' is cosmetic and acceptable.","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries calculate the average LifeExpectancy for African Republics, with equivalent filters and aggregation logic. The output field name 'avgLifeExpectancy' vs 'avg' is cosmetic and acceptable.""
+}"
+"SELECT T1.Name ,  T2.Orchestra FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""conductor"": {
+    ""Age"": ""number"",
+    ""Name"": ""string"",
+    ""Nationality"": ""string"",
+    ""Year_of_Work"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""orchestra"": {
+    ""Conductor_ID"": ""number"",
+    ""Major_Record_Format"": ""string"",
+    ""Orchestra"": ""string"",
+    ""Record_Company"": ""string"",
+    ""Year_of_Founded"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT T1.Name ,  T2.Orchestra FROM conductor AS T1 JOIN orchestra AS T2 ON T1.Conductor_ID  =  T2.Conductor_ID
+
+MongoDB:",260,"db.conductor.find({}).forEach(function(doc) {
+  db.orchestra.find({}).forEach(function(orchestra) {
+    console.log(doc.Name, orchestra.Orchestra);
+  });
+});
+
+SQL:",db.conductor.find({}),"db.conductor.aggregate([{""$lookup"":{""from"":""orchestra"",""localField"":""conductor_id"",""foreignField"":""conductor_id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""name"":""$name"",""orchestra"":""$j.orchestra""}}])",,True,False,"Predicted query returns only conductor documents without joining with orchestra, while reference query joins and projects orchestra information.","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns only conductor documents without joining with orchestra, while reference query joins and projects orchestra information.""
+}"
+SELECT Record_Company FROM orchestra WHERE Year_of_Founded  <  2003 INTERSECT SELECT Record_Company FROM orchestra WHERE Year_of_Founded  >  2003,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""orchestra"": {
+    ""Conductor_ID"": ""number"",
+    ""Major_Record_Format"": ""string"",
+    ""Orchestra"": ""string"",
+    ""Record_Company"": ""string"",
+    ""Year_of_Founded"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Record_Company FROM orchestra WHERE Year_of_Founded  <  2003 INTERSECT SELECT Record_Company FROM orchestra WHERE Year_of_Founded  >  2003
+
+MongoDB:",221,"db.orchestra.find({Year_of_Founded: {$lt: 2003}, Record_Company: {$in: [""A"", ""B"", ""C""]}}).map(function(doc) { return doc.Record_Company; })
+
+SQL:","db.orchestra.find({Year_of_Founded: {$lt: 2003}, Record_Company: {$in: [""A"", ""B"", ""C""]}})","db.orchestra.aggregate([{""$group"":{""_id"":""$record_company"",""__a"":{""$max"":{""$cond"":[{""$lt"":[""$year_of_founded"",2003]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$gt"":[""$year_of_founded"",2003]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""record_company"":""$_id"",""_id"":0}}])",,True,False,"The predicted query filters for Record_Company in ['A','B','C'] and Year_of_Founded < 2003, while the reference query computes intersection of Year_of_Founded < 2003 and > 2003, but the predicted query has an extra filter on Record_Company and does not match the intersection logic.","{
+  ""query_correct"": false,
+  ""reason"": ""The predicted query filters for Record_Company in ['A','B','C'] and Year_of_Founded < 2003, while the reference query computes intersection of Year_of_Founded < 2003 and > 2003, but the predicted query has an extra filter on Record_Company and does not match the intersection logic.""
+}"
+"SELECT grade ,  count(*) FROM Highschooler GROUP BY grade","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Highschooler"": {
+    ""_id"": ""ObjectId"",
+    ""grade"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT grade ,  count(*) FROM Highschooler GROUP BY grade
+
+MongoDB:",162,"db.Highschooler.aggregate([
+  { $group: { _id: ""$grade"", count: { $sum: 1 } } }
+])
+
+SQL:","db.Highschooler.aggregate([
+  { $group: { _id: ""$grade"", count: { $sum: 1 } } }
+])","db.highschooler.aggregate([ { $group: { _id: '$grade', count: { $sum: 1 } } } ])",,True,True,"Both queries group by grade with count, same collection name case difference ignored, equivalent aggregation logic","{
+  ""query_correct"": true,
+  ""reason"": ""Both queries group by grade with count, same collection name case difference ignored, equivalent aggregation logic""
+}"
+SELECT T2.name FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id INTERSECT SELECT T2.name FROM Likes AS T1 JOIN Highschooler AS T2 ON T1.liked_id  =  T2.id,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Friend"": {
+    ""_id"": ""ObjectId"",
+    ""friend_id"": ""number"",
+    ""student_id"": ""number""
+  },
+  ""Highschooler"": {
+    ""_id"": ""ObjectId"",
+    ""grade"": ""number"",
+    ""name"": ""string""
+  },
+  ""Likes"": {
+    ""_id"": ""ObjectId"",
+    ""liked_id"": ""number"",
+    ""student_id"": ""number""
+  }
+}
+
+SQL:
+SELECT T2.name FROM Friend AS T1 JOIN Highschooler AS T2 ON T1.student_id  =  T2.id INTERSECT SELECT T2.name FROM Likes AS T1 JOIN Highschooler AS T2 ON T1.liked_id  =  T2.id
+
+MongoDB:",267,"db.Friend.find({}).forEach(function (doc) {
+  db.Highschooler.find({}).forEach(function (doc) {
+    db.Likes.find({}).forEach(function (doc) {
+      if (doc.liked_id === doc.student_id) {
+        console.log(doc.name);
+      }
+    });
+  });
+});",db.Friend.find({}),"db.friend.aggregate([{""$lookup"":{""from"":""highschooler"",""localField"":""student_id"",""foreignField"":""id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""name"":""$j.name""}}])",,True,False,"Predicted query returns all Friend documents, but reference query returns names of highschoolers who have friends (via student_id) or likes (via liked_id), so different output sets","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns all Friend documents, but reference query returns names of highschoolers who have friends (via student_id) or likes (via liked_id), so different output sets""
+}"
+"SELECT professional_id ,  role_code ,  email_address FROM Professionals EXCEPT SELECT T1.professional_id ,  T1.role_code ,  T1.email_address FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Professionals"": {
+    ""_id"": ""ObjectId"",
+    ""cell_number"": ""string"",
+    ""city"": ""string"",
+    ""email_address"": ""string"",
+    ""first_name"": ""string"",
+    ""home_phone"": ""string"",
+    ""last_name"": ""string"",
+    ""professional_id"": ""number"",
+    ""role_code"": ""string"",
+    ""state"": ""string"",
+    ""street"": ""string"",
+    ""zip_code"": ""string""
+  },
+  ""Treatments"": {
+    ""_id"": ""ObjectId"",
+    ""cost_of_treatment"": ""number"",
+    ""date_of_treatment"": ""string"",
+    ""dog_id"": ""number"",
+    ""professional_id"": ""number"",
+    ""treatment_id"": ""number"",
+    ""treatment_type_code"": ""string""
+  }
+}
+
+SQL:
+SELECT professional_id ,  role_code ,  email_address FROM Professionals EXCEPT SELECT T1.professional_id ,  T1.role_code ,  T1.email_address FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id
+
+MongoDB:",349,"db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Professionals
+db.Treatments
+db.Pro",,"db.professionals.aggregate([{""$lookup"":{""from"":""treatments"",""localField"":""professional_id"",""foreignField"":""professional_id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""professional_id"":""$professional_id"",""role_code"":""$role_code"",""email_address"":""$email_address""}}])",Unable to extract MongoDB query from model output,False,False,Missing predicted or reference MongoDB query,Skipped judge evaluation: missing predicted or reference MongoDB query
+"SELECT T1.professional_id ,  T1.cell_number FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id GROUP BY T1.professional_id HAVING count(*)  >=  2","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Professionals"": {
+    ""_id"": ""ObjectId"",
+    ""cell_number"": ""string"",
+    ""city"": ""string"",
+    ""email_address"": ""string"",
+    ""first_name"": ""string"",
+    ""home_phone"": ""string"",
+    ""last_name"": ""string"",
+    ""professional_id"": ""number"",
+    ""role_code"": ""string"",
+    ""state"": ""string"",
+    ""street"": ""string"",
+    ""zip_code"": ""string""
+  },
+  ""Treatments"": {
+    ""_id"": ""ObjectId"",
+    ""cost_of_treatment"": ""number"",
+    ""date_of_treatment"": ""string"",
+    ""dog_id"": ""number"",
+    ""professional_id"": ""number"",
+    ""treatment_id"": ""number"",
+    ""treatment_type_code"": ""string""
+  }
+}
+
+SQL:
+SELECT T1.professional_id ,  T1.cell_number FROM Professionals AS T1 JOIN Treatments AS T2 ON T1.professional_id  =  T2.professional_id GROUP BY T1.professional_id HAVING count(*)  >=  2
+
+MongoDB:",344,"db.Professionals.join(db.Treatments, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {count(*)  >=  2}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T2.professional_id}, {T1.professional_id  =  T",,"db.professionals.aggregate([{""$lookup"":{""from"":""treatments"",""localField"":""professional_id"",""foreignField"":""professional_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$professional_id having count(*) >= 2"",""professional_id"":{""$first"":""$professional_id""},""cell_number"":{""$first"":""$cell_number""}}},{""$project"":{""_id"":0,""professional_id"":1,""cell_number"":1}}])",Unable to extract MongoDB query from model output,False,False,Missing predicted or reference MongoDB query,Skipped judge evaluation: missing predicted or reference MongoDB query
+"SELECT T1.date_of_treatment ,  T2.first_name FROM Treatments AS T1 JOIN Professionals AS T2 ON T1.professional_id  =  T2.professional_id","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Professionals"": {
+    ""_id"": ""ObjectId"",
+    ""cell_number"": ""string"",
+    ""city"": ""string"",
+    ""email_address"": ""string"",
+    ""first_name"": ""string"",
+    ""home_phone"": ""string"",
+    ""last_name"": ""string"",
+    ""professional_id"": ""number"",
+    ""role_code"": ""string"",
+    ""state"": ""string"",
+    ""street"": ""string"",
+    ""zip_code"": ""string""
+  },
+  ""Treatments"": {
+    ""_id"": ""ObjectId"",
+    ""cost_of_treatment"": ""number"",
+    ""date_of_treatment"": ""string"",
+    ""dog_id"": ""number"",
+    ""professional_id"": ""number"",
+    ""treatment_id"": ""number"",
+    ""treatment_type_code"": ""string""
+  }
+}
+
+SQL:
+SELECT T1.date_of_treatment ,  T2.first_name FROM Treatments AS T1 JOIN Professionals AS T2 ON T1.professional_id  =  T2.professional_id
+
+MongoDB:",329,"db.treatments.date_of_treatment ,  db.professionals.first_name
+
+SQL:",,"db.treatments.aggregate([{""$lookup"":{""from"":""professionals"",""localField"":""professional_id"",""foreignField"":""professional_id"",""as"":""j""}},{""$unwind"":""$j""},{""$project"":{""_id"":0,""date_of_treatment"":""$date_of_treatment"",""first_name"":""$j.first_name""}}])",Unable to extract MongoDB query from model output,False,False,Missing predicted or reference MongoDB query,Skipped judge evaluation: missing predicted or reference MongoDB query
+SELECT Name FROM singer ORDER BY Net_Worth_Millions ASC,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Birth_Year"": ""number"",
+    ""Citizenship"": ""string"",
+    ""Name"": ""string"",
+    ""Net_Worth_Millions"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Name FROM singer ORDER BY Net_Worth_Millions ASC
+
+MongoDB:",182,"db.singer.find({}).sort({Net_Worth_Millions: 1})
+
+SQL:",db.singer.find({}).sort({Net_Worth_Millions: 1}),"db.singer.find({}, { name: 1, _id: 0 }).sort({ net_worth_millions: 1 })",,True,True,Both queries return all singer names sorted by Net_Worth_Millions ascending with _id excluded,"{
+  ""query_correct"": true,
+  ""reason"": ""Both queries return all singer names sorted by Net_Worth_Millions ascending with _id excluded""
+}"
+SELECT Citizenship FROM singer GROUP BY Citizenship ORDER BY COUNT(*) DESC LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Birth_Year"": ""number"",
+    ""Citizenship"": ""string"",
+    ""Name"": ""string"",
+    ""Net_Worth_Millions"": ""number"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Citizenship FROM singer GROUP BY Citizenship ORDER BY COUNT(*) DESC LIMIT 1
+
+MongoDB:",185,"db.singer.distinct(""Citizenship"")
+
+SQL:","db.singer.distinct(""Citizenship"")","db.singer.aggregate([{""$group"":{""_id"":""$citizenship"",""count"":{""$sum"":1}}},{""$sort"":{""count"":-1}},{""$limit"":1},{""$project"":{""citizenship"":""$_id"",""_id"":0}}])",,True,False,"Predicted query returns distinct Citizenship values without counts, while reference query returns top citizenship by count (with count aggregation and sort).","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query returns distinct Citizenship values without counts, while reference query returns top citizenship by count (with count aggregation and sort).""
+}"
+SELECT Name FROM singer WHERE Singer_ID NOT IN (SELECT Singer_ID FROM song),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""Birth_Year"": ""number"",
+    ""Citizenship"": ""string"",
+    ""Name"": ""string"",
+    ""Net_Worth_Millions"": ""number"",
+    ""_id"": ""ObjectId""
+  },
+  ""song"": {
+    ""Highest_Position"": ""number"",
+    ""Sales"": ""number"",
+    ""Singer_ID"": ""number"",
+    ""Title"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+SQL:
+SELECT Name FROM singer WHERE Singer_ID NOT IN (SELECT Singer_ID FROM song)
+
+MongoDB:",230,"db.singer.find({$not: {$in: db.song.singer.map(function(s) { return s.Singer_ID; })}})
+
+SQL:",db.singer.find({$not: {$in: db.song.singer.map(function(s) { return s.Singer_ID; })}}),"db.singer.aggregate([{""$lookup"":{""from"":""song"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])",,True,False,"Predicted query uses a non-standard, invalid MongoDB syntax (db.song.singer.map is not a valid MongoDB operator), while reference uses a valid $lookup aggregation. The predicted query would not run, so outputs differ.","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query uses a non-standard, invalid MongoDB syntax (db.song.singer.map is not a valid MongoDB operator), while reference uses a valid $lookup aggregation. The predicted query would not run, so outputs differ.""
+}"
+SELECT T2.property_type_description FROM Properties AS T1 JOIN Ref_Property_Types AS T2 ON T1.property_type_code  =  T2.property_type_code GROUP BY T1.property_type_code,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Properties"": {
+    ""_id"": ""ObjectId"",
+    ""agreed_selling_price"": ""number"",
+    ""apt_feature_1"": ""string"",
+    ""apt_feature_2"": ""string"",
+    ""apt_feature_3"": ""string"",
+    ""buyer_offered_price"": ""number"",
+    ""date_on_market"": ""string"",
+    ""date_sold"": ""string"",
+    ""fld_feature_1"": ""string"",
+    ""fld_feature_2"": ""string"",
+    ""fld_feature_3"": ""string"",
+    ""hse_feature_1"": ""string"",
+    ""hse_feature_2"": ""string"",
+    ""hse_feature_3"": ""string"",
+    ""oth_feature_1"": ""string"",
+    ""oth_feature_2"": ""string"",
+    ""oth_feature_3"": ""string"",
+    ""other_property_details"": ""string"",
+    ""property_address"": ""string"",
+    ""property_id"": ""number"",
+    ""property_name"": ""string"",
+    ""property_type_code"": ""string"",
+    ""room_count"": ""number"",
+    ""shp_feature_1"": ""string"",
+    ""shp_feature_2"": ""string"",
+    ""shp_feature_3"": ""string"",
+    ""vendor_requested_price"": ""number""
+  },
+  ""Ref_Property_Types"": {
+    ""_id"": ""ObjectId"",
+    ""property_type_code"": ""string"",
+    ""property_type_description"": ""string""
+  }
+}
+
+SQL:
+SELECT T2.property_type_description FROM Properties AS T1 JOIN Ref_Property_Types AS T2 ON T1.property_type_code  =  T2.property_type_code GROUP BY T1.property_type_code
+
+MongoDB:",461,"db.properties.aggregate([
+  { $unwind: ""$ref_Property_Types"" },
+  { $group: { _id: ""$ref_Property_Types.property_type_code"", count: { $sum: 1 } } }
+])
+
+SQL:","db.properties.aggregate([
+  { $unwind: ""$ref_Property_Types"" },
+  { $group: { _id: ""$ref_Property_Types.property_type_code"", count: { $sum: 1 } } }
+])","db.properties.aggregate([{""$lookup"":{""from"":""ref_property_types"",""localField"":""property_type_code"",""foreignField"":""property_type_code"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":""$j.property_type_code"",""property_type_description"":{""$first"":""$j.property_type_description""}}},{""$project"":{""_id"":0,""property_type_description"":1}}])",,True,False,"Predicted query uses $unwind on ref_Property_Types which may not exist in all documents, causing missing data; reference query uses $lookup with $unwind on joined results, ensuring correct data alignment","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query uses $unwind on ref_Property_Types which may not exist in all documents, causing missing data; reference query uses $lookup with $unwind on joined results, ensuring correct data alignment""
+}"
+"SELECT property_name FROM Properties WHERE property_type_code  =  ""House"" UNION SELECT property_name FROM Properties WHERE property_type_code  =  ""Apartment"" AND room_count  >  1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""Properties"": {
+    ""_id"": ""ObjectId"",
+    ""agreed_selling_price"": ""number"",
+    ""apt_feature_1"": ""string"",
+    ""apt_feature_2"": ""string"",
+    ""apt_feature_3"": ""string"",
+    ""buyer_offered_price"": ""number"",
+    ""date_on_market"": ""string"",
+    ""date_sold"": ""string"",
+    ""fld_feature_1"": ""string"",
+    ""fld_feature_2"": ""string"",
+    ""fld_feature_3"": ""string"",
+    ""hse_feature_1"": ""string"",
+    ""hse_feature_2"": ""string"",
+    ""hse_feature_3"": ""string"",
+    ""oth_feature_1"": ""string"",
+    ""oth_feature_2"": ""string"",
+    ""oth_feature_3"": ""string"",
+    ""other_property_details"": ""string"",
+    ""property_address"": ""string"",
+    ""property_id"": ""number"",
+    ""property_name"": ""string"",
+    ""property_type_code"": ""string"",
+    ""room_count"": ""number"",
+    ""shp_feature_1"": ""string"",
+    ""shp_feature_2"": ""string"",
+    ""shp_feature_3"": ""string"",
+    ""vendor_requested_price"": ""number""
+  }
+}
+
+SQL:
+SELECT property_name FROM Properties WHERE property_type_code  =  ""House"" UNION SELECT property_name FROM Properties WHERE property_type_code  =  ""Apartment"" AND room_count  >  1
+
+MongoDB:",426,"db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property_type_code: ""House""})
+
+db.Properties.find({property_type_code: ""Apartment""})
+
+db.Properties.find({property","db.Properties.find({property_type_code: ""House""})","db.properties.aggregate([{$match: {property_type_code: 'House'}}, {$unionWith: {coll: 'properties', pipeline: [{ $match: { property_type_code: 'Apartment', room_count: { $gt: 1 } }]}}])",,True,False,"Predicted query only returns House properties, but reference query unions House and Apartment (with room_count > 1) properties","{
+  ""query_correct"": false,
+  ""reason"": ""Predicted query only returns House properties, but reference query unions House and Apartment (with room_count > 1) properties""
+}"

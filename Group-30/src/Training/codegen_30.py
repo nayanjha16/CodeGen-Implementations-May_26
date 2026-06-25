@@ -32,15 +32,17 @@ Install all the necessary packages
 #from google.colab import userdata
 import os
 # Force CPU to wait for GPU
-#os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 # Described debug output from GPU
 os.environ["TORCH_USE_CUDA_DSA"] = "1"
+# Force on single GPU
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import gc #Added for memory cleanup
 from dotenv import load_dotenv
 
 # Load all environment variables from the .env file
-load_dotenv()
+
 
 # Access the variables using os.getenv()
 HUGGING_FACE_KEY = os.getenv("HUGGING_FACE_KEY")
@@ -191,7 +193,7 @@ class CodeDocumentationGenerator(QwenModelBase):
           with torch.no_grad():
               generated_ids = self._model.generate(
                   **model_inputs,
-                  max_new_tokens=512,
+                  max_new_tokens=max_length,
                   do_sample=False,  # Use greedy decoding for stability
                   temperature=1.0,
               )
@@ -1342,15 +1344,15 @@ class BaselineData(metaclass=SingletonMeta):
                 # Use greedy decoding for stability (do_sample=False avoids numerical issues)
                 print("self._model_codegen.generate: Start")
                 # Create explicit position_ids to prevent index out of bounds
-                position_ids = torch.arange(input_ids.shape[1], dtype=torch.long, device=self.device).unsqueeze(0)
+                #position_ids = torch.arange(input_ids.shape[1], dtype=torch.long, device=self.device).unsqueeze(0)
 
                 # Debug: Check position_ids bounds
-                print(f"DEBUG - position_ids shape: {position_ids.shape}, dtype: {position_ids.dtype}")
-                print(f"DEBUG - position_ids range: {position_ids.min().item()} to {position_ids.max().item()}")
-                print(f"DEBUG - max_position_embeddings: {max_position_embeddings}")
+                #print(f"DEBUG - position_ids shape: {position_ids.shape}, dtype: {position_ids.dtype}")
+                #print(f"DEBUG - position_ids range: {position_ids.min().item()} to {position_ids.max().item()}")
+                #print(f"DEBUG - max_position_embeddings: {max_position_embeddings}")
 
                 # Check if position_ids would cause index out of bounds
-                if position_ids.max().item() >= max_position_embeddings:
+                if False: #position_ids.max().item() >= max_position_embeddings:
                     print(f"ERROR: position_ids max ({position_ids.max().item()}) >= max_position_embeddings ({max_position_embeddings})")
                     # Truncate position_ids to valid range
                     position_ids = torch.clamp(position_ids, 0, max_position_embeddings - 1)
@@ -1373,13 +1375,26 @@ class BaselineData(metaclass=SingletonMeta):
                 else:
                     print("DEBUG - No wpe found, checking for rotary embeddings...")
 
+                import transformers
+                print(f"Transformers Version: {transformers.__version__}")
+                print(f"DEBUG - attention_mask.dtype: {attention_mask.dtype}")
+                print(f"DEBUG - attention_mask.device: {attention_mask.device}")
+                #print(f"DEBUG - past_key_values: {type(past_key_values)}")
+                print("DEBUG - n_positions:", self._model_codegen.config.n_positions)
+                print("DEBUG - input length:", input_ids.shape[1])
+                print("DEBUG - max_new_tokens:", max_new_tokens)
+                print("DEBUG - total:", input_ids.shape[1] + max_new_tokens)
+                print(f"DEBUG - {input_ids.shape[1]} + {max_new_tokens} > {self._model_codegen.config.n_positions}")
+                print("CUDA devices:", torch.cuda.device_count())
+                print("Model parameters on device:", next(self._model_codegen.parameters()).device)
                 output_ids = self._model_codegen.generate(
                     input_ids,
                     attention_mask=attention_mask,
-                    position_ids=position_ids,
+                    #position_ids=position_ids,
                     max_new_tokens=max_new_tokens,
                     do_sample=False,  # Use greedy decoding for stability
                     num_return_sequences=1,
+                    use_cache=False,
                     pad_token_id=self._tokenizer_codegen.eos_token_id
                 )
                 print("self._model_codegen.generate: Done")
@@ -1929,7 +1944,7 @@ from tqdm import tqdm
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized before use in this cell ---
 # This is crucial in interactive environments where class definitions might be re-run
 # or partial executions can leave singletons in an inconsistent state.
-# Reset Singleton states for all classes involved to ensure clean re-initialization.
+# Reset Singleton states for all classes involved to ensure clean re-initfialization.
 print("Resetting singleton states for BaselineData and its dependencies in i0YOCFPWoYVV...")
 for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBERTScorer, FilteredDataset, LLMJudge, QwenModelBase]:
     if cls_to_reset in SingletonMeta._instances:
@@ -2172,7 +2187,7 @@ for record in tqdm(python_stream_iterator, desc="Processing Python records for C
     if not python_documentation.strip():
         print(f"Warning: Python documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
         # Fallback: Generate documentation if not present in the record (against 'not recreate' instruction, but necessary if empty)
-        python_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_python_code)
+        python_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_python_code, max_length=256)
         if not python_documentation.strip(): # If still no documentation, skip
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")
             continue

@@ -590,7 +590,7 @@ class LLMJudge(QwenModelBase):
 
             return score
         except json.JSONDecodeError:
-            print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}")
+            print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}\ndocumentation:\n{documentation}\ncode:\n{generated_code}\nreference code:\n{reference_code}")
             return 0.0 # Return 0.0 if JSON is invalid
         except ValueError:
             print(f"Warning: 'score' field not a valid number in JSON response:\n{response_str}")
@@ -865,7 +865,7 @@ class FilteredDataset(metaclass=SingletonMeta):
         if not isinstance(record_identifier, str):
             raise TypeError("record_identifier must be a string (e.g., 'hexsha').")
         self._local_documentation_cache[record_identifier] = new_documentation
-        print(f"Documentation for record '{record_identifier}' updated locally.")
+        print(f"\tDocumentation for record '{record_identifier}' updated locally.")
 
     def update_scores(self, record_identifier: str, ast_score: float, graphcodebert_score: float, average_score: float,
                       python_translation_ast_score: Optional[float] = None,
@@ -903,8 +903,9 @@ class FilteredDataset(metaclass=SingletonMeta):
             current_scores['python_translation_average_score'] = python_translation_average_score
 
         self._local_scores_cache[record_identifier] = current_scores
-        print(f"Scores for record '{record_identifier}' updated locally: NL->PL Avg={average_score:.4f}" +
-              (f", NL->C++->Py Avg={python_translation_average_score:.4f}" if python_translation_average_score is not None else ""))
+        print(f"\tScores for record '{record_identifier}' updated locally")
+        print(f"\t\tNL->PL Avg={average_score:.4f}")
+        print(f"\t\tNL->C++->Py Avg={python_translation_average_score:.4f}" if python_translation_average_score is not None else "")
 
 """# Efficient Filtering and Caching of Streaming Data
 
@@ -1100,7 +1101,8 @@ def create_and_cache_filtered_subset(filtered_dataset_instance: FilteredDataset,
                 'hexsha': example.get('hexsha'),
                 'content': example.get('content'),
                 'lang': example.get('lang'),
-                'language': example.get('language')
+                'language': example.get('language'),
+                'is_processable_code': example.get('is_processable_code', True)
             }
             raw_examples.append(clean_example)
             count += 1
@@ -1144,16 +1146,23 @@ import os
 class BaselineData(metaclass=SingletonMeta):
     _initialized = False # Class-level flag for singleton initialization
     _preferred_device = None  # Class-level device preference (can be set externally)
+    _num_samples = 100  # Default number of samples
 
-    def __init__(self):
+    def __init__(self, num_samples: int = 100):
         """
         Constructor for the BaselineData singleton class.
         Initializes all necessary components for baseline evaluation.
+
+        Args:
+            num_samples (int): Number of samples to use from FilteredDataset.
+                              If cache exists for this count, it will be loaded.
+                              Otherwise, streaming will occur and cache will be created.
         """
         if BaselineData._initialized:
             print("BaselineData already initialized. Returning existing instance.")
             return
         BaselineData._initialized = True
+        BaselineData._num_samples = num_samples
 
         # Use preferred device if set, otherwise auto-detect
         if BaselineData._preferred_device:
@@ -1168,6 +1177,11 @@ class BaselineData(metaclass=SingletonMeta):
         self._graphcodebert_scorer = GraphCodeBERTScorer()
         self._filtered_dataset = FilteredDataset()
         self._llm_judge = LLMJudge(self.device) # Initialize the LLMJudge here, passing self.device
+
+        # Create or load cached dataset for the specified number of samples
+        self._cached_dataset = create_and_cache_filtered_subset(
+            self._filtered_dataset, num_samples, "./cached_data"
+        )
 
         # Load codegen model for code generation from documentation
         self._load_codegen_model()
@@ -1264,8 +1278,9 @@ class BaselineData(metaclass=SingletonMeta):
         # Get model's max position embeddings to prevent CUDA index out of bounds errors
         model_max_length = getattr(self._model_codegen.config, 'max_position_embeddings', 2048)
         n_positions = getattr(self._model_codegen.config, 'n_positions', model_max_length)
-        print(f"Model config - max_position_embeddings: {model_max_length}, n_positions: {n_positions}")
-        print(f"Model config - hidden_size: {self._model_codegen.config.hidden_size}")
+        if DEBUG_FLAG:
+            print(f"DEBUG - Model config - max_position_embeddings: {model_max_length}, n_positions: {n_positions}")
+            print(f"DEBUG - Model config - hidden_size: {self._model_codegen.config.hidden_size}")
         # Ensure total sequence (input + output) doesn't exceed model's max position embeddings
         # Use a very conservative limit to prevent position index out of bounds
         max_input_length = min(model_max_length - max_new_tokens - 100, 256)  # Extra safety margin
@@ -1292,7 +1307,8 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Validate input token IDs are within valid range
         vocab_size = self._model_codegen.config.vocab_size
-        print(f"Model vocab_size: {vocab_size}")
+        if DEBUG_FLAG:
+            print(f"DEBUG - Model vocab_size: {vocab_size}")
 
         # Check for NaN or inf values in input_ids
         if torch.isnan(input_ids).any() or torch.isinf(input_ids).any():
@@ -1325,7 +1341,8 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Use torch.no_grad() for inference to save memory and avoid gradient computation issues
         self._model_codegen.eval()  # Ensure model is in eval mode
-        print(f"Max New Tokens for CodeGen: {max_new_tokens}")
+        if DEBUG_FLAG:
+            print(f"DEBUG - Max New Tokens for CodeGen: {max_new_tokens}")
 
         # Debug: Print tensor information before generation
         if DEBUG_FLAG:
@@ -1564,14 +1581,16 @@ class BaselineData(metaclass=SingletonMeta):
         results = []
         processed_count = 0
 
-        # Reset the iterator to ensure we start from the beginning of the stream
-        self._filtered_dataset.reset_iterator()
+        # Use the cached dataset instead of streaming
+        print(f"Using cached dataset with {len(self._cached_dataset)} samples...")
 
-        for record in self._filtered_dataset:
+        for i in range(len(self._cached_dataset)):
             if num_records is not None and processed_count >= num_records:
                 break
 
-            if not record['is_processable_code']:
+            record = self._cached_dataset[i]
+
+            if not record.get('is_processable_code', True):
                 continue # Skip unprocessable records
 
             processed_count += 1
@@ -1591,7 +1610,7 @@ class BaselineData(metaclass=SingletonMeta):
             # Generate documentation for Phase 1
             generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
 
-            print(f"  Generating code from documentation...")
+            print(f"  Generating code from documentation for {language}...")
             # Generate code from the generated documentation using the base model
             generated_code_phase1 = self._generate_code_from_model(generated_doc_phase1, language)
 
@@ -1608,17 +1627,18 @@ class BaselineData(metaclass=SingletonMeta):
                 print(f"  AST comparison error: {e}")
                 ast_similarity_phase1 = 0.0
 
-            print(f"  Computing semantic similarity...")
+            print(f"  Computing semantic similarity GraphCodeBERTScore...")
             try:
                 semantic_similarity_phase1 = self._graphcodebert_scorer.score(original_code, generated_code_phase1)
             except RuntimeError as e:
-                print(f"  GCB comparison CUDA error: {e}")
+                print(f"  GraphCodeBERTScore comparison CUDA error: {e}")
                 semantic_similarity_phase1 = 0.0
             except Exception as e:
-                print(f"  GCB comparison error: {e}")
+                print(f"  GraphCodeBERTScore comparison error: {e}")
                 semantic_similarity_phase1 = 0.0
 
             current_average_score_phase1 = (ast_similarity_phase1 + semantic_similarity_phase1) / 2.0
+            print(f"\t AST Similarity Score: {ast_similarity_phase1:0.4f}, GraphCodeBERTScore: {semantic_similarity_phase1:0.4f}, Average: {current_average_score_phase1:0.4f}")
 
             if current_average_score_phase1 > best_average_score_nl_pl:
                 best_average_score_nl_pl = current_average_score_phase1
@@ -1632,7 +1652,7 @@ class BaselineData(metaclass=SingletonMeta):
             best_avg_score_nl_pl1_pl2 = None
 
             # --- Phase 2: NL -> PL1 -> PL2 (Documentation -> C++ -> Python) for Python records ---
-            if language == 'python':
+            if language.lower() == 'python':
                 current_best_avg_phase2 = -1.0
                 temp_best_ast_phase2 = 0.0
                 temp_best_gcb_phase2 = 0.0
@@ -1646,9 +1666,9 @@ class BaselineData(metaclass=SingletonMeta):
 
                     # Step 1: Generate C++ code from best_documentation (from Phase 1) and use LLM Judge to pick the best
                     for _ in range(num_tries):
-                        generated_cpp_candidate = self._generate_code_from_model(best_documentation, 'cpp', is_cpp_to_py=False)
+                        generated_cpp_candidate = self._generate_code_from_model(best_documentation.replace("Python", 'cpp').replace('python','cpp'), 'cpp', is_cpp_to_py=False)
                         if generated_cpp_candidate.strip():
-                            llm_judge_current_score = self._llm_judge.qwen_code_judge(best_documentation, generated_cpp_candidate)
+                            llm_judge_current_score = self._llm_judge.qwen_code_judge(best_documentation.replace("Python","C++").replace("python","C++"), generated_cpp_candidate)
                             if llm_judge_current_score > best_llm_judge_score_for_intermediate_cpp:
                                 best_llm_judge_score_for_intermediate_cpp = llm_judge_current_score
                                 best_generated_cpp_code_for_phase2 = generated_cpp_candidate
@@ -1712,12 +1732,14 @@ class BaselineData(metaclass=SingletonMeta):
                 # Option 2: Clear GPU cache after each record to prevent memory fragmentation
                 if torch.cuda.is_available():
                     try:
-                        print("Clear GPU cache after each record to prevent memory fragmentation")
+                        print("\tClear GPU cache after each record to prevent memory fragmentation")
                         torch.cuda.empty_cache()
                         gc.collect()
                     except RuntimeError:
                         print("GPU is in bad state, skip cache clearing")
                         pass
+
+                print(f"\tRecording result: 'hexsha': {original_hexsha[:10]}, 'nl_pl_best_ast_score': {best_ast_score_nl_pl:0.4f}, 'nl_pl_best_graphcodebert_score': {best_graphcodebert_score_nl_pl:0.4f}, 'nl_pl_best_average_score': {best_average_score_nl_pl:0.4f}")
 
                 record_result = {
                     'hexsha': original_hexsha,
@@ -1726,15 +1748,16 @@ class BaselineData(metaclass=SingletonMeta):
                     'nl_pl_best_average_score': best_average_score_nl_pl
                 }
 
-                if language == 'python':
+                if language.lower() == 'python':
                     record_result.update({
                         'nl_pl1_pl2_best_ast_score': best_ast_score_nl_pl1_pl2,
                         'nl_pl1_pl2_best_graphcodebert_score': best_gcb_score_nl_pl1_pl2,
                         'nl_pl1_pl2_best_average_score': best_avg_score_nl_pl1_pl2
                     })
+                    print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, 'nl_pl1_pl2_best_ast_score': {best_ast_score_nl_pl1_pl2:0.4f}, 'nl_pl1_pl2_best_average_score': {best_avg_score_nl_pl1_pl2:0.4f}")
                 results.append(record_result)
                 processed_count += 1
-                print(f"Processed {processed_count}/{num_records if num_records is not None else 'all'} records. Current record {original_hexsha[:10]}... " +
+                print(f"\nProcessed {processed_count}/{num_records if num_records is not None else 'all'} records. Current record {original_hexsha[:10]}... " +
                       f"NL->PL Avg Score: {best_average_score_nl_pl:.4f}" +
                       (f", NL->C++->Py Avg Score: {best_avg_score_nl_pl1_pl2:.4f}" if best_avg_score_nl_pl1_pl2 is not None else ""))
 
@@ -1784,12 +1807,13 @@ if torch.cuda.is_available() and not is_gpu_usable():
     BaselineData._preferred_device = 'cpu'
 
 # Instantiate the BaselineData singleton
-baseline_evaluator = BaselineData()
+num_samples_for_evaluation = 10000
+baseline_evaluator = BaselineData(num_samples = num_samples_for_evaluation)
 
 # Set num_records_for_full_eval to None to process all records, or specify a number.
 num_records_for_full_eval: Optional[int] = None # Process all records
 # If you want to process a specific number of records for testing, uncomment and set the value:
-num_records_for_full_eval = 50
+num_records_for_full_eval = 1000
 
 num_generation_tries_eval = 3 # Number of tries for code generation per record
 
@@ -1829,14 +1853,14 @@ for record in filtered_dataset_instance_for_metrics:
       overall_scores_nl_pl.append(avg_score_nl_pl)
 
       language = record.get('language')
-      if language == 'python':
+      if language.lower() == 'python':
         python_scores_nl_pl.append(avg_score_nl_pl)
         # Collect scores for Phase 2 (NL->PL1->PL2) for Python records
         if score_data['nl_pl1_pl2_best_average_score'] is not None:
           avg_score_nl_pl1_pl2 = score_data['nl_pl1_pl2_best_average_score']
           overall_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
           python_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
-      elif language == 'cpp':
+      elif language.lower() == 'cpp':
         cpp_scores_nl_pl.append(avg_score_nl_pl)
 
       processed_for_metrics_count += 1
@@ -1898,8 +1922,9 @@ model_codegen = AutoModelForCausalLM.from_pretrained(
 tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
 model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
 
+print("Printing modules in CodeGen-350m-multi-model")
 for name, module in model_codegen.named_modules():
-    print(name)
+    print(f"\t{name}")
 
 """### LORA Adaptation for `codegen-350M-multi`
 
@@ -1923,8 +1948,9 @@ lora_config = LoraConfig(
 # Apply LORA to the codegen model
 model_codegen_lora = get_peft_model(model_codegen, lora_config)
 
-print("LORA adapted model summary:")
+print("\n"+"*"*30+"\nLORA adapted model summary:")
 model_codegen_lora.print_trainable_parameters()
+print("\n"+"*"*30)
 
 import torch
 
@@ -1957,7 +1983,7 @@ from tqdm import tqdm
 # This is crucial in interactive environments where class definitions might be re-run
 # or partial executions can leave singletons in an inconsistent state.
 # Reset Singleton states for all classes involved to ensure clean re-initfialization.
-print("Resetting singleton states for BaselineData and its dependencies in i0YOCFPWoYVV...")
+print("Resetting singleton states for BaselineData and its dependencies")
 for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBERTScorer, FilteredDataset, LLMJudge, QwenModelBase]:
     if cls_to_reset in SingletonMeta._instances:
         del SingletonMeta._instances[cls_to_reset]
@@ -1966,11 +1992,10 @@ for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBER
     # QwenModelBase has a specific initialization flag
     if hasattr(cls_to_reset, '_initialized_qwen'):
         cls_to_reset._initialized_qwen = False
-print("Singleton states reset in i0YOCFPWoYVV.")
 # --- END FIX ---
 
 # Instantiate the BaselineData singleton. This call will now guarantee a fresh instance.
-baseline_evaluator = BaselineData()
+baseline_evaluator = BaselineData(num_samples = num_samples_for_evaluation)
 print("BaselineData instance ensured for LORA training dataset generation.")
 
 # Assuming baseline_evaluator is already initialized
@@ -1992,7 +2017,7 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
         print(f"Reached max records for LORA NL->C++ training: {MAX_RECORDS_FOR_LORA_NL_CPP}")
         break
 
-    if not record['is_processable_code'] or record['language'] != 'cpp':
+    if not record['is_processable_code'] or record['language'].lower() != 'cpp':
         continue
 
     # Use existing documentation from the record (generated by BaselineData if available)
@@ -2010,6 +2035,7 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
         "code": record['content'] # The ground truth C++ code
     })
     processed_cpp_records += 1
+    print(f"Processed {processed_cpp_records} C++ records for LORA NL->C++")
 
 if lora_nl_cpp_examples:
     training_dataset = Dataset.from_list(lora_nl_cpp_examples)
@@ -2054,6 +2080,8 @@ training_args = TrainingArguments(
     # metric_for_best_model="eval_loss", # Uncomment if you have a validation set
 )
 
+print("Created Training arguments for LORA")
+
 # Initialize Trainer
 trainer = Trainer(
     model=model_codegen_lora,
@@ -2062,7 +2090,7 @@ trainer = Trainer(
     # eval_dataset=tokenized_validation_dataset, # Uncomment if you have a validation set
     data_collator=data_collator,
 )
-
+print("Created Trainer for LORA")
 # Start training
 print("Starting LORA training...")
 trainer.train()
@@ -2129,6 +2157,7 @@ if 'model_codegen_lora' not in globals():
         lora_dropout=0.1,
         target_modules=["qkv_proj", "out_proj"]
     )
+    print("LORA Config created")
     # If _current_device is not set from reload, assume CPU for safety or re-detect
     if '_current_device' not in locals():
         _current_device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -2189,7 +2218,7 @@ for record in tqdm(python_stream_iterator, desc="Processing Python records for C
         print(f"Reached max records for C++ to Python LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
         break
 
-    if not record['is_processable_code'] or record['language'] != 'python':
+    if not record['is_processable_code'] or record['language'].lower() != 'python':
         continue
 
     original_python_code = record['content']

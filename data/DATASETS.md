@@ -1,130 +1,101 @@
-# Dataset Reference (Spider & BIRD)
+# Dataset Reference — TEND (Hugging Face)
 
-Local paths, raw JSON fields, loader output, and difficulty/complexity labels.
+Training and evaluation use the published **TEND silver** dataset on Hugging Face:
 
-Loaders: `src/datasets/spider_loader.py`, `src/datasets/bird_loader.py`
+**Repository:** [care2achieve/tend](https://huggingface.co/datasets/care2achieve/tend)
 
----
-
-## Spider
-
-**Location:** `data/spider/spider-master/evaluation_examples/examples/`
-
-| File | Count | Purpose |
-|------|-------|---------|
-| `dev.json` | 1,034 | Validation (dev) split |
-| `train_spider.json` | 7,000 | Training split |
-| `tables.json` | 166 DBs | Schema metadata |
-
-> This repo caches the Spider **evaluation examples** subset. The full `spider_data/` bundle (with SQLite databases) is downloaded on first use via `SpiderLoader` if not present.
-
-### Per-example fields (`dev.json`, `train_spider.json`)
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `db_id` | string | Database identifier |
-| `question` | string | Natural-language question |
-| `question_toks` | list | Tokenized question |
-| `query` | string | Gold SQL |
-| `query_toks` | list | Tokenized SQL |
-| `query_toks_no_value` | list | SQL tokens with literals replaced |
-| `sql` | dict | Structured SQL parse tree (select, from, where, groupBy, orderBy, etc.) |
-
-### Schema fields (`tables.json`)
-
-| Field | Description |
-|-------|-------------|
-| `db_id` | Database id |
-| `table_names` / `table_names_original` | Table names |
-| `column_names` / `column_names_original` | `[table_idx, column_name]` pairs |
-| `column_types` | Column types |
-| `primary_keys` | Primary key column indices |
-| `foreign_keys` | Foreign-key column index pairs |
-
-### Difficulty / complexity
-
-**Spider has no official difficulty field.** There is no `difficulty`, `level`, or `complexity` key in the raw JSON.
-
-`SpiderLoader` standardizes each example to:
-
-```json
-{"question": "...", "schema": "...", "sql": "...", "db_id": "..."}
-```
-
-To bucket by complexity, derive it from the `sql` structure or SQL heuristics (joins, aggregations, subqueries, etc.).
+Loader: `src/datasets/tend_loader.py`
 
 ---
 
-## BIRD (BirdBench)
+## Configurations
 
-**Location:** `data/bird/bird_data/`
+| Config | Train rows | Test rows | Notes |
+|--------|------------|-----------|-------|
+| `spider` | 6,730 | 859 | Spider-derived silver examples |
+| `bird` | 3,967 | 766 | BIRD-derived silver examples |
 
-| File | Count | Purpose |
-|------|-------|---------|
-| `dev.json` | 1,534 | Dev / validation split |
-| `dev_tied_append.json` | 42 | Extra tied-result questions |
-| `dev_tables.json` | 11 DBs | Schema metadata |
-| `dev_databases/` | — | SQLite databases per `db_id` |
+> **Split naming:** `test` corresponds to each source dataset's validation/dev split (Spider `dev`, BIRD `dev`). `train` corresponds to the source training split.
 
-### Per-example fields (`dev.json`)
+---
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `question_id` | int | Unique question id |
-| `db_id` | string | Database identifier |
-| `question` | string | Natural-language question |
-| `evidence` | string | Domain hints / formulas needed to answer |
-| `SQL` | string | Gold SQL (capital `SQL` in raw JSON) |
-| `difficulty` | string | **Official difficulty label** |
+## Record schema
 
-### Schema fields (`dev_tables.json`)
+Each example includes aligned fields for all three pipeline tasks:
 
-Same structure as Spider `tables.json` (`db_id`, table/column names, types, primary keys, foreign keys).
+| Field | Used for |
+|-------|----------|
+| `question` | Text→SQL input |
+| `schema` (`sql_schema`) | Text→SQL input |
+| `sql` (`sql_query`) | Text→SQL target; SQL→MongoDB input |
+| `nosql_schema` | SQL→MongoDB input |
+| `nosql_query` | SQL→MongoDB target; Documentation input |
+| `documentation` | Documentation target |
+| `db_id` | Metadata |
+| `id` | Stable example id |
 
-### Difficulty labels
+---
 
-BIRD uses three official values (not easy/medium/hard):
-
-| Label | Dev count | Rough mapping |
-|-------|-----------|---------------|
-| `simple` | 925 | Easy |
-| `moderate` | 464 | Medium |
-| `challenging` | 145 | Hard / complex |
-
-`BirdLoader` standardizes each example to:
-
-```json
-{"question": "...", "schema": "...", "sql": "...", "db_id": "...", "difficulty": "simple"}
-```
-
-`schema` is built from `db_id` + `evidence`, not from `dev_tables.json`.
-
-Example:
+## Loading examples
 
 ```python
-from src.datasets.bird_loader import BirdLoader
+from src.datasets.tend_loader import TENDLoader
 
-examples = BirdLoader().load_split("validation")
-easy = [e for e in examples if e["difficulty"] == "simple"]
-medium = [e for e in examples if e["difficulty"] == "moderate"]
-hard = [e for e in examples if e["difficulty"] == "challenging"]
+# Spider validation (test split)
+loader = TENDLoader(config="spider")
+examples = loader.load_split("test")
+
+# BIRD training
+bird_train = TENDLoader(config="bird").load_split("train")
+```
+
+Via Hugging Face `datasets` directly:
+
+```python
+from datasets import load_dataset
+
+spider = load_dataset("care2achieve/tend", "spider")
+bird = load_dataset("care2achieve/tend", "bird")
 ```
 
 ---
 
-## TEND outputs (`data/TEND/`)
+## Evaluation
 
-Derived CSVs from the TEND pipeline (not raw Spider/BIRD JSON).
+```bash
+python scripts/run_baseline_eval.py --tend-config spider --split test --max-samples 20
+python scripts/run_baseline_eval.py --tend-config bird --split train --max-samples 50
+```
 
-Columns: `source`, `db_id`, `question`, `sql_schema`, `sql_query`, `nosql_schema`, `nosql_query`, `metadata`, `conversion_success`, `schema_correct`, `query_correct`, `overall_correct`, `schema_reason`, `query_reason`, `evaluation_response`
+Smoke test:
 
-The `metadata` JSON includes structural hints (`joins`, `aggregations`, `from_clauses`, `tables`) but **no** simple/medium/hard label.
+```bash
+python scripts/test_tend_loader.py
+```
 
 ---
 
-## Quick comparison
+## Environment
 
-| Dataset | Official difficulty? | Field | Values |
-|---------|------------------------|-------|--------|
-| Spider | No | — | — |
-| BIRD | Yes | `difficulty` | `simple`, `moderate`, `challenging` |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TEND_DATASET_ID` | `care2achieve/tend` | Hugging Face dataset id |
+| `TEND_CACHE_DIR` | `~/.cache/codegen/tend` | Local cache for standardized JSONL splits (project-relative path allowed) |
+
+---
+
+## Caching
+
+`TENDLoader` downloads each config/split once, then reads from disk on later runs. Cache layout:
+
+```
+{TEND_CACHE_DIR}/care2achieve__tend/{spider|bird}/{train|test}.jsonl
+```
+
+To refresh after a dataset update, delete the matching `.jsonl` file or the whole cache directory.
+
+---
+
+## Source credits
+
+TEND is a derived benchmark built on Spider and BIRD. Cite the original datasets when using this release. See the [dataset README](https://huggingface.co/datasets/care2achieve/tend) for citations and license (CC BY 4.0).

@@ -1,49 +1,47 @@
 # Workflow Status — CodeGen Studio
 
-## Current Phase
+## Active Initiative — TENDv2 (Ollama)
 
-- **Phase**: Research — **COMPLETE**
-- **Next phase**: Planning
-- **Date**: 2026-06-13
-- **Implementation performed**: None (research is analysis-only)
+- **Phase**: Implementation — chunked pipeline complete (2026-06-24)
+- Plan: `ai-workflow/planning/feature-plans/tendv2-ollama-plan.md`
 
-## Phase Checklist
+---
+
+## LoRA Fine-Tuning Initiative
+
+- **Phase**: Implementation — **Stage 5 complete**
+- **Active stage**: Stage 6 — Eval integration (next)
+- **Date**: 2026-06-25
+
+### Phase Checklist
 
 | Phase | Status |
 |-------|--------|
 | Research | ✅ Complete |
-| Planning | ⏭️ Next |
-| Implementation | ⬜ Not started |
+| Planning | ✅ Complete |
+| Approval | ✅ Approved |
+| Implementation Stages 1–5 | ✅ Complete |
+| Implementation Stage 6 | ⬜ Pending |
 | Validation | ⬜ Not started |
 | Optimization | ⬜ Not started |
 
-## Research Deliverables (all written)
+### Stage 5 Artifacts
 
-| Deliverable | Path |
-|-------------|------|
-| Executive Summary | `ai-workflow/research/summaries/project-summary.md` |
-| Executive Summary (synced) | `ai-workflow/context/project-summary.md` |
-| Architecture Map | `ai-workflow/research/architecture/architecture-map.md` |
-| Architecture Map (synced) | `ai-workflow/context/architecture-map.md` |
-| Requirements Analysis | `ai-workflow/research/requirements/requirements-analysis.md` |
-| Risk Report | `ai-workflow/research/risks/risk-analysis.md` |
-| Open Questions | `ai-workflow/research/open-questions/questions.md` |
-| Current State (baseline) | `ai-workflow/context/current-state.md` |
-| Workflow Status (this file) | `ai-workflow/context/workflow-status.md` |
+| Artifact | Path |
+|----------|------|
+| Stage log | `ai-workflow/implementation/stage-logs/stage-5.md` |
+| Code report | `ai-workflow/implementation/generated-code-reports/stage-5-report.md` |
+| Batch train CLI | `scripts/train_all_lora.py` |
+| Verify CLI | `scripts/verify_lora_adapters.py` |
+| Adapters (v1 run) | `models/checkpoints/v1/{text2sql,sql2nosql,nosql2doc}/` |
 
-## Handoff to Planning
+### Next Steps (Stage 6)
 
-Planning should:
+1. Extend eval script with `--adapter` / per-task loading
+2. Run LoRA eval for each adapter vs baseline
+3. Comparison table (`qwen_correct_rate`)
 
-1. Resolve the **Open Questions** (`ai-workflow/research/open-questions/questions.md`),
-   prioritizing scope (fine-tuning? product vs demo? NoSQL execution?).
-2. Triage the **High-severity risks** first (arbitrary SQL execution, per-request model
-   reload, Spider download `NameError`).
-3. Use the **Requirements Analysis** missing-features list to scope any new work.
-4. Treat the **Architecture Map** as the integration reference (no import cycles; DI-based;
-   heavy deps deferred).
+### Reference
 
-## Notes
-
-- No source code was modified during research.
-- Tests were not executed during research.
+- Feature plan: `ai-workflow/planning/feature-plans/lora-finetuning-plan.md`
+- Current state: `ai-workflow/context/current-state.md`

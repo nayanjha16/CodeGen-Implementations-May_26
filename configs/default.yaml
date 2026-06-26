@@ -5,6 +5,7 @@ model:
 
 generation:
   max_new_tokens: 256
+  documentation_max_new_tokens: 96
   temperature: 0.7
   top_p: 0.95
   num_beams: 4
@@ -13,12 +14,12 @@ generation:
   seq2seq_decoding_strategy: "beam"  # used automatically for T5/BART-style models
 
 datasets:
-  spider: {}  # cache_dir, repo_url, dataset_url set from .env
-  bird: {}     # cache_dir, dataset_url set from .env
+  tend: {}  # dataset_id set from TEND_DATASET_ID in .env
+  spider_gold_validation: data/spider_gold_validation.jsonl
 
 evaluation:
   batch_size: 8
-  max_samples: 100
+  max_samples: 50
   # bertscore_model set from BERTSCORE_MODEL_NAME in .env
   mlflow_tracking_uri: "sqlite:///mlflow.db"
   experiment_name: "codegen-text2sql"
@@ -27,3 +28,34 @@ seeds:
   random: 42
   numpy: 42
   torch: 42
+
+# LoRA fine-tuning (Salesforce/codegen-350M-multi, causal LM)
+training:
+  task_type: CAUSAL_LM
+  datasets: [spider, bird]         # HF TEND configs combined for training
+  split: train
+  eval_datasets: [spider, bird]    # held-out eval during training
+  eval_split: test
+  max_length: 2048              # total sequence budget (matches model.max_length)
+  max_target_tokens: 256        # reserve for completion; prompt budget = 1792
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  epochs: 5
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 4  # effective batch size = 32
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  fp16: false
+  bf16: false                     # fp32 for cross-device compatibility
+
+lora:
+  enabled: true
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  bias: none
+  target_modules:
+    - qkv_proj
+    - out_proj

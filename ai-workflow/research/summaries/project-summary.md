@@ -1,56 +1,62 @@
-# Executive Summary — CodeGen Studio
+# Executive Summary — CodeGen Studio (PEFT / LoRA Research)
+
+> **Research focus (2026-06-21):** Introduce **parameter-efficient fine-tuning (PEFT)
+> via LoRA** for three sequential tasks — **text2sql**, **sql2nosql**, **nosql2doc** —
+> using the TEND-style dataset under `data/TEND/`. This summary reflects the *current*
+> codebase (the prior 2026-06-13 research describing FastAPI/Streamlit/`query_engine` is
+> stale; those modules no longer exist).
 
 ## Project Purpose
 
-**CodeGen** ("CodeGen Studio") is a modular, reproducible, research-oriented project
-for evaluating the small code language model **`Salesforce/codegen-350M-multi`** on two
-database-query tasks:
+**CodeGen Studio** is a modular, reproducible, research-oriented project for evaluating
+small code language models on a **three-stage database query pipeline**:
 
-1. **Natural Language → SQL** generation (text-to-SQL)
-2. **SQL → MongoDB (NoSQL)** rule-based translation
+1. **text2sql** — natural-language question + SQL schema → SQL query.
+2. **sql2nosql** — SQL query + MongoDB schema → MongoDB shell query.
+3. **nosql2doc** (`documentation`) — MongoDB query + schema + question → plain-English
+   documentation.
 
-It bundles an end-to-end interactive query pipeline (generate → validate → execute →
-explain → translate), a benchmark evaluation harness (Spider, BIRD), experiment tracking
-(MLflow), a REST API (FastAPI), and an interactive UI (Streamlit). The repository
-appears to back an academic/training deliverable (a `demo_presentation.py` references an
-"IIT Hyderabad AIML Training" demo).
+Today the system is **baseline / evaluation only**. There is **no training or
+fine-tuning code anywhere** in the repository. The PEFT/LoRA initiative adds the missing
+fine-tuning capability so each task's quality can be improved over the zero-shot baseline.
 
 ## Business / Project Goals
 
-- Provide a **reproducible baseline** for a 350M-parameter code LLM on text-to-SQL.
-- Demonstrate a **complete, teachable pipeline**: prompt building, decoding strategies,
-  validation, execution-based evaluation, and metric reporting.
-- Offer **multiple front ends** (API, Streamlit UI, CLI scripts, notebooks) so the same
-  core logic can be demoed or integrated.
-- Show **cross-paradigm translation** (relational SQL → document MongoDB) with explicit
-  capability boundaries (warnings for unsupported constructs).
-- Track experiments with **MLflow** for comparison across models, datasets, prompts, and
-  decoding strategies.
+- Improve task accuracy over the prompt-only baseline using **LoRA adapters** (small,
+  cheap-to-train, swappable) rather than full fine-tuning.
+- Train on the **TEND dataset** (`data/TEND/*.csv`) derived from Spider, which already
+  contains aligned `(question, sql_schema, sql_query, nosql_schema, nosql_query,
+  documentation)` columns — i.e. ready-made supervision for all three tasks.
+- Keep the work **reproducible** (seeds, config-driven) and **resource-aware** (small
+  base models, LoRA, CPU/MPS/CUDA portability).
+- Reuse the existing **prompt builders** and **evaluation harness** so fine-tuned models
+  are scored on the same metrics as the baseline (apples-to-apples comparison).
 
-## Architecture Overview
+## Architecture Overview (current)
 
-A clean layered Python architecture with strong separation of concerns:
+Clean layered Python package under `src/`, plus a standalone `TEND/` dataset-generation
+package:
 
-- **`src/models/`** — `CodeGenModel` wrapper around HuggingFace `AutoModelForCausalLM`
-  with lazy loading, device resolution (auto/cuda/cpu), and greedy/beam decoding.
-- **`src/text2sql/`** — prompt building, SQL generation, validation (sqlparse + SQLite
-  `EXPLAIN`), and execution (SQLite with order-independent row comparison).
-- **`src/sql2nosql/`** — rule-based SQL→MongoDB translator (AST via sqlparse + regex
-  fallbacks) and a translation-quality evaluator.
-- **`src/query_engine/`** — orchestrates the full interactive pipeline.
-- **`src/api/`** — FastAPI app exposing 6 endpoints with Pydantic schemas.
-- **`src/utils/`** — config loading (YAML), seed setting, logging.
-- **`datasets/`** — Spider & BIRD loaders (auto-download + schema parsing) and a
-  preprocessor with cleaning, splitting, and statistics.
-- **`evaluation/`** — metrics (EM, execution accuracy, syntax validity, BLEU, ROUGE-L,
-  BERTScore, CodeBLEU), a `BenchmarkRunner`, and an `MLflowTracker`.
-- **`streamlit_app/`** — 4-page UI (Text-to-SQL, SQL-to-NoSQL, Interactive, Evaluation).
-- **`scripts/`** — setup, baseline eval, demo, and shell launchers.
+- **`src/models/`** — `CodeGenModel` HF wrapper (`AutoModelForCausalLM` /
+  `AutoModelForSeq2SeqLM`), lazy load, device auto-resolve (cuda > mps > cpu), greedy/beam
+  generation. `MODEL_CHECKPOINT` already lets the loader pick a checkpoint dir over the
+  base model — the natural hook for serving fine-tuned adapters.
+- **`src/text2sql/`** — `PromptBuilder`, `SQLGenerator`, `SQLValidator`, `SQLExecutor`.
+- **`src/sql2nosql/`** — `NoSQLPromptBuilder`, `NoSQLGenerator`, rule-based
+  `SQLToNoSQLTranslator`, `NoSQLEvaluator`.
+- **`src/documentation/`** — `DocumentationPromptBuilder`, `DocumentationGenerator`,
+  `DocumentationEvaluator`, `ReferenceDocumentationBuilder` (the nosql2doc task).
+- **`src/evaluation/`** — `EvaluationMetrics` (EM, exec acc, syntax validity, BLEU,
+  ROUGE-L, BERTScore, CodeBLEU, token-F1), `BenchmarkRunner` (runs all three tasks end to
+  end), `MLflowTracker`, `qwen_evaluator`.
+- **`src/datasets/`** — `SpiderLoader`, `BirdLoader`, `DatasetPreprocessor`.
+- **`src/utils/`** — config (YAML + `.env`), device, paths, seeds, logging,
+  `schema_conversion` (`derive_mongo_schema_json`).
+- **`TEND/`** — `TENDDatasetBuilder` + Qwen doc generator/evaluator produce the
+  supervised CSVs in `data/TEND/`.
 
-Dependency injection is used throughout (constructors accept optional collaborators),
-which makes the code highly testable. Heavy imports (`torch`, `transformers`, metric
-libraries) are deferred to call time, and metric computations degrade gracefully to a
-token-overlap fallback when optional libraries are missing.
+There is **no training package** (`src/training/`, no `Trainer`, no `train.py`). This is
+the primary gap the LoRA work must fill.
 
 ## Tech Stack
 
@@ -58,43 +64,38 @@ token-overlap fallback when optional libraries are missing.
 |-------|-----------|
 | Language | Python 3.11 |
 | Model / NLP | PyTorch ≥2.0, Transformers ≥4.36, accelerate, sentencepiece |
-| Model | `Salesforce/codegen-350M-multi` (configurable causal LM) |
-| SQL parsing | sqlparse ≥0.4.4 |
-| Datasets | HF `datasets`, `requests` (+ optional `gdown` for full Spider) |
-| Metrics | nltk (BLEU), rouge-score, bert-score, codebleu |
-| Tracking | MLflow ≥2.9 (SQLite backend store) |
-| API | FastAPI ≥0.109, uvicorn, pydantic ≥2.5 |
-| UI | Streamlit ≥1.30, plotly |
-| Storage | SQLite (execution + sample DBs) |
-| Config | PyYAML (`configs/default.yaml`) |
-| Packaging | Dockerfile (python:3.11-slim) + docker-compose (api, streamlit, mlflow) |
+| PEFT | **Not yet present** — `peft` (and optionally `trl`, `bitsandbytes`) to be added |
+| Candidate base models (already cached in `models/base/`) | `Salesforce/codegen-350M-multi`, `Qwen/Qwen2.5-Coder-0.5B`, `Qwen/Qwen2.5-0.5B-Instruct`, `bigcode/starcoder2-3b`, `google-t5/t5-base`, `google-t5/t5-large` |
+| Dataset gen | `sql-mongo-converter`, sqlparse, Qwen2.5-0.5B-Instruct (doc + judge) |
+| Metrics | nltk, rouge-score, bert-score, codebleu |
+| Tracking | MLflow ≥2.9 (SQLite store) |
+| Config | PyYAML (`configs/default.yaml`) + `.env` (`MODEL_NAME`, paths) |
+| Hardware | macOS dev host → MPS; CUDA when available; CPU fallback (slow) |
 
-## Core Workflows
+## Core Workflows (current)
 
-### 1. Interactive Query Pipeline (`QueryEngine.process`)
-NL question + schema → **generate SQL** (CodeGen) → **validate** (syntax/completeness/
-SQLite EXPLAIN) → **execute** (if DB + valid) → **translate to MongoDB** → **explain**
-(human-readable summary). Returns a single dict consumed by the API and Streamlit UI.
+### 1. TEND dataset generation (`TEND.run_tend` / `scripts/run_all_tend.py`)
+Spider split → SQL DDL → Mongo schema → Mongo query (rule-based) → Qwen documentation →
+Qwen semantic judge → timestamped `data/TEND/spider_<split>_<MMDD_HHMM>.csv` + summary.
 
-### 2. Benchmark Evaluation (`BenchmarkRunner.run_on_dataset`)
-Load standardized examples (Spider/BIRD) → batch-generate SQL → compute full metric
-suite → resolve per-example SQLite DB paths for execution accuracy → log run to MLflow
-(model, dataset, prompt template, decoding strategy, metrics).
+### 2. Three-task baseline evaluation (`BenchmarkRunner.run_on_dataset`)
+Generate SQL → derive/generate MongoDB → generate documentation; score each stage with
+the full metric suite; optionally log to MLflow. Results land in `results/<run>/`.
 
-### 3. SQL → MongoDB Translation (`SQLToNoSQLTranslator.translate`)
-Parse SQL → extract table/columns/WHERE/ORDER BY/LIMIT/GROUP BY → build `db.coll.find(...)`
-or `db.coll.aggregate([...])` string + structured filter/projection → emit warnings for
-unsupported constructs (JOIN, HAVING, UNION, write statements).
+### 3. Model loading & checkpoints
+`load_model()` resolves `MODEL_CHECKPOINT` (under `models/checkpoints/`) before falling
+back to the cached base model. **LoRA adapters will be saved here** and loaded for eval.
 
-### 4. Serving
-- **API**: `uvicorn src.api.main:app` — `/health`, `/generate-sql`, `/translate-nosql`,
-  `/execute-query`, `/evaluate`, `/interactive-query`.
-- **UI**: `streamlit run streamlit_app/app.py`.
-- **Docker**: `docker-compose up` brings up API (8000), Streamlit (8501), MLflow (5000).
+## Current Maturity & Gap for LoRA
 
-## Current Maturity
+- **Implemented:** dataset generation, prompt construction, generation, validation,
+  metrics, MLflow, model caching, checkpoint-aware loading.
+- **Missing for LoRA:** `peft` dependency, a training dataset/`Dataset` builder that turns
+  TEND CSV rows into `(prompt, target)` pairs per task, a LoRA training loop
+  (`Trainer`/`SFTTrainer` or custom), adapter save/merge, and adapter-aware loading in
+  `CodeGenModel`.
+- **Critical data caveat:** `data/TEND/` currently holds only **10 train + 10 validation
+  rows** (smoke-test sized). A real LoRA run needs the **full Spider train split (~7k
+  examples)** regenerated through `run_all_tend.py` first.
 
-The project is **feature-complete for a baseline/evaluation/demo** use case: all modules
-exist and are wired together. It is **not** a fine-tuning project
-(training is an explicit placeholder in `scripts/train.sh`) and the NoSQL translator is
-intentionally rule-based with documented limitations.
+This summary is synced to `ai-workflow/context/project-summary.md`.

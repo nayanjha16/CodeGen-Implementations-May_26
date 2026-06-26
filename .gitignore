@@ -6,22 +6,15 @@ __pycache__/
 dist/
 build/
 .eggs/
-myvenv/
 venv/
 .venv/
 env/
 
 # Data & models (downloaded content)
-data/spider/
-data/bird/
-data/TEND/*.csv
-data/TEND/*.json
-data/processed/
-data/samples/
-models/base_model/*
-!models/base_model/.gitkeep
-models/trained_model/*
-!models/trained_model/.gitkeep
+models/base/*
+!models/base/.gitkeep
+models/checkpoints/*
+!models/checkpoints/.gitkeep
 *.sqlite
 *.db
 
@@ -31,6 +24,7 @@ mlruns/
 # IDE
 .idea/
 .vscode/
+.ipynb_checkpoints/
 *.swp
 
 # OS

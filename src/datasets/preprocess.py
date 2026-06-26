@@ -28,7 +28,7 @@ def clean_question(question: str) -> str:
 class DatasetPreprocessor:
     """Clean and split datasets into standardized format."""
 
-    def __init__(self, output_dir: str | Path = "data/processed"):
+    def __init__(self, output_dir: str | Path = "results/processed"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 

@@ -6,7 +6,7 @@ import csv
 from pathlib import Path
 from typing import Any
 
-from src.evaluation.qwen_evaluator import QwenEvaluator
+from src.evaluation.ollama_judge import OllamaJudge
 from src.models.model_loader import count_input_tokens
 from src.utils.config import get_model_name, load_config
 
@@ -32,36 +32,36 @@ TASK_METRIC_KEYS = [
     "total_count",
     "scored_count",
     "translation_success_rate",
-    "qwen_correct_rate",
-    "qwen_overall_correct_rate",
-    "qwen_count",
+    "judge_correct_rate",
+    "judge_overall_correct_rate",
+    "judge_count",
 ]
 
 
-def merge_qwen_summary_into_metrics(
+def merge_judge_summary_into_metrics(
     base_metrics: dict[str, Any] | None,
-    qwen_summary: dict[str, Any] | None,
+    judge_summary: dict[str, Any] | None,
     *,
     task: str,
 ) -> dict[str, Any]:
-    """Merge Qwen aggregate metrics and normalize to the shared task metrics schema."""
+    """Merge Ollama judge aggregate metrics and normalize to the shared task schema."""
     merged = dict(base_metrics or {})
-    if qwen_summary:
+    if judge_summary:
         if task == "text2sql":
-            merged["qwen_correct_rate"] = qwen_summary.get("sql_correct_rate")
-            merged["qwen_overall_correct_rate"] = qwen_summary.get("sql_correct_rate")
+            merged["judge_correct_rate"] = judge_summary.get("sql_correct_rate")
+            merged["judge_overall_correct_rate"] = judge_summary.get("sql_correct_rate")
         elif task == "sql2nosql":
-            merged["qwen_correct_rate"] = qwen_summary.get("query_correct_rate")
-            merged["qwen_overall_correct_rate"] = qwen_summary.get(
+            merged["judge_correct_rate"] = judge_summary.get("query_correct_rate")
+            merged["judge_overall_correct_rate"] = judge_summary.get(
                 "overall_correct_rate"
             )
         elif task == "documentation":
-            merged["qwen_correct_rate"] = qwen_summary.get("doc_correct_rate")
-            merged["qwen_overall_correct_rate"] = qwen_summary.get(
+            merged["judge_correct_rate"] = judge_summary.get("doc_correct_rate")
+            merged["judge_overall_correct_rate"] = judge_summary.get(
                 "overall_correct_rate"
             )
-        if "count" in qwen_summary:
-            merged["qwen_count"] = qwen_summary["count"]
+        if "count" in judge_summary:
+            merged["judge_count"] = judge_summary["count"]
     return normalize_task_metrics(merged, task=task)
 
 
@@ -90,7 +90,7 @@ def normalize_task_metrics(
     for key in TASK_METRIC_KEYS:
         if key in source:
             normalized[key] = source[key]
-        elif key.startswith("qwen_"):
+        elif key.startswith("judge_"):
             normalized[key] = None
         else:
             normalized[key] = 0.0
@@ -105,8 +105,9 @@ TEXT2SQL_DETAIL_FIELDS = [
     "predicted_sql",
     "predicted_sql_valid",
     "ground_truth",
-    "qwen_sql_correct",
-    "qwen_raw_response",
+    "judge_sql_correct",
+    "judge_reason",
+    "judge_raw_response",
 ]
 
 SQL2NOSQL_DETAIL_FIELDS = [
@@ -118,8 +119,9 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "reference_mongodb_query",
     "mongodb_warnings",
     "mongodb_success",
-    "qwen_query_correct",
-    "qwen_raw_response",
+    "judge_query_correct",
+    "judge_reason",
+    "judge_raw_response",
 ]
 
 DOCUMENTATION_DETAIL_FIELDS = [
@@ -127,8 +129,9 @@ DOCUMENTATION_DETAIL_FIELDS = [
     "prompt",
     "input_token_count",
     "raw_output",
-    "qwen_doc_correct",
-    "qwen_raw_response",
+    "judge_doc_correct",
+    "judge_reason",
+    "judge_raw_response",
 ]
 
 
@@ -136,25 +139,25 @@ def save_text2sql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
     db_paths: list[str | None] | None = None,
-    qwen_evaluator: QwenEvaluator | None = None,
-    use_qwen: bool = True,
+    judge: OllamaJudge | None = None,
+    use_judge: bool = True,
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write text-to-SQL per-sample details to CSV using Qwen semantic evaluation."""
+    """Write text-to-SQL per-sample details to CSV using Ollama semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     db_paths = db_paths or [None] * len(predictions)
-    evaluator = qwen_evaluator
-    if use_qwen and evaluator is None:
-        evaluator = QwenEvaluator()
+    evaluator = judge
+    if use_judge and evaluator is None:
+        evaluator = OllamaJudge()
 
     fieldnames = TEXT2SQL_DETAIL_FIELDS
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
 
-    qwen_results: list[dict[str, Any]] = []
+    judge_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -172,14 +175,14 @@ def save_text2sql_details_csv(
                     config=cfg,
                 )
 
-            qwen_eval: dict[str, Any] = {}
-            if use_qwen and evaluator is not None:
+            judge_eval: dict[str, Any] = {}
+            if use_judge and evaluator is not None:
                 sql_valid = (
                     predicted_sql_valid
                     if isinstance(predicted_sql_valid, bool)
                     else None
                 )
-                qwen_eval = evaluator.evaluate_text2sql_sample(
+                judge_eval = evaluator.evaluate_text2sql_sample(
                     question=pred.get("question", ""),
                     schema=pred.get("schema", ""),
                     predicted_sql=predicted_sql,
@@ -188,9 +191,9 @@ def save_text2sql_details_csv(
                     prompt=pred.get("prompt", ""),
                     predicted_sql_valid=sql_valid,
                 )
-                qwen_results.append(qwen_eval)
+                judge_results.append(judge_eval)
                 if predicted_sql_valid == "":
-                    predicted_sql_valid = qwen_eval.get("predicted_sql_valid", "")
+                    predicted_sql_valid = judge_eval.get("predicted_sql_valid", "")
 
             writer.writerow(
                 {
@@ -202,40 +205,41 @@ def save_text2sql_details_csv(
                     "predicted_sql": predicted_sql,
                     "predicted_sql_valid": predicted_sql_valid,
                     "ground_truth": ground_truth,
-                    "qwen_sql_correct": qwen_eval.get("sql_correct", ""),
-                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
+                    "judge_sql_correct": judge_eval.get("sql_correct", ""),
+                    "judge_reason": judge_eval.get("reason", ""),
+                    "judge_raw_response": judge_eval.get("raw_response", ""),
                 }
             )
 
     summary = (
-        QwenEvaluator.summarize_text2sql(qwen_results)
-        if use_qwen
+        OllamaJudge.summarize_text2sql(judge_results)
+        if use_judge
         else {"sql_correct_rate": 0.0, "count": len(predictions)}
     )
-    return output_path, qwen_results, summary
+    return output_path, judge_results, summary
 
 
 def save_sql2nosql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-    qwen_evaluator: QwenEvaluator | None = None,
-    use_qwen: bool = True,
+    judge: OllamaJudge | None = None,
+    use_judge: bool = True,
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write SQL-to-MongoDB per-sample details to CSV using Qwen semantic evaluation."""
+    """Write SQL-to-MongoDB per-sample details to CSV using Ollama semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    evaluator = qwen_evaluator
-    if use_qwen and evaluator is None:
-        evaluator = QwenEvaluator()
+    evaluator = judge
+    if use_judge and evaluator is None:
+        evaluator = OllamaJudge()
 
     fieldnames = SQL2NOSQL_DETAIL_FIELDS
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
 
-    qwen_results: list[dict[str, Any]] = []
+    judge_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -253,14 +257,14 @@ def save_sql2nosql_details_csv(
                     config=cfg,
                 )
 
-            qwen_eval: dict[str, Any] = {}
-            if use_qwen and evaluator is not None:
-                qwen_eval = evaluator.evaluate_sql2nosql_sample(
+            judge_eval: dict[str, Any] = {}
+            if use_judge and evaluator is not None:
+                judge_eval = evaluator.evaluate_sql2nosql_sample(
                     predicted_mongodb_query=predicted_mongodb,
                     reference_mongodb_query=reference_mongodb,
                     reference_sql=reference_sql,
                 )
-                qwen_results.append(qwen_eval)
+                judge_results.append(judge_eval)
 
             writer.writerow(
                 {
@@ -272,44 +276,45 @@ def save_sql2nosql_details_csv(
                     "reference_mongodb_query": reference_mongodb,
                     "mongodb_warnings": pred.get("mongodb_warnings", ""),
                     "mongodb_success": pred.get("mongodb_success", ""),
-                    "qwen_query_correct": qwen_eval.get("query_correct", ""),
-                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
+                    "judge_query_correct": judge_eval.get("query_correct", ""),
+                    "judge_reason": judge_eval.get("reason", ""),
+                    "judge_raw_response": judge_eval.get("raw_response", ""),
                 }
             )
 
     summary = (
-        QwenEvaluator.summarize_sql2nosql(qwen_results)
-        if use_qwen
+        OllamaJudge.summarize_sql2nosql(judge_results)
+        if use_judge
         else {
             "query_correct_rate": 0.0,
             "overall_correct_rate": 0.0,
             "count": len(predictions),
         }
     )
-    return output_path, qwen_results, summary
+    return output_path, judge_results, summary
 
 
 def save_documentation_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-    qwen_evaluator: QwenEvaluator | None = None,
-    use_qwen: bool = True,
+    judge: OllamaJudge | None = None,
+    use_judge: bool = True,
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write MongoDB documentation per-sample details to CSV using Qwen evaluation."""
+    """Write MongoDB documentation per-sample details to CSV using Ollama evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    evaluator = qwen_evaluator
-    if use_qwen and evaluator is None:
-        evaluator = QwenEvaluator()
+    evaluator = judge
+    if use_judge and evaluator is None:
+        evaluator = OllamaJudge()
 
     fieldnames = DOCUMENTATION_DETAIL_FIELDS
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
 
-    qwen_results: list[dict[str, Any]] = []
+    judge_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -328,15 +333,15 @@ def save_documentation_details_csv(
                     config=cfg,
                 )
 
-            qwen_eval: dict[str, Any] = {}
-            if use_qwen and evaluator is not None:
+            judge_eval: dict[str, Any] = {}
+            if use_judge and evaluator is not None:
                 raw_output = pred.get("doc_raw_output", pred.get("raw_output", ""))
-                qwen_eval = evaluator.evaluate_documentation_sample(
+                judge_eval = evaluator.evaluate_documentation_sample(
                     mongodb_query=mongodb_query,
                     raw_output=raw_output,
                     reference_sql=pred.get("reference_sql", pred.get("ground_truth", "")),
                 )
-                qwen_results.append(qwen_eval)
+                judge_results.append(judge_eval)
 
             writer.writerow(
                 {
@@ -344,18 +349,19 @@ def save_documentation_details_csv(
                     "prompt": prompt,
                     "input_token_count": input_token_count,
                     "raw_output": pred.get("doc_raw_output", pred.get("raw_output", "")),
-                    "qwen_doc_correct": qwen_eval.get("doc_correct", ""),
-                    "qwen_raw_response": qwen_eval.get("raw_response", ""),
+                    "judge_doc_correct": judge_eval.get("doc_correct", ""),
+                    "judge_reason": judge_eval.get("reason", ""),
+                    "judge_raw_response": judge_eval.get("raw_response", ""),
                 }
             )
 
     summary = (
-        QwenEvaluator.summarize_documentation(qwen_results)
-        if use_qwen
+        OllamaJudge.summarize_documentation(judge_results)
+        if use_judge
         else {
             "doc_correct_rate": 0.0,
             "overall_correct_rate": 0.0,
             "count": len(predictions),
         }
     )
-    return output_path, qwen_results, summary
+    return output_path, judge_results, summary

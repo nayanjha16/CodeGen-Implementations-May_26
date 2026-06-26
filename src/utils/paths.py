@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+from datetime import datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -38,19 +39,14 @@ def get_models_checkpoints_dir() -> Path:
     return _env_path("MODELS_CHECKPOINTS_DIR", "models/checkpoints")
 
 
-def get_data_dir() -> Path:
-    """Root data directory."""
-    return _env_path("DATA_DIR", "data")
-
-
-def get_spider_data_dir() -> Path:
-    """Local Spider dataset directory."""
-    return _env_path("SPIDER_DATA_DIR", "data/spider")
-
-
-def get_bird_data_dir() -> Path:
-    """Local BIRD dataset directory."""
-    return _env_path("BIRD_DATA_DIR", "data/bird")
+def ensure_storage_dirs() -> None:
+    """Create standard models/ and results/ directories if missing."""
+    for directory in (
+        get_models_base_dir(),
+        get_models_checkpoints_dir(),
+        get_results_dir(),
+    ):
+        directory.mkdir(parents=True, exist_ok=True)
 
 
 def get_results_dir() -> Path:
@@ -63,9 +59,52 @@ def model_slug(model_name: str) -> str:
     return re.sub(r"[^\w.\-]+", "__", model_name.replace("/", "__"))
 
 
+def short_model_name(model_id: str) -> str:
+    """Use the HuggingFace repo tail as a compact run-name segment."""
+    return model_id.rsplit("/", 1)[-1]
+
+
+def _safe_run_name_segment(value: str, *, fallback: str) -> str:
+    safe = re.sub(r"[^\w.\-]+", "__", value.strip()).strip("_")
+    return safe or fallback
+
+
+def build_results_run_name(
+    *,
+    dataset: str,
+    model_name: str,
+    when: datetime | None = None,
+) -> str:
+    """Build ``<dataset>_<model>_<DDMM>_<HHMM>`` for results run folders."""
+    stamp = (when or datetime.now()).strftime("%d%m_%H%M")
+    dataset_part = _safe_run_name_segment(dataset, fallback="dataset")
+    model_part = _safe_run_name_segment(short_model_name(model_name), fallback="model")
+    return f"{dataset_part}_{model_part}_{stamp}"
+
+
 def get_model_cache_dir(model_name: str) -> Path:
     """Local cache path for a base model."""
     return get_models_base_dir() / model_slug(model_name)
+
+
+def default_adapter_run_name(when: datetime | None = None) -> str:
+    """Return DDMM folder name for a checkpoint run when no version/name is supplied."""
+    return (when or datetime.now()).strftime("%d%m")
+
+
+def resolve_adapter_run_name(run: str | None = None, when: datetime | None = None) -> str:
+    """Sanitize a checkpoint run segment, defaulting to DDMM when empty."""
+    fallback = default_adapter_run_name(when)
+    if run is None or not str(run).strip():
+        return fallback
+    return _safe_run_name_segment(str(run), fallback=fallback)
+
+
+def get_adapter_checkpoint_path(task: str, run: str | None = None) -> Path:
+    """Resolve ``models/checkpoints/<run>/<task>/`` for LoRA adapter output."""
+    normalized = task.strip().lower()
+    run_name = resolve_adapter_run_name(run)
+    return get_models_checkpoints_dir() / run_name / normalized
 
 
 def get_checkpoint_path(checkpoint_name: str) -> Path:
@@ -115,47 +154,15 @@ def resolve_results_output_path(path: str | Path) -> Path:
     return resolved
 
 
-def is_dataset_cached(data_dir: Path) -> bool:
-    """Return True when a dataset has been downloaded to the local cache."""
-    return (data_dir / ".downloaded").exists()
+def get_tend_dataset_id() -> str:
+    """Hugging Face dataset id for published TEND silver data."""
+    _load_env()
+    return os.environ.get("TEND_DATASET_ID", "care2achieve/tend")
 
 
-def is_spider_cached(data_dir: Path) -> bool:
-    """Return True when Spider data files exist locally."""
-    if not is_dataset_cached(data_dir):
-        return False
-    if (data_dir / "dev.json").exists() or (data_dir / "train_spider.json").exists():
-        return True
-    if (data_dir / "spider_data" / "dev.json").exists():
-        return True
-    return any(
-        (path / "dev.json").exists() or (path / "train_spider.json").exists()
-        for path in data_dir.glob("spider-*")
+def get_spider_gold_validation_path() -> Path:
+    """Frozen Spider gold validation set used for all baseline evaluation."""
+    return _env_path(
+        "SPIDER_GOLD_VALIDATION_PATH",
+        "data/spider_gold_validation.jsonl",
     )
-
-
-def is_bird_cached(data_dir: Path) -> bool:
-    """Return True when BIRD data files exist locally."""
-    bird_data = data_dir / "bird_data"
-    if (bird_data / "dev.json").exists() or (bird_data / "train.json").exists():
-        return True
-    if (data_dir / "dev.json").exists() or (data_dir / "train.json").exists():
-        return True
-    return any(
-        (path / "dev.json").exists() or (path / "train.json").exists()
-        for path in data_dir.rglob("*")
-        if path.is_dir()
-    )
-
-
-def ensure_storage_dirs() -> None:
-    """Create standard models/, data/, and results/ directories if missing."""
-    for directory in (
-        get_models_base_dir(),
-        get_models_checkpoints_dir(),
-        get_data_dir(),
-        get_spider_data_dir(),
-        get_bird_data_dir(),
-        get_results_dir(),
-    ):
-        directory.mkdir(parents=True, exist_ok=True)

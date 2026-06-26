@@ -27,7 +27,7 @@ class ReferenceDocumentationBuilder:
 
         collection = match.group(1)
         operation = match.group(2).lower()
-        parts = [f"This query targets the `{collection}` collection."]
+        parts = [f"Reads from the {collection} collection via {operation}."]
 
         if operation == "find":
             parts.append("It uses a find operation to retrieve matching documents.")

@@ -1,4 +1,4 @@
-"""Benchmark runner for Spider and BirdBench evaluation."""
+"""Benchmark runner for TEND dataset evaluation."""
 
 from __future__ import annotations
 
@@ -10,14 +10,33 @@ from src.documentation.evaluator import DocumentationEvaluator
 from src.documentation.reference_builder import ReferenceDocumentationBuilder
 from src.evaluation.metrics import EvaluationMetrics
 from src.evaluation.mlflow_tracker import MLflowTracker
+from src.models.model_loader import CodeGenModel, load_model
 from src.sql2nosql.evaluator import NoSQLEvaluator
 from src.sql2nosql.nosql_generator import NoSQLGenerator
-from src.sql2nosql.translator import SQLToNoSQLTranslator
 from src.text2sql.sql_generator import SQLGenerator
-from src.utils.config import load_config
+from src.training.tasks import TRAINING_TASKS
+from src.utils.config import get_adapter_path, load_config
 from src.utils.seeds import set_seeds
 
 logger = logging.getLogger("codegen")
+
+
+def load_task_model(
+    task: str,
+    config: dict[str, Any],
+    *,
+    adapter_run: str | None = None,
+    eager: bool = True,
+) -> CodeGenModel:
+    """Load base model with a task-specific LoRA adapter when ``adapter_run`` is set."""
+    normalized = task.strip().lower()
+    if normalized not in TRAINING_TASKS:
+        allowed = ", ".join(sorted(TRAINING_TASKS))
+        raise ValueError(f"Unknown task '{task}'. Expected one of: {allowed}")
+    if adapter_run:
+        adapter_path = get_adapter_path(normalized, config, run=adapter_run)
+        return load_model(config=config, adapter_path=adapter_path, eager=eager)
+    return load_model(config=config, eager=eager)
 
 
 class BenchmarkRunner:
@@ -30,26 +49,51 @@ class BenchmarkRunner:
         metrics: EvaluationMetrics | None = None,
         nosql_evaluator: NoSQLEvaluator | None = None,
         nosql_generator: NoSQLGenerator | None = None,
-        nosql_translator: SQLToNoSQLTranslator | None = None,
         doc_generator: DocumentationGenerator | None = None,
         doc_evaluator: DocumentationEvaluator | None = None,
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
+        adapter_run: str | None = None,
     ):
         self.config = config or load_config()
         set_seeds(self.config)
-        self.sql_generator = sql_generator or SQLGenerator(config=self.config)
+        self.adapter_run = adapter_run
+
+        if sql_generator is not None:
+            self.sql_generator = sql_generator
+        elif adapter_run:
+            text2sql_model = load_task_model("text2sql", self.config, adapter_run=adapter_run)
+            self.sql_generator = SQLGenerator(model=text2sql_model, config=self.config)
+        else:
+            self.sql_generator = SQLGenerator(config=self.config)
+
         self.metrics = metrics or EvaluationMetrics()
         self.nosql_evaluator = nosql_evaluator or NoSQLEvaluator()
-        self.nosql_translator = nosql_translator or SQLToNoSQLTranslator()
-        self.nosql_generator = nosql_generator or NoSQLGenerator(
-            model=self.sql_generator.model,
-            config=self.config,
-        )
-        self.doc_generator = doc_generator or DocumentationGenerator(
-            model=self.sql_generator.model,
-            config=self.config,
-        )
+
+        if nosql_generator is not None:
+            self.nosql_generator = nosql_generator
+        elif adapter_run:
+            sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
+            self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
+        else:
+            self.nosql_generator = NoSQLGenerator(
+                model=self.sql_generator.model,
+                config=self.config,
+            )
+
+        if doc_generator is not None:
+            self.doc_generator = doc_generator
+        elif adapter_run:
+            nosql2doc_model = load_task_model("nosql2doc", self.config, adapter_run=adapter_run)
+            self.doc_generator = DocumentationGenerator(
+                model=nosql2doc_model,
+                config=self.config,
+            )
+        else:
+            self.doc_generator = DocumentationGenerator(
+                model=self.sql_generator.model,
+                config=self.config,
+            )
         self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
         self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
@@ -100,7 +144,9 @@ class BenchmarkRunner:
                 {
                     "question": result.get("question", example.get("question", "")),
                     "schema": schema,
-                    "nosql_schema": result.get("nosql_schema", ""),
+                    "nosql_schema": result.get(
+                        "nosql_schema", example.get("nosql_schema", "")
+                    ),
                     "sql": ref_sql,
                     "ground_truth_sql": ref_sql,
                 }
@@ -126,7 +172,25 @@ class BenchmarkRunner:
                     "Model output is not valid MongoDB shell syntax"
                 )
 
-            ref_trans = self.nosql_translator.translate(ref_sql)
+            ref_mongo = example.get("nosql_query", "").strip()
+            if ref_mongo:
+                ref_trans = {
+                    "mongodb_query": ref_mongo,
+                    "collection": NoSQLGenerator._parse_collection(ref_mongo),
+                    "filter": {},
+                    "projection": {},
+                    "warnings": [],
+                    "success": True,
+                }
+            else:
+                ref_trans = {
+                    "mongodb_query": "",
+                    "collection": "",
+                    "filter": {},
+                    "projection": {},
+                    "warnings": ["Missing gold nosql_query in dataset example"],
+                    "success": False,
+                }
 
             pred_structured = {
                 "mongodb_query": pred_mongo,
@@ -154,6 +218,7 @@ class BenchmarkRunner:
                     "nosql_raw_output": nosql_gen.get("raw_output", ""),
                     "predicted_mongodb_query": pred_mongo,
                     "reference_mongodb_query": ref_trans.get("mongodb_query", ""),
+                    "reference_documentation": example.get("documentation", ""),
                     "reference_translation_success": ref_trans.get("success", False),
                     "mongodb_warnings": "; ".join(pred_warnings),
                     "mongodb_success": pred_structured["success"],
@@ -212,7 +277,9 @@ class BenchmarkRunner:
         for result, doc_gen in zip(nosql_results, doc_gen_results):
             mongodb_query = doc_gen.get("mongodb_query", "")
             predicted_doc = doc_gen.get("documentation", "")
-            reference_doc = doc_gen.get("reference_documentation", "")
+            reference_doc = result.get("reference_documentation", "").strip()
+            if not reference_doc:
+                reference_doc = doc_gen.get("reference_documentation", "")
             reference_mongodb = result.get("reference_mongodb_query", "")
 
             pred_warnings: list[str] = []
@@ -306,18 +373,26 @@ class BenchmarkRunner:
 
         run_id = None
         if self.tracker:
+            extra_params: dict[str, Any] = {
+                "max_samples": len(samples),
+                "decoding_strategy": self.config.get("generation", {}).get(
+                    "decoding_strategy", "greedy"
+                ),
+            }
+            if self.adapter_run:
+                extra_params["run_type"] = "lora"
+                extra_params["adapter_run"] = self.adapter_run
+                for task in ("text2sql", "sql2nosql", "nosql2doc"):
+                    extra_params[f"adapter_path_{task}"] = str(
+                        get_adapter_path(task, self.config, run=self.adapter_run)
+                    )
             run_id = self.tracker.log_evaluation(
                 model_name=self.config.get("model", {}).get("name", "codegen"),
                 dataset=dataset_name,
                 prompt_template=self.sql_generator.prompt_builder.get_template_name(),
                 metrics=eval_metrics,
                 nosql_metrics=nosql_metrics,
-                extra_params={
-                    "max_samples": len(samples),
-                    "decoding_strategy": self.config.get("generation", {}).get(
-                        "decoding_strategy", "greedy"
-                    ),
-                },
+                extra_params=extra_params,
             )
 
         return {
@@ -331,28 +406,38 @@ class BenchmarkRunner:
             "mlflow_run_id": run_id,
         }
 
-    def run_spider(self, split: str = "validation") -> dict[str, Any]:
-        """Run benchmark on Spider dataset."""
-        from src.datasets.spider_loader import SpiderLoader
+    def run_tend(
+        self,
+        config: str = "spider",
+        split: str = "test",
+        *,
+        use_gold_validation: bool = True,
+    ) -> dict[str, Any]:
+        """Run benchmark on TEND data.
 
-        spider_cfg = self.config.get("datasets", {}).get("spider", {})
-        loader = SpiderLoader(config=self.config, cache_dir=spider_cfg.get("cache_dir"))
-        examples = loader.load_split(split)
-        return self.run_on_dataset(
-            examples,
-            dataset_name=f"spider_{split}",
-            db_resolver=loader.get_database_path,
+        Spider baseline eval always uses the frozen gold validation JSONL
+        under ``data/spider_gold_validation.jsonl``. Other configs load from
+        Hugging Face when ``use_gold_validation`` is False or no gold file
+        applies.
+        """
+        from src.datasets.tend_loader import (
+            GOLD_VALIDATION_DATASET_NAME,
+            TENDLoader,
+            load_gold_validation,
         )
 
-    def run_bird(self, split: str = "validation") -> dict[str, Any]:
-        """Run benchmark on BIRD dataset."""
-        from src.datasets.bird_loader import BirdLoader
+        if use_gold_validation and config == "spider":
+            examples = load_gold_validation()
+            return self.run_on_dataset(
+                examples,
+                dataset_name=GOLD_VALIDATION_DATASET_NAME,
+            )
 
-        bird_cfg = self.config.get("datasets", {}).get("bird", {})
-        loader = BirdLoader(config=self.config, cache_dir=bird_cfg.get("cache_dir"))
+        tend_cfg = self.config.get("datasets", {}).get("tend", {})
+        dataset_id = tend_cfg.get("dataset_id")
+        loader = TENDLoader(dataset_id=dataset_id, config=config)
         examples = loader.load_split(split)
         return self.run_on_dataset(
             examples,
-            dataset_name=f"bird_{split}",
-            db_resolver=loader.get_database_path,
+            dataset_name=f"tend_{config}_{split}",
         )

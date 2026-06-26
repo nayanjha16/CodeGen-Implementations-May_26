@@ -9,7 +9,11 @@ from typing import Any
 import yaml
 from dotenv import load_dotenv
 
-from src.utils.paths import get_project_root
+from src.utils.paths import get_checkpoint_path, get_project_root
+
+DEFAULT_TEND_DATASET_ID = "care2achieve/tend"
+
+TRAINING_TASKS = frozenset({"text2sql", "sql2nosql", "nosql2doc"})
 
 
 def _load_env() -> None:
@@ -54,20 +58,27 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     )
     if os.environ.get("MODEL_CHECKPOINT"):
         model_cfg["checkpoint"] = os.environ["MODEL_CHECKPOINT"]
+    if os.environ.get("MODEL_ADAPTER"):
+        model_cfg["adapter"] = os.environ["MODEL_ADAPTER"]
+
+    training_cfg = _ensure_dict(config, "training")
+    _ensure_dict(config, "lora")
 
     datasets_cfg = _ensure_dict(config, "datasets")
-    spider_cfg = _ensure_dict(datasets_cfg, "spider")
-    bird_cfg = _ensure_dict(datasets_cfg, "bird")
-    spider_cfg["cache_dir"] = os.environ.get("SPIDER_DATA_DIR", "data/spider")
-    spider_cfg["repo_url"] = os.environ.get("SPIDER_REPO_URL")
-    spider_cfg["dataset_url"] = os.environ.get("SPIDER_DATASET_URL")
-    bird_cfg["cache_dir"] = os.environ.get("BIRD_DATA_DIR", "data/bird")
-    bird_cfg["dataset_url"] = os.environ.get("BIRD_DATASET_URL")
-    config["data_dir"] = os.environ.get("DATA_DIR", "data")
+    tend_cfg = _ensure_dict(datasets_cfg, "tend")
+    tend_cfg["dataset_id"] = os.environ.get(
+        "TEND_DATASET_ID", DEFAULT_TEND_DATASET_ID
+    )
 
     eval_cfg = _ensure_dict(config, "evaluation")
     eval_cfg["bertscore_model"] = os.environ.get("BERTSCORE_MODEL_NAME")
-    eval_cfg["qwen_evaluator_model"] = os.environ.get("QWEN_EVALUATOR_MODEL_NAME")
+    eval_cfg["ollama_base_url"] = os.environ.get("OLLAMA_BASE_URL")
+    eval_cfg["ollama_judge_model"] = os.environ.get("OLLAMA_JUDGE_MODEL")
+    eval_cfg["ollama_timeout"] = os.environ.get("OLLAMA_TIMEOUT")
+
+    # Apply model.max_length as default training max_length when not set in YAML.
+    if training_cfg.get("max_length") is None:
+        training_cfg["max_length"] = model_cfg.get("max_length", 2048)
 
     return config
 
@@ -83,16 +94,28 @@ def get_model_name(config: dict[str, Any] | None = None) -> str:
     return name
 
 
-def get_qwen_evaluator_model_name(config: dict[str, Any] | None = None) -> str:
-    """Return the configured Qwen evaluator model name from env/config."""
+def get_ollama_base_url(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Ollama base URL from env/config."""
     _load_env()
     if config is None:
         config = load_config()
-    name = (
-        os.environ.get("QWEN_EVALUATOR_MODEL_NAME")
-        or config.get("evaluation", {}).get("qwen_evaluator_model")
+    return (
+        os.environ.get("OLLAMA_BASE_URL")
+        or config.get("evaluation", {}).get("ollama_base_url")
+        or "http://localhost:11434"
     )
-    return name or "Qwen/Qwen2.5-0.5B-Instruct"
+
+
+def get_ollama_judge_model(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Ollama judge model from env/config."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return (
+        os.environ.get("OLLAMA_JUDGE_MODEL")
+        or config.get("evaluation", {}).get("ollama_judge_model")
+        or "qwen3:4b"
+    )
 
 
 def get_bertscore_model_name(config: dict[str, Any] | None = None) -> str:
@@ -109,40 +132,60 @@ def get_bertscore_model_name(config: dict[str, Any] | None = None) -> str:
     return name
 
 
-def get_spider_repo_url(config: dict[str, Any] | None = None) -> str:
-    """Return Spider repository archive URL from env/config."""
+def get_tend_dataset_id(config: dict[str, Any] | None = None) -> str:
+    """Return the configured TEND Hugging Face dataset id."""
     _load_env()
     if config is None:
         config = load_config()
-    url = config.get("datasets", {}).get("spider", {}).get("repo_url") or os.environ.get(
-        "SPIDER_REPO_URL"
+    return (
+        os.environ.get("TEND_DATASET_ID")
+        or config.get("datasets", {}).get("tend", {}).get("dataset_id")
+        or DEFAULT_TEND_DATASET_ID
     )
-    if not url:
-        return _require_env("SPIDER_REPO_URL")
-    return url
 
 
-def get_spider_dataset_url(config: dict[str, Any] | None = None) -> str:
-    """Return Spider full dataset mirror URL from env/config."""
+def get_training_config(config: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Return the training section from config with env-aware defaults."""
+    if config is None:
+        config = load_config()
+    return dict(config.get("training", {}))
+
+
+def get_lora_config(config: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Return the LoRA section from config."""
+    if config is None:
+        config = load_config()
+    return dict(config.get("lora", {}))
+
+
+def get_adapter_name(config: dict[str, Any] | None = None) -> str | None:
+    """Return configured adapter task name from env/config, if set."""
     _load_env()
     if config is None:
         config = load_config()
-    url = config.get("datasets", {}).get("spider", {}).get("dataset_url") or os.environ.get(
-        "SPIDER_DATASET_URL"
-    )
-    if not url:
-        return _require_env("SPIDER_DATASET_URL")
-    return url
+    return os.environ.get("MODEL_ADAPTER") or config.get("model", {}).get("adapter")
 
 
-def get_bird_dataset_url(config: dict[str, Any] | None = None) -> str:
-    """Return BIRD dataset archive URL from env/config."""
+def get_adapter_run(config: dict[str, Any] | None = None) -> str | None:
+    """Return configured adapter run folder (version/name) from env/config, if set."""
     _load_env()
     if config is None:
         config = load_config()
-    url = config.get("datasets", {}).get("bird", {}).get("dataset_url") or os.environ.get(
-        "BIRD_DATASET_URL"
-    )
-    if not url:
-        return _require_env("BIRD_DATASET_URL")
-    return url
+    return os.environ.get("MODEL_ADAPTER_RUN") or config.get("model", {}).get("adapter_run")
+
+
+def get_adapter_path(
+    task: str,
+    config: dict[str, Any] | None = None,
+    *,
+    run: str | None = None,
+) -> Path:
+    """Resolve the LoRA adapter directory under ``models/checkpoints/<run>/<task>/``."""
+    from src.utils.paths import get_adapter_checkpoint_path
+
+    normalized = task.strip().lower()
+    if normalized not in TRAINING_TASKS:
+        allowed = ", ".join(sorted(TRAINING_TASKS))
+        raise ValueError(f"Unknown training task '{task}'. Expected one of: {allowed}")
+    resolved_run = run if run is not None else get_adapter_run(config)
+    return get_adapter_checkpoint_path(normalized, resolved_run)

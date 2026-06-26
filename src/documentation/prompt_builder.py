@@ -4,26 +4,42 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.training.tasks import TaskType, format_task_prompt
+
 
 class DocumentationPromptBuilder:
     """Build prompts that explain MongoDB shell queries in plain English."""
 
-    TEMPLATE = """Generate documentation for the MongoDB shell query below.
+    TEMPLATE = """You are an expert MongoDB documentation generator.
 
-Requirements:
+Generate concise, human-readable documentation for the MongoDB shell query.
 
-* Explain what the query does in plain English.
-* Mention the collection name and operation type (find, aggregate, distinct, or countDocuments).
-* Describe filters, projections, sorting, limits, and aggregation stages when present.
-* Return documentation text only.
-* No code.
-* No markdown fences.
-* No extra headings or labels.
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
 
-MongoDB collections:
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+{question_section}MongoDB Schema:
 {mongodb_schema}
 
-MongoDB query:
+MongoDB Query:
 {mongodb_query}
 
 Documentation:
@@ -44,8 +60,9 @@ Documentation:
         mongodb_query: str,
         schema: str = "",
         nosql_schema: str | None = None,
+        question: str = "",
     ) -> str:
-        """Build a documentation prompt from a MongoDB query and schema."""
+        """Build a documentation prompt from a MongoDB query, schema, and question."""
         from src.utils.schema_conversion import derive_mongo_schema_json
 
         if nosql_schema is None:
@@ -53,10 +70,20 @@ Documentation:
         else:
             mongo_schema = nosql_schema.strip() or "{}"
 
-        return self.template.format(
+        question_text = question.strip()
+        question_section = ""
+        if question_text:
+            question_section = (
+                "Natural language question:\n"
+                f"{question_text}\n\n"
+            )
+
+        prompt = self.template.format(
+            question_section=question_section,
             mongodb_schema=mongo_schema,
             mongodb_query=mongodb_query.strip(),
         ).strip()
+        return format_task_prompt(TaskType.NOSQL2DOC.value, prompt)
 
     def get_template_name(self) -> str:
         """Return template identifier for experiment tracking."""

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.training.tasks import TaskType, format_task_prompt
+
 
 class PromptBuilder:
     """Build prompts for text-to-SQL generation."""
@@ -40,10 +42,11 @@ SQL:
 
     def build(self, question: str, schema: str) -> str:
         """Build a text-to-SQL prompt."""
-        return self.template.format(
+        prompt = self.template.format(
             schema=schema.strip(),
             question=question.strip(),
         ).strip()
+        return format_task_prompt(TaskType.TEXT2SQL.value, prompt)
 
     def build_batch(self, examples: list[dict[str, str]]) -> list[str]:
         """Build prompts for a batch of examples."""

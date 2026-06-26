@@ -23,7 +23,6 @@ Instructions:
 * Mention the collection name and operation type.
 * Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
 * For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
-* When a natural language question is provided, generate documentation that directly answers that question.
 * Infer intent from the query structure rather than repeating MongoDB operators.
 * Use natural language field names where possible.
 * Focus on the final output returned to the user.

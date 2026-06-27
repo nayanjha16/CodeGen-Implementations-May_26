@@ -98,21 +98,36 @@ style PerRecord fill:#fff3e0
 
 # Phase 2: Java (PL1) -\> C# (PL2)
 
-``` mermaid
+```mermaid
 flowchart TD
+
 subgraph Training["Fine Tuning Java to CSharp"]
-A[CodeSearchNet Java Samples] --> B[LoRA Fine-tuning on unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit]
 
-subgraph PerRecord[For each Java record]
-B --> C[Input Java PL1]
-C --> D[Generate CSharp (PL2)]
-D --> E[AST + GraphCodeBERTScore against C# Ground Truth]
-E --> F[Average Score]
-end
+    A["CodeSearchNet Java Samples"]
+    B["LoRA Fine Tuning<br/>unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit"]
+
+    A --> B
+
+    subgraph PerRecord["For each Java Record"]
+
+        C["Input Java Code (PL1)"]
+        D["Generate CSharp Code (PL2)"]
+        E["Compare with Ground Truth CSharp<br/>AST and GraphCodeBERTScore"]
+        F["Average Score"]
+
+        B --> C
+        C --> D
+        D --> E
+        E --> F
+
+    end
+
 end
 
-F --> G[Fine-tuned Java to CSharp Model]
+F --> G["Fine Tuned Java to CSharp Model"]
 
 style Training fill:#f3e5f5
+style PerRecord fill:#fff3e0
+```
 style PerRecord fill:#fff3e0
 ```

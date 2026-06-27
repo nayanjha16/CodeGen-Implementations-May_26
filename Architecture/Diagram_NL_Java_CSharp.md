@@ -126,8 +126,6 @@ end
 
 F --> G["Fine Tuned Java to CSharp Model"]
 
-style Training fill:#f3e5f5
-style PerRecord fill:#fff3e0
 ```
 style PerRecord fill:#fff3e0
 ```

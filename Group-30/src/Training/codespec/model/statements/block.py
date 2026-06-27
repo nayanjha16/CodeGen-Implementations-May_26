@@ -1,98 +1,74 @@
 """
-codespec.model.entities.routine
+codespec.model.statements.block
 
-CSR v1.0 Routine Entity
+CSR v1.0 Block Statement
 
-A Routine represents an executable unit of behavior:
-- Function (Python)
-- Method (C++)
-- Procedure (general)
+A Block represents a scoped sequence of statements.
 
-It is the core unit of execution in CSR.
+It is used for:
+- function bodies
+- loop bodies
+- conditional branches
+- exception handling blocks
+
+Blocks define:
+- lexical scope
+- execution order
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Any
+from typing import List
 
-from codespec.core.node import CSRObject, CSRRelationship
-from codespec.core.enums import NodeKind, RelationshipKind
+from codespec.core.node import CSRObject
+from codespec.core.enums import StatementKind
 from codespec.core.ids import CSRIdentifier
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from codespec.model.entities.variable import Variable
-    from codespec.model.entities.class_ import Class
-    from codespec.model.statements.block import Block
-    from codespec.model.entities.type import Type
+    from codespec.model.statements.base import Statement
 
 
 # ------------------------------------------------------------
-# Routine Entity
+# Block Statement
 # ------------------------------------------------------------
 
 @dataclass
-class Routine(CSRObject):
+class Block(CSRObject):
     """
-    CSR representation of a function/method/procedure.
+    Ordered container of statements.
     """
 
-    name: str = ""
-
-    # Parameters
-    parameters: List["Variable"] = field(default_factory=list)
-
-    # Return type (semantic type, not language-specific)
-    return_type: Optional["Type"] = None
-
-    # Body (block of statements)
-    body: Optional["Block"] = None
-
-    # Parent class (if method)
-    parent_class: Optional["Class"] = None
+    statements: List["Statement"] = field(default_factory=list)
 
     # --------------------------------------------------------
 
     def __post_init__(self):
-        self.kind = NodeKind.ROUTINE.name
+        self.kind = StatementKind.BLOCK.name
 
     # --------------------------------------------------------
-    # Parameter management
+    # Statement management
     # --------------------------------------------------------
 
-    def add_parameter(self, param: "Variable") -> None:
-        self.parameters.append(param)
-        self.add_child(param)
-
-    # --------------------------------------------------------
-    # Body management
-    # --------------------------------------------------------
-
-    def set_body(self, block: "Block") -> None:
-        self.body = block
-        self.add_child(block)
-
-    # --------------------------------------------------------
-    # Return type
-    # --------------------------------------------------------
-
-    def set_return_type(self, return_type: "Type") -> None:
-        self.return_type = return_type
-
-    # --------------------------------------------------------
-    # Call relationship helper
-    # --------------------------------------------------------
-
-    def calls(self, other: "Routine") -> None:
+    def add_statement(self, stmt: "Statement") -> None:
         """
-        Declare that this routine calls another routine.
+        Add a statement in execution order.
         """
-        self.add_relationship(
-            CSRRelationship(
-                kind=RelationshipKind.CALLS,
-                source=self.id,
-                target=other.id,
-            )
-        )
+        self.statements.append(stmt)
+        self.add_child(stmt)
+
+    # --------------------------------------------------------
+
+    def extend(self, stmts: List["Statement"]) -> None:
+        """
+        Add multiple statements preserving order.
+        """
+        for s in stmts:
+            self.add_statement(s)
+
+    # --------------------------------------------------------
+
+    def get_statements(self) -> List["Statement"]:
+        return self.statements

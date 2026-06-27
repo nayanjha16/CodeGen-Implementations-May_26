@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import logging
 from typing import Final
 
@@ -13,7 +14,7 @@ _DIRECTML_ALIASES: Final[frozenset[str]] = frozenset({"dml", "directml"})
 def directml_available() -> bool:
     """Return True when torch-directml is installed and reports a usable device."""
     try:
-        import torch_directml
+        torch_directml = importlib.import_module("torch_directml")
     except ImportError:
         return False
     return bool(torch_directml.is_available())
@@ -21,8 +22,7 @@ def directml_available() -> bool:
 
 def resolve_directml_device() -> str:
     """Return the DirectML device string (typically ``privateuseone:0``)."""
-    import torch_directml
-
+    torch_directml = importlib.import_module("torch_directml")
     return str(torch_directml.device())
 
 

@@ -9,6 +9,7 @@ from pathlib import Path
 from src.datasets.tend_loader import TENDLoader
 from src.training.lora_trainer import train_lora
 from src.utils.config import load_config
+from src.utils.logging import log_step
 
 
 class OverfitSmokeTest(unittest.TestCase):
@@ -20,6 +21,7 @@ class OverfitSmokeTest(unittest.TestCase):
         cls.rows = TENDLoader(config="spider").load_split("train")[:5]
 
     def test_overfit_smoke_text2sql(self) -> None:
+        log_step("text2sql", "Overfit smoke test: 5 rows, 10 epochs")
         with tempfile.TemporaryDirectory() as tmpdir:
             result = train_lora(
                 "text2sql",

@@ -12,13 +12,16 @@ if str(ROOT) not in sys.path:
 
 from src.training.tasks import TRAINING_TASKS
 from src.training.tend_dataset import build_sft_dataset, load_tend_training_rows
+from src.utils.logging import log_step, setup_logging
 
 
 def main() -> int:
+    setup_logging()
     rows = load_tend_training_rows()
     print(f"Combined train rows (spider + bird): {len(rows)}")
 
     for task in sorted(TRAINING_TASKS):
+        log_step(task, "Building SFT dataset smoke sample (max 50 rows)")
         result = build_sft_dataset(rows=rows, task=task, max_samples=50)
         print(
             f"  {task}: kept={result.row_count} "

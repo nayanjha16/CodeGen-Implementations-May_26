@@ -1,0 +1,48 @@
+# Windows Intel/AMD GPU (DirectX 12) via PyTorch DirectML.
+#
+# Do NOT install the standard `torch` package from requirements.txt on the same
+# environment — torch-directml bundles a compatible PyTorch build.
+#
+#   conda create -n ai python=3.11 -y
+#   conda activate ai
+#   pip install torch-directml
+#   pip install -r requirements-windows-directml.txt
+#   $env:PYTHONPATH = (Get-Location).Path
+#
+# DirectML is best for inference/evaluation. LoRA training via TRL SFTTrainer may
+# hit compatibility issues; use CPU or offload training if DirectML training fails.
+
+torch-directml>=0.2.4
+
+# Core ML / NLP (torch omitted — provided by torch-directml)
+transformers>=4.36.0
+accelerate>=0.25.0
+sentencepiece>=0.1.99
+
+# Fine-tuning (LoRA)
+peft>=0.11.0
+trl>=0.9.0
+
+# Datasets
+datasets>=2.16.0
+huggingface_hub>=0.23.0
+requests>=2.31.0
+
+# SQL processing
+sqlparse>=0.4.4
+
+# Evaluation metrics
+nltk>=3.8.1
+rouge-score>=0.1.2
+bert-score>=0.3.13
+codebleu>=0.7.0
+
+# Experiment tracking
+mlflow>=2.9.0
+
+# Utilities
+pyyaml>=6.0.1
+numpy>=1.24.0
+pandas>=2.1.0
+tqdm>=4.66.0
+python-dotenv>=1.0.0

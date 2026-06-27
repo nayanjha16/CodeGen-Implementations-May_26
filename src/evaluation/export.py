@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import csv
+import logging
 from pathlib import Path
 from typing import Any
 
 from src.evaluation.ollama_judge import OllamaJudge
 from src.models.model_loader import count_input_tokens
 from src.utils.config import get_model_name, load_config
+from src.utils.logging import log_batch_progress, log_step
+
+logger = logging.getLogger("codegen")
 
 METRICS_JSON = "metrics.json"
 TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
@@ -147,6 +151,8 @@ def save_text2sql_details_csv(
     """Write text-to-SQL per-sample details to CSV using Ollama semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    total = len(predictions)
+    log_step("text2sql", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
 
     db_paths = db_paths or [None] * len(predictions)
     evaluator = judge
@@ -163,6 +169,7 @@ def save_text2sql_details_csv(
         writer.writeheader()
 
         for idx, (pred, _db_path) in enumerate(zip(predictions, db_paths)):
+            log_batch_progress("text2sql", idx + 1, total, every=25)
             predicted_sql = pred.get("sql", "")
             ground_truth = pred.get("ground_truth", "")
             predicted_sql_valid = pred.get("sql_valid", "")
@@ -216,6 +223,7 @@ def save_text2sql_details_csv(
         if use_judge
         else {"sql_correct_rate": 0.0, "count": len(predictions)}
     )
+    logger.info("[%s] Details CSV saved: %s", "text2sql (Text-to-SQL)", output_path)
     return output_path, judge_results, summary
 
 
@@ -230,6 +238,8 @@ def save_sql2nosql_details_csv(
     """Write SQL-to-MongoDB per-sample details to CSV using Ollama semantic evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    total = len(predictions)
+    log_step("sql2nosql", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
 
     evaluator = judge
     if use_judge and evaluator is None:
@@ -244,7 +254,8 @@ def save_sql2nosql_details_csv(
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for pred in predictions:
+        for idx, pred in enumerate(predictions):
+            log_batch_progress("sql2nosql", idx + 1, total, every=25)
             reference_sql = pred.get("reference_sql", pred.get("ground_truth", ""))
             predicted_mongodb = pred.get("predicted_mongodb_query", "")
             reference_mongodb = pred.get("reference_mongodb_query", "")
@@ -291,6 +302,7 @@ def save_sql2nosql_details_csv(
             "count": len(predictions),
         }
     )
+    logger.info("[%s] Details CSV saved: %s", "sql2nosql (SQL-to-MongoDB)", output_path)
     return output_path, judge_results, summary
 
 
@@ -305,6 +317,8 @@ def save_documentation_details_csv(
     """Write MongoDB documentation per-sample details to CSV using Ollama evaluation."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    total = len(predictions)
+    log_step("nosql2doc", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
 
     evaluator = judge
     if use_judge and evaluator is None:
@@ -319,7 +333,8 @@ def save_documentation_details_csv(
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
 
-        for pred in predictions:
+        for idx, pred in enumerate(predictions):
+            log_batch_progress("nosql2doc", idx + 1, total, every=25)
             mongodb_query = pred.get(
                 "input_mongodb_query",
                 pred.get(
@@ -367,4 +382,5 @@ def save_documentation_details_csv(
             "count": len(predictions),
         }
     )
+    logger.info("[%s] Details CSV saved: %s", "nosql2doc (NoSQL-to-Documentation)", output_path)
     return output_path, judge_results, summary

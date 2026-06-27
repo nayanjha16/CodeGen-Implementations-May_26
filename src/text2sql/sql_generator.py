@@ -8,6 +8,7 @@ from typing import Any
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
 from src.text2sql.prompt_builder import PromptBuilder
 from src.text2sql.sql_validator import SQLValidator
+from src.utils.logging import log_batch_done, log_batch_progress, log_batch_start
 from src.utils.schema_conversion import derive_mongo_schema_json
 
 
@@ -219,8 +220,10 @@ class SQLGenerator:
         decoding_strategy: str | None = None,
     ) -> list[dict[str, str]]:
         """Generate SQL for multiple examples."""
+        total = len(examples)
+        log_batch_start("text2sql", total)
         results = []
-        for ex in examples:
+        for index, ex in enumerate(examples, start=1):
             schema = ex.get("schema", "")
             result = self.generate(
                 ex["question"],
@@ -232,4 +235,7 @@ class SQLGenerator:
             result["ground_truth"] = ex.get("sql", "")
             result["sql_valid"] = self.is_valid_sql(result["sql"])
             results.append(result)
+            log_batch_progress("text2sql", index, total)
+        valid = sum(1 for result in results if result.get("sql_valid"))
+        log_batch_done("text2sql", total, valid=valid)
         return results

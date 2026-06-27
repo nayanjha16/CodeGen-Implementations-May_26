@@ -9,9 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.datasets.tend_loader import TENDLoader, load_gold_validation
+from src.utils.logging import setup_logging
 
 
 def main() -> int:
+    setup_logging()
     gold_rows = load_gold_validation()
     assert len(gold_rows) == 50, f"Expected 50 gold validation rows, got {len(gold_rows)}"
     print(f"OK gold validation: {len(gold_rows)} rows | id={gold_rows[0]['id']}")

@@ -207,6 +207,7 @@ def build_sft_dataset(
         else:
             rows = load_tend_training_rows(cfg)
 
+    logger.info("[%s] Building SFT dataset from %d source rows", task, len(rows))
     filter_stats = FilterStats()
     examples, filter_stats, token_stats = build_sft_examples(
         rows,
@@ -220,6 +221,7 @@ def build_sft_dataset(
 
     log_filter_stats(task, filter_stats)
     log_token_stats(task, token_stats)
+    logger.info("[%s] SFT dataset ready: %d examples", task, len(examples))
 
     dataset = Dataset.from_list(examples)
     return SFTBuildResult(

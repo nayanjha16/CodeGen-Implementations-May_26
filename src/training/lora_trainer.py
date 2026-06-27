@@ -13,8 +13,9 @@ from src.training.lora_config import build_lora_config
 from src.training.mlflow_utils import TrainingMLflowLogger
 from src.training.tend_dataset import build_sft_dataset, load_tend_eval_rows, load_tend_training_rows
 from src.utils.config import get_adapter_path, get_model_name, get_training_config, load_config
+from src.utils.logging import log_step, setup_logging, task_label
 from src.utils.paths import resolve_adapter_run_name
-from src.utils.device import resolve_device
+from src.utils.device import is_cpu_device, resolve_device, supports_dataloader_pin_memory
 from src.utils.seeds import set_seeds
 
 logger = logging.getLogger("codegen.training")
@@ -141,8 +142,8 @@ def _build_sft_config(
         save_total_limit=1,
         report_to="none",
         seed=int((training_cfg.get("seed") or 42)),
-        use_cpu=device == "cpu",
-        dataloader_pin_memory=device == "cuda",
+        use_cpu=is_cpu_device(device),
+        dataloader_pin_memory=supports_dataloader_pin_memory(device),
     )
 
 
@@ -209,6 +210,7 @@ def train_lora(
 
     from src.models.model_loader import ensure_model_cached, is_seq2seq_model, load_tokenizer
 
+    setup_logging()
     cfg = config or load_config()
     set_seeds(cfg)
 
@@ -227,13 +229,14 @@ def train_lora(
 
     resolved_device = resolve_device(device or cfg.get("model", {}).get("device", "auto"))
     logger.info(
-        "Starting LoRA training: task=%s model=%s device=%s output=%s",
-        task,
+        "=== LoRA training [%s] === model=%s device=%s output=%s",
+        task_label(task),
         model_name,
         resolved_device,
         resolved_output,
     )
 
+    log_step(task, "Loading training data")
     train_rows = train_rows if train_rows is not None else _resolve_train_rows(train_csv, cfg)
     if skip_eval:
         eval_rows_raw = None
@@ -242,6 +245,7 @@ def train_lora(
     else:
         eval_rows_raw = _resolve_eval_rows(eval_csv, cfg)
 
+    log_step(task, "Building SFT train dataset")
     train_result = build_sft_dataset(
         rows=train_rows,
         task=task,
@@ -254,6 +258,7 @@ def train_lora(
     eval_dataset = None
     eval_row_count = 0
     if eval_rows_raw is not None:
+        log_step(task, "Building SFT eval dataset")
         eval_build = build_sft_dataset(
             rows=eval_rows_raw,
             task=task,
@@ -265,7 +270,14 @@ def train_lora(
             eval_dataset = prepare_prompt_completion_dataset(eval_build.dataset, task)
 
     train_dataset = prepare_prompt_completion_dataset(train_result.dataset, task)
+    logger.info(
+        "[%s] Dataset ready: train=%d eval=%d",
+        task_label(task),
+        train_result.row_count,
+        eval_row_count,
+    )
 
+    log_step(task, "Loading base model weights")
     local_path = ensure_model_cached(model_name)
     tokenizer = load_tokenizer(model_name, cfg)
     _ensure_tokenizer_pad_token(tokenizer)
@@ -275,7 +287,7 @@ def train_lora(
         model.config.pad_token_id = tokenizer.pad_token_id
     if tokenizer.bos_token_id is not None:
         model.config.bos_token_id = tokenizer.bos_token_id
-    if resolved_device != "cpu":
+    if not is_cpu_device(resolved_device):
         model = model.to(resolved_device)
 
     peft_config = build_lora_config(cfg)
@@ -297,6 +309,13 @@ def train_lora(
         peft_config=peft_config,
     )
 
+    log_step(
+        task,
+        "Starting SFT training (epochs=%s, batch=%s, grad_accum=%s)",
+        sft_args.num_train_epochs,
+        sft_args.per_device_train_batch_size,
+        sft_args.gradient_accumulation_steps,
+    )
     train_output = trainer.train()
     trainer.save_model(str(resolved_output))
 
@@ -308,6 +327,7 @@ def train_lora(
     eval_loss = None
     best_eval_loss = None
     if eval_dataset is not None:
+        log_step(task, "Running final eval pass")
         eval_metrics = trainer.evaluate()
         eval_loss = eval_metrics.get("eval_loss")
         best_eval_loss = trainer.state.best_metric
@@ -371,8 +391,8 @@ def train_lora(
         raise FileNotFoundError(f"Missing adapter weights after training: {adapter_weights}")
 
     logger.info(
-        "LoRA training complete: task=%s train_loss=%s eval_loss=%s best_eval=%s adapter=%s",
-        task,
+        "=== LoRA training complete [%s] train_loss=%s eval_loss=%s best_eval=%s adapter=%s",
+        task_label(task),
         train_loss,
         eval_loss,
         best_eval_loss,

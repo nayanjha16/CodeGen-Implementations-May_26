@@ -17,6 +17,7 @@ from src.training.lora_trainer import train_lora
 from src.training.prompt_factory import build_training_prompt
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import load_config
+from src.utils.logging import log_step
 
 
 class AdapterPathTest(unittest.TestCase):
@@ -60,6 +61,7 @@ class AdapterLoadTest(unittest.TestCase):
         for task in sorted(TRAINING_TASKS):
             kept = filter_tend_rows(cls.rows, task)[:3]
             out = base / task
+            log_step(task, "Adapter load test: training mini adapter (3 rows, 5 epochs)")
             train_lora(
                 task,
                 config=cls.config,
@@ -78,6 +80,7 @@ class AdapterLoadTest(unittest.TestCase):
     def test_load_and_generate_for_each_task(self) -> None:
         sample = self.rows[0]
         for task in sorted(TRAINING_TASKS):
+            log_step(task, "Testing adapter load and generate")
             adapter_dir = self.adapter_dirs[task]
             model = load_model(
                 config=self.config,

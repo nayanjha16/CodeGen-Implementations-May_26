@@ -10,12 +10,14 @@ from src.datasets.tend_loader import TENDLoader
 from src.training.adapter_verify import verify_adapter_dir, verify_all_adapters
 from src.training.lora_trainer import train_lora
 from src.utils.config import load_config
+from src.utils.logging import log_step
 
 
 class AdapterVerifyTest(unittest.TestCase):
     def test_verify_adapter_dir_after_training(self) -> None:
         config = load_config()
         rows = TENDLoader(config="spider").load_split("train")[:3]
+        log_step("text2sql", "Adapter verify test: train then verify")
         with tempfile.TemporaryDirectory() as tmpdir:
             train_lora(
                 "text2sql",
@@ -38,6 +40,7 @@ class AdapterVerifyTest(unittest.TestCase):
             base = Path(tmpdir)
             for task in ("text2sql", "sql2nosql", "nosql2doc"):
                 out = base / task
+                log_step(task, "Adapter verify all: training mini adapter")
                 train_lora(
                     task,
                     config=config,

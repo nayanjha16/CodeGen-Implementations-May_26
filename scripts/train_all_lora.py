@@ -20,6 +20,7 @@ from src.training.lora_trainer import train_lora
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_model_name, load_config
 from src.utils.device import resolve_device
+from src.utils.logging import setup_logging
 from src.utils.paths import build_results_run_name, get_models_checkpoints_dir, resolve_adapter_run_name
 
 DEFAULT_TASK_ORDER = ("text2sql", "sql2nosql", "nosql2doc")
@@ -118,6 +119,7 @@ def _run_baseline(
 
 
 def main() -> int:
+    setup_logging()
     args = build_parser().parse_args()
     config_path = Path(args.config) if args.config else None
     config = load_config(config_path)

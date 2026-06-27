@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,9 @@ from typing import Any
 from src.models.model_loader import is_adapter_dir
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_adapter_path, get_adapter_run, load_config
+from src.utils.logging import setup_logging, task_label
+
+logger = logging.getLogger("codegen.training")
 
 REQUIRED_ADAPTER_FILES = ("adapter_config.json", "adapter_model.safetensors")
 
@@ -56,6 +60,15 @@ def verify_adapter_dir(
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
 
     ok = not errors and not missing
+    status = "OK" if ok else "FAIL"
+    logger.info(
+        "[%s] Adapter verify %s: path=%s missing=%s errors=%s",
+        task_label(task),
+        status,
+        path,
+        list(missing) or "none",
+        list(errors) or "none",
+    )
     return AdapterVerifyResult(
         task=task,
         adapter_path=path,
@@ -74,8 +87,14 @@ def verify_all_adapters(
     require_metadata: bool = True,
 ) -> dict[str, AdapterVerifyResult]:
     """Verify adapter directories for each training task under the given run folder."""
+    setup_logging()
     task_list = tasks or tuple(sorted(TRAINING_TASKS))
     resolved_run = run if run is not None else get_adapter_run(config)
+    logger.info(
+        "Verifying LoRA adapters: run=%s tasks=%s",
+        resolved_run,
+        ", ".join(task_list),
+    )
     return {
         task: verify_adapter_dir(
             task,

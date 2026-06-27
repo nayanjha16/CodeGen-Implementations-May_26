@@ -61,6 +61,32 @@ pip install -r requirements.txt
 $env:PYTHONPATH = (Get-Location).Path
 ```
 
+#### Windows with Intel/AMD GPU (DirectML)
+
+For systems with an Intel or AMD integrated/discrete GPU on Windows (DirectX 12), install
+`torch-directml` **instead of** the standard `torch` package, then install the rest of the
+dependencies from the Windows-specific requirements file:
+
+```powershell
+conda create -n ai python=3.11 -y
+conda activate ai
+pip install torch-directml
+pip install -r requirements-windows-directml.txt
+$env:PYTHONPATH = (Get-Location).Path
+```
+
+With `device: auto` in config, DirectML is selected when CUDA and MPS are unavailable.
+You can also force it explicitly:
+
+```powershell
+python scripts/run_baseline_eval.py --device dml
+python scripts/train_lora.py --version v1 --task text2sql --device dml --max-samples 50 --epochs 1
+```
+
+DirectML works best for **inference and evaluation**. LoRA training via TRL `SFTTrainer` may
+fail on some DirectML builds; use `--device cpu` for training smoke tests, or train on
+CUDA/MPS and evaluate on Windows with `--device dml`.
+
 ### 2. Configure Environment
 
 ```bash
@@ -256,7 +282,7 @@ python scripts/train_lora.py --version v1 --task nosql2doc --train-csv data/my_t
 | `--output-dir` | `models/checkpoints/<run>/<task>/` | Adapter output directory (overrides `--version`) |
 | `--max-samples` | all rows | Limit rows for smoke/debug |
 | `--epochs` | `5` (from config) | Override epoch count |
-| `--device` | `auto` | `auto`, `cuda`, `mps`, or `cpu` |
+| `--device` | `auto` | `auto`, `cuda`, `mps`, `dml`, or `cpu` |
 | `--config` | `configs/default.yaml` | Alternate YAML config |
 | `--no-mlflow` | off | Disable MLflow logging |
 
@@ -347,6 +373,7 @@ Checks for `adapter_config.json`, `adapter_model.safetensors`, and optionally `r
 | ------ | ----------------------------------------------- |
 | CUDA GPU | Hours (fastest) |
 | Apple MPS | ~10–15+ hours per task |
+| Windows DirectML (Intel/AMD) | Faster than CPU for inference; training experimental |
 | CPU | Very slow; use `--max-samples` for smoke tests |
 
 Use `--max-samples 50 --epochs 1 --no-mlflow` to validate the pipeline before committing to a full run.
@@ -498,7 +525,7 @@ All model names, adapter selection, dataset URLs, and storage paths are configur
 ```yaml
 model:
   max_length: 2048
-  device: "auto"       # auto (cuda > mps > cpu), cuda, mps, cpu
+  device: "auto"       # auto (cuda > mps > dml > cpu), cuda, mps, dml, cpu
 
 generation:
   max_new_tokens: 256
@@ -584,12 +611,14 @@ Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All 
 | `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env` |
 | `ModuleNotFoundError: src` | Export `PYTHONPATH=$(pwd)` from project root |
 | Model re-downloads every run | Check `models/base/<slug>/.downloaded` exists; ensure write permissions |
-| Out of memory on GPU/MPS | Reduce `--max-samples`, set `--device cpu`, or lower `per_device_train_batch_size` in config |
+| Out of memory on GPU/MPS/DirectML | Reduce `--max-samples`, set `--device cpu`, or lower `per_device_train_batch_size` in config |
 | Zero trainable LoRA params | Run `inspect_lora_modules.py`; fix `lora.target_modules` in config |
 | Adapter not found | Ensure `models/checkpoints/<run>/<task>/adapter_config.json` exists; use `--adapter-run <run>` or set `MODEL_ADAPTER=<task>` and `MODEL_ADAPTER_RUN=<run>` |
 | Ollama judge fails | Start Ollama locally or pass `--no-judge` to skip semantic scoring |
 | Token length warnings during training | Update to latest code; prompts are truncated to 2048 before SFT tokenization |
+| DirectML training fails | Expected on some builds; use `--device cpu` for training or train on CUDA/MPS |
 | Training very slow on Mac | Expected on MPS/CPU; use smoke runs (`--max-samples 50 --epochs 1`) to validate first |
+| Training very slow on Windows Intel GPU | Use `--device dml` for eval; keep training on CPU or offload to CUDA/MPS |
 
 ---
 

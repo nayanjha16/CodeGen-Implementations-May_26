@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 from src.training.lora_trainer import train_lora
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_adapter_path, load_config
+from src.utils.logging import setup_logging
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -61,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--device",
         default=None,
-        help="Device override: auto, cuda, mps, or cpu.",
+        help="Device override: auto, cuda, mps, dml, or cpu.",
     )
     parser.add_argument(
         "--config",
@@ -76,6 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    setup_logging()
     args = build_parser().parse_args()
     config_path = Path(args.config) if args.config else None
     config = load_config(config_path)

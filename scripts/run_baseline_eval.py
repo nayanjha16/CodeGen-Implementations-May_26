@@ -59,6 +59,7 @@ from src.utils.paths import (
     get_model_cache_dir,
     resolve_results_run_dir,
 )
+from src.utils.logging import setup_logging
 from src.utils.seeds import set_seeds
 
 def _compute_text2sql_translation_success_rate(
@@ -162,10 +163,13 @@ def run_tend_baseline(
     *,
     use_gold_validation: bool = True,
     adapter_run: str | None = None,
+    device: str | None = None,
 ) -> dict:
     """Run baseline on TEND data (Spider gold validation by default)."""
     config = load_config()
     config["evaluation"]["max_samples"] = max_samples
+    if device is not None:
+        config.setdefault("model", {})["device"] = device
     set_seeds(config)
     runner = BenchmarkRunner(
         config=config,
@@ -183,6 +187,7 @@ def main() -> None:
     import os
 
     os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+    setup_logging()
 
     parser = argparse.ArgumentParser(description="Baseline model evaluation")
     parser.add_argument(
@@ -206,6 +211,11 @@ def main() -> None:
         type=int,
         default=50,
         help="number of examples (default: 50, full gold validation set)",
+    )
+    parser.add_argument(
+        "--device",
+        default=None,
+        help="Device override: auto, cuda, mps, dml, or cpu.",
     )
     parser.add_argument("--mlflow", action="store_true", help="log results to MLflow")
     parser.add_argument(
@@ -287,6 +297,7 @@ def main() -> None:
         log_mlflow=args.mlflow,
         use_gold_validation=use_gold_validation,
         adapter_run=args.adapter_run,
+        device=args.device,
     )
 
     print_metrics(

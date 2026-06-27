@@ -1,0 +1,32 @@
+# Locked decoding config (Gate V4 — apple-to-apple comparability).
+#
+# Every evaluation run consumes THIS file. If any field changes, bump `version` and record why
+# in the changelog below. The harness refuses to compare runs with different config hashes
+# without a version bump — that is the structural guarantee that Vanilla vs Stage-1 vs Stage-2
+# numbers are actually comparable.
+
+version: 1
+
+model:
+  # -mono is Python-specialised (~12.8% HumanEval pass@1) vs -multi (~6.7%); use -mono when the
+  # OUTPUT is Python, -multi for multilingual / the C++ legs.
+  name: Salesforce/codegen-350M-mono
+  revision: main            # pin the commit sha here for true reproducibility before CP-1 submission
+  dtype: float16
+
+decode:
+  temperature: 0.2          # low temp for pass@1; raise to 0.8 + n>=k for pass@k sampling
+  top_p: 0.95
+  max_new_tokens: 256
+  seed: 1234
+  stop:
+    - "\ndef "              # base completion model: stop at the next top-level def
+    - "\nclass "
+    - "\nif __name__"
+
+sandbox:
+  timeout_s: 10
+  memory_mb: 512
+
+# changelog:
+#   v1 (2026-06-01): initial locked config.

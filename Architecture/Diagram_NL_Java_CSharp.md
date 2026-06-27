@@ -25,7 +25,7 @@ graph TD
 
     E --> F["unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit"]
 
-    F -- "Translate Java (PL1) to C# (PL2)" --> G[Generated C# Code]
+    F -- "Translate Java PL1 to CSharp PL2" --> G[Generated CSharp Code]
 
     subgraph Iteration[Three Iterations]
         subgraph AverageScores[Average Scores]
@@ -34,7 +34,7 @@ graph TD
     end
 
     H --> I{Highest Score}
-    I --> J[Store NL + Java + C# + Score]
+    I --> J[Store NL + Java + CSharp + Score]
 
     style A fill:#e1f5fe
     style Iteration fill:#f3e5f5
@@ -50,22 +50,22 @@ graph TD
 flowchart TD
 A[CodeSearchNet Dataset] --> B[For each NL + Java sample]
 
-subgraph NLJava[NL -> Java (PL1)]
+subgraph NLJava["NL to Java PL1"]
 B --> C[Prompt model with Natural Language]
 C --> D[Generate Java]
 D --> E[Compare with Ground Truth Java using AST + GraphCodeBERTScore]
 E --> F[Average Score]
 end
 
-subgraph JavaCS[Java (PL1) -> C# (PL2)]
+subgraph JavaCS["Java PL1 to CSharp PL2"]
 F --> G[Use Generated/Ground Truth Java]
-G --> H[Generate C#]
-H --> I[Compare with Ground Truth C# using AST + GraphCodeBERTScore]
+G --> H[Generate CSharp]
+H --> I[Compare with Ground Truth CSharp using AST + GraphCodeBERTScore]
 I --> J[Average Score]
 end
 
-F --> K[Overall NL→Java Accuracy]
-J --> L[Overall Java→C# Accuracy]
+F --> K[Overall NL to Java Accuracy]
+J --> L[Overall Java to CSharp Accuracy]
 
 style NLJava fill:#f3e5f5
 style JavaCS fill:#fff3e0
@@ -77,7 +77,7 @@ style JavaCS fill:#fff3e0
 
 ``` mermaid
 flowchart TD
-subgraph Training[Fine Tuning NL -> Java]
+subgraph Training["Fine Tuning NL to Java"]
 A[CodeSearchNet: NL + Java] --> B[LoRA Fine-tuning on unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit]
 
 subgraph PerRecord[For each record]
@@ -100,18 +100,18 @@ style PerRecord fill:#fff3e0
 
 ``` mermaid
 flowchart TD
-subgraph Training[Fine Tuning Java -> C#]
+subgraph Training["Fine Tuning Java to CSharp"]
 A[CodeSearchNet Java Samples] --> B[LoRA Fine-tuning on unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit]
 
 subgraph PerRecord[For each Java record]
-B --> C[Input: Java (PL1)]
-C --> D[Generate C# (PL2)]
+B --> C[Input Java PL1]
+C --> D[Generate CSharp (PL2)]
 D --> E[AST + GraphCodeBERTScore against C# Ground Truth]
 E --> F[Average Score]
 end
 end
 
-F --> G[Fine-tuned Java -> C# Model]
+F --> G[Fine-tuned Java to CSharp Model]
 
 style Training fill:#f3e5f5
 style PerRecord fill:#fff3e0

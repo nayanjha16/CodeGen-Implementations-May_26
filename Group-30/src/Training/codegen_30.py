@@ -67,7 +67,7 @@ else:
     os.environ['HF_TOKEN'] = HUGGING_FACE_KEY
     print("Hugging Face API key loaded successfully from secrets.")
 
-"""# All models will be singleton so create base metaclass for the singleton"""
+# All models will be singleton so create base metaclass for the singleton
 
 class SingletonMeta(type):
     _instances = {}
@@ -275,6 +275,19 @@ from contextlib import redirect_stdout
 from typing import Union
 from tree_sitter import Tree
 import numpy as np
+# Add path of this file to be able to import the code to code spec language
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from tree_sitter import Language, Parser
+import tree_sitter_cpp as tscpp
+import tree_sitter_python as tspy
+from codespec.core.graph import CSRGraph
+# Example language-specific entry (we will mock AST input here)
+from codespec.builders.simple_cpp_python import build_csr_from_code
+from codespec.prompting.csr_prompt_optimizer import CSRPromptOptimizer
+
+
 
 class AST(metaclass=SingletonMeta):
     def __init__(self):
@@ -293,9 +306,6 @@ class AST(metaclass=SingletonMeta):
         """
         Loading AST generation models/parsers.
         """
-        from tree_sitter import Language, Parser
-        import tree_sitter_cpp as tscpp
-        import tree_sitter_python as tspy
 
         # Load the language dynamically using tree-sitter-languages.
         # This function directly returns a tree_sitter.Language object.
@@ -303,6 +313,7 @@ class AST(metaclass=SingletonMeta):
         self._ast_cpp_parser.language = Language(tscpp.language())
         self._ast_python_parser = Parser()
         self._ast_python_parser.language = Language(tspy.language())
+
 
 
     def generate_ast(self, code: Union[str, bytes], language_name: str) -> Tree:
@@ -317,7 +328,7 @@ class AST(metaclass=SingletonMeta):
         Returns:
         A tuple where:
         first element: tree_sitter.Tree: The generated AST.
-        second element: string reresentation of the AST
+        second element: string representation of the AST
         """
 
         # Check if the language is supported
@@ -341,6 +352,27 @@ class AST(metaclass=SingletonMeta):
           raise ValueError(f"Runtime environment error for language {language_name}")
 
         return ast_tree
+
+
+    def generate_ast_documentation(self, code: Union[str, bytes], language_name: str):
+            # Encode string to bytes if necessary
+            if isinstance(code, str):
+                code = code.encode('utf-8')
+            if language_name.lower() in ["cpp", "c++"]:
+                language_ = "cpp"
+            elif language_name.lower() == "python":
+                language_name = "python"
+            else:
+                return ""
+
+            # Code Spec language generator
+            csr_graph_generator = graph_cpp = CSRGraph()
+            output_graph = build_csr_from_code(code, language_name, csr_graph_generator)
+            optimizer = CSRPromptOptimizer(output_graph)
+            csr_prompt = optimizer.optimize()
+            print(f"CSL Output for  {language_name} : {csr_prompt}")
+            return csr_prompt
+
 
     def compare_ast(self, ast1: Tree, ast2: Tree) -> float:
         """
@@ -1210,8 +1242,17 @@ class BaselineData(metaclass=SingletonMeta):
         """
         if is_py_to_cpp:
             prompt = f"Convert the following Python code to C++:\n{input_text}\nC++ code:\n"
+            # prompt = f"""You are a code generation model.
+            #             Generate C++ code from this CSR:
+            #             {input_text}
+            #             Rules:
+            #             - preserve semantics exactly
+            #             - do not add new logic
+            #             - output only code
+            #             """
         else:
-            prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
+            #prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
+            prompt = f"""You are a code generation model.\nGenerate {target_lang} code from this CSR:\n{input_text}\nRules:\n- preserve semantics exactly\n- do not add new logic\n- output only code\n"""
 
         # Store prompt for potential re-tokenization during retries
         original_prompt = prompt
@@ -1552,7 +1593,8 @@ class BaselineData(metaclass=SingletonMeta):
 
             print(f"  Generating documentation for {original_hexsha[:8]}...")
             # Generate documentation for Phase 1
-            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
+            #generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
+            generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
 
             print(f"  Generating code from documentation for {language}...")
             # Generate code from the generated documentation using the base model
@@ -1971,7 +2013,8 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
     documentation = record.get('documentation')
     if not documentation or not documentation.strip():
         # Fallback to generating documentation if not present or empty
-        documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
+        #documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
+        documentation= baseline_evaluator._ast_processor.generate_ast_documentation(record['content'], record['language'])
         if not documentation.strip():
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
             continue
@@ -2174,7 +2217,9 @@ for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for Python 
     if not pl2_documentation.strip():
         print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
         # Fallback: Generate documentation if not present in the record (against 'not recreate' instruction, but necessary if empty)
-        pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+        #pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+        pl2_documentation= baseline_evaluator._ast_processor.generate_ast_documentation(original_pl2_code, "cpp")
+
         if not pl2_documentation.strip(): # If still no documentation, skip
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")
             continue

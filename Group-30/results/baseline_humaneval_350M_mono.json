@@ -1,0 +1,15 @@
+{
+  "model": "Salesforce/codegen-350M-mono",
+  "dataset": "humaneval",
+  "n": 5,
+  "temperature": 0.6,
+  "num_problems": 164,
+  "pass@1": 0.111,
+  "pass@5": 0.1768,
+  "failure_modes": {
+    "wrong_output": 582,
+    "compile_error": 24,
+    "runtime_error": 122,
+    "oom": 1
+  }
+}

@@ -1,0 +1,13 @@
+models:
+  - id: codegen-350m-multi
+    hf_repo: Salesforce/codegen-350M-multi
+    backend: hf
+scenarios: [zero_shot]
+datasets: [spider, bird]
+evaluation:
+  metrics: [ex, ts, ves, component_f1, bleu, bertscore]
+  llm_judge_model: codegen-350m-multi
+  sample_size: 20
+paths:
+  spider_root: data/spider/spider_data
+  bird_root: data/bird/dev_20240627

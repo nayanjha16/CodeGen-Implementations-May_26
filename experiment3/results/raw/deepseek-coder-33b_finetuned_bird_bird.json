@@ -1,0 +1,1218 @@
+{
+  "model": "deepseek-coder-33b",
+  "scenario": "finetuned_bird",
+  "dataset": "bird",
+  "metrics": {
+    "ex": 0.0,
+    "ts": 0.0,
+    "ves": 0.0,
+    "component_f1": 0.0,
+    "bleu": 0.5686277274281084,
+    "bertscore": 0.8223556903004646
+  },
+  "meta": {
+    "sample_size": 200
+  },
+  "per_example": [
+    {
+      "db_id": "california_schools",
+      "question": "What is the highest eligible free rate for K-12 students in the schools in Alameda County?",
+      "gold": "SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1",
+      "pred": "IdididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id:id_Id-Id0_Id0000000000NoneId_id_Id_Id_Id_Id_Id_id-id00000001000_id0110010001000000000000000000000000000000000000000000000001011101100000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.",
+      "gold": "SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3",
+      "pred": "_Id_Id_X_X_Id_Id.Id_TEXT,Id0000000000NoneNoneNoneNoneTRId_ole_Id_ole0000000000NoneNoneNoneTR_Id000None00000000000NoneNoneNoneTR00000000000None0000000000000000000000000001NoneNoneTR0111101110NoneNoneNoneTR0000000110000000100000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the zip code of all the charter schools in Fresno County Office of Education.",
+      "gold": "SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1",
+      "pred": "IdIdIdIdTIdTEXTole_Idole_Idole_Idole_IdINTEINTEINTEPRGERINTEPRINTEIdTEXTIdTEXTIdTEXTIdTEXTIdTEXTIdTEXTIdINTEIdTEXTIdINTEIdTEXTIdTEXT_TEXT_TEXT_TEXT_INTE_INTE_INTE_TEXT,TEXT,TEXT0__IdididIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id:IdIdIdIdIdIdIdIdIdIdId_Id___________________________________________________________________________________________________________TRINTEididididididid__Id_IdIdIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?",
+      "gold": "SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1",
+      "pred": "IdididididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdidIdidididididididid_idid_id__id0_id00000*/id_id0000000000NoneTRididid"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.",
+      "gold": "SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01'",
+      "pred": "id__id_Id_ole_ole0_Id_Id_Id_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_X_X_Id_Id:Id_ole0000000000NoneNoneTR_Id_Id0000000000NoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneTR0000000000NoneNoneId-idNoneNoneId00000_Id_Id000001001101111001100000000011010010111110000000000000000000000000000000000000000000011110111100000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools with an average score in Math greater than 400 in the SAT test are exclusively virtual?",
+      "gold": "SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400",
+      "pred": "IdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdId_Id_Id_Id0_Id_Id0000000000NoneTRTRidididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id:IdIdIdIdId_Id_Id_Id_Id_Id_Id_id_Id00-TRidididididid_Id_Id_Id_Id_Id_Id_id000000000000NoneTRididididid_id_id_id_id00000TRididTRididid_id0000010000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.",
+      "gold": "SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500",
+      "pred": "IdIdidididIdidIdXoleIdIdXIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id-Id_Id_Id_Id_Id_Id_Id_Id_Id0_Id_Id0000000000NoneTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id-id_Id00-TR_id_id0000000000000_id0000000000000000NoneTR_id0000000000000000Noneid00000*/idNoneidTR_id*/id_Id_id_id_id.id_id-id-id.id0000000000000000_ole_id"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number of the school that has the highest number of test takers with an SAT score of over 1500?",
+      "gold": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "id__id__id.Id_id0_Id000000NoneIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRoleIdId_Id_XId_Id_Id_XId_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id:_X_Id_Id000NoneNoneId_Id_Id_Id_Id_Id000_ole_X_Id0000000000NoneNone_Id0000000000_Id00000_Id01001101001000000000000010110110000000000000000000000000000000000000000000000101110100000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the number of SAT test takers of the schools with the highest FRPM count for K-12 students?",
+      "gold": "SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 )",
+      "pred": "IdididididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidXididididididididididid_idid_X_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?",
+      "gold": "SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded'",
+      "pred": "ididididIdididIdidIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id:Id_Id:Id_Id0__Id_idTRIdIdId_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id000000000000000_Id_id_Id-_id_id_Id00000_id00000001000000000000000000000000000000000000000000000000000010101110100000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "For the school with the highest average score in Reading in the SAT test, what is its FRPM count for students aged 5-17?",
+      "gold": "SELECT T2.`FRPM Count (Ages 5-17)` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrRead DESC LIMIT 1",
+      "pred": "idididididIdole__IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdIdTRole_IdId_XIdId_IdId_IdId_IdId_IdId_IdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId0_Id_Id_Id_Id000___________NoneTRTRId_Id_Id_Id_Id_idId_Id_Id_Id_Id_id_id-_id0000000000NoneTRTRid_id0000000000TRid00000000010001NoneNoneid01000000000NoneTRid000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the codes of the schools with a total enrollment of over 500.",
+      "gold": "SELECT T2.CDSCode FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` + T2.`Enrollment (Ages 5-17)` > 500",
+      "pred": "id__id_Id_ole_ole0_Id_Id_X_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_T_ole000000000NoneNoneId_Id_Id_Id_Id_Id_Id_Id-_ole000000000TRid_id000000000TR_id000000000Id01100011100001000000000000000000011000000000000000000000000000000000000000010000111101111000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with an SAT excellence rate of over 0.3, what is the highest eligible free rate for students aged 5-17?",
+      "gold": "SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr > 0.3",
+      "pred": "IdoleIdIdole_IdIdole_IdIdXIdTEXT_IdTEXT_IdINTEINTETEXT,XIdINTEIdTEXT,IdTEXT,IdTEXT,IdTEXT_IdTEXT,IdTEXT_IdTEXT,IdTEXT:id_id_IdIdIdIdIdIdIdIdId_IdIdIdId_IdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_id_Id_Id_id:id_id0__id_id_id_IdIdIdIdIdIdIdId_____________________________________________0000NoneTRidIdIdIdIdIdIdid__________TR_id_id0000-0000-000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the phone numbers of the schools with the top 3 SAT excellence rate.",
+      "gold": "SELECT T1.Phone FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds ORDER BY CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr DESC LIMIT 3",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdId_Id_Id0_Id0000000000NoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNone_Id_Id00000000000000000000001110011111100000000000000000000001100000000000000000000000000000000000000000000011111100000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the top five schools, by descending order, from the highest to the lowest, the most number of Enrollment (Ages 5-17). Please give their NCES school identification number.",
+      "gold": "SELECT T1.NCESSchool FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T2.`Enrollment (Ages 5-17)` DESC LIMIT 5",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdXole__IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_IdId_Id_Id_Id_Id000NoneNoneNoneNoneNoneNoneNoneNoneTRNoneIdTRTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id-______Id_Id_id_id0__TR*/idTRidTR_IdIdIdIdIdid_Id___Id_Id_Id_Id_Id_id_id.ididididididididid_id_id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_id00000TR_TR_id_id-TR_id-id_"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which active district has the highest average score in Reading?",
+      "gold": "SELECT T1.District FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.StatusType = 'Active' ORDER BY T2.AvgScrRead DESC LIMIT 1",
+      "pred": "id__Id_Id_Id.Idid_ole_ole0_ole00_ole000_ole0000_ole00000_ole00000TRole00000TRid_ole00000TRid_ole00000IdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XId_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id-id_X_Id_id00000NoneTRid_INTEINTEId_INTEId_INTE_Id_X_Id_Id_Id_Id_Id_Id_Id_Id:_id_id:_Id_id00000_id0010101111110000100000000000000000000000000000000000000011"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in merged Alameda have number of test takers less than 100?",
+      "gold": "SELECT COUNT(T1.CDSCode) FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.StatusType = 'Merged' AND T2.NumTstTakr < 100 AND T1.County = 'Lake'",
+      "pred": "id__IdIdididIdIdIdIdIdId_INGERX_IdIdX_IdIdIdIdIdIdIdId_X_TEXT_IdIdX,IdIdole_idIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEINTEINTEIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT_X,Id_INTE_INTE_TEXT,Id_TEXT,Id_INTE,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT_X_id_ole_id_ole0_id_ole1_id:id_X_IdididIdIdIdIdIdId_TEXT__X_IdIdIdId_INTE_Id_X_id_id_id_id_id_id_id_id_IdIdIdIdIdIdIdId_TEXT,Id_TEXT"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Rank schools by their average score in Writing where the score is greater than 499, showing their charter numbers.",
+      "gold": "SELECT CharterNum, AvgScrWrite, RANK() OVER (ORDER BY AvgScrWrite DESC) AS WritingScoreRank FROM schools AS T1  INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T2.AvgScrWrite > 499 AND CharterNum is not null",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdXole__IdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdId_Id_Id_Id_Id_Id0NoneTR_NoneNoneNoneTR0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in Fresno (directly funded) have number of test takers not more than 250?",
+      "gold": "SELECT COUNT(T1.CDSCode) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`County Name` = 'Fresno' AND T2.NumTstTakr <= 250",
+      "pred": "IdoleIdXole_idIdole_IdXole_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdId_Id_Id_Id-Id_Id0_Id_Id000_idTRididIdidididIdidIdIdIdIdIdIdId_Id_Id_Id_Id_ididId_id_Id_Id_Id_Id_Id_Id-TidididId_XIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdidididididid_id_id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdid_Id_Id_"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number of the school that has the highest average score in Math?",
+      "gold": "SELECT T1.Phone FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds ORDER BY T2.AvgScrMath DESC LIMIT 1",
+      "pred": "id__IdIdididIdIdIdIdIdId_PRGERINGERXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_XId_Id0_id00_id0000000000_id0000000000000000_XId_Id_Id_X_X_ole_Id_Id_id0000000000010101010000000000000000000000000000000000000000001110101000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in Amador which the Low Grade is 9 and the High Grade is 12?",
+      "gold": "SELECT COUNT(T1.`School Name`) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Amador' AND T1.`Low Grade` = 9 AND T1.`High Grade` = 12",
+      "pred": "id__Idid_IdIdIdIdIdId_ole_ole._id_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_ole_INGERPRTEINTEINTEINTEIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdId_Id_X_Id_Id_Id_Id_Id_Id_Id_Id_Id-Id_Id_Id0_Id_id_Id_Id_Id0000000000000000000000000111000111010010000000000100101011000000000000000000000000000000000000000000000000111000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In Los Angeles how many schools have more than 500 free meals but less than 700 free or reduced price meals for K-12?",
+      "gold": "SELECT COUNT(CDSCode) FROM frpm WHERE `County Name` = 'Los Angeles' AND `Free Meal Count (K-12)` > 500 AND `FRPM Count (K-12)`< 700",
+      "pred": "id__id_Id_Id_Id_Id_Id_Id_X_X_X_X_ole_ole_TEXT,ole0_Id.Id000_Id00000000NoneTRole_ole000NoneTRid_IdTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEINTEXIdIdIdId_INTE_TEXT,Id_TEXT_TEXT_TEXT,Id_TEXT:id_id0000000000NoneId_INTE_INTE_TEXT,Id0000000000_TEXT_ole_TEXT,Id_ole01_ole10000000011000111110111111100101100000000000000000000000000000000000000111011111111100000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which school in Contra Costa has the highest number of test takers?",
+      "gold": "SELECT sname FROM satscores WHERE cname = 'Contra Costa' AND sname IS NOT NULL ORDER BY NumTstTakr DESC LIMIT 1",
+      "pred": "id__idTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_T_IdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id:Id_Id_Id_Id_Id:Id_Id_Id_Id000NoneNoneNoneNoneNoneNoneIdNoneIdIdIdIdIdId_Id_Id:Id_Id000NoneNone0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the names of schools with more than 30 difference in enrollements between K-12 and ages 5-17? Please also give the full street adress of the schools.",
+      "gold": "SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id00000000NoneNoneNoneNoneNoneNoneNoneNoneIdTR_NoneNoneIdIdIdIdId_Id_Id_Id_Id00000000_IdIdIdId_Id00000_Id_Id-TR000001000000000_id_Id_id00000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Give the names of the schools with the percent eligible for free meals in K-12 is more than 0.1 and test takers whose test score is greater than or equal to 1500?",
+      "gold": "SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1 AND T1.NumGE1500 > 0",
+      "pred": "IdIdIdIdIdole_Idole_IdTEXT_IdTEXT,IdPRTE_IdTEXT,_IdINTETEXT,IdTEXT_IdTEXT_IdINTEINTEINTETEXT,IdINTETEXT,IdTEXT,IdTEXT,_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdINTEXXIdTEXT,_IdINTEIdINTEIdINTEIdTEXT,_IdTEXT,IdTEXT,_IdTEXT,_IdTEXT,_IdTEXT_IdTEXT_IdTEXT_IdTEXT_ididididIdIdIdIdIdIdId_TEXT,_IdIdIdIdIdIdId_TEXT_IdIdIdIdId_TEXT___Id_X_________________________________________________TRididididididididIdXIdIdIdIdididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTE"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Name schools in Riverside which the average of average math score for SAT is grater than 400, what is the funding type of these schools?",
+      "gold": "SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%' GROUP BY T1.sname, T2.`Charter Funding Type` HAVING CAST(SUM(T1.AvgScrMath) AS REAL) / COUNT(T1.cds) > 400",
+      "pred": "id__IdIdIdIdIdIdId_Id_X_Id_Id_X_X_PRINTETEXTIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0_TRId_Id0000000000TR_idTR00NoneTR00NoneTR00TR00NoneId_Id_Id_X_Id_idId_Id-_id_id_id_id_Id_Id_Id_X_X_X00_id_id00_id0000000000_id00000id00000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "State the names and full communication address of high schools in Monterey which has more than 800 free or reduced price meals for ages 15-17?",
+      "gold": "SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey' AND T1.`Free Meal Count (Ages 5-17)` > 800 AND T1.`School Type` = 'High Schools (Public)'",
+      "pred": "id__id._id_Id_ole_Id_XIdIdIdId_XId_TEXT_TEXT,Id_INTEINTE_INTE_INTE_INTE_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTE_INTE,Id_INTE_TEXT,Id_TEXT,Id_TEXT:Id_TEXT_ole_id_XId_Id_Id_XId_XId_XId_Id0_XId_Id0000000000_ole00000000000000000_ole000_id_id10001100010000000000000000000000000000000000000000000000110111101110000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average score in writing for the schools that were opened after 1991 or closed before 2000? List the school names along with the score. Also, list the communication number of the schools if there is any.",
+      "gold": "SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds WHERE strftime('%Y', T2.OpenDate) > '1991' OR strftime('%Y', T2.ClosedDate) < '2000'",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id0NoneTR_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:IdIdIdIdIdId_Id_Id0_Id0000000000_Id_Id_Id_Id_Id_Id_Id0000001000-0000000010000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Consider the average difference between K-12 enrollment and 15-17 enrollment of schools that are locally funded, list the names and DOC type of schools which has a difference above this average.",
+      "gold": "SELECT T2.School, T2.DOC FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.FundingType = 'Locally funded' AND (T1.`Enrollment (K-12)` - T1.`Enrollment (Ages 5-17)`) > (SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded')",
+      "pred": "IdIdIdXidIdXIdole__XIdole__IdXIdIdIdIdIdIdIdIdIdIdIdIdId_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id-Id_Id_Id-Xididididid_Id_Id_Id_Id_Id_Id_Id_id_id0_id_id0000000000idTRid____id__id_id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_id0000000000TRTRid_id_id_id_id_id_id_id_IdIdIdIdIdId_Id_Id_Id00000_id0000000000TR_idTR_TR_id_id0000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "When did the first-through-twelfth-grade school with the largest enrollment open?",
+      "gold": "SELECT T2.OpenDate FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`Enrollment (K-12)` DESC LIMIT 1",
+      "pred": "id__________0NoneNoneTRIdIdXXIdXIdole_________NoneTRIdIdIdINTEINTEIdPRINTE_IdIdTEXT_IdTEXT_IdTEXT_IdTEXT_IdINTEIdTEXT,IdTEXT,_IdTEXT,_IdINTE_IdTEXT,_IdINTE_________________None__None_None_None000000000NoneNoneIdIdIdidIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_Id_Id__________0_0-0010000000000000000001110000000000000000000000000000000000000000000011110110100000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which cities have the top 5 lowest enrollment number for students in grades 1 through 12?",
+      "gold": "SELECT T2.City FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode GROUP BY T2.City ORDER BY SUM(T1.`Enrollment (K-12)`) ASC LIMIT 5",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INGERIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT_IdIdIdId_TEXT,_TEXT,_INTEPRGERId_TEXT,_INTEINTEId_TEXT,_IdIdIdId_TEXT,_TEXT,_TEXT,_INTEXIdIdIdId_INTE_X_idIdIdId_TEXT_X_IdIdId_INTE__X,_idid_TEXT_IdIdIdIdIdIdIdId_INTE___X_id_INTE,_id_TEXT_IdIdIdId_TEXT,_id_TEXT,_id_TEXT_X_X_IdId_INTE____id_INTE_id_IN"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the eligible free rate of the 10th and 11th schools with the highest enrolment for students in grades 1 through 12?",
+      "gold": "SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2",
+      "pred": "IdIdididididIdXIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdidididid_id_id_id_id_IdIdIdIdIdIdIdIdId_Id_Id_Id0_id0000000000TR###id_T_id_id_id_id.id_id0000000000id*/id_Id_Id_Id:id_id00000_id0000000000TRid"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the eligible free or reduced price meal rate for the top 5 schools in grades 1-12 with the highest free or reduced price meal count of the schools with the ownership code 66?",
+      "gold": "SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 5",
+      "pred": "IdIdIdXIdole_Idole_IdIdXIdole_ole_IdIdIdIdIdIdIdId_IdIdIdId_Id_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_ididididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdididididid_id_id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_id.id_id0_TRidididididididididididid_id_Idid_IdIdIdIdIdIdId_Id_Id0._XIdIdIdIdId_id_id_id_id-_id_id000_id_id0000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "If there are any, what are the websites address of the schools with a free meal count of 1,900-2,000 to students aged 5-17? Include the name of the school.",
+      "gold": "SELECT T2.Website, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Free Meal Count (Ages 5-17)` BETWEEN 1900 AND 2000 AND T2.Website IS NOT NULL",
+      "pred": "IdIdIdIdTIdTEXTidIdTEXT_ole_ole_ole_ole_INTEINTEXPRGERTEXT_IdTEXT_TEXT_TEXT_TEXT,IdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTE_TEXT,IdTEXT,TEXT:id_ole0_IdIdTXINTEIdXTEXT_INTE_TEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdIdId_INTE_INTE_INTE,IdIdIdId_INTE_TEXT,IdIdId_TEXT:IdIdId_TEXT_XIdIdIdIdIdIdIdId_ole_ole0:id000110100111111100000000000000000000000000000000000000111010110100000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the free rate for students between the ages of 5 and 17 at the school run by Kacey Gibson?",
+      "gold": "SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.AdmFName1 = 'Kacey' AND T1.AdmLName1 = 'Gibson'",
+      "pred": "_Id_Id_ole_Id_X_Id_Id_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id:Id_Id:Id_Id:Id_Id0000000000NoneNoneNoneNoneNoneNoneNoneNoneNone____________0000000000NoneNoneNoneNoneNoneNoneNoneNoneNone001111001100000000000001110011111010000000000000000000000000000000000000000000001111100000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's email address of the chartered school with the fewest students enrolled in grades 1 through 12?",
+      "gold": "SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter School (Y/N)` = 1 ORDER BY T1.`Enrollment (K-12)` ASC LIMIT 1",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRINTEXIdIdIdIdIdId__IdIdIdIdIdIdId_Id_Id_Id_Id_Id:IdIdIdIdId_Id_Id_id_Id__Id-Id_id:id_id:id_id0___________________________________________________NoneId_Id_Id_Id_Id_Id00000000000TRTR###idTRid_T_______________Id_Id_Id:id_id00000000000TRid_id0"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Under whose administration is the school with the highest number of students scoring 1500 or more on the SAT? Indicate their full names.",
+      "gold": "SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "IdIdIdIdTIdTEXT_IdTEXT_IdINTEINTETEXT,TEXT,INTE_TEXT_TEXT,TEXT0_id__id0000000000NoneTRole_IdTEXT,IdXIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X_IdIdIdIdIdId_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_id_id:id_id_id_id_id_id_Id_Id_Id:Id_id01000010000000000000000000000000000000000000000001010110100000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+      "gold": "SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC LIMIT 1",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id0NoneTR_Id_Id_idTR_Id-Id_Id_Id_Id_Id:_Id_Id.Id_Id_Id_Id_Id0_Id0_Id000TR000TR000TR011NoneTR100NoneTR1100NoneididididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdididIdIdIdidididid_X_id__id_Id_Id_Id_Id.Id0_id000_id0000000000TR000TR000TR000TR000id_ole_ididididididIdIdIdIdIdIdIdIdId_Id"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the webpages for the Los Angeles County school that has between 2,000 and 3,000 test takers?",
+      "gold": "SELECT T2.Website FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.NumTstTakr BETWEEN 2000 AND 3000 AND T2.County = 'Los Angeles'",
+      "pred": "ole__ididIdidIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id0_Id_Id000NoneTR_idTR000NoneNoneNoneNoneNoneNoneNoneNoneNoneNoneTR000NoneNoneNoneNoneNoneNoneNoneTR000NoneNoneNoneNoneNoneNoneTR000NoneNoneNoneNoneNoneNoneIdTR011100111000000000000000000001000000000000000000000000000000000000000000000001011101110000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average number of test takers from Fresno schools that opened between 1/1/1980 and 12/31/1980?",
+      "gold": "SELECT AVG(T1.NumTstTakr) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE strftime('%Y', T2.OpenDate) = '1980' AND T2.County = 'Fresno'",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id:Id_Id0_Id0000000000NoneNoneNoneNoneNoneNoneNoneNoneId_Id0000000000NoneNoneTRIdidIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id-_Id-_id_id00000NoneTR_idid_Id_Id_X_Id_id000_id0000000000_id0000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the telephone number for the school with the lowest average score in reading in Fresno Unified?",
+      "gold": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1",
+      "pred": "id_____NoneNone__0000000000NoneNoneNoneTRTRid*/IdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_X_Id_Id_Id0TRididIdid_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0Id_id-Id_Id0_id00_Id0000000000NoneTR_X_Id_Id_Id_Id_Id_Id:_id_id-id0_Id0-_id_id-_id_id_Id_Id0000000000000000_id0000000000NoneTR_TR-id00000_id0000000001001100000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the names of virtual schools that are among the top 5 in their respective counties based on average reading scores.",
+      "gold": "SELECT School FROM (SELECT T2.School,T1.AvgScrRead, RANK() OVER (PARTITION BY T2.County ORDER BY T1.AvgScrRead DESC) AS rnk FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' ) ranked_schools WHERE rnk <= 5",
+      "pred": "_Id_Id_X_ole_Id_Id_Id_ole_Id_Id.Id_X0_id_Id00TRole_Id_Id_TEXT,TEXT_TEXT,TEXT0_ole00_ole00_ole00-_ole00_ole0000TRole0000_id00000NoneNoneIdNoneTRole00000_id0000000000NoneNoneIdIdIdIdIdIdIdIdIdId_Id_Id:_Id_Id:_Id_Id-_Id-_Id_Id:_X_X00_id0000000000_id000010110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the type of education offered in the school who scored the highest average in Math?",
+      "gold": "SELECT T2.EdOpsName FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrMath DESC LIMIT 1",
+      "pred": "id__IdIdIdIdIdIdIdIdIdId_Id_ole_ole_ole0_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id.Id_XId_Id_Id_ole0.IdTRINTETEXT_XId_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_X_TEXT,IdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_id_ole0000000000_ole0000000000-_ole000_ole0000001_X_ole00100010000000000000000110100000110000000000000000000000000000000000000000111NoneTRidIdidid"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average math score of the school with the lowest average score for all subjects, and in which county is it located?",
+      "gold": "SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath IS NOT NULL ORDER BY T1.AvgScrMath + T1.AvgScrRead + T1.AvgScrWrite ASC LIMIT 1",
+      "pred": "id__idTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id00000000NoneNoneNoneNoneNoneNoneNoneNoneTR_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id00000NoneNone_X_Id_Id_Id_Id_Id_Id:_id_id_Id-_ole_id_id_id_Id_Id_Id_Id_id_id0_id0000000000000000_id00000000000000000000000010111011000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average writing score of the school who has the highest number of test takers whose total SAT sscores are greater or equal to 1500? Indicate the city to where the school is situated.",
+      "gold": "SELECT T1.AvgScrWrite, T2.City FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "IdIdIdIdIdTIdole_IdIdole_Idole_Idole_Idole_Idole_Idole_IdPRGERTEXTIdTEXT_IdTEXT,IdTEXT,IdTEXT,IdINTETEXT,IdTEXT_IdTEXT,IdTEXT,IdTEXT,IdTEXT_IdINTEINTEIdINTETEXT,IdINTETEXT,IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT__IdTEXT___IdTEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_Id_Id_Id_Id_Id_idididid_id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_id_id_id_id_id_id_id_id_IdIdIdXIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_id.id_id-id_id0_TRINGERid_id_id:_id:_id:"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average writing score of each of the schools managed by Ricci Ulrich? List the schools and the corresponding average writing scores.",
+      "gold": "SELECT T2.School, T1.AvgScrWrite FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.AdmFName1 = 'Ricci' AND T2.AdmLName1 = 'Ulrich'",
+      "pred": "IdIdIdIdTidIdole__IdIdole__IdXIdXIdIdINTETEXT_IdXIdIdTEXT,IdTEXT,IdTEXT,IdTEXT,IdTEXT,IdINTEINTEPRTETEXT_IdTEXT_IdTEXT,IdTEXT,TEXT_TEXT_INTEPRTE_INTE_TEXT,TEXT,TEXT:_IdIdIdIdIdIdIdIdIdIdId_IdIdIdId_IdId_Id_Id_Id_Id_Id0__Id_Id0000000000000000000000000000000000000001110-0111110011110000000000000000000000000000000000000000111111010000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which state special schools have the highest number of enrollees from grades 1 through 12?",
+      "gold": "SELECT T2.School FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.DOC = 31 ORDER BY T1.`Enrollment (K-12)` DESC LIMIT 1",
+      "pred": "_Id__Id_Id_Id_Id_Id_Id_Id_ole_ole_INTEGER_INTEINTEIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEINTEIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id:Id_Id0_Id00000000100101010011010000000001010011100000000000000000000000000000000000000000000000000001110101000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the monthly average number of schools that opened in Alameda County under the jurisdiction of the Elementary School District in 1980?",
+      "gold": "SELECT CAST(COUNT(School) AS REAL) / 12 FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980'",
+      "pred": "IdidIdIdole__ole_Idole_Idole_Idole_Idole._Idole0__Idole000000NoneTRole_idididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdId_IdIdIdIdId_IdIdIdIdId_IdIdIdId_IdIdIdId_IdIdId_Id_Id_Id_Id_id_Id-XIdididid_id_id_Id_Id_Id_Id_Id-id_id0000000000_id00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the ratio of merged Unified School District schools in Orange County to merged Elementary School District schools?",
+      "gold": "SELECT CAST(SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange'",
+      "pred": "id__id__ole_X_Id_INGER_X_X_Id_TEXT,Id_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEINTETEXT_INTEXTEXT_INTE_INTE_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT_TEXT:id__id0_id0000000000None_Id_INTE_Id0000000000_ole_id010010100000100000000110111111110101010000000000000000000000000000000000000000111001111000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which different county has the most number of closed schools? Please provide the name of each school as well as the closure date.",
+      "gold": "SELECT DISTINCT County, School, ClosedDate FROM schools WHERE County = ( SELECT County FROM schools WHERE StatusType = 'Closed' GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1 ) AND StatusType = 'Closed' AND school IS NOT NULL",
+      "pred": "IdididididIdoleIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdididididididididid_id___IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id______________TR###id______id:id*/id_TRididIdXIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the postal street address for the school with the 7th highest Math average? Indicate the school's name.",
+      "gold": "SELECT T2.MailStreet, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrMath DESC LIMIT 6, 1",
+      "pred": "_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdId_XIdIdId_Id_Id_PRGERTEXTIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0NoneTRTEXT_ole_IdIdIdIdIdIdIdId_Id_Id_Id_Id_Id0_Id0_idId_Id_Id_Id-__Id_Id0-10010100010010001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In which mailing street address can you find the school that has the lowest average score in reading? Also give the school's name.",
+      "gold": "SELECT T2.MailStreet, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1",
+      "pred": "idididididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdidIdIdIdIdidIdIdIdidididididididid_id____IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id0_id00000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of schools whose total SAT scores are greater or equal to 1500 whose mailing city is Lakeport?",
+      "gold": "SELECT COUNT(T1.cds) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.MailCity = 'Lakeport' AND (T1.AvgScrRead + T1.AvgScrMath + T1.AvgScrWrite) >= 1500",
+      "pred": "id__IdIdIdIdIdIdIdIdIdId_Id_Id_TEXT,IdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdIdId_INTETEXT_TEXT_TEXT_TEXT,XIdIdIdId_INTEINTEINTE_INTE_TEXT,IdIdIdId_INTE_TEXT_TEXT,IdIdIdId_TEXT_TEXT,IdIdId_INTEId_INTE_INTE_TEXT,Id_INTE_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT_TEXT,Id_ole_ole_INTEid_ole0_INTE_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,Id_id_ole0:id_id0000000000_id000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many test takers are there at the school/s whose mailing city address is in Fresno?",
+      "gold": "SELECT T1.NumTstTakr FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.MailCity = 'Fresno'",
+      "pred": "id__IdIdididIdIdIdIdId_INGERIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEINTEId_TEXT_INTEId_TEXT_TEXT_TEXT_TEXT_TEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEId_INTEId0_id_IdIdIdIdIdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id0000000000NoneTRole_TId_INTE_INTE_TEXT,Id_TEXT,Id_INTE_TEXT,Id_TEXT,Id_TEXT,Id:_TEXT_id_id_id_IdIdIdIdIdId_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,_TEXT_IdIdIdId_TEXT_XIdIdIdId_INTE_INTE_INTE_INTE_INTE_TEXT,_TEXT,_TEXT_X_TEXT,_TEXT000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please specify all of the schools and their related mailing zip codes that are under Avetik Atoian's administration.",
+      "gold": "SELECT School, MailZip FROM schools WHERE AdmFName1 = 'Avetik' AND AdmLName1 = 'Atoian'",
+      "pred": "idididididIdididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdidIdIdIdIdidIdidIdidIdidididididid_id_____IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id0___id"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of the schools with a mailing state address in California, what is the ratio of the schools located in the county of Colusa against the school located in the county of Humboldt?",
+      "gold": "SELECT CAST(SUM(CASE WHEN County = 'Colusa' THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN County = 'Humboldt' THEN 1 ELSE 0 END) FROM schools WHERE MailState = 'CA'",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdId_Id_Id_Id_Id0_idTRid_ole_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id0000_idididId_ole_Id_Id_Id_id_X_Id_id0000000000TRid0000000000TRTRid_id_id_id_id_id.idNoneid_id_IdIdIdIdId_Id_Id_Id_id0000000000TRid000TRid0000000000id_id-_id000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of all the schools with a mailing state address in California, how many are active in San Joaquin city?",
+      "gold": "SELECT COUNT(CDSCode) FROM schools WHERE City = 'San Joaquin' AND MailState = 'CA' AND StatusType = 'Active'",
+      "pred": "IdididIdoleIdoleidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id-Id_Id0_Id_Id_Id_Id0000000000NoneTRidididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id0000000000TR_idid_id_id_id_id-_Id-NoneNoneid_Id_id00000_id000000000000Noneid_id000000000000NoneTR_id-_id000000000000None"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number and extension number for the school that had the 333rd highest average writing score?",
+      "gold": "SELECT T2.Phone, T2.Ext FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrWrite DESC LIMIT 332, 1",
+      "pred": "IdoleIdidididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRPRINGERIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_Id_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X_Id_Id_Id_Id_Id:id_id0_____id0000000000TRidididididididididid_id0000000000id*/id_id-TRidTRidIdIdIdIdIdIdIdid_"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number and extension number for the school with the zip code 95203-3704? Indicate the school's name.",
+      "gold": "SELECT Phone, Ext, School FROM schools WHERE Zip = '95203-3704'",
+      "pred": "id__id_id0000NoneNoneNoneNone_Id_Id_Id_Id_Id_Id_Id-TRIdTRIdIdIdIdId_INTEINTEIdIdIdId_INTE_TEXT_TEXT,TEXT:IdIdTidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTE_INTE_INTE:X_X0000000000000000000NoneNoneNoneNoneNoneNoneNoneNoneTRIdIdIdIdIdIdId_INTE_INTE:IdIdIdIdIdId_INTE_TEXT00000001001100000011011010000000110111110110000000000000000000000000000000000000000000000101100000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the website for the schools under the administrations of Mike Larson and Dante Alvarez?",
+      "gold": "SELECT Website FROM schools WHERE (AdmFName1 = 'Mike' AND AdmLName1 = 'Larson') OR (AdmFName1 = 'Dante' AND AdmLName1 = 'Alvarez')",
+      "pred": "IdoleidIdoleidididididIdole_IdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id0_Id_Id0000-_idNoneNone_IdIdIdIdId_Id_Id_Id_Id_Id-_id_Id_Id-_id000000-000-00110000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the websites for all the partially virtual chartered schools located in San Joaquin?",
+      "gold": "SELECT Website FROM schools WHERE County = 'San Joaquin' AND Virtual = 'P' AND Charter = 1",
+      "pred": "IdIdIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id0NoneTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id:_Id_Id:IdIdIdIdIdIdIdId_Id_Id_Id_Id_Id-_Id_Id-_Id_id_Id-_id0_Id_id00_id0000000000NoneTRidididididid_Id_Id_id0000000000TR_ididididididid_id00000_id00000000010000100000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many chartered schools located in the city of Hickman are owned by the Elementary School District?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE DOC = 52 AND Charter = 1 AND City = 'Hickman'",
+      "pred": "IdididididIdIdIdIdXIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_Id_Id_Id_Id_Id0NoneTR_ididTR0NoneNoneTR0NoneTR0NoneIdTR0idNoneididIdIdididIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id-_Id_Id0_Id0_id_id-_id-_Id_Id_Id_Id_Id:_id_id00000000000000_id-TR000000000000NoneTR0Noneid_id_id._id0000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of non-chartered schools in the county of Los Angeles with a percent (%) of eligible free meals for grades 1 through 12 that is less than 0.18%?",
+      "gold": "SELECT COUNT(T2.School) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Los Angeles' AND T2.Charter = 0 AND CAST(T1.`Free Meal Count (K-12)` AS REAL) * 100 / T1.`Enrollment (K-12)` < 0.18",
+      "pred": "TIdINTEINGER__PRTEIdTEXT,IdTEXT,IdIdINTEIdINTEIdTEXT,ole__IdTEXT,IdIdIdTEXT,IdIdIdXTEXT,IdIdIdXIdINTE_IdINTE_IdIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEPRTE_IdTEXT,XIdINTE_IdididIdTEXT_IdIdXTEXT_IdIdIdTEXT_IdIdIdTEXT_IdIdIdTEXT_IdIdIdTEXT_IdIdIdTEXT,X__IdIdIdXIdid_X_id_IdIdTEXT_IdIdIdTEXT_IdIdIdTEXT_Id_ole_id_INTE_IdIdXid_INTE_id_INTE_id_INTE_id:id_INTE_id_INGER,INTE_IdIdIdTEXT,TEXT:IdIdIdXIdIdIdIdid_INTE_IdIdIdX_INTE_Id_X_id:id_ole_id_ole0_id_id000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In chartered schools with charter number 00D2, what are the names of all the administrators? Include the name of the school and the city to which it belongs",
+      "gold": "SELECT AdmFName1, AdmLName1, School, City FROM schools WHERE Charter = 1 AND CharterNum = '00D2'",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id0NoneNone_Id_Id_Id_Id0NoneTR_id_id0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of schools with a mailing city in Hickman belonging to the charter number 00D4?",
+      "gold": "SELECT COUNT(*) FROM schools WHERE CharterNum = '00D4' AND MailCity = 'Hickman'",
+      "pred": "idididididididIdidididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdidididididid_id________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the ratio in percentage of Santa Clara County schools that are locally funded compared to all other types of charter school funding?",
+      "gold": "SELECT CAST(SUM(CASE WHEN FundingType = 'Locally funded' THEN 1 ELSE 0 END) AS REAL) * 100 / SUM(CASE WHEN FundingType != 'Locally funded' THEN 1 ELSE 0 END) FROM schools WHERE County = 'Santa Clara' AND Charter = 1",
+      "pred": "_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRINTEPRTE_X_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdidididid_X:id_id_id0_id0000000000TRTRid_id_IdIdIdid_id_id_id_id_id:id-id0000000000id000000000TRid_id0000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Between 1/1/2000 to 12/31/2005, how many directly funded schools opened in the county of Stanislaus?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE strftime('%Y', OpenDate) BETWEEN '2000' AND '2005' AND County = 'Stanislaus' AND FundingType = 'Directly funded'",
+      "pred": "id__IdIdid_IdIdIdIdIdId_Id_Id_X_IdId_Id_TEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,Id_INTEINTEId_INTE_INTEId_TEXT_TEXT_TEXT_TEXT,_TEXT,_TEXT_ole_ole_ole_TEXT,Id_TEXT,Id_TEXT,Id_INTE_INTE_INTE_INGER,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT_INTE_TEXT_TEXT,Id_ole:_id_id0_id10011111100111100000000000000000000000000000000000000101111111000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total amount of Community College District closure in 1989 in the city of San Francisco?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE strftime('%Y', ClosedDate) = '1989' AND City = 'San Francisco' AND DOCType = 'Community College District'",
+      "pred": "IdIdoleIdoleIdole_IdIdole_IdIdole_IdIdole_IdIdXIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRPRINGERIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdIdIdIdId_INTEINTEIdIdIdIdIdIdIdIdIdidididid_IdIdIdIdIdIdIdIdId_IdIdIdIdIdIdid_ole_IdIdIdIdIdIdIdId_IdIdIdIdIdid_Idididid_id_X_X_IdIdIdIdIdIdIdId_IdIdIdId_id_Id_X_IdIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)?",
+      "gold": "SELECT County FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1",
+      "pred": "Id_Id_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_T_Id_ole_XIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0_Id0000000000_Id_Id_Id_Id_X_id_Id000000000000000000000000000000000000000_T_id_id_X_id00000_id0000000000010000010000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please provide the National Center for Educational Statistics school district identification number for all schools with a School Ownership Code that are part of the State Special Schools.",
+      "gold": "SELECT NCESDist FROM schools WHERE SOC = 31",
+      "pred": "IdIdididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdId_Id_Id_Id_Id_Id0NoneTR_id_id_IdIdIdIdIdId_Id_Id_Id_Id_Id:IdIdIdIdIdId_Id0_Id_Id000__Id-_Id00101100000000000000000000010100000000000000000000000000000000000000000000000011101110000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many active and closed District Community Day Schools are there in the county of Alpine?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE (StatusType = 'Closed' OR StatusType = 'Active') AND SOC = 69 AND County = 'Alpine'",
+      "pred": "id__IdIdidididIdididIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_XIdIdIdIdIdIdIdIdIdTRoleIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id.idIdIdIdId_Id_Id0_Id_Id_Id_Id_Id:IdIdIdIdId_Id_Id_Id0000000000_Id_Id_Id_Id_id_Id:_id_id_id_id_id_Id_Id_Id_Id_Id_id_id000000000000000000_id00000TRidididididididididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the district code for the School that does not offer a magnet program in the city of Fresno?",
+      "gold": "SELECT T1.`District Code` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.City = 'Fresno' AND T2.Magnet = 0",
+      "pred": "IdidIdididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id:IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id:IdIdIdIdId_Id:Id_Id_Id_Id0_Id0000000000000000-0010000000000000000000000101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many students from the ages of 5 to 17 are enrolled at the State Special School school in Fremont for the 2014-2015 academic year?",
+      "gold": "SELECT T1.`Enrollment (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.EdOpsCode = 'SSS' AND T2.City = 'Fremont' AND T1.`Academic Year` BETWEEN 2014 AND 2015",
+      "pred": "IdidIdididIdIdXole_IdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdId_Id_Id_Id_Id0NoneTR_idIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id:_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_id_Id-Id_Id-id_id_id_id_id_Id_Id_Id_Id-id0_id0000000000NoneTR0000000000TR0000000000TR00000TR00100000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the free or reduced price meal count for ages 5 to 17 in the Youth Authority School with a mailing street address of PO Box 1040?",
+      "gold": "SELECT T1.`FRPM Count (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.MailStreet = 'PO Box 1040' AND T2.SOCType = 'Youth Authority Facilities'",
+      "pred": "id__IdIdIdIdIdIdId_Id_Id_ole_Id_XIdIdIdIdIdIdTRTEXT_XIdIdId_Id_Id_TEXT_Id_INTEINTEIdIdXTEXT,IdIdXTEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdId_INTE_TEXT:IdIdId_INTE_INTE_TEXT,Id_TEXT,Id_TEXT:ole_ole_ole0_id_id_id_id_id_id_id_Id_Id_Id_XId_Id_Id_id00000000_id0000000000TRid_id00000_id0000000000id01001100000000000TRole_id000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the lowest grade for the District Special Education Consortia School with National Center for Educational Statistics school district identification number of 0613360?",
+      "gold": "SELECT MIN(T1.`Low Grade`) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.NCESDist = '0613360' AND T2.EdOpsCode = 'SPECON'",
+      "pred": "IdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_Id_Id_Id.IdId_Id_Id_Id_Id_Id0NoneTR_idIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_id_Id-_Id-_id_id.id_id_Id_Id_Id_Id0_id_id0000000000_IdTR-idididididididid_id_id_id_id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_id000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the educational level name for the schools with Breakfast Provision 2 in county code 37? Indicate the name of the school.",
+      "gold": "SELECT T2.EILName, T2.School FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`NSLP Provision Status` = 'Breakfast Provision 2' AND T1.`County Code` = 37",
+      "pred": "ididididididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdidIdidididididididididid_id_____IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id0TRole____"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the city location of the high school level school with Lunch Provision 2 whose lowest grade is 9 and the highest grade is 12 in the county of Merced?",
+      "gold": "SELECT T2.City FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`NSLP Provision Status` = 'Lunch Provision 2' AND T2.County = 'Merced' AND T1.`Low Grade` = 9 AND T1.`High Grade` = 12 AND T2.EILCode = 'HS'",
+      "pred": "IdididididIdidIdIdXIdIdXIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRINTEXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_X_IdIdIdId_IdIdIdId_Id_Id_Id_Id_Id-Id_Id0_id_id00000_IdNoneTR_IdIdIdIdId_IdIdId_X__id_id_id_id_id:id_id:IdididIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_id00000000_ond_id_id000000000*/id_id00"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which schools served a grade span of Kindergarten to 9th grade in the county of Los Angeles and what is its Percent (%) Eligible FRPM (Ages 5-17)?",
+      "gold": "SELECT T2.School, T1.`FRPM Count (Ages 5-17)` * 100 / T1.`Enrollment (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Los Angeles' AND T2.GSserved = 'K-9'",
+      "pred": "id__Id_Id_ole_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id0000000000_Id0000001100011101100000000000000000000000000000000000000000000000000000000000000000000100111000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the most common type of grade span served in the city of Adelanto?",
+      "gold": "SELECT GSserved FROM schools WHERE City = 'Adelanto' GROUP BY GSserved ORDER BY COUNT(GSserved) DESC LIMIT 1",
+      "pred": "IdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_Id_Id_Id0_Id_Id000NoneTRTRidTRididTR_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id:IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdidIdidIdididididid_id_______________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Between San Diego and Santa Barbara, which county offers the most number of schools that does not offer physical building? Indicate the amount.",
+      "gold": "SELECT County, COUNT(Virtual) FROM schools WHERE (County = 'San Diego' OR County = 'Santa Barbara') AND Virtual = 'F' GROUP BY County ORDER BY COUNT(Virtual) DESC LIMIT 1",
+      "pred": "IdIdididididIdIdIdIdXoleIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdidididididid_id_____IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_id-id0__id0000000000TRTRidididididididIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the school type of the school with the highest latitude? Indicate the name of the school as well as the latitude coordinates.",
+      "gold": "SELECT T1.`School Type`, T1.`School Name`, T2.Latitude FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T2.Latitude DESC LIMIT 1",
+      "pred": "idididididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdidIdIdIdIdIdidIdIdIdidididididididid_id____IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id0___id0000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In which city can you find the school in the state of California with the lowest latitude coordinates and what is its lowest grade? Indicate the school name.",
+      "gold": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' ORDER BY T2.Latitude ASC LIMIT 1",
+      "pred": "IdidIdidididIdXoleIdXoleIdIdXXXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id0_id_id0000_Id_Id000000_Id-_Id010010010001000000000000000000000000000000000000000-_id_id-TRididididididididid_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_id000000000000TRididididid_Xid_id_XIdIdIdId"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the grade span offered in the school with the highest longitude?",
+      "gold": "SELECT GSoffered FROM schools ORDER BY ABS(longitude) DESC LIMIT 1",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X_IdIdId_IdId_Id_Id_Id_Id_Id0NoneTR_id_id_IdIdIdIdIdId_Id_Id_Id_Id_Id_Id:IdId_Id_Id0_Id_Id0-0_Id0-1000000011000000000000000000000101000000001000000000000000000000000000000000000011000000000000000000000000000000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of the schools that offers a magnet program serving a grade span of Kindergarten to 8th grade, how many offers Multiple Provision Types? List the number of cities that offers a Kindergarten to 8th grade span and indicate how many schools are there serving such grade span for each city.",
+      "gold": "SELECT T2.City, COUNT(T2.CDSCode) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.Magnet = 1 AND T2.GSoffered = 'K-8' AND T1.`NSLP Provision Status` = 'Multiple Provision Types' GROUP BY T2.City",
+      "pred": "id__Id_Id_Id_Id_Id_Id_Id_Id_T_ole_Id_X_Id_Id0000000000TRid_Id0000000000TR_Id000_Id0110001010000000000TR0010000000110000000000TR0000000000TR0000000000id0000000000id001000000000TR00000id0000000000TR0000000000TR0000000000id000000-TR0000000000TR--TR0000000000TR0000000000TRTRTRTRTRTRTRTRTRTRTRTRTRTRTRTRTRid00000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the two most common first names among the school administrators? Indicate the district to which they administer.",
+      "gold": "SELECT DISTINCT T1.AdmFName1, T1.District FROM schools AS T1 INNER JOIN ( SELECT admfname1 FROM schools GROUP BY admfname1 ORDER BY COUNT(admfname1) DESC LIMIT 2 ) AS T2 ON T1.AdmFName1 = T2.admfname1",
+      "pred": "_IdoleidididididididIdole__IdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdidididididid_Idid_Id_id_id0_id0000000000NoneTRidididididididid_id_id"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the Percent (%) Eligible Free (K-12) in the school administered by an administrator whose first name is Alusine. List the district code of the school.",
+      "gold": "SELECT T1.`Free Meal Count (K-12)` * 100 / T1.`Enrollment (K-12)`, T1.`District Code` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.AdmFName1 = 'Alusine'",
+      "pred": "IdidIdToleidIdole_IdIdole_IdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_ididididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdidIdididididid_id___________________________________TRididididididididid_Xidid_id_id0_id_id00000_id0000000000TRidTR_idid_id_id_id-TR_id_"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's last name that oversees the school with Charter number 40? Indicate the district, the county where the school is situated, and the name of the school.",
+      "gold": "SELECT AdmLName1, District, County, School FROM schools WHERE CharterNum = '0040'",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdXXIdole_Idole_Idole_IdINTEINTEXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id-XidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_ole0_id_id_IdIdIdIdIdIdididididididid_id_id_id_id_IdIdIdIdIdIdIdIdIdId_Id_Id.id_id00*/id_id0000000000_id:_id.id00"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the valid e-mail addresses of the administrator of the school located in the San Bernardino county, City of San Bernardino City Unified that opened between 1/1/2009 to 12/31/2010 whose school types are public Intermediate/Middle Schools and Unified Schools?",
+      "gold": "SELECT T2.AdmEmail1, T2.AdmEmail2 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'San Bernardino' AND T2.City = 'San Bernardino' AND T2.DOC = 54 AND strftime('%Y', T2.OpenDate) BETWEEN '2009' AND '2010' AND T2.SOC = 62",
+      "pred": "IdididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdIdIdidididid_Id_id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_id-id0_id0000000000TRididididididididididIdIdIdIdIdIdIdId_Id_Id0000000000TR_id_id_id_id_id-id00000id0000TR_TR0000TR0000TR001NoneTR0000TR0000TR0000TR0000TR0000TR0-NoneNoneTR0000"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's email address for the school with the highest number of test takers who received SAT scores of at least 1500?Provide the name of the school.",
+      "gold": "SELECT T2.AdmEmail1, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdId_Id_Id_Id.Id_Id_Id_Id0__Id00000000000NoneNoneTRidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_id_Id-_Id_Id-_id:id_id_id_Id_Id_Id_Id000000000000000NoneNoneIdIdididIdidididididididididididid_id_id_id_Id_Id_Id_Id_XIdIdIdIdIdIdIdIdId_Id_Id000id0000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts who choose issuance after transaction are staying in East Bohemia region?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE T1.A3 = 'east Bohemia' AND T2.frequency = 'POPLATEK PO OBRATU'",
+      "pred": "INTETEXX_IdINTEGER__IdINTEGER,IdINTEGER,IdINTETEXT,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEINTEGER,GERIdINTEGER,INTEINTEGER,GERIdINTEGER,GERINTEGER,GERX_INTEGER,GERIdTEXT,GERTEXT,GERTEXT000-100-000-000.coleoleididididididid_X_Idole_TEXT__TEXT_TEXT,IdIdTEXT,TEXT,TEXT101|_0|0|None|None|None|None|None|None|None|None|_1|0|None|Id0|None|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts who have region in Prague are eligible for loans?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T1.district_id = T3.district_id WHERE T3.A3 = 'Prague'",
+      "pred": "INTEGER_________None______011111000111001100101010101111111111110111111011111111111111110001100000000001010010000000000000001011111111111111111111111111111111111000000000000000001011111111111111111111111111111111111111000000101011111111111111111111111100000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "The average unemployment ratio of 1995 and 1996, which one has higher percentage?",
+      "gold": "SELECT DISTINCT IIF(AVG(A13) > AVG(A12), '1996', '1995') FROM district",
+      "pred": "id__X_Id__Id_X00001000010010011NoneTRid__Id_Id_INGERINTEINTE_INTE_INTE_INTE_INTE_INTE,X_X:Id_INTE_INTE,Id_INTE,TEXT,INTE,TEXT,TEXT,TEXT,TEXT,TEXT,INTE:IdIdTEXT_INTE,TEXT0____________None0000000000000000NoneNoneNone_____None0000000000100011Noneid0-None_id10-_____None0000000000000000NoneNoneNonecoleoleoleoleoleINTE_TEXT,X000000001000-010-111110-010-0000000000000000NoneNone_IdIdTEXT,IN"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the no. of districts that have female average salary is more than 6000 but less than 10000?",
+      "gold": "SELECT COUNT(DISTINCT T2.district_id)  FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A11 BETWEEN 6000 AND 10000",
+      "pred": "IdidXoleoleoleoleXIdoleIdINTEGER__INTEGER,INTEGER,INTEIdINTEINTETEXT,INTEINTEINTETEXT,INTE_TEXT,INTE,INTE_TEXT,TEXT,INTE_INTE_INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT,TEXT,INTE_IdINTE,INTE,INTE,TEXT,INTE,TEXT,INGER,INTE,TEXT,INTE,INTE,INTE,INTE,TEXT,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,TEXT,TEXT:XIdTEXT,TEXT-ole_INTEidole_INTE_INTEidINTE_INTE_INTE_INTE_INTE,TEXT,TEXT:XIdTEXT:IdTEXT,TEXT:IdTEXT:X_TEXT,TEXT:IdTEXT:IdTEXT0_IdTEXT00:X_ole_ole0000000000000001000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male customers who are living in North Bohemia have average salary greater than 8000?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A3 = 'north Bohemia' AND T2.A11 > 8000",
+      "pred": "INTEGER__________000111011001111001111100010011010110100010010100000100000000000000000000011000000000101000000000000000000000000000000000000000011111111111111111111111111000000000000000000000111111111111111111111111110000000000000000000000000000010000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the account numbers of female clients who are oldest and has lowest average salary, calculate the gap between this lowest average salary with the highest average salary?",
+      "gold": "SELECT T1.account_id , ( SELECT MAX(A11) - MIN(A11) FROM district ) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T1.account_id = T3.account_id INNER JOIN client AS T4 ON T3.client_id = T4.client_id WHERE T2.district_id = ( SELECT district_id FROM client WHERE gender = 'F' ORDER BY birth_date ASC LIMIT 1 ) ORDER BY T2.A11 DESC LIMIT 1",
+      "pred": "id____________________________________________TR_0-TR00-TR00000TR000000TR000000TR000000TRTRTRid_________________________________________________________________:__0-00-00000-00000000000000000001-TR0-TR11|TR--0|id|id|id|id|id|id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|id|id|id|id|Id|Id|Id|"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the account numbers of clients who are youngest and have highest average salary?",
+      "gold": "SELECT T1.account_id  FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id INNER JOIN client AS T3 ON T2.client_id = T3.client_id INNER JOIN district AS T4 on T4.district_id = T1.district_id WHERE T2.client_id = ( SELECT client_id FROM client ORDER BY birth_date DESC LIMIT 1) GROUP BY T4.A11, T1.account_id",
+      "pred": "id__id__IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidididididid_Xid_IdIdid_Id_ole_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id-Id_Id_Id_Id0_____Id000000TRTRole_idTRidTRidIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_____Id000000_TR_Id_Id_Id_Id0000000000000000_Id00010010011101110000000000010"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many customers who choose statement of weekly issuance are Owner?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T2.type = 'OWNER' AND T1.frequency = 'POPLATEK TYDNE'",
+      "pred": "id_ole_ole_TEXT,id_TEXT,TEXT,TEXT00010-0000-0ole0000-0000-0cTRidTR_ole0000|TR0000|ole0000|ole00id:id_ole0000|ole0000|ole0000|ole10-0000|ole0000|ule10000|ule0000|ole0000|ole0000|ole0000|ule10-0000|ole000_id_ule00-0000|ole0000|ole0000|ole0000|ole11000|ole1000|ole1000|ule10000|ole0000|ole1100-000-000-10-10-10-000-000-000|ole000-000|ole100"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the id number of client who choose statement of issuance after transaction are Disponent?",
+      "gold": "SELECT T2.client_id FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T1.frequency = 'POPLATEK PO OBRATU' AND T2.type = 'DISPONENT'",
+      "pred": "_Id___TRId__Id_IdIdIdIdIdIdIdIdId_XId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id:Id_Id0000000000000000_id000000000010000001011011110000001-_id000_id0100000000000000000000000000000000000000000000000000101110000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have approved loan date in 1997, list out the accounts that have the lowest approved amount and choose weekly issuance statement.",
+      "gold": "SELECT T2.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T1.date) = '1997' AND T2.frequency = 'POPLATEK TYDNE' ORDER BY T1.amount LIMIT 1",
+      "pred": "_Id_Id_ole_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_Id_TEXT,Id_TEXT,Id_TEXT,Id_INTEINTEId_TEXT_TEXT_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT_TEXT,Id_INTEid_TEXT,TEXT,TEXT,TEXT,TEXT:Id_TEXT,Id_TEXT:ole_INTEid0_TEXT,id0-_TEXT:ole0000000000000000_ole00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have loan validity more than 12 months, list out the accounts that have the highest approved amount and have account opening date in 1993.",
+      "gold": "SELECT T1.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T2.date) = '1993' AND T1.duration > 12 ORDER BY T1.amount DESC LIMIT 1",
+      "pred": "id_id*/id_idIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidididididididid_ole_idid_ole000000110101111101110000000000000000000000000000000000000TRididTRIdIdIdole_TEXT_IdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT__IdIdIdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT:Id_TEXT___Id_TEXT:id_TEXT_Id_TEXT:Id_TEXT:Id_ole1_ole1"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the account opened, how many female customers who were born before 1950 and stayed in Sokolov?",
+      "gold": "SELECT COUNT(T2.client_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.gender = 'F' AND STRFTIME('%Y', T2.birth_date) < '1950' AND T1.A2 = 'Sokolov'",
+      "pred": "id__IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdididididid_XIdIdid_idid_ole_ole0_id00010-TRTRId_Id_Id_Id_TId_Id000000000_id_id_id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_XId_X_X_X_Id_Id_Id_Id_Id_Id_Id_Id_TId_Id_TId_Id:Id_X_X_X_Id_Id000000000000000000000000000000000000000000000000000000000000010010010011011101111011110010110000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the accounts who have the earliest trading date in 1995 ?",
+      "gold": "SELECT account_id FROM trans WHERE STRFTIME('%Y', date) = '1995' ORDER BY date ASC LIMIT 1",
+      "pred": "TEXT__X_______01111111____c____011111110c011111000100111111111111c111111NoneIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdId_Id_X_Id_Id_Id_Id_Id_Id:Id_TEXT:TEXT,X_Id_TEXT,X:X_INTEGER,Id_INTEGER:INTEGER,Id_INTEGER0:_Id:Id_TEXT0000010100000000000000000000000000000000000000001000011000000000000000000000000000001100000000001010100"
+    },
+    {
+      "db_id": "financial",
+      "question": "State different accounts who have account opening date before 1997 and own an amount of money greater than 3000USD",
+      "gold": "SELECT DISTINCT T2.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T2.date) < '1997' AND T1.amount > 3000",
+      "pred": "id_idTRond_X___id_id_X___id_T_id_T0000-0000-0000-0TRTRole_id_ole_ole_TEXT_TEXT:_Id_TEXT0000-0idTRole00000000000000000010110111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which client issued his/her card in 1994/3/3, give his/her client id.",
+      "gold": "SELECT T2.client_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T3.issued = '1994-03-03'",
+      "pred": "id__id_id_Id_Id_Id_Id_Id_Id_Id_Id_XIdIdIdIdIdIdIdIdIdIdId_Id_XId_X_X_X_Id_Id:_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id0___Id0000000000_Id0000000000000000_Id000000000000000000000000000000000000000000000001011-_id0000001000-0000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "The transaction of 840 USD happened in 1998/10/14, when was this account opened?",
+      "gold": "SELECT T1.date FROM account AS T1 INNER JOIN trans AS T2 ON T1.account_id = T2.account_id WHERE T2.amount = 840 AND T2.date = '1998-10-14'",
+      "pred": "id__TRTRid0000-000000000000-000000000000-000000000100-01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "There was a loan approved in 1994/8/25, where was that account opened, give the district Id of the branch.",
+      "gold": "SELECT T1.district_id FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.date = '1994-08-25'",
+      "pred": "id_id_id_Id_Id_Id_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id0000000000_Id0000000001000000000000000000000000000000000000001000000000011-_id01100000000000000000110000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the biggest amount of transaction that the client whose card was opened in 1996/10/21 made?",
+      "gold": "SELECT T4.amount FROM card AS T1 JOIN disp AS T2 ON T1.disp_id = T2.disp_id JOIN account AS T3 on T2.account_id = T3.account_id JOIN trans AS T4 on T3.account_id = T4.account_id WHERE T1.issued = '1996-10-21' ORDER BY T4.amount DESC LIMIT 1",
+      "pred": "id__id_id_id_id_id_id_id_id_X_Id_X:Id_TEXT_Id000100010000000000_ole_ole00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001NoneIdTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdidid"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the gender of the oldest client who opened his/her account in the highest average salary branch?",
+      "gold": "SELECT T2.gender FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id ORDER BY T1.A11 DESC, T2.birth_date ASC LIMIT 1",
+      "pred": "IdididTidoleididididididididididididIdole_ole0_Idole_ole1000.idididididIdole_TEXT__IdTEXT_IdTEXT_XIdTEXT__IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT_IdTEXT:_X_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id:_____Id_Id_Id_Id00000000000000000000000000000000000000000000001______________________________01000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client who applied the biggest loan, what was his/her first amount of transaction after opened the account?",
+      "gold": "SELECT T3.amount FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id ORDER BY T1.amount DESC, T3.date ASC LIMIT 1",
+      "pred": "id__idTRididIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdididididididid_Xid_Idid_IdIdId_ole_Id_Id_X_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_X_Id_Id_Id0000000000NoneTRTRId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id:_Id_Id_Id_Id_Id_Id_Id-_Id_Id_Id:_Id_Id000000000000000000000000000000000000000010110111111000000101"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients opened their accounts in Jesenik branch were women?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A2 = 'Jesenik'",
+      "pred": "TEXT,X_Id_INTEGER,X,INTEGER,INTEINTEGER,GERTEXT,INTETEXT,INTEIdINTEINTEINTEINTEINTEINTETEXT,INTETEXT,INTEIdINTE_INTE_INTE,INTEIdIdTEXT,INTEINTEIdINTE_IdIdINTE_IdIdTEXT,INTE_X_INTE,INTE,INTE,INTE,INTE,INTE,TEXT,INTEIdTEXT,TEXT,TEXT,TEXT:TEXT,TEXT0_id_INTEINTE_X_INTE_IdIdINTE,INTE,INTE,TEXT:INTE_Id_INTE,TEXT00:TEXT0100.10000100-00000000000000000000100-11100000000000000100-00000000000000000000000-000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the disposition id of the client who made 5100 USD transaction in 1998/9/2?",
+      "gold": "SELECT T1.disp_id FROM disp AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.date='1997-08-20' AND T3.amount = 5100",
+      "pred": "id_id_id_id_id_Id_Id_Id_Id_Id_XIdIdIdIdId_TEXT_TEXT_TEXT:id_TEXT:Id_INTEINTEId_TEXT:Id_TEXT_XId_TEXT0___id0000000NoneTR_idId_TEXT,Id_TEXT:Id_TEXT:Id_TEXT_X_TEXT:Id_TEXT0000000000_id00000000000000000000000000000000000000000000000000000000_id01000000000000010101101000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts were opened in Litomerice in 1996?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) = '1996' AND T1.A2 = 'Litomerice'",
+      "pred": "TEXT:Id_X011111111None_TEXT111_X11110-00000000000000000000010-01000100011None1110|None|Id0|TR_None|Id0|ole_INGERId0|INTEINTEINTEINTEPRTEId0|INTE_INTE_X_Id0|TEXT_X0-00000000010-01011111111111111111111111111111111111111111111111111cId1|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|INTE_TEXT1-11111111111111111cId1|INTE1|INTE0|INTE0|ole_ole1|INTE"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the female client who was born in 1976/1/29, which district did she opened her account?",
+      "gold": "SELECT T1.A2 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.birth_date = '1976-01-29' AND T2.gender = 'F'",
+      "pred": "id________0000NoneTRTRid____TRId____Id_____Id0011011111100000000000000000000_______0000TRId0000TRid0000TRTRid0000TRid0000Id0000TRId0000id0000TRid0000id0000id0000Id0000Id0_TRId0000TRid0000Id0000Id0000Id0000id0000id0000id0000Id0000id0000id0000id0000id0000id010000NoneTRid010000TRid0000TRid0000id0111000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client who applied 98832 USD loan in 1996/1/3, when was his/her birthday?",
+      "gold": "SELECT T4.birth_date FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id INNER JOIN client AS T4 ON T3.client_id = T4.client_id WHERE T1.date = '1996-01-03' AND T1.amount = 98832",
+      "pred": "X_IdIdidIdIdIdIdX_IdIdTEXT_IdIdTEXT,TEXT0_IdidIdX:X_IdIdX0000000000NoneNoneNoneNoneNoneNoneTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEGER_INTEGER_INTEINTEINTEINTEINTEINTEINTEXXIdX_TEXT_TEXT_TEXT_TEXT,IdIdIdIdId_TEXT:Id_INTETEXT,TEXT000000000000100-000-0000-0000-100-1000-0000-0000000000100-000|TR000-0000|TR000|id0-0-00"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the first client who opened his/her account in Prague, what is his/her account ID?",
+      "gold": "SELECT T1.account_id FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'Prague' ORDER BY T1.date ASC LIMIT 1",
+      "pred": "id__________000000000TR_TR00000000TR-idTR00000000TR0TRTRidididole_idTTidTIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id0_________NoneNone___000000100010111111111110010000000111110000000000000000000000000000000000000000000010110110010100000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the branch which located in the south Bohemia with biggest number of inhabitants, what is the percentage of the male clients?",
+      "gold": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'south Bohemia' GROUP BY T2.A4 ORDER BY T2.A4 DESC LIMIT 1",
+      "pred": "X_Id_Id_Id_TEXT,Id_TEXT,Id0000|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id_INTEGER,Id010-100.101-010-111-11100|id|id|TTRid|ole_id|Id|X_ole1000|Id|Id|ole1010|id|id|TINTEINTEINTEXINTEXINTEId|X_"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client whose loan was approved first in 1993/7/5, what is the increase rate of his/her account balance from 1993/3/22 to 1998/12/27?",
+      "gold": "SELECT CAST((SUM(IIF(T3.date = '1998-12-27', T3.balance, 0)) - SUM(IIF(T3.date = '1993-03-22', T3.balance, 0))) AS REAL) * 100 / SUM(IIF(T3.date = '1993-03-22', T3.balance, 0)) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T3.account_id = T2.account_id WHERE T1.date = '1993-07-05'",
+      "pred": "IdidTIdTEXT_IdTEXT_IdINTEINTETEXT,TEXT,TEXT_TEXT_TEXT_TEXT,TEXT_TEXT,TEXT,TEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT_TEXT0__idididIdoleidIdole_X_IdX_X:_IdIdIdX_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0000000000_IdidIdTIdTEXT0000000001000101000001101101010000000000011101000100000000000000000000000000000000000000001011100"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the percentage of loan amount that has been fully paid with no issue.",
+      "gold": "SELECT (CAST(SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) AS REAL) * 100) / SUM(amount) FROM loan",
+      "pred": "TEXT10__IdIdIdIdIdIdIdIdIdIdIdIdIdIdXIdXIdXIdIdIdXIdIdX_IdIdX,IdIdX_X_Id_X,Id_Id_Id_Id_Id_Id_Id_Id_X:Id_Id:Id:_X:_______________________01110001111111001111111111101111111111111cIdIdIdId_Id_Id_Id_Id_Id_Id_Id__________001111111111cId_Id_Id_Id_Id_Id000000000000000000001111100000000000000000001001111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "For loan amount less than USD100,000, what is the percentage of accounts that is still running with no issue.",
+      "gold": "SELECT CAST(SUM(status = 'C') AS REAL) * 100 / COUNT(account_id) FROM loan WHERE amount < 100000",
+      "pred": "Id_Id_TEXT,Id_TEXT_IdIdIdTEXT_TEXT_TEXT,TEXT_INTEGER,INTEGER,INTEINTEGER_GERINTEGER/*_INTEGER,INTEGER,INTEGER_INTEGER,INTEGER,TEXT,INTEGER:IdIdTEXT,TEXT0_id_ole_ole0000000000000000000001100000000011100-None00010-None10000000010000011111111111111111000000000110000011111100000000010000000000000000000000000010000000000000000000000000000000000001000"
+    },
+    {
+      "db_id": "financial",
+      "question": "For accounts in 1993 with statement issued after transaction, list the account ID, district name and district region.",
+      "gold": "SELECT T1.account_id, T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.frequency = 'POPLATEK PO OBRATU' AND STRFTIME('%Y', T1.date)= '1993'",
+      "pred": "_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdId_Id_Id_Id_Id_Id_Id_Id_Id________________________________:__0000000000000000000001000000000000001000000000000001000000000000000000000000000000000000000000000000110011000001110000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "From Year 1995 to 2000, who are the accounts holders from 'east Bohemia'. State the account ID the frequency of statement issuance.",
+      "gold": "SELECT T1.account_id, T1.frequency FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'east Bohemia' AND STRFTIME('%Y', T1.date) BETWEEN '1995' AND '2000'",
+      "pred": "_id__IdIdIdIdIdIdId_XIdId_Id_X_X_IdId_Id_IdId_XId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id_Id00000000000_id00000000010000000000010000001000000001000000000001010110000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List account ID and account opening date for accounts from 'Prachatice'.",
+      "gold": "SELECT T1.account_id, T1.date FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A2 = 'Prachatice'",
+      "pred": "id________0000000000TR_TR0000000000TR-TR00000TR0000000000TR0000000000IdNoneIdIdIdIdIdIdIdIdIdIdId_Id_Id0_____________________________:___0000000000TR0000000000__00000001000001010110111100000-00000000010101010100-000000000000000000000000000000000001000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "State the district and region for loan ID '4990'.",
+      "gold": "SELECT T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.loan_id = 4990",
+      "pred": "id_________0TRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id_Id:Id_Id0______________________:____000000000_TR-TR0000000000_id00000100000100110000100000010000010111000001000000000000000000000000000000000000000000001010000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Provide the account ID, district and region for loan amount greater than USD300,000.",
+      "gold": "SELECT T1.account_id, T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.amount > 300000",
+      "pred": "id__IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id:Id_Id0000000000000000000___________-________:_________:_00000000000001010000-1000000000000000101000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the loan ID, district and average salary for loan with duration of 60 months.",
+      "gold": "SELECT T3.loan_id, T2.A2, T2.A11 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.duration = 60",
+      "pred": "_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_XIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id0000000000000000000_id000000000000010000000-0000000100010000000000000010000000000000000000000000000000000000000000000000000100000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "For loans contracts which are still running where client are in debt, list the district of the and the state the percentage unemployment rate increment from year 1995 to 1996.",
+      "gold": "SELECT CAST((T3.A13 - T3.A12) AS REAL) * 100 / T3.A12 FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.status = 'D'",
+      "pred": "id__id_id_IdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_XIdIdIdIdIdId_IdIdId_XId_XId_Id_XId_Id00_______0000000000NoneTR_id_id00-TR0000000000TR0000000000TR0000000000TR0000TR0000000000TR00000000000TR000000TR00000000000TR0001NoneIdTR1NoneIdTR1NoneNoneIdIdIdIdIdIdId_ole_id_Xid_id_ole_id_ole00000000001TR0101101101100000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Calculate the percentage of account from 'Decin' district for all accounts are opened in 1993.",
+      "gold": "SELECT CAST(SUM(T1.A2 = 'Decin') AS REAL) * 100 / COUNT(account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) = '1993'",
+      "pred": "id_TR0000000000000000000_id0000000000100000100NoneTR00000000000000000000000000000000000101TR1101111100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the account IDs with monthly issuance of statements.",
+      "gold": "SELECT account_id FROM account WHERE Frequency = 'POPLATEK MESICNE'",
+      "pred": "id__idTRididididididTididididTidTTidTTIdXXIdIdIdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdididididIdididididid_ole_ole0000001000110111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the top nine districts, by descending order, from the highest to the lowest, the number of female account holders.",
+      "gold": "SELECT T2.A2, COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' GROUP BY T2.district_id, T2.A2 ORDER BY COUNT(T1.client_id) DESC LIMIT 9",
+      "pred": "id_id_id_ole_id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_X_X0___________TRId_Id0000000000NoneTRid_id0000000000NoneId_Id00_Id00000000000_Id0000000000000000_X0000000000000000000_id0000000001000100010101100010000000000000100000000000001000000000000000000000000000000000001100000101100000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which are the top ten withdrawals (non-credit card) by district names for the month of January 1996?",
+      "gold": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ' AND T3.date LIKE '1996-01%' ORDER BY A2 ASC LIMIT 10",
+      "pred": "id_id_ole_idididXole_IdIdXXXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdidIdIdIdXole_ididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,Id_TEXT,Id_TEXT,XId_TEXT,Id_TEXT_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT_INTEINTETidididid_INTEid_INTE_INTE_TEXT_TEXT_TEXT_TEXT,X_INGERid_INTE_X_INTE_Id_INTE_X:ole_id_INTE_id0_ole_id0000000000_ole0000000000000000000000000000000101010000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many of the account holders in South Bohemia still do not own credit cards?",
+      "gold": "SELECT COUNT(T3.account_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.client_id = T3.client_id WHERE T1.A3 = 'south Bohemia' AND T3.type != 'OWNER'",
+      "pred": "id__IdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_Id_Id_Id_Id___________________________________:__________________0____000010001010011TR_id_id_id00001000101011TR0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which district has highest active loan?",
+      "gold": "SELECT T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.status IN ('C', 'D') GROUP BY T2.A3 ORDER BY SUM(T3.amount) DESC LIMIT 1",
+      "pred": "id_id_ole_ole_ole_TEXT,id:_id0000000000TRidTR_ole0_id_ole1_ole10_TEXT_ole10_ole0000000000TRidole0000000000ididididididid_TEXT_TEXT_TEXT_TEXT_TEXT,XIdTEXT,XIdTEXT,TEXT:IdIdTEXT_TEXT0000000000_ole00000_ole0000000000_ole000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001101111100000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average loan amount by male borrowers?",
+      "gold": "SELECT AVG(T4.amount) FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN loan AS T4 ON T3.account_id = T4.account_id WHERE T1.gender = 'M'",
+      "pred": "ole_id_X__IdIdX_IdX_X_X_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X:id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X:X_X_IdIdIdId_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id_Id_Id:id_X0__id_X00000000000TRTRole_T_ole_ole0_ole1_INTEINTETEXTX_TEXTIdIdX_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,TEXT,INTEIdIdX000_TEXT_INTEid_INTEIdIdidIdX_TEXT_TEXT_TEXT,TEXT_TEXT,TEXT_TEXT,TEXT_TEXT_TEXT_TEXT,TEXT,TEXT0_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,TEXT"
+    },
+    {
+      "db_id": "financial",
+      "question": "In 1996, which districts have the highest unemployment rate? List their branch location and district name.",
+      "gold": "SELECT district_id, A2 FROM district ORDER BY A13 DESC LIMIT 1",
+      "pred": "IdIdTEXT,TEXT,INTEINTETEXT,INTEIdINTETEXT,INTEIdTEXT,INTEIdINTEINTEINTETEXT,INTE_INTE/*_IdIdTEXT,INTE,INTE,TEXT,TEXT,TEXT,INTE,INTE,INTE,TEXT:IdIdINTETEXT,TEXT:TEXT,TEXT:TEXT,TEXT:INTE_IdXIdINTEIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_TEXT,TEXT0000-1-0000|TRId_Id1|Id1|Id0|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|TEXT|TEXT|INTE|INTE|INGER:X_X1|______0-100"
+    },
+    {
+      "db_id": "financial",
+      "question": "In the branch where the largest number of crimes were committed in 1996, how many accounts were opened?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id GROUP BY T1.A16 ORDER BY T1.A16 DESC LIMIT 1",
+      "pred": "IdIdTEXT__IdINTEGER,IdINTEINTEGER,INTEGER,INTEGER,INTEGER,INGERIdINTEINTEINTEGER,INTEGER,INTEIdINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTETEXT,INTEGER,TEXT:IdTEXT0-_id_ole_id_INTEINTEole_id_INTEINTEINTEINTEINTEINTETEXT:IdINTETEXT:X_TEXT10-01-110.0-01-11100-00000000000000000000000110-01-1010.0.0-01|None|IdIdINTEINTEINTEINTETEXT:_IdIdINTETEXT:_IdIdX_INTEINTETEXT0-00-000-000-01-010-01-100"
+    },
+    {
+      "db_id": "financial",
+      "question": "After making a credit card withdrawal, how many account/s with monthly issuance has a negative balance?",
+      "gold": "SELECT COUNT(T1.account_id) FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T1.balance < 0 AND T1.operation = 'VYBER KARTOU' AND T2.frequency = 'POPLATEK MESICNE'",
+      "pred": "id__IdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_TEXT_IdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_TEXT:Id_TEXT,Id_TEXT,Id_TEXT,Id0___id0000000000_id0000101000001110101000000000000100000011110000000000000000000000000000000000000000000000010110100000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Between 1/1/1995 and 12/31/1997, how many loans in the amount of at least 250,000 per account that chose monthly statement issuance were approved?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.date BETWEEN '1995-01-01' AND '1997-12-31' AND T1.frequency = 'POPLATEK MESICNE' AND T2.amount >= 250000",
+      "pred": "id_________000000000NoneTRTRid__id000000000TRid010110110_TRId_Id_Id00000TRid000000000TRid_id000000000TRid000000000TRid001000000000000000NoneIdTRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id:_Id_Id_Id:_Id:_Id00000000000000000_X_Id_Id_Id000_TId_id000000000000000000000101001101110010000001010010111110000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts have running contracts in Branch location 1?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T1.district_id = 1 AND (T3.status = 'C' OR T3.status = 'D')",
+      "pred": "TEXT__Id_X_Id0000-0000-0000|_0|None|TR00-0000|0|None|Id|id|id|X|X|X|X|X|X|Id|Id|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|INTEINTE_Id|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|INTE_Id|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|INGERX|_______-010-01-10|Id|id|id|id|TTRTRTid|id|Tole_id|X|id|id|X|Id|Id|X|Id|Id|X|Id|Id|Id|X|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|"
+    },
+    {
+      "db_id": "financial",
+      "question": "In the branch where the second-highest number of crimes were committed in 1995 occurred, how many male clients are there?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A15 = (SELECT T3.A15 FROM district AS T3 ORDER BY T3.A15 DESC LIMIT 1, 1)",
+      "pred": "IdIdINTEINTEINTEINTEINTEINTEINTEINTEINTEXINTE_INTE,INTE,INTE,INTE,INTE,INGERTEXTIdINTETEXT_INTE_INTE_INTE,INTE,INTE,INTE,INTE_INTE,INTE,TEXT_IdTEXT,TEXT,TEXT,TEXT,INTE_INTE,INTE,INTE,INTE:INTE_INTE,INTE0_ole_ole0:TEXT,TEXT1001-1111-1111-1111-01-1000-0000-0000-000000010000110100000000000000000000000000000000000000000000110100000000-0000-0001-11110000000000111"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many high-level credit cards have \"OWNER\" type of disposition?",
+      "gold": "SELECT COUNT(T1.card_id) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'gold' AND T2.type = 'OWNER'",
+      "pred": "TEXT__Idole_IdTEXT0000000001000000111NoneNoneNone0000001000111010011011111111111111111001000000101111111111110000001000011110000000000000000000100101100101011NoneNoneNone001110100000000000001111111111111111111111111100000000000000000000000000000000000001001111100111100000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts are there in the district of \"Pisek\"?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A2 = 'Pisek'",
+      "pred": "INTEGER_____________01111__11110.NoneNoneIdidIdole_IdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,TEXT,INTEGER,INTEINTETEXT,INTETEXT,TEXT,INTETEXT,INTETEXT:TEXT,INTEINTETEXT,TEXT:INTETEXT:TEXT:TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:INTEINTETEXT,INTEINTEINTETEXT,INTEIdIdIdIdIdIdId_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,IdIdIdIdIdId_TEXT:TEXT011110001001111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which districts have transactions greater than USS$10,000 in 1997?",
+      "gold": "SELECT T1.district_id FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T1.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date) = '1997' GROUP BY T1.district_id HAVING SUM(T3.amount) > 10000",
+      "pred": "id_id_id_X_id_X:Id_X_X_Id_Id:Id_Id_X0__idTRX_Id00000000000000000TRTRTId_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTEINTEId_TEXT,Id_TEXT0000000000000000_Id_TEXT:Id_TEXT,_Id00000000000000000_Id0000000000000000000000010001001001101110011110110101100000000000100000000000000000000000000000000000000000001110000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which accounts placed orders for household payment in Pisek?",
+      "gold": "SELECT DISTINCT T2.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.k_symbol = 'SIPO' AND T3.A2 = 'Pisek'",
+      "pred": "TEXT__IdIdTEXT__IdTEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT0__IdIdIdTEXT0-_idIdTEXT10-00100111111110011111111111111111111111111111111111111111111111111111111111111111111111000001000000000000000000010010000000000111111111111111111111110000000000000000000000000001111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "What are the accounts that have gold credit cards?",
+      "gold": "SELECT T2.account_id FROM disp AS T2  INNER JOIN card AS T1 ON T1.disp_id = T2.disp_id  WHERE T1.type = 'gold'",
+      "pred": "ole_ole_ole_ole_ule_ole_ole_ule,ole:exidole/*exTRule/*ididole/*atomidisisatom/*INTEGER/*INTEGER/*INTEGER_GERINTEGER_GERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERTEXTIdTEXT)"
+    },
+    {
+      "db_id": "financial",
+      "question": "How much is the average amount in credit card made by account holders in a month, in year 2021?",
+      "gold": "SELECT AVG(T4.amount) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE STRFTIME('%Y', T4.date) = '1998' AND T4.operation = 'VYBER KARTOU'",
+      "pred": "id_idTRoleid_ole_ole_idid_idId_idId_Id_Id_Id_Id_X_X_Id_TEXT_TEXT_TEXT,Id_TEXT,Id_TEXT:Id_INTETEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:Id_TEXT,Id:_TEXT:Id_TEXT0__Id0000000000_T_id_TEXT0000000000000010000011000010000000000000011000-_id00000000000000000000000000000000000000010000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who are the account holder identification numbers whose who have transactions on the credit card with the amount is less than the average, in 1998?",
+      "gold": "SELECT T1.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T1.date) = '1998' AND T1.operation = 'VYBER KARTOU' AND T1.amount < (SELECT AVG(amount) FROM trans WHERE STRFTIME('%Y', date) = '1998')",
+      "pred": "TEXT__id___IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_TEXT____Id_TEXT__IdIdIdIdId_TEXT,XIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,Id_Id_Id_Id_Id_Id_Id_Id:Id_TEXT,_TEXT,_ole_Id_Id_Id_Id_Id_Id:Id_TEXT0_id_id_Id_X_Id_Id_Id-_____Id000_id0000000000_id010000000000000000000000000000000000000000000000010001100000100000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who are the female account holders who own credit cards and also have loans?",
+      "gold": "SELECT T1.client_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T5 ON T2.account_id = T5.account_id INNER JOIN loan AS T3 ON T5.account_id = T3.account_id INNER JOIN card AS T4 ON T2.disp_id = T4.disp_id WHERE T1.gender = 'F'",
+      "pred": "ole_ole_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTEINTEIdIdIdXIdIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdId_TEXT,Id_TEXT,Id_TEXT,Id_INTE_TEXT:id_TEXT0_ole_TEXT0000000000_ole_TEXT0101111000-0100-0100-01010000000-0000-000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many female clients' accounts are in the region of South Bohemia?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A3 = 'south Bohemia'",
+      "pred": "TEXT__IdIdXXIdX_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_INTEGER,INTEGER,INTEIdIdIdIdIdIdIdIdId_INTEId_INTEId,INTEId,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INGER,INTE,TEXT,TEXT:TEXT,TEXT0:_TEXT00-00000000000000000000000000100-10110-10-111-11110|None|TRIdIdIdId_INTEId_INTE_INTE_INTE,IdId_TEXT,Id_TEXT:X_TEXT0-000000000000000000000000000000-00000-00|Id0-00"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the accounts whose district is Tabor that are eligible for loans.",
+      "gold": "SELECT T2.account_id FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'OWNER' AND T1.A2 = 'Tabor'",
+      "pred": "id__Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_TEXT,TEXT,INTEINTEId_TEXT:Id_TEXT:Id_INTE_TEXT0___Id0000000000_Id00000000000000000000000000000000000000000000000000000000000000000000000000000100000000000010101010000-01-1100|_0|TR_TR00|00|_None00|00|00|TR00|00|00|TR00|00|00|TR0TR0-100|00|TR00|TR100|00"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the account types that are not eligible for loans, and the average income of residents in the district where the account is located exceeds $8000 but is no more than $9000.",
+      "gold": "SELECT T3.type FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id WHERE T3.type != 'OWNER' AND T1.A11 BETWEEN 8000 AND 9000",
+      "pred": "IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdXXIdXIdXIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdId_Id_Id_Id:______________________________________________________________________________________________0__00-0000000000_0000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts in North Bohemia has made a transaction with the partner's bank being AB?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.bank = 'AB' AND T1.A3 = 'north Bohemia'",
+      "pred": "TEXT__IdIdIdIdXXXIdIdIdIdX_TEXT:TEXT0________cId___011111111100101110010111111011111111111111111NoneIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_T_Id_Id_X_X0:id_IdIdIdIdId_TEXT:TEXT:INTEINTEIdIdX_INTEId_INTE_INTE_INTE_INTE,INTE_INTE,INTE,TEXT,INTE,INTE,INTE,INTE,INTE,INGERIdIdX_INTE_INTE_INTE_INTE_INTE,INTE,INTE,TEXT:TEXT_IdIdX_TEXT000_Id_ole_X_X00000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the name of the districts with accounts that made withdrawal transactions.",
+      "gold": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ'",
+      "pred": "id__idTRTEXT_TEXT_INTEINTE_TEXT_TEXT_TEXT_TEXT_INTE_INTE_INTE,Id_IdIdIdIdIdIdId_INTE_INGER,Id_XId_IdId_TEXT,Id:Id_TEXT,Id0_TEXT_TEXT,Id0-000-01-01-110-100-1000000000000000000000000000000000000000000000000000000000:id._id_ole_id_id_id_id_Id_ole_Id_X_TEXT_TEXT,Id0000-0000-01-00-000-000-000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average number of crimes committed in 1995 in regions where the number exceeds 4000 and the region has accounts that are opened starting from the year 1997?",
+      "gold": "SELECT AVG(T1.A15) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) >= '1997' AND T1.A15 > 4000",
+      "pred": "ole_ole0__idididXIdX_ole1__ole00000000000000000000011cId_TEXT,TEXT,INTEGER,INTEINTEINTETEXT,INTEINTEIdIdTEXT,INTEIdIdTEXT,TEXT,INTEIdIdINTEIdTEXT,INTEIdIdTEXT,TEXT,TEXT,TEXT,TEXT,INTEIdIdINTEIdTEXT:IdIdTEXT,TEXT00000000000000000000000011000000000000011000000011111111000000000111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many 'classic' cards are eligible for loan?",
+      "gold": "SELECT COUNT(T1.card_id) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'classic' AND T2.type = 'OWNER'",
+      "pred": "oleid_IdIdXTEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTEINTEIdXTEXT_TEXT_INTEIdXTEXT_TEXT,TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,TEXT,TEXT0_IdIdTEXT:IdIdXTEXT00_IdIdidIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:id_Id_Id_Id_Id_Id_Id-Id_Id-Id-id_Id0010010001001001101111111100100000000000000000000000000000000000001"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male clients in 'Hl.m. Praha' district?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A2 = 'Hl.m. Praha'",
+      "pred": "INTEGER__IdINTEGER,IdINTEGER,INTEGER,INTEINTEGER,GERIdGERIdGERIdINTEGER,GERIdTEXT,GERIdINTEGER,INTEINTEINTEGER,GER_TEXT,INTEINTEIdINTEINTETEXT,INTETEXT,INTETEXT,INTEINTETEXT,INTETEXT,TEXT,INTETEXT,INTEINTEINTETEXT,INTETEXT,INTEINTETEXT,INTEINTETEXT,INTETEXT,INTEINTEINTETEXT,INTEINTETEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEINTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:IdIdIdIdIdIdIdId_IdId_Id_Id_Id_Id_Id_Id_Id:Id_TEXT,TEXT:Id_TEXT101010111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many percent of 'Gold' cards were issued prior to 1998?",
+      "gold": "SELECT CAST(SUM(type = 'gold' AND STRFTIME('%Y', issued) < '1998') AS REAL) * 100 / COUNT(card_id) FROM card",
+      "pred": "IdXoleidididididIdXole_IdIdXTEXT__IdIdIdXTEXT,IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_ole_XidididXole_XIdIdIdIdXTEXT,IdIdIdIdIdIdIdIdIdId_TEXT_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdIdIdIdId_INTEGER_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,IdIdIdIdIdId_INTEINTEINTEINTEINTEINTEXINTEIdIdIdIdId_XXole_TXXXXTTTId_XIdIdIdId_XId_INTEidididididid_XIdid_Xid_X_INTE_"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who is the owner of the account with the largest loan amount?",
+      "gold": "SELECT T1.client_id FROM disp AS T1 INNER JOIN account AS T3 ON T1.account_id = T3.account_id INNER JOIN loan AS T2 ON T3.account_id = T2.account_id WHERE T1.type = 'OWNER' ORDER BY T2.amount DESC LIMIT 1",
+      "pred": "id__idTRole_idid_idid_Xid_idid_ole_INGERINTEINTEole_INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEXXXXIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdid_idIdid0TRINTE_ole_ole0id0id0id1id1id1id1Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id0Id0_Id0_id00id0TRid0TRoleTRoleTRoleid0id0id0id0id0Id_Id_Id_Id_Id_Id_Id_Id_Tid_Id_Id_Id_Id_Id:_Id_Id_Id_Id_Id_Id_Id_Id:_Id0_Id00Id0Id0TRId_Id0_Id1_X_Id0_id0_Id00_Id00_id"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the number of committed crimes in 1995 in the district of the account with the id 532?",
+      "gold": "SELECT T1.A15 FROM district AS T1 INNER JOIN `account` AS T2 ON T1.district_id = T2.district_id WHERE T2.account_id = 532",
+      "pred": "IdidididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdId_Id_Id_Id_Id:Id_Id0_Id000000_Id_Id_Id:_Id0000000000000000_id_id00000000010000000110000001001000000010000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the district Id of the account that placed the order with the id 33333?",
+      "gold": "SELECT T3.district_id FROM `order` AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.order_id = 33333",
+      "pred": "id_id_id_id_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_TEXT,TEXT,TEXT,TEXT_TEXT:Id_TEXT:T_X:id0000000000TRPRININININTEXT_TEXT,TEXT0000000000TRId_TEXT0000000000_TEXT000Id_TEXT000000000000000000000000000000000000000000000000000000000000000000_TEXT01000000000010000111111010000000000000000000000000000000000000000000000110100001000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all the withdrawals in cash transactions that the client with the id 3356 makes.",
+      "gold": "SELECT T4.trans_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 3356 AND T4.operation = 'VYBER'",
+      "pred": "Id_id_id_IdIdIdIdIdIdIdIdId_Id_XId_Id_Id_X_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id0_Id0-_Id00-0000000_id0000000000000000-_id01-011000000000000100000001110000-010000000000000000000000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the weekly issuance accounts, how many have a loan of under 200000?",
+      "gold": "SELECT COUNT(T1.account_id) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T2.frequency = 'POPLATEK TYDNE' AND T1.amount < 200000",
+      "pred": "IdIdXTEXT_Idole_TEXT_IdTEXT,TEXT,INTEINTEIdINTEXINTE_INTE_INTE_TEXT,INTE_TEXT,TEXT,INTE_TEXT_TEXT,INTE_INTE_INTE_XINTE_INTE_INTE_INTE_INTE_INTE_INTE_TEXT,TEXT,INTE_INTE0_XIdXXIdIdXX_INTE0:ole_INTE0:INTE0_INTE000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000001100000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What type of credit card does the client with the id 13539 own?",
+      "gold": "SELECT T3.type FROM disp AS T1 INNER JOIN client AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T1.disp_id = T3.disp_id WHERE T2.client_id = 13539",
+      "pred": "id__id_id_ole_ole_ole_ole_ole_ole_X_Id_Id_Id_Id_Id_Id_Id0_Id00000TRTRTidTRid_X_X_X_X_Id_Id_Id_TEXT_TEXT_TEXT,TIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,TEXT,TEXT:Id_TEXT,Id_TEXT000_Id00000_T_Id0000000000000000_ole0000000000000000-_Id00101001101111111110010000010101111110100000000000000000000000000000000000000001100000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the region of the client with the id 3541 from?",
+      "gold": "SELECT T1.A3 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.client_id = 3541",
+      "pred": "id__idTRididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id_Id:_Id0000000000000000_id00000_id0000001000100111011111100000-_id00001000000000000000000000000000000000000000000000101101001000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which district has the most accounts with loan contracts finished with no problems?",
+      "gold": "SELECT T1.A2 FROM District AS T1 INNER JOIN Account AS T2 ON T1.District_id = T2.District_id INNER JOIN Loan AS T3 ON T2.Account_id = T3.Account_id WHERE T3.status = 'A' GROUP BY T1.District_id ORDER BY COUNT(T2.Account_id) DESC LIMIT 1",
+      "pred": "IdIdIdIdTEXTIdTEXT_TEXT_TEXT_INTETETEXT,TEXT,INTEGER_INTETETEXT,TEXT:TEXT,TEXT:INTEGER_TEXT:TEXT0000000000__IdIdIdole_ole00000000000001000000000000000000000000000000000000000000010000000-NoneNoneNoneNoneNoneNoneNoneTRIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdId_Id_XId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_ole000TRidididTRidididididIdidididididid_ole10000000000000100000110111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who placed the order with the id 32423?",
+      "gold": "SELECT T3.client_id FROM `order` AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T4 ON T4.account_id = T2.account_id  INNER JOIN client AS T3 ON T4.client_id = T3.client_id WHERE T1.order_id = 32423",
+      "pred": "Id_id_id_Id_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_X_Id0__Id000000TRole_idididididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id_Id_Id:Id_Id_Id_Id_Id000000_Id0000000000_X_Id0000000000000000_id00000001000001110110011111100000000000010111000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list all the transactions made by accounts from district 5.",
+      "gold": "SELECT T3.trans_id FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T1.district_id = 5",
+      "pred": "ole_INTEGER,INTEGER,INTEGER,INTETEXT,INTETEXT,TEXT,INTEINTEGER,INTEINTEINTEINTEINTEIdGER,INTEGER,INTEGER,INTEGER,TEXT,INTEGER,TEXT,TEXT:TEXT,TEXT,TEXT,TEXT,INTEGER,INTEGER:INTEINTETEXT,INTEINTEINTEINTETEXT,TEXT,INTEINTEINTETEXT000-0000|_0|None|Id_Id-Id0|_1|None|_0|None|TRId_Id0|None|None|TRId0|None|Id0|TRTRid_Id0|TRid0|Id0|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id1|Id_Id1|Id1|"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many of the accounts are from Jesenik district?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE T1.A2 = 'Jesenik'",
+      "pred": "INTEGER__________01100-11000coleididole___-0110000000000000000000111NoneIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT0000000000000000010000000010111111111111111111111111111100000000000000001100-NoneNoneNoneNoneNoneNoneNoneNone_INTEINTEPRTE_IdIdTEXT,TEXT,TEXT,INTEIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:IdIdTEXT11111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all the clients' IDs whose junior credit cards were issued after 1996.",
+      "gold": "SELECT T2.client_id FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'junior' AND T1.issued >= '1997-01-01'",
+      "pred": "id_IdINTEGER_IdTEXT,IdTEXT,TEXT,INTEGER,INTETEXT,INTEINTEGER,INTETEXT,TEXT,TEXT:IdTEXT,TEXT:X_X_IdTEXT0000|__0-000-0000|_000|None|None|None|TRIdTEXT0000|0|None|TR000|0|None|IdINTEINTETEXT-0|_0|TR__TR0-0-0-0-0-000|TR0|TR0|id_idIdTEXT0-0-0-0|id0|id0|id0|id0|id0|id0|TIdINTEINTETEXT0|id0|id0|IdX_IdTEXT0|Idid_ole_X_id_IdTEXT0|id0|id0|id0|id0|id_id0|Id_id0|id0|id0|id0|id0|id0|Tidid_IdTEXT0|Id_IdIdole_X0|id0"
+    },
+    {
+      "db_id": "financial",
+      "question": "What percentage of clients who opened their accounts in the district with an average salary of over 10000 are women?",
+      "gold": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) * 100 / COUNT(T2.client_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A11 > 10000",
+      "pred": "X_Id_Id_TEXT,Id:_TEXT,Id0-10-110.00|None|None|None|None|None|___0.00|None|TRId_Id0-11|None|TRTRId0-11|TR_Id0|_0|Id|Id|Id|X0|_0|Id|Id|Id|Id|Id|Id|X0|_0|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id1|_1|TEXT|TEXT|TEXT|TEXT|Id|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|TEXT|INTEGER|INTEGER|INTEId1|"
+    },
+    {
+      "db_id": "financial",
+      "question": "What was the growth rate of the total amount of loans across all accounts for a male client between 1996 and 1997?",
+      "gold": "SELECT CAST((SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1997' THEN T1.amount ELSE 0 END) - SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END)) AS REAL) * 100 / SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T3.account_id = T2.account_id INNER JOIN client AS T4 ON T4.client_id = T3.client_id WHERE T4.gender = 'M' AND T3.type = 'OWNER'",
+      "pred": "id__id_id_Id_XIdIdIdId_XId_XId_ole_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_XId_XId0_Id010000100000000000_ole000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many credit card withdrawals were recorded after 1995?",
+      "gold": "SELECT COUNT(account_id) FROM trans WHERE STRFTIME('%Y', date) > '1995' AND operation = 'VYBER KARTOU'",
+      "pred": "TEXT__IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdTEXT1IdIdIdIdIdIdIdIdIdIdIdIdIdTEXT1__X__IdIdIdIdIdIdIdIdIdIdIdIdIdIdId___Id_TEXT11____Id_TEXT110111111coleXIdXXXXXXXXXId_INTEGERTEXT,TEXT_IdIdIdIdIdIdIdIdIdIdIdIdTEXT,TEXT,TEXT,TEXT,TEXT,INTEGER_INTEGER_INTEINTEINTEINTEINTEINTETEXT,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEINTEIdIdIdXIdIdIdIdIdIdId_INTEINTETEXT,INTETEXT,TEXT,INTEINTEId_INTEXId_TEXT,TEXT,TEXT:TEXT,TEXT0__id_ole_TEXT:TEXT011___Id_INTEXId_INTE_TEXT:ole_INTE_ole_X_"
+    },
+    {
+      "db_id": "financial",
+      "question": "What was the difference in the number of crimes committed in East and North Bohemia in 1996?",
+      "gold": "SELECT SUM(IIF(A3 = 'east Bohemia', A16, 0)) - SUM(IIF(A3 = 'north Bohemia', A16, 0)) FROM district",
+      "pred": "INTEGER,IdINTEINTEINTEINTEIdTEXT,TEXT,INTEIdINTETEXT,INTEIdTEXT,INTEIdTEXT,INTEIdINTEINTEIdTEXT,INTE_INTE_TEXT,TEXT,INTE,TEXT:TEXT,TEXT0000-0000|_0|None|None|None|None|None|None|None|None|_0|None|IdNone0000|None|TR_None0-100-100-000-000-010-1100-1111-0110-11110111000-1111-1111-1111-1111-11110111011-1111|TR|TR|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|TEXT|INTEIdIdIdIdIdIdId"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many owner and disponent dispositions are there from account number 1 to account number 10?",
+      "gold": "SELECT SUM(type = 'OWNER') , SUM(type = 'DISPONENT') FROM disp WHERE account_id BETWEEN 1 AND 10",
+      "pred": "id_id_id_ole_ole_ole0001-01-110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000010100000000000000000000001000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How often does account number 3 request an account statement to be released? What was the aim of debiting 3539 in total?",
+      "gold": "SELECT T1.frequency, T2.k_symbol FROM account AS T1 INNER JOIN (SELECT account_id, k_symbol, SUM(amount) AS total_amount FROM `order` GROUP BY account_id, k_symbol) AS T2 ON T1.account_id = T2.account_id WHERE T1.account_id = 3 AND T2.total_amount = 3539",
+      "pred": "__id:_IdIdIdIdId_ole_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_X_X_Id_X:_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:_Id_Id0_Id0000000000_Id_Id_Id_Id_Id000000000000000000000000000000000000000000001001001101110010000000000001000000000001100-_id01000000000000000000000000000000000010000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "What year was account owner number 130 born?",
+      "gold": "SELECT STRFTIME('%Y', T1.birth_date) FROM client AS T1 INNER JOIN disp AS T3 ON T1.client_id = T3.client_id INNER JOIN account AS T2 ON T3.account_id = T2.account_id WHERE T2.account_id = 130",
+      "pred": "id__id_id_ole_INTEINTETEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,IdIdTEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,X_IdIdTEXT,IdIdTEXT0_IdIdTEXT00000000000_IdIdTEXT0000000000000000000000000000000000000000000000100010110000010111010100000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts have an owner disposition and request for a statement to be generated upon a transaction?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T2.type = 'OWNER' AND T1.frequency = 'POPLATEK PO OBRATU'",
+      "pred": "INTEGER_____________None______0000000000000000000None000000000000000000NoneNoneNoneIdIdXIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id:TEXT,Id_Id0001011111111111111111111111111cId_X_Id11111111111111110111111111111111111111111111111111cId11111111111111111111cId1111111Id_Id111111111111cXId_Id"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the amount of debt that client number 992 has, and how is this client doing with payments?",
+      "gold": "SELECT T4.amount, T4.status FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 on T2.account_id = T3.account_id INNER JOIN loan AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 992",
+      "pred": "id__idTRidididididididIdIdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT_TEXT_INTEINTEIdIdIdXIdIdIdIdIdIdIdId_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_INTEXXIdid_INTEId_INTEid_INTEId_INGERINTEId_XXId_XId_id_X_TEXT_INTEid0_Toleid0000_id00000000000TRTRidTRidTRTRid_id_ole_INTEid000000000000000000000000000001TRIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdid_INTEid000000000001TRid_id_TEXT_TEXT,IdIdIdIdIdIdIdIdIdIdId"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the sum that client number 4's account has following transaction 851? Who owns this account, a man or a woman?",
+      "gold": "SELECT T4.balance, T1.gender FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id =T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 4 AND T4.trans_id = 851",
+      "pred": "id_id_id_Id_Id_Id_Id_Id_Id_Id_TEXT,Id_TEXT_TEXT,Id:Id_TEXT:Id_INTEINTETEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT,Id_TEXT:Id_TEXT:TEXT:TEXT0000000000000000000_TR0000000000000000000-*/id_id0000000000000000000000000000000000000000_id00000id000000010101100000000000000000000000000000000000000000000110111100000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which kind of credit card does client number 9 possess?",
+      "gold": "SELECT T3.type FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T1.client_id = 9",
+      "pred": "IdIdTEXT__IdTEXT10101-______0101010000010111111111111111111111111111111111111111111111cIdTEXT1111100-01-01-11-11-11-11-11-None01-1100|None|TRidid_ole_IdINTEINTEINTEXIdINTEXINTE_XIdXIdIdINTE_X_IdIdIdIdIdIdIdIdIdId_X_Id_TEXT,IdTEXT,TEXT,TEXT0000-01|_1|None|id_ole_ole_TEXT_ole_INTE_TEXT_INTE_TEXT,IdIdXIdXId_ole_ole_INTE_INTE_INTE,X_TEXT,TEXT0000-00|0|None|X0000|0|None|TR0"
+    },
+    {
+      "db_id": "financial",
+      "question": "How much, in total, did client number 617 pay for all of the transactions in 1998?",
+      "gold": "SELECT SUM(T3.amount) FROM client AS T1 INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date)= '1998' AND T1.client_id = 617",
+      "pred": "IdIdTEXT_IdTEXT,TEXT111_IdTEXT0110-1000-0111-1110-11110010-1111011100110-11111111111111111111cX_idid_INTEINTEINTEINTEINTEXINTEIdTEXT,TEXT,INTETEXT,TEXT,TEXT_TEXT,TEXT1_id_TEXT0000|__000-0000|None|id0-1000|None|TRid_INTEid000-010-010-110-1111-1110-1110-11110111001110-010-010-010|id0-010|TR000|TR111|ole_ole110|ole000|ole100|ole000|ole000|ole01"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please provide a list of clients who were born between 1983 and 1987 and whose account branch is in East Bohemia, along with their IDs.",
+      "gold": "SELECT T1.client_id, T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id and T4.account_id = T3.account_id WHERE T2.A3 = 'east Bohemia' AND STRFTIME('%Y', T1.birth_date) BETWEEN '1983' AND '1987'",
+      "pred": "idTRINTEid_X___id______________________00-10000-100000000000000000000000000000000000000001100-TRidTRididididididIdidIdIdole_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id0___________________________00000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please provide the IDs of the 3 female clients with the largest loans.",
+      "gold": "SELECT T1.client_id FROM client AS T1 INNER JOIN disp AS T4 on T1.client_id= T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id  INNER JOIN loan AS T3 ON T2.account_id = T3.account_id and T4.account_id = T3.account_id WHERE T1.gender = 'F' ORDER BY T3.amount DESC LIMIT 3",
+      "pred": "ole_ole:id_IdX_X_X_IdIdIdIdIdIdIdIdId_TEXT:Id_TEXT:X_INTEINTEId_INTEId_INTEINTEINTEINTEINTEINTEINTEINTEId_INTE_INTE,Id,Id,Id0_X:Id0-_id_X00-0000000000000000000000000000000000000000000000000010-0000000000000000100-00000TRTRid_INTE_INTE_INTE_INTE_INTE_INTE_INTE_TEXT,Id00-011110.None00.00-1111110-100-0000000-0000000000000010.None10|None-00|_id-"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male customers who were born between 1974 and 1976 have made a payment on their home in excess of $4000?",
+      "gold": "SELECT COUNT(T1.account_id) FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T4 ON T2.account_id = T4.account_id INNER JOIN client AS T3 ON T4.client_id = T3.client_id WHERE STRFTIME('%Y', T3.birth_date) BETWEEN '1974' AND '1976' AND T3.gender = 'M' AND T1.amount > 4000 AND T1.k_symbol = 'SIPO'",
+      "pred": "ole_INTEGER,INTEGER,INTEGER,INTEINTEINTEGER,INTEIdINTEINTETEXT,INTEIdTEXT,INTEIdINTEIdTEXT,INTEIdIdINTEIdTEXT,INTEId_INTEId_INTE_INTE,INTE_INTE,TEXT,INTE,INTE_TEXT,INTE,INTE,TEXT,TEXT,INTE_INTE,INTE,TEXT,TEXT,TEXT,INTE,INTE,TEXT,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INGER,INTE_INTE,INTE,TEXT:TEXT,TEXT0_id_INTEond_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,TEXT0-_X_______0-1-10-10-11-110|TR__0-00-00-00.0-None|_None|None|TR|None|None|None|None"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts in Beroun were opened after 1996?",
+      "gold": "SELECT COUNT(account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T1.date) > '1996' AND T2.A2 = 'Beroun'",
+      "pred": "X_id_idIdIdIdIdIdIdId_PRGERTEXTIdIdIdX_IdIdIdIdIdIdId_IdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_X:_Id_TEXT_Id_TEXT:_TEXT_TEXT_TEXT,Id_TEXT,Id_TEXT,X_X_TEXT,X_TEXT:_TEXT:_TEXT_TEXT0_Id_TEXT0000000000_TEXT:_TEXT_TEXT_TEXT:_TEXT0000000000000000000000000000000000100100101011001010011111100010000000000111010000000000000000000000000000000000000001000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many female customers have a junior credit card?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T1.gender = 'F' AND T3.type = 'junior'",
+      "pred": "INTEGER_________00000011coleidIdINTEGER_:___:_00000001Noneidole_idole_IdINTEGER00-0111111000011111NoneNoneIdINTEINTEIdTEXT,TEXT,INTETEXT,TEXT,INTETEXT,INTEINTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTETEXT,INTEGER,TEXT,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEINTEGER,INTEGER:IdTEXT,TEXT00-000000000001000110101111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "What proportion of customers who have accounts at the Prague branch are female?",
+      "gold": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) / COUNT(T2.client_id) * 100 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A3 = 'Prague'",
+      "pred": "X________00000None___01111None111010101111001100111010100000000000000000000000000000000000001011111111111111111111111111c_Id_Id:Id_INTEGER,_Id_INTEGER,_Id,INTEGER,IdIdTEXT,TEXT,INTETEXT,GERTEXT,INTEINTEGER,GERTEXT,GERIdINTETEINTEGER,INTEINTEINTEINTEINTETEXT,INTETEXT,INTEINTETEXT,TEXT,TEXT,TEXT,TEXT,INTEINTETEXT,INTETEXT,INTEINTEINTETEXT,TEXT,INTETEXT,INTEINTETEXT,INTEINTEINTEINTEINTETEXT,INTETEXT,TEXT,TEXT,TEXT,INTETEXT"
+    },
+    {
+      "db_id": "financial",
+      "question": "What percentage of male clients request for weekly statements to be issued?",
+      "gold": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T3 ON T1.district_id = T3.district_id INNER JOIN account AS T2 ON T2.district_id = T3.district_id INNER JOIN disp as T4 on T1.client_id = T4.client_id AND T2.account_id = T4.account_id WHERE T2.frequency = 'POPLATEK TYDNE'",
+      "pred": "IdIdXXIdole_X_X_X_IdINTEGERIdINTEGERIdINTEGERIdINTEGERIdTEXT,IdTEXT,IdTEXT,INTEGER,INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTETEXT,INTETEXT,INTEINTE,TEXT,INTEIdINTEGER_TEXT,INTEINTEIdINTEGER,INTETEXT,TEXT,INTETEXT,TEXT,INTEINTE,INTEIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEINTE_INTE_TEXT,TEXT:TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:INTETEXT:TEXT0________000000000000000010000000100011000000010111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients who choose statement of weekly issuance are Owner?",
+      "gold": "SELECT COUNT(T2.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T2.account_id = T1.account_id WHERE T1.frequency = 'POPLATEK TYDNE' AND T2.type = 'OWNER'",
+      "pred": "TEXT,TEXT,INTEGER,INTETEXT,INTEINTETEXT,INTEIdINTEGER,INTEIdTEXT,TEXT,INTEIdINTEGER,INTETEXT,TEXT,INTETEXT,INTETEXT,INTEINTEINTEINTETEXT,INTEINTEIdINTEGER,INTETEXT,INTETEXT,INTETEXT,TEXT,INTEINTETEXT,TEXT:TEXT,TEXT:TEXT0000000000000000000001111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have loan validity more than 24 months, list out the accounts that have the lowest approved amount and have account opening date before 1997.",
+      "gold": "SELECT T1.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T1.duration > 24 AND STRFTIME('%Y', T2.date) < '1997' ORDER BY T1.amount ASC LIMIT 1",
+      "pred": "idTRidTidTidTTididididTXINTEINTEidIdINTEINTEINTETEXTIdTEXTIdTEXTIdTEXT_IdTEXT_IdTEXT_IdTEXT_IdINTETEXT_IdINTEINTEINTEINTEINTEINTEINTEoleoleoleoleoleoleoleoleoleTEXT_TEXT:idIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_Id_Id_Id0_Id00000000000000000000000000000000000000000000000010000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Name the account numbers of female clients who are oldest and have lowest average salary?",
+      "gold": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id INNER JOIN disp AS T4 ON T1.client_id = T4.client_id AND T4.account_id = T3.account_id  WHERE T1.gender = 'F' ORDER BY T1.birth_date ASC, T2.A11 ASC LIMIT 1",
+      "pred": "id__TRid_id000000000000001010011001011TRNoneTR_Id_id00000TRTRid000000000000000100111111TRTRId_Id_Id_Id_Id00000000000000000000000000000000TRid0000000000000000000000000000000NoneIdIdole_ole_ole_ole_TEXT_XIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,IdIdIdIdId_TEXT,IdIdIdId_TEXT,IdIdId_TEXT,Id_TEXT0__Id_TEXT00000000000000000000000001000101001011010"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients who were born in 1920 stay in east Bohemia?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T1.birth_date) = '1920' AND T2.A3 = 'east Bohemia'",
+      "pred": "X_________0000000000None_____01100-101000-001100000000100010000000000000000000000000000000000000000000010000000001011100000000000000000000000000000000000000000000000000000000000000000000000000000000100000000010111000000000000000-NoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneNoneId_position_TEXT,IdIdIdpositionTEXT,INTEGER"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many loan accounts are for pre-payment of duration of 24 months with weekly issuance of statement.",
+      "gold": "SELECT COUNT(T2.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.duration = 24 AND T1.frequency = 'POPLATEK TYDNE'",
+      "pred": "ole_ole0_idIdIdTEXT_TEXT_TEXT_TEXT_TEXT_TEXT,IdTEXT:IdTEXT_INTEGER,TEXT0_ole0_TEXT0_TEXT0_INTEGER:TEXT0_INTEINTEXIdTEXT0:TEXT:TEXT_TEXT:TEXT:TEXT:INTEIdTEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:INTETEXT:INTETEXT0:TEXT:INTETEXT00-IdINTEINTETEXT00|ole00|TEXT-id_TEXT0-TEXT0-TEXT0-TEXT0-TEXT0-INTEid_TEXT0-TEXT0-TEXT00|ole00|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|TEXT0|INTEole00|TEXT|TEXT|INTEXXidididIdXIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT0|TEXT-id0|TEXT|TEXT|TEXT|TEXT|INTEXIdXIdIdIdIdId"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average amount of loan which are still on running contract with statement issuance after each transaction?",
+      "gold": "SELECT AVG(T2.amount) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.status IN ('C', 'D') AND T1.frequency = 'POPLATEK PO OBRATU'",
+      "pred": "ole_id_ole_id_TEXT_XIdXXXIdIdXIdIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT:XIdIdIdId_TEXT,IdIdIdId_INTEINTETEXT,TEXT_TEXT_TEXT,TEXT_TEXT,TEXT,INTEId_INTEId_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT_TEXT:X_INTE_INTE_INTE_ole_id_INTE_INGER_INTE_TEXT_TEXT,TEXT0_X_id_ole_ole_id_INTE_INGER_TEXT:ole_id_INTE_ole0_INTE_INGER_INGER_INGER_INGER_INGER_ole00_ole000000000000000000000000011NoneIdIdIdIdIdIdIdIdIdIdId_INTE_TEXT_INTE_TEXT,ole_id_INTE_ole0000"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all ID and district for clients that can only have the right to issue permanent orders or apply for loans.",
+      "gold": "SELECT T3.client_id, T2.district_id, T2.A2 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T1.account_id = T3.account_id WHERE T3.type = 'OWNER'",
+      "pred": "id00000TRidTRTRididididIdIdIdIdIdIdIdId_XIdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_IdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:Id_Id0_Id00000-NoneNoneTR_id_Id_Id_Id_Id:Id_Id_Id0100000110101111111100101010100101010111111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "financial",
+      "question": "Provide the IDs and age of the client with high level credit card, which is eligible for loans.",
+      "gold": "SELECT T1.client_id, STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', T3.birth_date) FROM disp AS T1 INNER JOIN card AS T2 ON T2.disp_id = T1.disp_id INNER JOIN client AS T3 ON T1.client_id = T3.client_id WHERE T2.type = 'gold' AND T1.type = 'OWNER'",
+      "pred": "Id_X_Id:_Id__Id:_Id_Id_X:_TEXT0000000000TR_id_id00000_ole_ole0_id0000000000TR00000001001111110111111110111111110011010000000011110000000000000100000101111111111111111110100000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000100111111"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "What is the most common bond type?",
+      "gold": "SELECT T.bond_type FROM ( SELECT bond_type, COUNT(bond_id) FROM bond GROUP BY bond_type ORDER BY COUNT(bond_id) DESC LIMIT 1 ) AS T",
+      "pred": "ole___________cidINTEGERXole__,INTEGER)"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "In the non-carcinogenic molecules, how many contain chlorine atoms?",
+      "gold": "SELECT COUNT(DISTINCT T1.molecule_id) FROM molecule AS T1 INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.element = 'cl' AND T1.label = '-'",
+      "pred": "id__________________cTEXT,IdINTETEXT,INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEXINTE_INTE,INTE,INTE_INTE_X_X:INTE_________cINTE__________cINTE:INTE,INTE___:ole__:INTE,INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ole__:INTE:INTE0:ole000-_000000101111001011111110100000000000000000000000010000000101110000000000110000000000000000000000"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "Calculate the average number of oxygen atoms in single-bonded molecules.",
+      "gold": "SELECT AVG(oxygen_count) FROM (SELECT T1.molecule_id, COUNT(T1.element) AS oxygen_count FROM atom AS T1 INNER JOIN bond AS T2 ON T1.molecule_id = T2.molecule_id  WHERE T2.bond_type = '-' AND T1.element = 'o'  GROUP BY T1.molecule_id) AS oxygen_counts",
+      "pred": "id__________________cXX__:id__000-ccccccccccccccccccc_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccNonecId__00000000000000000000000000000000"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "On average how many carcinogenic molecules are single bonded?",
+      "gold": "SELECT AVG(single_bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS single_bond_count FROM bond AS T1  INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN molecule AS T3 ON T3.molecule_id = T2.molecule_id WHERE T1.bond_type = '-' AND T3.label = '+' GROUP BY T3.molecule_id) AS subquery",
+      "pred": "ole________cINTE###INTEINTEbINTE______________________cINTEbINTE_:###INTE__:ole__:INTE__:###INTE:INTE:INTE:XidXbINTE_:ole_:INTE0:ole0000000000cole:ole0000000000cule__:ole00__000000000000cole000001000000101010001101001000000000001100000000000000001110000000001110000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "In the molecule containing sodium atoms, how many are non-carcinogenic?",
+      "gold": "SELECT COUNT(DISTINCT T2.molecule_id) FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.element = 'na' AND T2.label = '-'",
+      "pred": "oleididole_id__IdINTEINTEINTEIdINTE_TEXT,X_X_IdTEXT,idole_id__idINTE_INTE_X_bINTE_X__idole_id__idINTE,INTE,INTE_X:INTE_idINTE_bX_bX_#########INTE_b_b_b_b_b__b_b_________cINTE__________cX______cbX:INTE________________0_ccINTE:X:INTE:X00111111101111111111111c_____c_c___c001111100011011110111111100111001001110000111100000000"
+    }
+  ]
+}

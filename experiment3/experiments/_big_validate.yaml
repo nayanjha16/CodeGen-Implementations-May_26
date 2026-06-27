@@ -1,0 +1,14 @@
+models:
+  - id: qwen3-coder-30b
+    mlx_repo: mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit
+    hf_repo: Qwen/Qwen3-Coder-30B-A3B-Instruct
+    backend: mlx
+scenarios: [zero_shot]
+datasets: [spider]
+evaluation:
+  metrics: [ex, component_f1, bleu]
+  llm_judge_model: qwen3-coder-30b
+  sample_size: 5
+paths:
+  spider_root: data/spider/spider_data
+  bird_root: data/bird/dev_20240627

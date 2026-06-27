@@ -1,0 +1,1220 @@
+{
+  "model": "codegen-350m-multi",
+  "scenario": "finetuned_combined",
+  "dataset": "spider",
+  "metrics": {
+    "ex": 0.005,
+    "ts": 0.005,
+    "ves": 0.004985177722602402,
+    "component_f1": 0.044642857142857144,
+    "bleu": 4.95001520777235,
+    "bertscore": 0.8571091389656067,
+    "llm_judge": 2.2266666666666666
+  },
+  "meta": {
+    "sample_size": 200,
+    "llm_judge_n": 75
+  },
+  "per_example": [
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers do we have?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "SELECT count(*) FROM singer_in_concert GROUP BY Singer_ID HAVING count(*) > 10 ### Explanation: How many singers do we have? 10 means 10 singer. ### SQL: SELECT count(*) FROM singer_in_concert GROUP BY Singer_ID HAVING count(*) > 10 ### Explanation: How many singers do we have? 10 means 10 singer. ### SQL: SELECT count(*) FROM singer_in_concert GROUP BY Singer_ID HAVING count(*) > 10 ### Explanation: How many singers do we have? 10 means 10 singer. ### SQL: SELECT count(*) FROM singer_in_concert GROUP BY Singer_ID HAVING count(*) > 10 ### Explanation: How many singers do we have? 10 means 10 singer. ### SQL: SELECT count(*) FROM singer_in_concert GROUP BY Singer_ID HAVING count(*) > 10 ### Explanation: How many singers do we have? 10 means 10 singer. ### SQL: SELECT"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the total number of singers?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "SELECT COUNT(*) FROM singer GROUP BY T1.Singer_ID HAVING COUNT(*) > 10 */ ### SQL: SELECT COUNT(*) FROM singer GROUP BY T1.Singer_ID HAVING COUNT(*) > 10 EXCEPT SELECT COUNT(*) FROM singer WHERE T1.Singer_ID = (SELECT T1.Singer_ID FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID) */ ### SQL: SELECT COUNT(*) FROM singer GROUP BY T1.Singer_ID HAVING COUNT(*) > 10 EXCEPT SELECT COUNT(*) FROM singer WHERE T1.Singer_ID = (SELECT T1.Singer_ID FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = (SELECT T1.Singer_ID FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = (SELECT T1.Singer_ID FROM singer AS T1 JOIN concert AS T2"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### Explanation: 1 | English | 26 2 | English | 18 3 | English | 32 */ ### SQL: SELECT Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### Explanation: 1 | English | 26 2 | English | 18 3 | English | 32 */ ### Question: Show names, country, age for all the different singer. ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Name NOT IN (SELECT Name FROM singer_in_concert) ### Explanation: 1 | English | 26 2 | English | 18 3 | English | 32 */ ### Question: Show names, country, age for all the different singer. ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Name NOT IN (SELECT Name FROM singer_in_concert) ### Explanation: 1 | English | 26 2 | English | 18 3 | English | 32 */ ### Question: Show names, country, age for all"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names, countries, and ages for every singer in descending order of age?",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name , Country , Age FROM singer ORDER BY Age DESC LIMIT 3 ### SQL: SELECT Name ,"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age of all singers from France?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT name , avg(age) , min(age) FROM singer WHERE country = \"FR\" GROUP BY name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT name , avg(age) , min(age) FROM singer WHERE country = \"FR\" GROUP BY name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT name , avg(age) , min(age) FROM singer WHERE country = \"US\" GROUP BY name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT name , avg(age) , min(age) FROM singer WHERE country = \"US\" GROUP BY name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT name , avg(age) , min(age) FROM singer WHERE country = \"DE\" GROUP BY name ORDER BY count(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age for all French singers?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 2 ### SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 5 ### SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER BY count(*) DESC LIMIT 6 ### SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = \"FR\" GROUP BY country ORDER"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and the release year of the song by the youngest singer.",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "SELECT Name , Release_Year FROM singer WHERE Singer_ID > 1 ORDER BY Age DESC LIMIT 1 ### Explanation: 1 | 2014 | 13 2 | 2015 | 1 */ ### Question: Show the name and the release year of the song by the oldest singer. ### SQL: SELECT Name , Release_Year FROM singer WHERE Singer_ID = 1 ORDER BY Age DESC LIMIT 1 ### Explanation: 1 | 4812 | 23 2 | 2352 | 26 */ ### Question: Show the name and the release year of the song by the oldest singer. ### SQL: SELECT Name , Release_Year FROM singer WHERE Singer_ID = 1 ORDER BY Age DESC LIMIT 1 ### Explanation: 1 | 2014 | 13 2 | 2015 | 1 */ ### Question: Show the name and the release year of the song by the youngest singer. ### SQL: SELECT Name , Release_Year FROM singer WHERE Singer_ID > 1 ORDER BY Age DESC LIMIT 1 ### Explanation: 1 | 2014 | 13"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and release years for all the songs of the youngest singer?",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "SELECT Name , Release_year FROM singer WHERE Singer_ID > 1 ORDER BY Age DESC LIMIT 1 ### SQL: SELECT Name , Release_year FROM singer ORDER BY Age DESC LIMIT 1 ### Explanation: Years are in descending order. ### SQL: SELECT Name , Release_year FROM singer ORDER BY Age DESC LIMIT 1 EXCEPT SELECT Name , Release_year FROM singer LIMIT 1 ### Explanation: Years are in descending order. ### SQL: SELECT Name , Release_year FROM singer ORDER BY Age DESC LIMIT 1 EXCEPT SELECT Name , Release_year FROM singer LIMIT 1 EXCEPT SELECT Name , Release_year FROM singer */ ### Question: What are the names and release years for all the concerts? ### SQL: SELECT Name , Release_year FROM concert ORDER BY Age DESC LIMIT 1 ### SQL: SELECT Name , Release_year FROM concert ORDER BY Age DESC LIMIT 1 ### Explanation: Years are in descending order. ### SQL: SELECT Name , Release_year FROM concert ORDER BY Age DESC LIM"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all distinct countries where singers above age 20 are from?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "SELECT DISTINCT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT Country FROM singer GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY COUNT(*) DESC LIMIT 2 ### SQL: SELECT DISTINCT T1.Country FROM singer AS T1 JOIN concert AS T2"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are  the different countries with singers above age 20?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "SELECT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY count(*) > 20 ### Explanation: Among the countries, which countries have more than 20 singers above their age. ### SQL: SELECT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY count(*) > 20 ### Explanation: Among the countries, which countries have more than 20 singers above their age. ### SQL: SELECT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY count(*) > 20 ### Explanation: Among the countries, which countries have more than 20 singers above their age. ### SQL: SELECT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY count(*) > 20 ### Explanation: Among the countries, which countries have more than 20 singers above their age. ### SQL: SELECT Country FROM singer WHERE Age > 20 GROUP BY Country ORDER BY count(*) > 20 ### Explanation: Among the countries, which countries have more than 20 singers above their age. ### SQL: SELECT Country FROM singer WHERE Age"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show all countries and the number of singers in each country.",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "SELECT Country , COUNT(*) FROM singer GROUP BY Country HAVING COUNT(*) > 1 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) > 1 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) > 2 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) > 3 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) > 4 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) > 5 ### SQL: SELECT Country , COUNT(*) FROM singer WHERE Name = \"Tommy Hall\" GROUP BY Country HAVING COUNT(*) >"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers are from each country?",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "SELECT T1.Country , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Country ORDER BY COUNT(*) DESC LIMIT 2 ### SQL: SELECT T2.Country , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Country ORDER BY COUNT(*) DESC LIMIT 2 ### Explanation: From country to country ### SQL: SELECT T2.Country , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Country ORDER BY COUNT(*) DESC LIMIT 2 ### Explanation: From country to country ### SQL: SELECT T1.Country , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Country"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all song names by singers above the average age.",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY avg(T2.Year) ASC LIMIT 3 ### Explanation: For each singer, list the names of the songs that have the average age above the average. ### SQL: SELECT T2.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY avg(T2.Year) ASC LIMIT 3 ### Explanation: For each singer, list the names of the songs that have the average age above the average. ### SQL: SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme ORDER BY avg(T2.Year) ASC LIMIT 3 ### Explanation: For each singer, list the names of the songs that have the"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all the song names by singers who are older than average?",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year < (SELECT avg(Year) FROM singer) GROUP BY T2.Year ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year < (SELECT avg(Year) FROM singer) GROUP BY T2.Year ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year < (SELECT avg(Year) FROM singer) GROUP BY T2.Year ORDER BY count(*) DESC LIMIT 5 ### SQL: SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show location and name for all stadiums with a capacity between 5000 and 10000.",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10001 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10002 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10003 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10004 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10005 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10006 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10007 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10008 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10009 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10010 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10011 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10012 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BET"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the locations and names of all stations with capacity between 5000 and 10000?",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 AND 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 5000 INTERSECT SELECT Location , Name FROM Stadium WHERE Capacity BETWEEN 10000 INT"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the maximum capacity and the average of all stadiums ?",
+      "gold": "select max(capacity), average from stadium",
+      "pred": "SELECT max(Capacity) , avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg(Capacity) FROM stadium GROUP BY Capacity ORDER BY avg(Capacity) DESC LIMIT 1 ### SQL: SELECT max(Capacity), avg("
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average and maximum capacities for all stadiums ?",
+      "gold": "select avg(capacity) ,  max(capacity) from stadium",
+      "pred": "SELECT avg(Capacity) , max(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > (SELECT avg(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > ) ### SQL: SELECT avg(Capacity) , max(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > (SELECT avg(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > ) ### SQL: SELECT avg(Capacity) , max(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > (SELECT avg(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > ) ### SQL: SELECT avg(Capacity) , max(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > (SELECT avg(Capacity) FROM stadium GROUP BY Stadium_ID HAVING avg(Capacity) > ) ### SQL:"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "SELECT Name , Capacity FROM stadium ORDER BY Average DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with the highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "SELECT Name , Capacity FROM stadium ORDER BY Average DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1 ### Explanation: Return the name, capacity for the highest average attendance. ### SQL: SELECT Name , Capacity FROM stadium ORDER BY Highest DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts are there in year 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "SELECT count(*) FROM concert WHERE Date BETWEEN 2014-04-01 AND 2015-05-31 GROUP BY Date ORDER BY count(*) DESC LIMIT 3 ### Explanation: 3 rows are expected. ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN 2014-04-01 AND 2015-05-31 GROUP BY Date ORDER BY count(*) DESC LIMIT 3 1 | 3 2 | 4 3 | 5 ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN 2014-04-01 AND 2015-05-31 GROUP BY Date ORDER BY count(*) DESC LIMIT 3 1 | 3 2 | 4 3 | 5 ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN 2014-04-01 AND 2015-05-31 GROUP BY Date ORDER BY count(*) DESC LIMIT 1 1 | 4 ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN 2014-04-01 AND 2015-05-31 GROUP BY Date ORDER BY count(*) DESC LIMIT 1 2 | 4 ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts occurred in 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "SELECT count(DISTINCT concert_ID) FROM concert WHERE Date BETWEEN '2014-07-01' AND '2015-04-17' GROUP BY concert_ID HAVING count(*) > 10 ORDER BY count(*) DESC LIMIT 10 ### Explanation: 10 concerts in 2014 or 2015. ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN '2014-07-01' AND '2015-04-17' GROUP BY concert_ID HAVING count(*) > 10 ORDER BY count(*) DESC LIMIT 10 ### Explanation: 10 concerts in 2014 or 2015. ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN '2014-07-01' AND '2015-04-17' GROUP BY concert_ID HAVING count(*) > 10 ORDER BY count(*) DESC LIMIT 10 ### Explanation: 10 concerts in 2014 or 2015. ### SQL: SELECT count(*) FROM concert WHERE Date BETWEEN '2014-07-01' AND '2015-04-17' GROUP BY concert_ID HAVING count("
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and the number of concerts in each stadium.",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "SELECT T1.Stadium_ID , COUNT(*) FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Stadium_ID HAVING COUNT(*) > 1 ### Explanation: For each station, show the number of concerts in each stadium. ### SQL: SELECT T1.Stadium_ID , COUNT(*) FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Stadium_ID HAVING COUNT(*) > 1 EXCEPT SELECT T2.Stadium_ID , COUNT(*) FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Stadium_ID HAVING COUNT(*) > 1 ### Explanation: For each station, show the number of concerts in each stadium. ### SQL: SELECT T1.Stadium_ID ,"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "For each stadium, how many concerts play there?",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "SELECT count(DISTINCT T1.Stadium_ID) FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Stadium_ID = \"Rakes\" GROUP BY T1.Stadium_ID HAVING count(*) > 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and capacity with most number of concerts in year 2014 or after.",
+      "gold": "SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT T1.Name , T1.Capacity FROM station AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = \"2014\" GROUP BY T1.Name ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 | Auditions | Free choice | 2014 | 8192 2 | Australia | Free choice | 2014 | 2240 3 | Australia | Free choice | 2014 | 2132 */ ### Question: Show the names of the concerts in the year 2014 or after. ### SQL: SELECT T1.Name , COUNT(*) FROM concert AS T1 JOIN singer_in_concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = \"2014\" GROUP BY T1.Name ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 | Auditions | Free choice | 2014 | 8192 2 | Australia | Free choice | 2014 | 2240 3 | Australia | Free choice | 2014 | 2132"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity of the stadium with the most concerts after 2013 ?",
+      "gold": "select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1",
+      "pred": "SELECT Name , Capacity FROM stadium ORDER BY Capacity DESC LIMIT 1 ### Explanation: Return the name and capacity of the most concerts after 2013. ### SQL: SELECT Name , Capacity FROM designate WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1) ### Explanation: Return the name and capacity of the most concerts after 2013. ### SQL: SELECT Name , Capacity FROM designate WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1) WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1) ### Explanation: Return the name and capacity of the most concerts after 2013. ### SQL: SELECT Name , Capacity FROM designate WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1) WHERE Stadium_ID"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Which year has most number of concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT year FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of concerts in the 2014 year. ### SQL: SELECT COUNT(*) FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of concerts in the 2014 year. ### SQL: SELECT COUNT(*) FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of concerts in the 2014 year. ### SQL: SELECT COUNT(*) FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of concerts in the 2014 year. ### SQL: SELECT COUNT(*) FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of concerts in the 2014 year. ### SQL: SELECT COUNT(*) FROM concert GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Find the most number of"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the year that had the most concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT Year FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the year that had the most concerts. ### SQL: SELECT COUNT(*) FROM concert ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium names without any concert.",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "SELECT T1.Name FROM station AS T1 JOIN designate AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Stadium_ID NOT IN (SELECT Stadium_ID FROM concert) GROUP BY T2.Stadium_ID HAVING count(*) > 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the stadiums without any concerts?",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "SELECT T1.Name FROM station AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Stadium_ID NOT IN (SELECT Stadium_ID FROM station) GROUP BY T2.Stadium_ID HAVING count(*) > 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show countries where a singer above age 40 and a singer below 30 are from.",
+      "gold": "SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30",
+      "pred": "SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 3 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 2 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 5 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 6 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 7 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 8 ### SQL: SELECT Country FROM singer WHERE Age = 40 OR Age = 30 GROUP BY Country ORDER BY Age ASC LIMIT 9 ### SQL: SELECT Country FROM singer WHERE Age ="
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show names for all stadiums except for stadiums having a concert in year 2014.",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "SELECT T1.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = 2014 GROUP BY T1.Name ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 stands alone in the city of the stations. ### Results: 1 | None ### Next: 1 stands in the city of stations with a concert in 2014. ### Results: 1 | 3 1 | 2 1 | 4 */ ### Question: Show names for all stations except for stations having a concert in year 2014. ### SQL: SELECT T1.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = 2014 GROUP BY T1.Name ORDER BY COUNT(*) DESC LIMIT 5 ### Explanation: 1 stands alone in the city of the stations. ### Results: 1 | None 1 | Stand alone in the city of stations"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of all stadiums that did not have a concert in 2014?",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "SELECT T1.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = 2014 GROUP BY T2.Stadium_ID HAVING count(*) > 1 EXCEPT SELECT t2.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Stadium_ID HAVING count(*) > 1 EXCEPT SELECT t2.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = 2014 EXCEPT SELECT t2.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Stadium_ID EXCEPT SELECT t2.Name FROM station AS T1 JOIN station_to_station AS T2 ON T1.Stadium_ID ="
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and theme for all concerts and the number of singers in each concert.",
+      "gold": "SELECT T2.concert_name ,  T2.theme ,  count(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.concert_id  =  T2.concert_id GROUP BY T2.concert_id",
+      "pred": "SELECT T1.Name , T1.Theme FROM concert AS T1 JOIN singer_in_concert AS T2 ON T1.Concrete_ID = T2.Concrete_ID WHERE T2.Concrete_ID = \"1\" GROUP BY T1.Name , T1.Theme ORDER BY count(*) DESC LIMIT 1 ### Explanation: For each concert, show the name and theme of the concerts. ### SQL: SELECT T1.Name , T1.Theme FROM concert AS T1 JOIN singer_in_concert AS T2 ON T1.Concrete_ID = T2.Concrete_ID GROUP BY T1.Name , T1.Theme ORDER BY count(*) DESC LIMIT 1 ### Explanation: For each concert, show the name and theme of the concerts. ### SQL: SELECT T1.Name , T1.Theme FROM concert AS T1 JOIN singer_in_concert AS T2 ON T1.Concrete_ID = T2.Concrete_ID GROUP BY T1.Name , T1.Theme ORDER BY"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names , themes , and number of singers for every concert ?",
+      "gold": "select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id",
+      "pred": "SELECT T1.Name , T1.Theme , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Concert_ID HAVING count(*) > 1 ### SQL: SELECT T1.Name , T1.Theme , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Concert_ID HAVING count(*) > 1 EXCEPT SELECT T2.Concert_ID , T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID GROUP BY T2.Concert_ID HAVING count(*) > 1 ### SQL: SELECT T1.Name , T1.Theme , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Stadium_ID"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List singer names and number of concerts for each singer.",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "SELECT T1.Name , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Singer_ID HAVING COUNT(*) > 1 ### SQL: SELECT T2.Name , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Singer_ID HAVING COUNT(*) > 1 ### SQL: SELECT T1.Name , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme HAVING COUNT(*) > 1 ### SQL: SELECT T2.Name , COUNT(*) FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Theme HAVING COUNT(*) > 1 ### SQL: SELECT T"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers and number of concerts for each person?",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "SELECT T1.Name , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Singer_ID HAVING avg(COUNT(*) ) > 1 ### SQL: SELECT T2.Name , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Singer_ID HAVING avg(COUNT(*) ) > 1 ### SQL: SELECT T1.Name , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID GROUP BY T2.Singer_ID HAVING avg(COUNT(*) ) > 1 ### SQL: SELECT T2.Name , COUNT(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2."
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all singer names in concerts in year 2014.",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year = 2014 GROUP BY T1.Name ORDER BY count(*) DESC LIMIT 3 ### Explanation: 3 members of each singer: \"Jane Kara\" | \"Steve Kara\" | \"Tomeka\" ### Results: 3 members of each singer: \"Jane Kara\" | \"Steve Kara\" | \"Tomeka\" ### Total number of members: 2 ### Number of concerts: 2 ### Number of singer names: 3 ### Name of concerts: 2014 ### Name of singer: \"Jane Kara\" ### Name of singer: \"Steve Kara\" ### Name of singer: \"Tomeka\" ### Name of singer: \"Tomeka and Steve Kara\" ### Name of singer: \"Charles Kakina\" ### Name of singer: \"Donna Makarov\" ### Name of singer: \"Tomeka and Steve Kara\" ### Name of singer: \"Jack Matthews\" ### Name of singer: \""
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers who performed in a concert in 2014?",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year = 2014 GROUP BY T1.Singer_ID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many different singer names are there in 2014? ### SQL: SELECT count(*) FROM singer_in_concert WHERE Year = 2014 GROUP BY T1.Singer_ID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many different singer names are there in 2014? ### SQL: SELECT T1.Name FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Year = 2014 GROUP BY T1.Singer_ID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many different singer names"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "what is the name and nation of the singer who have a song having 'Hey' in its name?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 3 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 1 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 2 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 1 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 1 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 2 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 3 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP BY Name ORDER BY Country ASC LIMIT 4 ### SQL: SELECT Name , Country FROM singer WHERE Name = \"Hey\" GROUP"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Song_Name = \"Hey\" GROUP BY T1.Name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Song_Name = \"Hello\" GROUP BY T1.Name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID WHERE T2.Song_Name = \"How\" GROUP BY T1.Name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the name and location of the stadiums which some concerts happened in the years of both 2014 and 2015.",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "SELECT T1.Name , T1.Location FROM station AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Year = \"2015\" AND T1.Name = \"Auditions\" GROUP BY T1.Name ORDER BY count(*) ASC LIMIT 3"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and locations of the stadiums that had concerts that occurred in both 2014 and 2015?",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID JOIN singer_in_concert AS T3 ON T3.Singer_ID = T1.Singer_ID WHERE T2.Year = \"2014\" AND T3.Year = \"2015\" INTERSECT SELECT T2.Name , T2.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID JOIN singer_in_concert AS T3 ON T3.Singer_ID = T1.Singer_ID WHERE T2.Year = \"2015\" INTERSECT SELECT T1.Name , T1.Country FROM singer AS T1 JOIN concert AS T2 ON T1.Singer_ID = T2.Singer_ID JOIN singer_in_concert AS T3 ON T3.Singer_ID = T1.Singer_ID WHERE T2.Year = \"2014\" INTERS"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the number of concerts happened in the stadium with the highest capacity .",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "SELECT count(*) FROM ( SELECT T1.Stadium_ID , T2.Capacity FROM station AS T1 JOIN station_allocation AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Capacity > 30 GROUP BY T1.Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1 ) AS Anumry WHERE T2.Capacity = \"30\" GROUP BY T1.Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 stands for the highest capacity ### SQL: SELECT T1.Stadium_ID , COUNT(*) FROM ( SELECT T1.Stadium_ID , COUNT(*) FROM station AS T1 JOIN station_allocation AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Capacity > 30 GROUP BY T1.Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1 ) AS Anumry GROUP BY T1.Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the number of concerts that occurred in the stadium with the largest capacity ?",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID HAVING max(Capacity) > 50) ### SQL: SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID HAVING max(Capacity) > 50) ### SQL: SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID HAVING max(Capacity) > 50) ### SQL: SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID HAVING max(Capacity) > 50) ### SQL: SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium_ID HAVING max(Capacity) > 50) ### SQL: SELECT count(*) FROM concert WHERE Stadium_ID = (SELECT Stadium_ID FROM station GROUP BY Stadium"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets whose weight is heavier than 10.",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "SELECT count(*) FROM pets WHERE weight = 10 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ORDER BY pet_age ASC LIMIT 1 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ORDER BY pet_age ASC LIMIT 2 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ORDER BY pet_age ASC LIMIT 3 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ORDER BY pet_age ASC LIMIT 4 ### SQL: SELECT count(*) FROM pets WHERE weight = 10 GROUP BY pet_age HAVING avg(weight) < 10 ORDER BY pet_age ASC LIMIT 5"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets have a greater weight than 10?",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "SELECT count(*) FROM pets WHERE weight > 10 GROUP BY PetType HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many pets have a greater weight than 10? Explanation: How many pets have a greater weight than 10? Explanation: 1 3 */ ### Question: How many pets have a weight between 10 and 100? ### SQL: SELECT count(*) FROM pets WHERE weight > 10 AND weight < 100 GROUP BY PetType HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many pets have a weight between 10 and 100? Explanation: How many pets have a weight between 10 and 100? Explanation: 1 3 */ ### Question: How many pets have a weight between 10 and 100? ### SQL: SELECT count(*) FROM pets WHERE weight > 10 AND weight < 100 GROUP BY PetType HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the weight of the youngest dog.",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT weight FROM Has_Pet WHERE PetType = \"dog\" GROUP BY weight ORDER BY age DESC LIMIT 1 ### Explanation: 1 = top 1 weight ### SQL: SELECT PetType , age FROM Has_Pet ORDER BY age DESC LIMIT 1 ### Explanation: 1 = top 1 pet_age ### SQL: SELECT PetType , age FROM Has_Pet ORDER BY age DESC LIMIT 1 AND pet_age ORDER BY age DESC LIMIT 1 ### Explanation: 1 = top 1 pet_age ### SQL: SELECT PetType , age FROM Has_Pet ORDER BY age DESC LIMIT 1 AND pet_age ORDER BY age DESC LIMIT 2 ### Explanation: 1 = top 2 pet_age ### SQL: SELECT PetType , age FROM Has_Pet ORDER BY age DESC LIMIT 2 ORDER BY age DESC LIMIT 1 ### Explanation: 1 = top 2 pet_age ### SQL: SELECT PetType , age FROM Has_Pet ORDER BY age DESC LIMIT 2 ORDER BY age DESC LIMIT 2"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How much does the youngest dog weigh?",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET (#) ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET (#) ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET (#) ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET (#) ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET (#) ### SQL: SELECT min(weight) FROM Has_Pet GROUP BY PetType ORDER BY age DESC LIMIT 1 OFSET"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the maximum weight for each type of pet. List the maximum weight and pet type.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "SELECT max(weight) , pet_type FROM pets GROUP BY pet_type HAVING max(pet_age) > 1 ORDER BY pet_type LIMIT 1 ### SQL: SELECT T1.pet_type , avg(weight) , T2.pet_type FROM pets AS T1 JOIN pets AS T2 ON T1.pet_id = T2.pet_id GROUP BY T1.pet_type ORDER BY avg(weight) DESC LIMIT 1 ### SQL: SELECT T1.pet_type , avg(weight) , T2.pet_type FROM pets AS T1 JOIN pets AS T2 ON T1.pet_id = T2.pet_id GROUP BY T2.pet_type ORDER BY avg(weight) DESC LIMIT 1 ### SQL: SELECT T1.pet_type , avg(weight) , T2.pet_type FROM pets AS T1 JOIN pets AS T2 ON T1.pet_id = T2.pet_id GROUP BY T2.pet_type ORDER BY avg(weight) DESC LIMIT"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "List the maximum weight and type for each type of pet.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "SELECT max(weight) , type FROM pets GROUP BY type HAVING max(weight) > 1000 ORDER BY type ASC LIMIT 3"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "SELECT count(*) FROM Has_Pet WHERE StuID < 20 GROUP BY PetType HAVING avg(pet_age) < 20 ORDER BY avg(pet_age) DESC LIMIT 3 ### Explanation: Number of pets: 3 ### SQL: SELECT count(*) FROM Has_Pet WHERE StuID < 20 GROUP BY PetType HAVING avg(pet_age) < 20 ORDER BY avg(pet_age) DESC LIMIT 3 ### Explanation: Number of pets: 2 ### SQL: SELECT count(*) FROM Has_Pet WHERE StuID < 20 GROUP BY PetType HAVING avg(pet_age) < 20 ORDER BY avg(pet_age) DESC LIMIT 3 ### Explanation: Number of pets: 0 ### SQL: SELECT count(*) FROM Has_Pet WHERE StuID < 20 GROUP BY PetType HAVING avg(pet_age) < 20 ORDER BY avg(pet_age) DESC LIMIT 3 ### Explanation: Number of pets: 1 ### SQL:"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets are owned by students that have an age greater than 20?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY StuID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT count(*) FROM Student WHERE age > 20 GROUP BY Stu"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of dog pets that are raised by female students (with sex F).",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "SELECT count(DISTINCT petType) FROM Has_Pet WHERE sex = 'F' GROUP BY petType HAVING count(*) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "SELECT count(*) FROM Has_Pet WHERE PetType = \"F\" GROUP BY PetType HAVING count(*) > 1 HAVING PetType = \"F\" ORDER BY pet_age ASC LIMIT 3 ### Explanation: 3 example rows: 3 example rows: PetType | pet_age | weight F | 2013 | 94 | 94 F | 2010 | 94 | 94 F | 2011 | 95 | 890 */ ### Question: What is the average pet age of female students? ### SQL: SELECT avg(pet_age) FROM Has_Pet WHERE PetType = \"F\" GROUP BY PetType ORDER BY count(*) > 1 HAVING count(*) > 2 ORDER BY pet_age ASC LIMIT 2 ### Explanation: 1 row with pet_age = \"2012\" ### Question: What is the average pet age of female students? ### SQL: SELECT avg(pet_age) FROM Has_Pet WHERE PetType = \"F\" GROUP BY PetType ORDER BY count(*) > 1 HAVING count(*)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of distinct type of pets.",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "SELECT count(DISTINCT PetType) FROM pets GROUP BY PetType HAVING count(*) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many different types of pet are there?",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "SELECT count(*) FROM PetType WHERE PetType = \"cat\" GROUP BY PetType HAVING count(*) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have cat or dog pet.",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "SELECT LName FROM Student WHERE city_code = \"HKG\" OR city_code = \"HK\" GROUP BY LName ORDER BY 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the first names of every student who has a cat or dog as a pet?",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "SELECT LName FROM Student WHERE StuID IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets)) ORDER BY age ASC LIMIT 3"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have both cat and dog pets .",
+      "gold": "select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'dog'",
+      "pred": "SELECT T1.pet_type , T1.pet_age , T1.weight FROM Has_Pet AS T1 JOIN Pets AS T2 ON T1.petID = T2.petID JOIN Pet_Type AS T3 ON T2.petID = T3.petID WHERE T3.pet_type = \"cat\" AND T1.pet_age = \"3\" AND T2.pet_age = \"2\""
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the students' first names who have both cats and dogs as pets?",
+      "gold": "SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' INTERSECT SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog'",
+      "pred": "SELECT T1.StuID , T1.PetType , T1.pet_age , T1.weight FROM Has_Pet AS T1 JOIN Pets AS T2 ON T1.PetID = T2.PetID JOIN Pet_Catalogue AS T3 ON T2.PetID = T3.PetID WHERE T1.StuID = \"1001\" AND T1.PetType = \"cat\" AND T1.pet_age = \"3\" AND T2.PetID = \"2002\" AND T3.PetID = \"2002\" ### Explanation: What are the students who have both cats and dogs as pets? ### SQL: SELECT T1.StuID , T1.PetType , T1.pet_age , T1.weight FROM Has_Pet AS T1 JOIN Pets AS T2 ON T1.PetID = T2.PetID JOIN Pet_Catalogue AS T3 ON T2.PetID = T3.PetID WHERE T1.StuID = \"1001"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 1 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 5 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 8 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 9 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age > 10 ORDER BY age DESC LIMIT 10 ### SQL: SELECT major , age FROM Student WHERE LName = \"-\" GROUP BY major HAVING age"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What major is every student who does not own a cat as a pet, and also how old are they?",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY major ORDER BY age DESC LIMIT 3 ### SQL: SELECT major , age FROM Student WHERE LName = \"Cat\""
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of students who do not have a cat pet.",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "SELECT StuID FROM Student WHERE LName = \"Nancy\" AND Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE LName = \"Sue\" EXCEPT SELECT StuID FROM Student WHERE Sex = \"F\" ### Output: 1001 | 1999 1002 | 2003 1003 | 1997 */ ### Question: Find the id of students who do not have a dog pet. ### SQL: SELECT StuID FROM Student WHERE Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE Sex = \"F\" ### Output: 1001 | 2000 1002 | 2003 1003 | 1997 */ ### Question: Find the id of students who do not have a cat pet and have a dog pet. ### SQL: SELECT StuID FROM Student WHERE Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE Sex = \"F\" EXCEPT SELECT StuID FROM Student WHERE Sex"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the ids of the students who do not own cats as pets?",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "SELECT PetID FROM Has_Pet WHERE StuID NOT IN (SELECT StuID FROM Has_Cat) AND PetType != 'Cat' ### Output: 102 | 102 | None 103 | 103 | None 104 | 104 | None ### SQL: SELECT PetID FROM Has_Pet WHERE StuID IN (SELECT StuID FROM Has_Cat) AND PetType != 'Cat' AND PetType != 'Pew' ### Output: 102 | 103 | 848 104 | 104 | 848 ### SQL: SELECT PetID FROM Has_Pet WHERE StuID IN (SELECT StuID FROM Has_Cat) AND PetType != 'Cat' AND PetType != 'Pew' AND PetType != 'Sax' ### Output: 102 | 104 | 848 104 | 105 | 848 ### SQL: SELECT PetID FROM Has_Pet WHERE StuID IN (SELECT StuID FROM Has_Cat) AND PetType != 'Cat' AND PetType != 'Pew' AND PetType != 'Sax' AND PetType != 'Mushroom' ### Output: 102 | 104 | 848 104 | 106"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT Fname , Age FROM Student WHERE LName = \"Dog\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE LName = \"Dog\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE LName = \"Cat\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE LName = \"Kid\" AND Sex = \"F\" GROUP BY Fname ORDER BY Age ASC LIMIT 1 ### SQL: SELECT Fname , Age FROM Student WHERE L"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name of every student who has a dog but does not have a cat?",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT T1.LName FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID JOIN Pets AS T3 ON T3.PetID = T2.PetID WHERE T3.PetType = \"0\" AND T1.Age = \"19\" AND T1.Sex = \"F\" UNION SELECT T1.LName FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID JOIN Pets AS T3 ON T3.PetID = T2.PetID WHERE T3.PetType = \"0\" AND T1.Age = \"18\" AND T1.Sex = \"F\" UNION SELECT T1.LName FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID JOIN Pets AS T3 ON T3.PetID = T2.PetID WHERE T3.PetType = \"0\" AND T1.Age ="
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the type and weight of the youngest pet.",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT PetType , weight FROM Has_Pet ORDER BY weight ASC LIMIT 3"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What type of pet is the youngest animal, and how much does it weigh?",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT PetType , COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT DISTINCT PetType FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC LIMIT 1 ### Explanation: How many pets are the youngest? ### SQL: SELECT COUNT(*) FROM Pets GROUP BY PetType ORDER BY weight DESC"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id and weight of all pets whose age is older than 1.",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "SELECT PetID , Weight FROM Pets WHERE Age < 1 ORDER BY Weight ASC LIMIT 1 ### Explanation: Find the id and weight of all pets whose age is older than 1. ### SQL: SELECT PetID , Weight FROM Pets WHERE Age < 1 ORDER BY Weight ASC LIMIT 1 ### Explanation: Find the id and weight of all pets whose age is older than 1. ### SQL: SELECT PetID , Weight FROM Pets WHERE Age < 1 ORDER BY Weight ASC LIMIT 1 ### Explanation: Find the id and weight of all pets whose age is older than 1. ### SQL: SELECT PetID , Weight FROM Pets WHERE Age < 1 ORDER BY Weight ASC LIMIT 1 ### Explanation: Find the id and weight of all pets whose age is older than 1. ### SQL: SELECT PetID , Weight FROM Pets WHERE Age < 1 ORDER BY Weight ASC LIMIT 1 ### Explanation: Find the id and weight of all pets whose age is older than 1. ### SQL: SELECT PetID , Weight FROM Pets WHERE Age"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id and weight of every pet who is older than 1?",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "SELECT PetID , Weight FROM Has_Pet WHERE age < 1 ORDER BY weight ASC LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 1 LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 1 OFERASE_POINT ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 1 OF CASE WHEN age < 10 THEN '00' ELSE NULL END LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 10 OF CASE WHEN age < 10 THEN '00' ELSE NULL END LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 10 OF CASE WHEN age < 10 THEN '00' ELSE NULL END LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER BY age < 10 OF CASE WHEN age < 10 THEN '00' ELSE NULL END LIMIT 3 ### SQL: SELECT PetID , Weight FROM Has_Pet ORDER"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average and maximum age for each type of pet.",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT avg(pet_age) , max(pet_age) FROM Has_Pet GROUP BY PetType HAVING count(*) > (SELECT count(*) FROM Has_Pet) ### SQL: SELECT t1.pet_age , max(t1.pet_age) FROM Has_Pet GROUP BY t1.pet_type HAVING count(*) > (SELECT count(*) FROM Has_Pet) ### SQL: SELECT t1.pet_age , avg(t1.pet_age) FROM Has_Pet GROUP BY t1.pet_type HAVING count(*) > (SELECT count(*) FROM Has_Pet) ### SQL: SELECT t1.pet_age , avg(t1.pet_age) - avg(t2.pet_age) FROM Has_Pet GROUP BY t1.pet_type HAVING count(*) > (SELECT count(*) FROM Has_Pet) ### SQL: SELECT t1.pet_age , avg(t1.pet_age) - avg(t2.pet_age) - avg(t3."
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average and maximum age for each pet type?",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT avg(pet_age) , max(pet_age) FROM Has_Pet GROUP BY pet_type HAVING max(pet_age) > (SELECT avg(pet_age) FROM Has_Pet GROUP BY pet_type HAVING max(pet_age) > ) ### SQL: SELECT t1.pet_type , avg(t1.pet_age) FROM Has_Pet AS t1 JOIN Pet_Type AS t2 ON t1.pet_id = t2.pet_id GROUP BY t1.pet_type HAVING avg(t1.pet_age) > (SELECT avg(t1.pet_age) FROM Has_Pet AS t1 JOIN Pet_Type AS t2 ON t1.pet_id = t2.pet_id) ### SQL: SELECT t1.pet_type , avg(t1.pet_age) FROM Has_Pet AS t1 JOIN Pet_Type AS t2 ON t1.pet_id = t2.pet_id GROUP BY t1.pet_type HAVING avg(t"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average weight for each pet type.",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT avg(weight) FROM pets GROUP BY pet_type HAVING count(*) > (SELECT count(*) FROM pets) AS _2_"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average weight for each type of pet?",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT avg(weight) FROM pets GROUP BY petType HAVING count(*) > (SELECT count(*) FROM pets) AS x"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a pet.",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "SELECT Fname , Age FROM Student WHERE StuID = \"1001\" GROUP BY Fname , Age ORDER BY Age ASC LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the different first names and ages of the students who do have pets?",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "SELECT T1.StuID , T1.PetID , T1.PetType FROM Has_Pet AS T1 JOIN Pets AS T2 ON T1.PetID = T2.PetID GROUP BY T2.PetID HAVING min(T2.PetType) = \"1\" ORDER BY min(T2.PetType) ASC LIMIT 1 ### Explanation: What are the different first names and ages of the students who do have pets? ### SQL: SELECT T1.StuID , T1.PetID , T1.PetType FROM Has_Pet AS T1 JOIN Pets AS T2 ON T1.PetID = T2.PetID GROUP BY T2.PetID HAVING min(T2.PetType) = \"1\" ORDER BY min(T2.PetType) ASC LIMIT 1 ### Explanation: What are the different first names and ages of the students who do have pets? ### SQL: SELECT T1.StuID , T1.PetID , T1.PetType FROM Has_"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of the pet owned by student whose last name is \u2018Smith\u2019.",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID HAVING age = 3 ORDER BY age DESC LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id of the pet owned by the student whose last name is 'Smith'?",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID HAVING count(*) > 1 ORDER BY age DESC LIMIT 1 ### SQL: SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID ORDER BY age DESC LIMIT 1 ### SQL: SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID ORDER BY age DESC LIMIT 1 EXCEPT SELECT PetID FROM Student WHERE LName = \"Tom\" EXCEPT SELECT PetID FROM Student WHERE LName = \"Smith\" ORDER BY age DESC LIMIT 1 ### SQL: SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID ORDER BY age DESC LIMIT 2 EXCEPT SELECT PetID FROM Student WHERE LName = \"Tom\" EXCEPT SELECT PetID FROM Student WHERE LName = \"Smith\" ORDER BY age DESC LIMIT 1 ### SQL: SELECT PetID FROM Student WHERE LName = \"Smith\" GROUP BY PetID ORDER BY age DESC LIMIT 2 EXCEPT SELECT PetID FROM Student WHERE LName = \"Tom\""
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets for each student who has any pet and student id.",
+      "gold": "SELECT count(*) ,  T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid",
+      "pred": "SELECT T1.petID , S1.studentID , count(*) FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.petID = T2.petID GROUP BY T2.studentID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.petID , S1.studentID , count(*) FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.petID = T2.petID GROUP BY T2.studentID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 2 ### SQL: SELECT T1.petID , S1.studentID , count(*) FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.petID = T2.petID GROUP BY T2.studentID HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT T1.petID , S1.studentID , count(*) FROM Student AS T1 JOIN"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "For students who have pets , how many pets does each student have ? list their ids instead of names .",
+      "gold": "select count(*) ,  t1.stuid from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid group by t1.stuid",
+      "pred": "SELECT StuID , COUNT(*) FROM Student WHERE Has_Pet IN (SELECT StuID FROM Pet_Associations) GROUP BY StuID HAVING COUNT(*) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and gender of student who have more than one pet.",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) >"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name and gender of the all the students who have more than one pet?",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Fname , T1.Lname FROM Student AS T1 JOIN Has_Pet AS T2 ON T1.StuID = T2.StuID GROUP BY Fname HAVING count(*) >"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the last name of the student who has a cat that is age 3.",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "SELECT LName FROM Student WHERE Age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: 1 = the last name of student whose age is 3 ### SQL: SELECT LName FROM Student ORDER BY age DESC LIMIT 1 ### Explanation: 1 = the last name of student whose age is 3 ### SQL: SELECT LName FROM Student ORDER BY age DESC LIMIT 1 WHERE Age = 3 ### Explanation: 1 = the last name of student whose age is 3 ### SQL: SELECT LName FROM Student ORDER BY age DESC LIMIT 1 WHERE Age = 3 WHERE PetType = \"cat\" ### Explanation: 1 = the last name of student whose age is 3 ### SQL: SELECT LName FROM Student ORDER BY age DESC LIMIT 1 WHERE Age = 3 WHERE PetType = \"cat\" WHERE PetType = \"cat\" ### Explanation: 1 = the last name of student whose age is 3 ### SQL: SELECT LName FROM Student ORDER BY age DESC LIMIT 1 WHERE Age"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the last name of the student who has a cat that is 3 years old?",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "SELECT LName FROM Student WHERE age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: Return the last name of the student who has a cat that is 3 years old. ### SQL: SELECT LName FROM Student WHERE age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: Return the last name of the student who has a cat that is 3 years old. ### SQL: SELECT LName FROM Student WHERE age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: Return the last name of the student who has a cat that is 3 years old. ### SQL: SELECT LName FROM Student WHERE age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: Return the last name of the student who has a cat that is 3 years old. ### SQL: SELECT LName FROM Student WHERE age = 3 GROUP BY LName ORDER BY age DESC LIMIT 1 ### Explanation: Return the last name of the student who has a cat that is"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average age of students who do not have any pet .",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "SELECT avg(age) FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet) AND PetID NOT IN (SELECT PetID FROM Pets) ### Output: 0 | None 15 | None */ ### Question: Find the average age of students who do not have any pet . ### SQL: SELECT avg(age) FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet) AND PetID NOT IN (SELECT PetID FROM Pets) AND StuID NOT IN (SELECT PetID FROM Student) ### Output: 0 | None 15 | None */ ### Question: Find the average age of students who do not have any pet . ### SQL: SELECT avg(age) FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet) AND PetID NOT IN (SELECT PetID FROM Pets) AND StuID NOT IN (SELECT PetID FROM Student) AND StuID NOT IN (SELECT PetID FROM Student) ### Output: 0 | None 15 | None */ ### Question: Find the average age of students who do not have any pet ."
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average age for all students who do not own any pets ?",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "SELECT avg(age) FROM Student WHERE age < 0 GROUP BY age ORDER BY count(*) AS count FROM Has_Pet WHERE StuID NOT IN (SELECT StuID FROM Has_Pet) GROUP BY age ORDER BY count(*) AS count FROM Pets ORDER BY count(*) AS count LIMIT 1 ### Explanation: There are two distinct groups of students who do not own any pets: StuID | PetType | pet_age | weight 1001 | F | 7 | 908.8 1002 | F | 8 | 908.4 1003 | F | 9 | 908.6 ### SQL: SELECT avg(age) FROM Student WHERE age < 0 GROUP BY age ORDER BY count(*) AS count FROM Has_Pet WHERE StuID NOT IN (SELECT StuID FROM Has_Pet) GROUP BY age ORDER BY count(*) AS count FROM Pets ORDER BY count(*) AS count LIMIT 2 ### Explanation: There are two distinct groups of students who do not own any pets: StuID | PetType | pet"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many continents are there?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "SELECT count(*) FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### Explanation: 1 is the continent, 2 is the continent with the most cars, and so on. ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### Explanation: 1 is the continent, 2 is the continent with the most cars, and so on. ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### Explanation: 1 is the continent, 2 is the continent with the most cars, and so on. ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### Explanation: 1 is the continent, 2 is the continent"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of continents?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "SELECT count(*) FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent FROM continents GROUP BY Continent ORDER BY count(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries does each continent have? List the continent id, continent name and the number of countries.",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT 3 ### SQL: SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT 3 OFFSET 1 ### SQL: SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT 3 OFFSET 2 ### SQL: SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT 3 OFFSET 3 ### SQL: SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT 3 OFFSET 4 ### SQL: SELECT Continent , continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents GROUP BY Continent , count(*) FROM continents LIMIT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For each continent, list its id, name, and how many countries it has?",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "SELECT Continent , CountryName , COUNT(*) FROM continents GROUP BY Continent , CountryName ORDER BY COUNT(*) DESC LIMIT 3 ### SQL: SELECT Continent , CountryName , COUNT(*) FROM continents GROUP BY Continent , CountryName ORDER BY COUNT(*) DESC LIMIT 2 ### SQL: SELECT Continent , CountryName , COUNT(*) FROM continents GROUP BY Continent , CountryName ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName , COUNT(*) FROM continents GROUP BY Continent , CountryName ORDER BY COUNT(*) DESC LIMIT 0 ### SQL: SELECT Continent , CountryName , COUNT(*) FROM continents GROUP BY Continent , CountryName ORDER BY COUNT(*) DESC EXCEPT SELECT CountryId , CountryName FROM continents GROUP BY Continent ORDER BY COUNT(*) DESC EXCEPT SELECT CountryId , CountryName FROM continents GROUP BY Continent ORDER BY COUNT(*) DESC EXCEPT SELECT CountryId , CountryName FROM continents GROUP BY Continent ORDER BY COUNT(*) DESC EXCEPT SELECT CountryId , CountryName FROM continents GROUP BY"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries are listed?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "SELECT count(*) FROM table country GROUP BY Continent HAVING count(*) > 10"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries exist?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "SELECT count(*) FROM table Country GROUP BY Continent HAVING count(*) > 10"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many models does each car maker produce? List maker full name, id and the number.",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "SELECT T2.MakeName , T1.Id FROM model_list AS T1 JOIN car_makers AS T2 ON T1.ModelId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) > 1 ### SQL: SELECT T2.MakeName , T1.Id FROM model_list AS T1 JOIN car_makers AS T2 ON T1.MakerId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) > 1 ### SQL: SELECT T2.MakeName , T1.Id FROM model_list AS T1 JOIN car_makers AS T2 ON T1.MakerId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) > 1 ### SQL: SELECT T2.MakeName , T1.Id FROM model_list AS T1 JOIN car_makers AS T2 ON T1.MakerId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) > 1 ### SQL: SELECT T2."
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the full name of each car maker, along with its id and how many models it produces?",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "SELECT T2.MakeName , T1.ModelId , count(*) FROM ( SELECT MakeTable CarrierNames (MakeId , Model TEXT) FROM cars_data GROUP BY MakeId HAVING count(*) > 1 ) AS T1 INNER JOIN ( SELECT MakeTable model_list (Model TEXT) FROM cars_data WHERE MakeId = ( SELECT MakeId FROM cars_data WHERE MakeId = \"1\" ) GROUP BY ModelId ORDER BY count(*) DESC LIMIT 1 ) AS T2 ON R1.MakeId = T2.MakeId WHERE T1.ModelId = \"1\" ### SQL: SELECT T2.MakeName , T1.ModelId , count(*) FROM ( SELECT MakeTable carrier_names (MakeId , Model TEXT) FROM cars_data GROUP BY MakeId HAVING count(*) > 1 ) AS T1 INNER JOIN ( SELECT MakeTable model_list (Model TEXT) FROM cars_data WHERE MakeId = ( SELECT MakeId FROM cars_data WHERE MakeId = \"1\" ) GROUP BY ModelId ORDER BY count(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model of the car has the minimum horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Make WHERE T2.ModelId = \"1\" GROUP BY T2.Make ORDER BY COUNT(*) * 10 ASC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model of the car with the smallest amount of horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Make WHERE T2.MakeId < \"1\" GROUP BY T2.Make ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 | buick | cyan | blue 2 | chris | white | black 3 | 1985 | mars | 1986 */ ### Question: What is the model of the car with the smallest amount of horsepower? ### SQL: SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Make WHERE T2.MakeId < \"2\" GROUP BY T2.Make ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: 1 | cyan | cyan | blue 2 | black | white | black 3 | 1985 | mars | 1986 */ ### Question: What is the model of the car with the smallest weight? ### SQL: SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the model of the car whose weight is below the average weight.",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "SELECT T1.Model FROM cars_data AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model GROUP BY T2.Model ORDER BY Weight > (SELECT avg(Weight) FROM cars_data) ### SQL: SELECT T1.Model FROM cars_data AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model GROUP BY T2.Model ORDER BY Weight > (SELECT avg(Weight) FROM cars_data) LIMIT 1 ### Explanation: 1 is the model of the car whose weight is below the average weight. ### SQL: SELECT T1.Model FROM cars_data AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model GROUP BY T2.Model ORDER BY Weight > (SELECT avg(Weight) FROM cars_data) LIMIT 1 ### Explanation: 1 is the model of the car whose weight is below the average weight. ### SQL: SELECT T1.Model FROM cars_data AS T1 JOIN model_list AS T2 ON T1."
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model for the car with a weight smaller than the average?",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "SELECT Model FROM cars_data WHERE Weight < (SELECT avg(Weight) FROM cars_data) GROUP BY Model HAVING Weight < (SELECT avg(Weight) FROM cars_data) ) ### SQL: SELECT Model FROM cars_data WHERE Weight < (SELECT avg(Weight) FROM cars_data) GROUP BY Model HAVING Weight < (SELECT avg(Weight) FROM cars_data) ) ### SQL: SELECT Model FROM cars_data WHERE Weight < (SELECT avg(Weight) FROM cars_data) GROUP BY Model HAVING Weight < (SELECT avg(Weight) FROM cars_data) ) ### SQL: SELECT Model FROM cars_data WHERE Weight < (SELECT avg(Weight) FROM cars_data) GROUP BY Model HAVING Weight < (SELECT avg(Weight) FROM cars_data) ) ### SQL: SELECT Model FROM cars_data WHERE Weight < (SELECT avg(Weight) FROM cars_data) GROUP BY Model HAVING Weight < (SELECT avg(Weight) FROM cars_data) ) ### SQL: SELECT Model FROM cars_data WHERE Weight <"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the name of the makers that produced some cars in the year of 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "SELECT Makeerer.Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"UK\" INTERSECT SELECT Maker FROM countries WHERE CountryName = \"US\""
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the different car makers who produced a car in 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "SELECT T1.MakeName FROM car_names AS T1 JOIN car_makers AS T2 ON T1.MakeId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) >= 2 HAVING T2.MakerId = \"1\" EXCEPT SELECT T2.MakerId FROM car_names AS T1 JOIN car_makers AS T2 ON T1.MakeId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) >= 2 HAVING T2.MakerId = \"2\" EXCEPT SELECT T2.MakerId FROM car_names AS T1 JOIN car_makers AS T2 ON T1.MakeId = T2.MakerId GROUP BY T2.MakerId HAVING count(*) >= 2 HAVING T2.MakerId = \"3\" EXCEPT SELECT T2.MakerId FROM car_names AS T1 JOIN car_makers AS T2 ON T1.MakeId = T2.MakerId GROUP BY T2.MakerId HAVING count(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the make and production time of the cars that were produced in the earliest year?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make LIMIT 1 ### SQL: SELECT Make , Production FROM cars_data WHERE Make > \"1970\" GROUP BY Make ORDER BY Production - Make"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maker of the carr produced in the earliest year and what year was it?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 1 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 1 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 2 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 2 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 3 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 4 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 5 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 6 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 7 ### SQL: SELECT Maker , Year FROM cars_data ORDER BY Year ASC LIMIT 1 LIMIT 8"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinct car models are the produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "SELECT DISTINCT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make ASC LIMIT 1 */ ### SQL: SELECT DISTINCT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make ASC LIMIT 1 WHERE T1.Year BETWEEN 1980 AND 2017 ### Explanation: Which distinct car models are the produced after 1980? ### SQL: SELECT DISTINCT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make ASC LIMIT 1 WHERE T1.Year BETWEEN 1980 AND 2017 ### Explanation: Which distinct car models are the produced after 1980? ### SQL: SELECT DISTINCT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make ASC LIMIT 1 WHERE T1.Year"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models for the cards produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "SELECT DISTINCT T1.Model FROM car_names AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model ORDER BY T2.Make TEXT ### SQL: SELECT DISTINCT T1.Model FROM car_names AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model ORDER BY T2.Make TEXT LIMIT 1 ### SQL: SELECT DISTINCT T1.Model FROM car_names AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model ORDER BY T2.Make TEXT LIMIT 1 ### Explanation: The different models are: 1 = BMW 2 = Buffalo 3 = Chevrolet 4 = Dachrist 5 = Diesel 6 = Ford 7 = Femago 8 = France Girl 9 = France House 10 = France Star 11 = Eurocard 12 = Lema 13 = Luxori 14 = Luxo 15 = Luxo-Ithoba 16 = Monsoon 17 = Mango 18 = Molloy 19 = Moll"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in each continents? List the continent name and the count.",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 10 ### SQL: SELECT Continent , COUNT(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of each continent and how many car makers are there in each one?",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM cars_data GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM car_makers GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*) FROM car_names GROUP BY Continent HAVING COUNT(*) > 1 ### SQL: SELECT Continent , COUNT(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which of the countries has the most car makers? List the country name.",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "SELECT CountryName FROM countries ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT CountryName FROM countries ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 OF-SELECT * FROM car_names GROUP BY CountryName"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the country with the most car makers?",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "SELECT CountryName FROM countries GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the country name of the most country makers. ### SQL: SELECT CountryName FROM countries GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Name FROM car_names GROUP BY Name ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the country name of the most country makers. ### SQL: SELECT CountryName FROM countries GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Name FROM car_names GROUP BY Name ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Name FROM car_makers GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: Return the country name of the most country makers. ### SQL: SELECT CountryName FROM countries GROUP BY CountryName ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Name FROM car_makers GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Name FROM car_makers GROUP BY Maker ORDER BY COUNT(*) DESC"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced by each maker ? Only list the count and the maker full name .",
+      "gold": "select count(*) ,  t2.fullname from model_list as t1 join car_makers as t2 on t1.maker  =  t2.id group by t2.id;",
+      "pred": "SELECT T1.MakeId , T1.MakeName , count(*) FROM car_names AS T1 JOIN car_makers AS T2 ON T1.Maker = T2.Maker GROUP BY T2.Maker HAVING count(*) > 1 ### Explanation: How many car models are produced by each maker ? Only list the count and the maker full name . ### SQL: SELECT T1.MakeId , T1.MakeName , count(*) FROM car_names AS T1 JOIN car_makers AS T2 ON T1.Maker = T2.Maker GROUP BY T2.Maker HAVING count(*) > 1 ### Explanation: How many car models are produced by each maker ? Only list the count and the maker full name . ### SQL: SELECT T1.MakeId , T1.MakeName , count(*) FROM car_names AS T1 JOIN car_makers AS T2 ON T1.Maker = T2.Maker GROUP BY T2.Maker HAVING count(*) > 1 ### Explanation: How many car"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models that are produced by each maker and what is the id and full name of each maker?",
+      "gold": "SELECT Count(*) ,  T2.FullName ,  T2.id FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id GROUP BY T2.id;",
+      "pred": "SELECT T1.MakeId , T1.Model , T2.Make , T2.ModelName FROM car_names AS T1 JOIN car_makers AS T2 ON T1.MakeId = T2.MakerId GROUP BY T2.MakerId , T1.ModelName ORDER BY T2.MakerId"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the accelerate of the car make amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "SELECT Accelerate FROM cars_data WHERE MakeId = \"1\" AND Maker = \"amc\" AND Accelerate = \"0\" GROUP BY Accelerate ORDER BY COUNT(*) > 1 ### Explanation: Return the accelerate of the car make amc hornet sportabout (sw) ### SQL: SELECT T2.MakeId , T2.Weight FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = \"1\" GROUP BY T2.MakeId ORDER BY COUNT(*) > 1 ### Explanation: Return the accelerate of the car make amc hornet sportabout (sw) ### SQL: SELECT T2.MakeId , T2.Weight FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = \"1\" GROUP BY T2.MakeId ORDER BY COUNT(*) > 1 ### Explanation: Return the accelerate of the car make amc hornet sportabout (sw) ### SQL: SELECT T2.MakeId , T"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How much does the car accelerate that makes amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "SELECT T2.C1_Weight FROM ( SELECT C1_Weight , T2.MakeId , T2.MakeName , T2.MakeName , T2.MakeName , T2.Cylinders , T2.MPG , T2.Year FROM cars_data AS T1 INNER JOIN countries AS T2 ON T1.MPG = T2.MPG WHERE T1.Maker = 'amc' AND T2.Country = '1' ) AS T1_2 ON T1_2.C1_Weight = T2.C1_Weight WHERE T1.Maker = 'amc' AND T2.Country = '1' AND T2.MPG = 'hornet' GROUP BY T2.MPG ORDER BY C1_Weight DESC LIMIT 1 ### Explanation: How much does the car accelerate that makes amc hornet sportabout (sw) ### SQL: SELECT C1_Weight , T2.MakeId , T2.MakeName , T2.MakeName , T2.MakeName , T2.Cylinders , T2.MPG FROM"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in france?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "SELECT count(*) FROM car_makers WHERE Continent = \"FR\" GROUP BY MakeId HAVING count(*) > 10 ORDER BY makeId ASC LIMIT 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of makers of care in France?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "SELECT count(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM car_makers WHERE Country = \"fr\" GROUP BY Maker ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced in the usa?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "SELECT count(*) FROM table ( SELECT T1.Make TEXT , T1.MakeId , T1.Model TEXT ) WHERE T1.MakeId = \"1\" GROUP BY T1.MakeId HAVING count(*) > 10 ### Explanation: How many car models are produced in the usa? 10 means 10 cars. ### SQL: SELECT count(*) FROM table ( SELECT T1.Make TEXT , T1.MakeId , T1.Model TEXT ) WHERE T1.MakeId = \"1\" GROUP BY T1.MakeId HAVING count(*) > 10 ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many car models are produced in the usa? 10 means 10 cars. ### SQL: SELECT count(*) FROM table ( SELECT T1.Make TEXT , T1.MakeId , T1.Model TEXT ) WHERE T1.MakeId = \"1\" GROUP BY T1.MakeId HAVING count(*) > 10 ORDER BY COUNT(*) DESC LIMIT 1 ORDER BY COUNT(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the count of the car models produced in the United States?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country = \"US\" GROUP BY Model ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT COUNT(*) FROM model_list WHERE Country"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon(mpg) of the cars with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "SELECT avg(Cylinders) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders ORDER BY Cylinders DESC LIMIT 1 ### Explanation: Return the average miles per gallon of the cars with 4 cylinders. ### SQL: SELECT avg(Cylinders) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders ORDER BY Cylinders DESC LIMIT 1 ### Explanation: Return the average miles per gallon of the cars with 4 cylinders. ### SQL: SELECT avg(Cylinders) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders ORDER BY Cylinders DESC LIMIT 1 ### Explanation: Return the average miles per gallon of the cars with 4 cylinders. ### SQL: SELECT avg(Cylinders) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders ORDER BY Cylinders DESC LIMIT 1 ### Explanation: Return the average miles per gallon of the cars with 4 cylinders. ### SQL: SELECT avg(Cylinders) FROM"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon of all the cards with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "SELECT avg(MPG) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders HAVING avg(MPG) > 4 ### SQL: SELECT avg(MPG) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders HAVING avg(MPG) > 4 AND Make TEXT > \"chevrolet\" ### SQL: SELECT avg(MPG) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders HAVING avg(MPG) > 4 AND Make TEXT > \"chevrolet\" AND Make TEXT = \"buick\" ### SQL: SELECT avg(MPG) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders HAVING avg(MPG) > 4 AND Make TEXT > \"chevrolet\" AND Make TEXT = \"buick\" AND Make TEXT = \"chv\" ### SQL: SELECT avg(MPG) FROM cars_data WHERE Cylinders = \"4\" GROUP BY Cylinders"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the smallest weight of the car produced with 8 cylinders on 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "SELECT Min(Weight) FROM cars_data WHERE Country = '74' AND Cylinders = '8' GROUP BY Cylinders ORDER BY Min(Weight) DESC LIMIT 1 ### Explanation: We have only one weight, so we have to return it. ### SQL: SELECT CAST(COUNT(*) FROM cars_data WHERE Country = '74' AND Cylinders = '8' GROUP BY Cylinders ORDER BY COUNT(*) DESC LIMIT 1) FROM cars_data WHERE Country = '74' AND Cylinders = '8' GROUP BY Cylinders ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: We have three cars, so we have to return them in order of weight. ### SQL: SELECT CAST(COUNT(*) FROM cars_data WHERE Country = '74' AND Cylinders = '8' GROUP BY Cylinders ORDER BY COUNT(*) DESC LIMIT 3) FROM cars_data WHERE Country = '74' AND Cylinders = '8' GROUP BY Cylinders ORDER BY COUNT(*) DESC LIM"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the minimum weight of the car with 8 cylinders produced in 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "SELECT Min(Weight) FROM cars_data WHERE Make = '24' AND Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### Explanation: The minimum weight of the car with 8 cylinders produced in 1974 is 1936. ### SQL: SELECT CAST(COUNT(*) FROM cars_data WHERE Make = '24' AND Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1) AS min_weight FROM cars_data WHERE Make = '24' AND Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### Explanation: The minimum weight of the car with 8 cylinders produced in 1974 is 1936. ### SQL: SELECT CAST(COUNT(*) FROM cars_data WHERE Make = '24' AND Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1) AS min_weight FROM cars_data WHERE Make = '24' AND Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are all the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "SELECT Maker , \" \" FROM table cars_data GROUP BY Maker HAVING count(*) > 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "SELECT Maker , \" \" FROM table cars_data GROUP BY Maker HAVING count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make , \" \" FROM table cars_data GROUP BY Make TEXT ORDER BY count(*) > 1 ORDER BY Make TEXT LIMIT 3 ### SQL: SELECT Make ,"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the countries having at least one car maker? List name and id.",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent ,"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all countries with at least one car maker?",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "SELECT CountryName , Id FROM countries WHERE Continent = \"1\" GROUP BY CountryName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM continents WHERE Country = \"1\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \"2\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \"3\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \"4\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \"5\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \"6\" GROUP BY Continent ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , Id FROM countries WHERE Country = \""
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of the cars with horsepower more than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "SELECT count(*) FROM cars_data WHERE HOSTILE = '150' AND MPG = '18' GROUP BY MPG HOSTILE, COUNT(*) FROM cars_data WHERE MPG = '18' HOSTILE ### SQL: SELECT count(*) FROM cars_data WHERE MPG = '18' GROUP BY MPG HOSTILE, COUNT(*) FROM cars_data WHERE MPG = '18' HOSTILE ### SQL: SELECT count(*) FROM cars_data WHERE MPG = '18' GROUP BY MPG HOSTILE, COUNT(*) FROM cars_data WHERE MPG = '150' HOSTILE ### SQL: SELECT count(*) FROM cars_data WHERE MPG = '150' GROUP BY MPG HOSTILE, COUNT(*) FROM cars_data WHERE MPG = '150' HOSTILE ### SQL: SELECT count(*) FROM cars_data WHERE MPG = '150' GROUP BY MPG HOSTILE, COUNT(*) FROM cars_data WHERE MPG = '18' HOSTILE ###"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a horsepower greater than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "SELECT count(*) FROM cars_data WHERE HOSTILE = '150' AND MPG > \"${mpg}\" ### SQL: SELECT count(*) FROM cars_data WHERE MPG > \"${mpg}\" AND HOSTILE = \"${hostile}\"' ### SQL: SELECT count(*) FROM cars_data WHERE MPG > \"${mpg}\" AND HOSTILE = \"${hostile}\" AND MPG > \"${hp}\" ### SQL: SELECT count(*) FROM cars_data WHERE MPG > \"${mpg}\" AND HOSTILE = \"${hostile}\" AND MPG > \"${hp}\" AND MPG > \"${hp}\" ### SQL: SELECT count(*) FROM cars_data WHERE MPG > \"${mpg}\" AND HOSTILE = \"${hostile}\" AND MPG > \"${hp}\" AND MPG > \"${hp}\" AND HOSTILE = \"${hostile}\" ### SQL: SELECT count(*) FROM cars_data WHERE MPG > \"${"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight of cars each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "SELECT avg(Weight) FROM cars_data GROUP BY YEAR HAVING count(*) >= (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT avg(Weight) FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) > (SELECT count(*) FROM cars_data) ### SQL: SELECT Weight FROM cars_data GROUP BY YEAR HAVING count(*) >"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight and year for each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "SELECT avg(Weight) , year FROM cars_data GROUP BY year HAVING count(*) > 1 ORDER BY year LIMIT 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which countries in europe have at least 3 car manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "SELECT Continent FROM countries WHERE CountryId = \"europe\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"europe\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"europe\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\" INTERSECT SELECT Continent FROM countries WHERE CountryId = \"euro\""
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of all European countries with at least 3 manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "SELECT T1.Country FROM countries AS T1 JOIN car_names AS T2 ON T1.Model = T2.Make WHERE T1.Country LIKE '%e%' AND T2.Make LIKE '%e%' AND T2.Make NOT LIKE '%e%' AND T2.Make NOT LIKE '%e%' ORDER BY T2.Make LIMIT 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum horsepower and the make of the car models with 3 cylinders?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT Max(Horsepower) , Make FROM cars_data GROUP BY Make ORDER BY COUNT(*) DESC LIMIT 3 ### Explanation: How many horsepower is the 3 cylinders? ### SQL: SELECT COUNT(T.Horsepower) FROM cars_data AS T WHERE T.Make = '3' GROUP BY Make ORDER BY COUNT(*) DESC LIMIT 3 ### Explanation: How many horsepower is the 3 cylinders? ### SQL: SELECT COUNT(T.Horsepower) FROM cars_data AS T WHERE T.Make = '3' GROUP BY Make ORDER BY COUNT(*) DESC LIMIT 3 ### Explanation: How many horsepower is the 3 cylinders? ### SQL: SELECT COUNT(T.Horsepower) FROM cars_data AS T WHERE T.Make = '3' GROUP BY Make ORDER BY COUNT(*) DESC LIMIT 3 ### Explanation: How many horsepower is the 3 cylinders? ### SQL: SELECT COUNT(T.Horsepower) FROM cars_data AS T WHERE T.Make = '3' GROUP BY Make ORDER BY C"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the largest amount of horsepower for the models with 3 cylinders and what make is it?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT Max(Make) , COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make) DESC LIMIT 3 ### Explanation: How many horsepower is it to make? ### SQL: SELECT COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make) DESC LIMIT 3 ### Explanation: How many horsepower is it to make? ### SQL: SELECT COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make) DESC LIMIT 3 ### Explanation: How many horsepower is it to make? ### SQL: SELECT COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make) DESC LIMIT 3 ### Explanation: How many horsepower is it to make? ### SQL: SELECT COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make) DESC LIMIT 3 ### Explanation: How many horsepower is it to make? ### SQL: SELECT COUNT(Make) FROM cars_data GROUP BY Make ORDER BY COUNT(Make)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.mpg DESC LIMIT 1;",
+      "pred": "SELECT Max(MPG) FROM cars_data GROUP BY MPG ORDER BY Max(miles_per_gallon) DESC LIMIT 1 ### Explanation: 1 = the most fuel ### SQL: SELECT T1.Make FROM cars_data AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make GROUP BY T2.Make ORDER BY avg(miles_per_gallon) DESC LIMIT 1 ### Explanation: 1 = British Cars ### SQL: SELECT T1.Make FROM cars_data AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make GROUP BY T2.Make ORDER BY T2.Maker TEXT ORDER BY avg(miles_per_gallon) DESC LIMIT 1 ### Explanation: 1 = British Cars ### SQL: SELECT T1.Make FROM cars_data AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make GROUP BY T2.Maker TEXT ORDER BY T2.Maker TEXT ORDER BY avg(miles_per_gallon) DESC LIMIT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the car model with the highest mpg ?",
+      "gold": "select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.mpg desc limit 1;",
+      "pred": "SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make DESC LIMIT 1 */ ### SQL: SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make DESC LIMIT 1 WHERE T2.Make = '74' ### Explanation: The car model with the highest mpg is the one with the most number of cars. ### SQL: SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY COUNT(*) FROM cars_data WHERE T2.Make = '74' ### Explanation: The car model with the highest mpg is the one with the most number of cars. ### SQL: SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY COUNT(*) FROM cars_data WHERE T2.Make = '"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower of the cars before 1980?",
+      "gold": "SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <  1980;",
+      "pred": "SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1970 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"buick\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"chevrolet\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"chrysler\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"flaret\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"lynx\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"twiecast\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"twirl\" ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Make = \"vuji\" ### SQL: SELECT avg(Horsepower) FROM cars"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower for all cars produced before 1980 ?",
+      "gold": "select avg(horsepower) from cars_data where year  <  1980;",
+      "pred": "SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980- ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 2000- ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 2000 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-80 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-90 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-100 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-110 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-120 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-130 ### SQL: SELECT avg(Horsepower) FROM cars_data WHERE Year = 1980-140 ###"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl of the cars of model volvo?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "SELECT avg(Edispl) FROM cars_data WHERE Model = \"volvo\" GROUP BY Model ORDER BY count(*) > 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl for all volvos?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "SELECT avg(Edispl) FROM cars_data WHERE Make = 'V' AND MakeId NOT IN (SELECT MakeId FROM car_names) GROUP BY MakeId HAVING avg(Edispl) > 0 ORDER BY avg(Edispl) DESC LIMIT 1 ### Explanation: avg(Edispl) is the average edispl for all volvos. ### SQL: SELECT avg(Edispl) FROM cars_data WHERE Make = 'V' AND MakeId NOT IN (SELECT MakeId FROM car_names) GROUP BY MakeId HAVING avg(Edispl) > 0 ORDER BY avg(Edispl) DESC LIMIT 1 ### Explanation: avg(Edispl) is the average edispl for all volvos. ### SQL: SELECT avg(Edispl) FROM cars_data WHERE Make = 'V' AND MakeId NOT IN (SELECT MakeId FROM car_names) GROUP BY MakeId HAVING avg(Edispl) > 0 ORDER BY avg(Edispl) DESC LIMIT 1 ### Explanation: av"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for different number of cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "SELECT Max(Accelerate) FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT Cylinders FROM cars_data WHERE MPG != (SELECT MPG FROM cars_data WHERE Cylinders != (SELECT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for all the different cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "SELECT Max(Accelerate) FROM cars_data GROUP BY Cylinders HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Id HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Make HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Make AND Id HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Make AND Make AND Id HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Make AND Make AND Id HAVING Max(Accelerate) > 50 ### SQL: SELECT Id FROM cars_data WHERE Cylinders > 50 GROUP BY Make AND Make AND Id HAVING Max(Accelerate)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model has the most version(make) of cars?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "SELECT T1.Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Make ORDER BY T2.Make DESC LIMIT 1 */ ### SQL: SELECT Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make DESC LIMIT 1 ### Explanation: Find the model with the most make of cars. ### SQL: SELECT Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make DESC LIMIT 1 ### Explanation: Find the model with the most make of cars. ### SQL: SELECT Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2.Make ORDER BY T2.Make DESC LIMIT 1 ### Explanation: Find the model with the most make of cars. ### SQL: SELECT Make FROM model_list AS T1 JOIN car_names AS T2 ON T1.Make = T2"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What model has the most different versions?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "SELECT Model FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many different models have the most different versions? ### SQL: SELECT COUNT(*) FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many different models have the most different versions? ### SQL: SELECT COUNT(*) FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many different models have the most different versions? ### SQL: SELECT COUNT(*) FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many different models have the most different versions? ### SQL: SELECT COUNT(*) FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many different models have the most different versions? ### SQL: SELECT COUNT(*) FROM model_list GROUP BY Model ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 4 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 4 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 4 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 5 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 5 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 4096 GROUP BY Cylinders ORDER BY Cylinders LIMIT 7 ### SQL: SELECT COUNT("
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "SELECT count(*) FROM cars_data WHERE Cylinders > 4 GROUP BY Make ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make FROM cars_data GROUP BY Make ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make, Cylinders FROM cars_data GROUP BY Make ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 OFFSET 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 OFFSET 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 OFFSET 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 OFFSET 3 ### SQL: SELECT Make, Cylinders FROM cars_data ORDER BY Make ASC LIMIT 3 ### SQL: SELECT Make, Cylinders FROM cars_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "how many cars were produced in 1980?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "SELECT count(*) FROM cars_data WHERE Year = \"1980\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-01-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-02-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-03-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-04-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-05-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-06-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-07-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-08-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year = \"1980-09-01\" ### SQL: SELECT count(*) FROM cars_data WHERE Year"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In 1980, how many cars were made?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "SELECT count(*) FROM cars_data WHERE MakeId = \"1\" GROUP BY MakeId HAVING count(*) > 10 ### Explanation: How many cars were made in 1980? ### SQL: SELECT count(*) FROM cars_data WHERE MakeId = \"1\" GROUP BY MakeId HAVING count(*) > 10 ### Explanation: How many cars were made in 1980? ### SQL: SELECT count(*) FROM cars_data WHERE MakeId = \"1\" GROUP BY MakeId HAVING count(*) > 10 ### Explanation: How many cars were made in 1980? ### SQL: SELECT count(*) FROM cars_data WHERE MakeId = \"1\" GROUP BY MakeId HAVING count(*) > 10 ### Explanation: How many cars were made in 1980? ### SQL: SELECT count(*) FROM cars_data WHERE MakeId = \"1\" GROUP BY MakeId HAVING count(*) > 10 ### Explanation: How many cars were made in 1980?"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models were produced by the maker with full name American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "SELECT count(*) FROM ( SELECT T1.Make TEXT , T1.Model TEXT , T2.Make TEXT , T2.Model TEXT , T3.Make TEXT , T3.Model TEXT WHERE T1.Maker = \"american\" AND T2.Model TEXT = \"american\" ) AS T1 INNER JOIN ( SELECT DISTINCT T2.Model TEXT , COUNT(*) FROM ( SELECT T1.Make TEXT , T1.Model TEXT , T2.Make TEXT , T2.Model TEXT WHERE T1.Maker = \"american\" AND T2.Model TEXT = \"american\" ) AS T2 INNER JOIN ( SELECT DISTINCT T1.Model TEXT , COUNT(*) FROM ( SELECT T1.Make TEXT , T1.Model TEXT , T2.Make TEXT , T2.Model TEXT WHERE T1.Maker = \"american\" AND T2.Model TEXT = \"american\" ) AS T1 INNER JOIN ( SELECT DISTINCT T1.Model TEXT , COUNT(*) FROM ( SELECT T1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models created by the car maker American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "SELECT count(*) FROM table cars_data WHERE Make = \"1\" GROUP BY Make ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many cars model was created by the car maker American Motor Company? ### SQL: SELECT COUNT(*) FROM cars_data WHERE Make = \"1\" GROUP BY Make ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many cars model was created by the car maker American Motor Company? ### SQL: SELECT COUNT(*) FROM cars_data WHERE Make = \"1\" GROUP BY Make ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many cars model was created by the car maker American Motor Company? ### SQL: SELECT COUNT(*) FROM cars_data WHERE Make = \"1\" GROUP BY Make ORDER BY count(*) DESC LIMIT 1 ### Explanation: How many cars model was created by the car maker American Motor Company? ### SQL: SELECT COUNT(*) FROM cars_data WHERE Make = \"1\" GROUP BY Make ORDER BY count(*) DESC LIMIT 1 ###"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which makers designed more than 3 car models? List full name and the id.",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT T2.MakeName , T1.MakerId FROM model_list AS T1 JOIN car_names AS T2 ON T1.ModelId = T2.ModelId GROUP BY T2.MakeName HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT T2.MakeName , T1.MakerId FROM model_list AS T1 JOIN car_names AS T2 ON T1.ModelId = T2.ModelId GROUP BY T2.MakeName HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T2.MakeName , T1.MakerId FROM model_list AS T1 JOIN car_names AS T2 ON T1.ModelId = T2.ModelId GROUP BY T2.MakeName HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T2.MakeName , T1.MakerId FROM model_list AS T1 JOIN car_names AS T2 ON T1.ModelId"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all makers with more than 3 models?",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT T1.MakeName , T1.MakeId FROM car_names AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.MakeId GROUP BY T2.MakeId HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT T1.MakeName , T1.MakeId FROM car_names AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.MakeId GROUP BY T2.MakeId HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 1 ### SQL: SELECT T1.MakeName , T1.MakeId FROM car_names AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.MakeId GROUP BY T2.MakeId HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 1 OFSTEPS 1 ### SQL: SELECT T1.MakeName , T1.MakeId FROM car_names AS T1 JOIN"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "SELECT DISTINCT T2.Make FROM ( SELECT MakeText(Make) , T2.Make TEXT , T2.MakeId TEXT , T1.Model TEXT , T2.Model TEXT , COUNT(T1.Model) FROM Car_names AS T1 INNER JOIN model_list AS T2 ON T1.Model = T2.Model GROUP BY T2.Make TEXT HAVING COUNT(T1.Model) > 3500 ) AS T3 WHERE T3.MakeId LIKE '%' || :Make || '%' GROUP BY T2.Make TEXT HAVING COUNT(T1.Model) > 3500 ) AS T4 WHERE T4.MakeId LIKE '%' || :Make || '%' ORDER BY COUNT(T1.Model) DESC LIMIT 1 ### Explanation: Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500? ### SQL: SELECT DISTINCT T2.Make FROM ( SELECT MakeText(Make) , T2.Make TEXT , T2.MakeId TEXT , T1."
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models created by either the car maker General Motors or weighed more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "SELECT DISTINCT T1.Make TEXT , T2.Make TEXT , T1.Make TEXT , T2.Make TEXT FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Model GROUP BY T2.Make ORDER BY COUNT(*) HAVING C1.Make TEXT , C2.Make TEXT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In which years cars were produced weighing no less than 3000 and no more than 4000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "SELECT year , COUNT(*) FROM cars_data WHERE Weight > 3000 GROUP BY year HAVING COUNT(*) < 4000 HAVING COUNT(*) < 3000 ORDER BY COUNT(*) DESC LIMIT 3 1, 2 3, 4 */ ### SQL: SELECT year , COUNT(*) FROM cars_data WHERE Weight > 3000 GROUP BY year HAVING COUNT(*) < 4000 HAVING COUNT(*) < 3000 ORDER BY COUNT(*) DESC LIMIT 3 1, 2 3, 4 */ ### SQL: SELECT year , COUNT(*) FROM cars_data WHERE Weight > 3000 GROUP BY year HAVING COUNT(*) < 4000 HAVING COUNT(*) < 3000 ORDER BY COUNT(*) DESC LIMIT 3 1, 2 3, 4 */ ### SQL: SELECT year , COUNT(*) FROM cars_data WHERE Weight > 3000 GROUP BY year HAVING COUNT(*) < 4000 HAVING COUNT(*) < 3000 ORDER BY COUNT(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "SELECT T2.Year FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId WHERE T1.MakeId = \"chevrolet\" AND T2.MakeId = \"buick\" AND T1.Weight = 3000 INTERSECT SELECT T2.Year FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId WHERE T1.MakeId = \"chv\" AND T2.MakeId = \"320\" INTERSECT SELECT T2.Year FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId WHERE T1.MakeId = \"314\" INTERSECT SELECT T2.Year FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = \"314\" INTERSECT SELECT T2.Year FROM cars_data AS T1 JOIN car_names AS T2 ON T1.MakeId = \"223\" INTERSECT SELECT T"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the largest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "SELECT HOST_CONNECTION().host + \".\" + \"accelerate\" FROM cars_data GROUP BY Accelerate ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: accelerate refers to acceleration in knots. ### SQL: SELECT T1.MakeId, T2.Make, T1.MakeId, T2.MakeId FROM cars_data AS T1 JOIN cars_data AS T2 ON T1.MakeId = T2.MakeId ORDER BY T2.MakeId LIMIT 1 ### Explanation: accelerate refers to acceleration in knots. ### SQL: SELECT T1.MakeId, T2.Make, T1.MakeId, T2.MakeId FROM cars_data AS T1 JOIN cars_data AS T2 ON T1.MakeId = T2.MakeId ORDER BY T2.MakeId LIMIT 1 ### Explanation: accelerate refers to acceleration in knots. ### SQL: SELECT T1.MakeId, T2.Make, T1.MakeId, T2.MakeId FROM cars_data AS T1 JOIN cars"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the greatest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "SELECT HOST_CONNECTION().accelerate FROM cars_data GROUP BY HOST_CONNECTION().accelerate ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many cars have accelerated? ### SQL: SELECT COUNT(*) FROM cars_data WHERE host_connection().accelerate > 1 GROUP BY host_connection().accelerate ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many cars have accelerated? ### SQL: SELECT COUNT(*) FROM cars_data WHERE host_connection().accelerate > 1 GROUP BY host_connection().accelerate ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many cars have accelerated? ### SQL: SELECT COUNT(*) FROM cars_data WHERE host_connection().accelerate > 1 GROUP BY host_connection().accelerate ORDER BY COUNT(*) DESC LIMIT 1 ### Explanation: How many cars have accelerated? ### SQL: SELECT COUNT(*) FROM cars_data WHERE host_connection().accelerate >"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For model volvo, how many cylinders does the car with the least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "SELECT COUNT(T.Cylinders) FROM cars_data AS T WHERE T.MPG = \"VOLVO\" AND T.Cylinders > \"HEIGHT\" GROUP BY T.Cylinders ORDER BY COUNT(T.Cylinders) DESC LIMIT 1 ### Explanation: 1 | 1 | None | 2 | 2 | None | 3 | 3 | None ### Explanation: 1 | 2 | None | 3 | 4 | None | 5 | 6 | None ### Explanation: 1 | 3 | None | 5 | 8 | None | 8 | 6 | None ### Explanation: 1 | 4 | None | 5 | 8 | None | 8 | 6 | None ### Explanation: 1 | 5 | None | 8 | 6 | None | 6 | 8 | None ### Explanation: 1 | 6 | None | 8 | 8 | None | 8 | 6 | None ### Explanation: 1 | 8 | None | 6 | 4 | None | 4 | 8 | None ###"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For a volvo model, how many cylinders does the version with least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "SELECT COUNT(T.Cylinders) FROM cars_data AS T WHERE T.MPG = \"18\" GROUP BY T.Cylinders ORDER BY COUNT(T.Cylinders) DESC LIMIT 1 ### Explanation: 1 ### Result: 1 ### Data: 18 cylinder ### Cache: Yes, a cache is made for this data. ### Step: Find the number of cylinders with less accelerate. ### SQL: SELECT COUNT(T.Cylinders) FROM cars_data AS T WHERE T.MPG = \"18\" GROUP BY T.Cylinders ORDER BY COUNT(T.Cylinders) DESC LIMIT 1 ### Explanation: 1 ### Result: 1 ### Data: 0 cylinder ### Cache: Yes, a cache is made for this data. ### Step: Find the number of cylinders with less accelerate. ### SQL: SELECT COUNT(T.Cylinders) FROM cars_data AS T WHERE T.MPG = \"18\" GROUP BY T.Cylinders ORDER BY COUNT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have a larger accelerate than the car with the largest horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "SELECT count(*) FROM cars_data WHERE Accelerate > (SELECT max(Accelerate) FROM cars_data) ### SQL: SELECT count(*) FROM cars_data WHERE Horsepower > (SELECT max(Horsepower) FROM cars_data) ### SQL: SELECT count(*) FROM cars_data WHERE Weight > (SELECT max(Weight) FROM cars_data) ### SQL: SELECT count(*) FROM cars_data WHERE Id > (SELECT max(Id) FROM cars_data) ### SQL: SELECT Id FROM cars_data ORDER BY Weight ASC LIMIT 1 ### SQL: SELECT Id FROM cars_data ORDER BY Horsepower ASC LIMIT 1 ### SQL: SELECT Id FROM cars_data ORDER BY Accelerate ASC LIMIT 1 ### SQL: SELECT Id FROM cars_data ORDER BY Weight ASC LIMIT 2 ### SQL: SELECT Id FROM cars_data ORDER BY Horsepower ASC LIMIT 2 ### SQL: SELECT Id FROM cars_data ORDER BY Weight ASC LIMIT 3 ### SQL: SELECT Id FROM cars_data ORDER BY Horsepower ASC LIMIT 3 ### SQL: SELECT Id FROM cars"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a greater accelerate than the one with the most horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "SELECT count(*) FROM cars_data WHERE Accelerate > Horsepower GROUP BY Make ORDER BY Make ASC LIMIT 1 ### Explanation: Return the number of cars with a greater accelerate than the one with the most horsepower. ### SQL: SELECT Make , COUNT(*) FROM cars_data WHERE Accelerate > Horsepower GROUP BY Make ORDER BY Make ASC LIMIT 1 ### Explanation: Return the number of cars with a greater accelerate than the one with the most horsepower. ### SQL: SELECT Make , COUNT(*) FROM cars_data WHERE Accelerate > Horsepower GROUP BY Make ORDER BY Make ASC LIMIT 1 ### Explanation: Return the number of cars with a greater accelerate than the one with the most horsepower. ### SQL: SELECT Make , COUNT(*) FROM cars_data WHERE Accelerate > Horsepower GROUP BY Make ORDER BY Make ASC LIMIT 1 ### Explanation: Return the number of cars with a greater accelerate than the one with the most horsepower. ### SQL: SELECT Make , COUNT(*) FROM cars_data WHERE Accelerate"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries has more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) WHERE CountryId = \"2\" ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) WHERE CountryId = \"2\" ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) WHERE CountryId = \"3\" ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) WHERE CountryId = \"3\" ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING count(*) > 2 ) WHERE CountryId = \"3\" ### SQL: SELECT count(*) FROM table ( SELECT CountryId FROM countries GROUP BY CountryId HAVING"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of countries with more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "SELECT count(*) FROM table where Continent = \"2\" GROUP BY Continent HAVING count(*) > 2 HAVING CountryName = \"2\" ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM table WHERE Id = \"1\" GROUP BY Continent HAVING count(*) > 2 HAVING CountryName = \"2\" ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM table WHERE Id = \"2\" GROUP BY Continent HAVING count(*) > 2 HAVING CountryName = \"2\" ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM table WHERE Id = \"3\" GROUP BY Continent HAVING count(*) > 2 HAVING CountryName = \"2\" ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT Continent , CountryName FROM table WHERE Id = \"4\" GROUP BY Continent HAVING count(*) > 2 HAVING CountryName = \""
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars has over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg(Weight) > 6 ORDER BY Weight DESC LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg(Weight) > 6 ORDER BY Weight DESC LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg(Weight) > 6 ORDER BY Weight DESC LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg(Weight) > 6 ORDER BY Weight DESC LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg(Weight) > 6 ORDER BY Weight DESC LIMIT 6 ### SQL: SELECT COUNT(*) FROM cars_data WHERE Cylinders > 6 GROUP BY Cylinders HAVING avg"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of carsw ith over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" ) ### SQL: SELECT count(*) FROM cars_data WHERE Cylinders = \"8\" OVER ( \"6\" )"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For the cars with 4 cylinders, which model has the largest horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT T1.Make FROM car_names AS T1 JOIN model_list AS T2 ON T1.Model = T2.Model LIMIT 4 ### SQL: SELECT Make FROM car_names AS T1 JOIN model_list AS T2 ON T1.Make = T2.Make LIMIT 4 OFFSET 1 ### Explanation: For the cars with 4 cylinders, which model has the largest horsepower, the first model has the maximum possible value. ### SQL: SELECT Make FROM car_names AS T1 JOIN model_list AS T2 ON T1.Make = T2.Make LIMIT 4 OFFSET 1 ### Explanation: For the cars with 4 cylinders, which model has the largest horsepower, the first model has the maximum possible value. ### SQL: SELECT Make FROM car_names AS T1 JOIN model_list AS T2 ON T1.Make = T2.Make LIMIT 4 OFFSET 1 ### Explanation: For the cars with 4 cylinders, which model has the largest horsepower, the first model has the maximum possible value. ### SQL: SELECT Make"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For all of the 4 cylinder cars, which model has the most horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT T1.Make FROM Car_names AS T1 JOIN Car_names AS T2 ON T1.Make = T2.Make WHERE T1.Model = \"chevrolet\" GROUP BY T2.Make ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT Make FROM Car_names AS T1 JOIN Car_names AS T2 ON T1.Make = T2.Make ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Make FROM Car_names AS T2 JOIN Car_names AS T1 ON T1.Make = T2.Make ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT Make FROM Car_names AS T2 JOIN Car_names AS T1 ON T1.Make = T2.Make ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T1.Make FROM Car_names AS T1 JOIN Car_names AS T2 ON T1.Make = T2.Make ORDER BY COUNT(*) DESC LIMIT 1 EXCEPT SELECT T2.Make FROM Car_names AS T1 JOIN Car_names AS T2 ON T1.Make"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars with more than lowest horsepower, which ones do not have more than 3 cylinders? List the car makeid and make name.",
+      "gold": "SELECT T2.MakeId ,  T2.Make FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Horsepower  >  (SELECT min(Horsepower) FROM CARS_DATA) AND T1.Cylinders  <=  3;",
+      "pred": "SELECT T1.MakeId , T1.MakeName FROM cars_data AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.Make TEXT GROUP BY T2.MakeId HAVING COUNT(*) > 3 ORDER BY COUNT(*) DESC LIMIT 3 ### SQL: SELECT T1.MakeId , T1.MakeName FROM cars_data AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.Make TEXT GROUP BY T2.MakeId HAVING COUNT(*) > 3 ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T1.MakeId , T1.MakeName FROM cars_data AS T1 JOIN model_list AS T2 ON T1.MakeId = T2.Make TEXT GROUP BY T2.MakeId HAVING COUNT(*) > 3 ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T1.MakeId , T1.MakeName FROM cars_data AS T1 JOIN model_list AS T2"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars that do not have the minimum horsepower , what are the make ids and names of all those with less than 4 cylinders ?",
+      "gold": "select t2.makeid ,  t2.make from cars_data as t1 join car_names as t2 on t1.id  =  t2.makeid where t1.horsepower  >  (select min(horsepower) from cars_data) and t1.cylinders  <  4;",
+      "pred": "SELECT MakeId , Make , MakeNames FROM cars_data WHERE Cylinders < 4 GROUP BY MakeId HAVING Cylinders < 4 ORDER BY MakeId ASC LIMIT 3 ### SQL: SELECT MakeId , Make , MakeNames FROM cars_data WHERE Cylinders < 4 GROUP BY MakeId HAVING Cylinders < 4 ORDER BY MakeId ASC LIMIT 3 ORDER BY MakeId ASC LIMIT 5 ### SQL: SELECT MakeId , Make , MakeNames FROM cars_data WHERE Cylinders < 4 GROUP BY MakeId HAVING Cylinders < 4 ORDER BY MakeId ASC LIMIT 3 ORDER BY MakeId ASC LIMIT 5 ORDER BY MakeId ASC LIMIT 6 ### SQL: SELECT MakeId , Make , MakeNames FROM cars_data WHERE Cylinders < 4 GROUP BY MakeId HAVING Cylinders < 4 ORDER BY MakeId ASC LIMIT 3 ORDER BY MakeId ASC LIMIT 6 ORDER BY MakeId ASC LIMIT 7 ### SQL: SELECT MakeId , Make , MakeNames FROM cars_data WHERE Cylinders <"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum miles per gallon of the car with 8 cylinders or produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY Cylinders LIMIT 1 ### SQL: SELECT Max(MPG) FROM cars_data WHERE Cylinders = \"8\" GROUP BY Cylinders ORDER BY C"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum mpg of the cars that had 8 cylinders or that were produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "SELECT Max(MPG) FROM cars_data WHERE Id BETWEEN \"1\" AND \"3\" GROUP BY Id ORDER BY Max(MPG) DESC LIMIT 1 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY Max(MakeId) DESC LIMIT 1 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY MakeId DESC LIMIT 1 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY MakeId DESC LIMIT 2 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY MakeId DESC LIMIT 3 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY MakeId DESC LIMIT 4 ### SQL: SELECT Id FROM cars_data WHERE MakeId BETWEEN \"1\" AND \"2\" GROUP BY Id ORDER BY MakeId DESC LIMIT 5"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which models are lighter than 3500 but not built by the 'Ford Motor Company'?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "SELECT T2.Make FROM Car_names AS T1 JOIN Model_list AS T2 ON T1.Model = T2.Make LIMIT 3500 ### SQL: SELECT T2.Make FROM Car_names AS T1 JOIN Model_list AS T2 ON T1.Model = T2.Make LIMIT 3500 WHERE T2.Make = \"Ford Motor Company\" ### SQL: SELECT T2.Make FROM Car_names AS T1 JOIN Model_list AS T2 ON T1.Model = \"Ford Motor Company\" WHERE T2.Make = \"Ford Motor Company\" AND T2.Make = \"Ford Motor Company\" WHERE T2.Make = \"Ford Motor Company\" ### Explanation: Ford Motor Company is lighter than 3500. ### SQL: SELECT T2.Make FROM Car_names AS T1 JOIN Model_list AS T2 ON T1.Model = \"Ford Motor Company\" WHERE T2.Make = \"Ford Motor Company\" AND T2.Make = \"Ford Motor Company\" WHERE T2.Make ="
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "SELECT DISTINCT T1.Model FROM cars_data AS T1 JOIN countries AS T2 ON T1.Country = T2.Country WHERE T1.Weight < 3500 GROUP BY T2.Country ORDER BY COUNT(*) > 1 ### Explanation: What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company? ### SQL: SELECT DISTINCT T1.Model FROM cars_data AS T1 JOIN countries AS T2 ON T1.Country = T2.Country ORDER BY COUNT(*) > 1 ### Explanation: What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company? ### SQL: SELECT DISTINCT T1.Model FROM cars_data AS T1 JOIN countries AS T2 ON T1.Country = T2.Country ORDER BY COUNT(*) > 1 ### Explanation: What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company? ### SQL: SELECT DISTINCT T1.Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the name of the countries where there is not a single car maker?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "SELECT CountryName FROM countries WHERE Continent != 1 UNION SELECT CountryName FROM countries WHERE Continent != 2 ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) UNION SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) AND CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) AND CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) AND CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT IN (SELECT CountryId FROM car_makers) ### SQL: SELECT Continent FROM countries WHERE CountryId NOT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of the countries with no car makers?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "SELECT CountryName FROM countries WHERE Continent != '1' GROUP BY CountryName HAVING count(*) > 1 HAVING CountryName = \"1\" ### SQL: SELECT Continent FROM continents WHERE Country = \"1\" GROUP BY Continent HAVING count(*) > 1 HAVING CountryName = \"1\" ### SQL: SELECT Continent FROM countries WHERE Country = \"2\" GROUP BY Continent HAVING count(*) > 1 HAVING CountryName = \"2\" ### SQL: SELECT Continent FROM countries WHERE Country = \"3\" GROUP BY Continent HAVING count(*) > 1 HAVING CountryName = \"3\" ### SQL: SELECT Continent FROM countries WHERE Country = \"1\" GROUP BY Continent HAVING count(*) > 1 HAVING CountryName = \"1\" ### SQL: SELECT Continent FROM countries WHERE Country = \"2\" GROUP BY Continent HAVING count(*) > 1 HAVING CountryName = \"2\" ### SQL: SELECT Continent FROM countries WHERE Country = \""
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which are the car makers which produce at least 2 models and more than 3 car makers ? List the id and the maker .",
+      "gold": "select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id having count(*)  >=  2 intersect select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker join car_names as t3 on t2.model  =  t3.model group by t1.id having count(*)  >  3;",
+      "pred": "SELECT T1.MakeId , T1.Maker , count(*) FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Model GROUP BY T2.Maker ORDER BY count(*) DESC LIMIT 2, 3 ### SQL: SELECT T1.MakeId , T1.Maker , count(*) FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Model GROUP BY T2.Maker ORDER BY count(*) DESC LIMIT 2 ### SQL: SELECT T1.MakeId , T1.Maker , count(*) FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Model GROUP BY T2.Maker ORDER BY count(*) DESC LIMIT 2 AND T1.MakeId != T2.MakeId ### SQL: SELECT T1.MakeId , T1.Maker , count(*) FROM model_list AS T1 JOIN car_names AS T2 ON T1.Model = T2.Model GROUP BY T2.Maker ORDER BY count(*)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and makers of all car makers that produce at least 2 models and make more than 3 cars?",
+      "gold": "SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >=  2 INTERSECT SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT Id , Maker FROM cars_data WHERE MPG > 2 GROUP BY Maker ORDER BY COUNT(*) > 3 HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC LIMIT 3 ### SQL: SELECT Id , Maker FROM cars_data WHERE MPG > 2 GROUP BY Maker ORDER BY COUNT(*) > 3 HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC LIMIT 2 ### SQL: SELECT Id , Maker FROM cars_data WHERE MPG > 2 GROUP BY Maker ORDER BY COUNT(*) > 3 HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT Id , Maker FROM cars_data WHERE MPG > 2 GROUP BY Maker ORDER BY COUNT(*) > 3 HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC LIMIT 0 ### SQL: SELECT Id , Maker FROM cars_data WHERE MPG > 2 GROUP BY Maker ORDER BY COUNT(*) > 3 HAVING"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the id and names of the countries which have more than 3 car makers or produce the 'fiat' model?",
+      "gold": "SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.countryId HAVING count(*)  >  3 UNION SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country JOIN MODEL_LIST AS T3 ON T2.Id  =  T3.Maker WHERE T3.Model  =  'fiat';",
+      "pred": "SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 1 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 2 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 3 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 4 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 ORDER BY count(*) DESC LIMIT 3 OFFSET 5 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) >"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "pred": "SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 ### SQL: SELECT Continent , CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 EXCEPT SELECT DISTINCT T1.Continent , T2.CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 EXCEPT SELECT DISTINCT T1.Continent , T2.CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 EXCEPT SELECT DISTINCT T1.Continent , T2.CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 EXCEPT SELECT DISTINCT T1.Continent , T2.CountryName FROM countries GROUP BY Continent HAVING count(*) > 3 || Model > 10 EXCEPT SELECT DISTINCT T1.Continent , T2.CountryName FROM countries GROUP BY Continent H"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which country does Airline \"JetBlue Airways\" belong to?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Country FROM airlines WHERE Language = \"de\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_DE\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_CH\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_GB\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_IT\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_NI\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_PL\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_RO\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_SA\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_SG\" INTERSECT SELECT Country FROM airlines WHERE Language = \"de_TH\" INTERSECT SELECT Country FROM airlines WHERE Language = \"en\" INTERSECT SELECT Country FROM airlines WHERE Language = \"en_BE\" INTERSECT SELECT Country FROM airlines WHERE Language = \"en_GH\" INTERSECT SELECT Country FROM airlines WHERE Language = \"en_IM\" INTERSECT SELECT Country FROM airlines WHERE"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What country is Jetblue Airways affiliated with?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Country FROM airlines WHERE Airline = \"Jetblue Airways\" GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT Country FROM airlines GROUP BY Country ORDER BY count(*) ASC LIM"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the abbreviation of Airline \"JetBlue Airways\"?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Abbreviation FROM airlines WHERE Airline = \"JetBlue Airways\" GROUP BY Abbreviation HAVING count(*) > 1"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which abbreviation corresponds to Jetblue Airways?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Abbreviation FROM airlines WHERE Airline = \"Jetblue Airways\" GROUP BY Abbreviation HAVING COUNT(*) > 1"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List all airline names and their abbreviations in \"USA\".",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT T1.Name , T1.Abbreviation FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Abbreviation FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Abbreviation FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT T1.Name , T1.Abbreviation FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline H"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What are the airline names and abbreviations for airlines in the USA?",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT T1.Country , T2.Abbreviation FROM airlines AS T1 JOIN airlines_country AS T2 ON T1.Country = T2.Country WHERE T1.Country = \"US\" GROUP BY T2.Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT T1.Country , T2.Abbreviation FROM airlines AS T1 JOIN airlines_country AS T2 ON T1.Country = \"USA\" GROUP BY T2.Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT T1.Country , T2.Abbreviation FROM airlines AS T1 JOIN airlines_country AS T2 ON T1.Country = \"United States\" GROUP BY T2.Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT T1.Country , T2.Abbreviation FROM airlines AS T1 JOIN airlines_country AS T2 ON T1.Country = \"US\" GROUP BY T2.Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT T1.Country , T2.Abbreviation FROM airlines"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List the airport code and name in the city of Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "SELECT AirportCode , AirportName FROM cities WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT AirportCode , AirportName FROM cities WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT AirportCode , AirportName FROM cities WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT AirportCode , AirportName FROM cities WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT AirportCode , AirportName FROM cities WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING count(*) > 1 ORDER BY count(*) DESC LIMIT 3"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airport code and airport name corresonding to the city Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "SELECT AirportCode , AirportName FROM airports WHERE City = \"Anthony\" GROUP BY AirportCode , AirportName HAVING City = \"Anthony\" ORDER BY City ASC ### SQL: SELECT AirportCode , AirportName FROM airports GROUP BY AirportCode HAVING City = \"Anth\" ORDER BY City ASC ### SQL: SELECT AirportCode , AirportName FROM airports GROUP BY AirportCode HAVING City = \"Anthony\" ORDER BY City ASC LIMIT 3 ### Explanation: Give the airport code and airport name corresponding to the city Anthony. ### SQL: SELECT AirportCode , AirportName FROM airports GROUP BY AirportCode HAVING City = \"Anth\" ORDER BY City ASC LIMIT 3 ### Explanation: Give the airport code and airport name corresponding to the city Anthony. ### SQL: SELECT AirportCode , AirportName FROM airports GROUP BY AirportCode HAVING City = \"Anthony\" ORDER BY City ASC LIMIT 3 ### Explanation: Give the airport code and airport name corresponding to the city Anthony. ### SQL: SELECT AirportCode , Air"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines do we have?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "SELECT count(*) FROM airlines GROUP BY Country HAVING count(*) > 10"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the total number of airlines?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "SELECT count(*) FROM airlines GROUP BY Country ORDER BY Country ASC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN product AS T2 ON T1.Airline = T2.Name GROUP BY T2.Name ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN product AS T2 ON T1.Airline = T2.Name GROUP BY T2.Name ORDER BY count(*) DESC LIMIT 1 OFFSET 1 ### SQL: SELECT T1.Country FROM airlines AS T1 JOIN product AS T2 ON T1.Airline = T2.Name GROUP BY T2.Name ORDER BY count(*) DESC LIMIT 1 OFFSET 2 ### SQL: SELECT T1.Country FROM airlines AS T1 JOIN product AS T2 ON T1.Airline = T2.Name GROUP BY T2.Name ORDER BY count(*) DESC LIMIT 1 OFFSET 3 ### SQL: SELECT T1.Country FROM airlines AS T1 JOIN product AS T2 ON T1.Airline ="
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airports do we have?",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "SELECT count(*) FROM airports GROUP BY City ORDER BY Country LIMIT 1 ### SQL: SELECT City FROM airports GROUP BY City ORDER BY Country LIMIT 1 ### SQL: SELECT Country FROM airports GROUP BY Country ORDER BY City LIMIT 1 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 2 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 3 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 4 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 5 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 6 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 7 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 8 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 9 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 10 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 11 ### SQL: SELECT Country FROM airports GROUP BY City ORDER BY Country LIMIT 12 ### SQL: SELECT Country"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of  airports.",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "SELECT count(*) FROM airports GROUP BY City HAVING count(*) > 1"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 3 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 5 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 8 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 9 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 10 ### SQL: SELECT count(*) FROM Flight WHERE DestinationAirport = \"ASY\" GROUP BY DestinationAirport ORDER BY count(*) DESC LIMIT 11 ### SQL: SELECT count(*)"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of flights.",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "SELECT count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"APG\" */ ### SQL: SELECT count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"CVO\" */ ### SQL: SELECT count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"ACV\" ### Explanation: Return the number of flights. ### SQL: SELECT count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"APG\" EXPLAIN count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"APG\" ### SQL: SELECT count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"CVO\" EXPLAIN count(*) FROM Flight WHERE SourceAirport = \"ASY\" AND DestAirport = \"CVO\" ### Explanation: Return the number of flights. ### SQL: SELECT count(*) FROM Flight"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which airline has abbreviation 'UAL'?",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "SELECT T1.Airline FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 HAVING Abbreviation = \"UAL\" ### SQL: SELECT T2.Airline FROM flights AS T1 JOIN airlines AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 HAVING Abbreviation = \"UAL\" ### SQL: SELECT T1.Airline FROM flights AS T1 JOIN airlines AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 HAVING Abbreviation = \"UAL\" ### SQL: SELECT T2.Airline FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline HAVING count(*) > 1 HAVING Abbreviation = \"UAL\""
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airline with abbreviation 'UAL'.",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "SELECT T1.Airline FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline WHERE T2.Abbreviation = \"UAL\" GROUP BY T2.Airline ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T2.Airline FROM flights AS T1 JOIN airlines AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T1.Airline FROM flights AS T1 JOIN airlines AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T2.Airline FROM airlines AS T1 JOIN flights AS T2 ON T1.Airline = T2.Airline GROUP BY T2.Airline ORDER BY COUNT(*) DESC LIMIT 1 ### SQL: SELECT T1.Airline FROM flights AS T1 JOIN airlines AS T2 ON T1.Airline = T"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines are from USA?",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN airline_tables AS T2 ON T1.airline = T2.airline GROUP BY T2.airline ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN airline_tables AS T2 ON T1.airline = T2.airline GROUP BY T2.airline ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN airline_tables AS T2 ON T1.airline = T2.airline GROUP BY T2.airline ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT DISTINCT T1.Country FROM airlines AS T1 JOIN airline_tables AS T2 ON T1.airline = T2.airline GROUP BY T2.airline ORDER BY count(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of airlines in the USA.",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL: SELECT count(*) FROM airlines WHERE Country = \"USA\" GROUP BY Country ORDER BY count(*) DESC LIMIT 1 ### SQL:"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which city and country is the Alton airport at?",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "SELECT City , Country FROM airlines WHERE Country = \"AL\" GROUP BY City , Country ORDER BY 1 , 2"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the city and country for the Alton airport.",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 1 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 3 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 5 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 8 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 9 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 10 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC LIMIT 11 ### SQL: SELECT City , Country FROM airlines WHERE AirportCode = \"AL\" GROUP BY Country ORDER BY count(*) ASC"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the airport name for airport 'AKO'?",
+      "gold": "SELECT AirportName FROM AIRPORTS WHERE AirportCode  =  \"AKO\"",
+      "pred": "SELECT AirportName FROM airports WHERE AirportCode = \"AKO\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"AKO\" INTERSECT SELECT AirportName FROM flights WHERE AirportCode = \"AKO\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"AKO\" INTERSECT SELECT AirportName FROM flights WHERE AirportCode = \"AKO\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"ASY\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"ASY\" INTERSECT SELECT AirportName FROM flights WHERE AirportCode = \"ASY\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"ASY\" INTERSECT SELECT AirportName FROM flights WHERE AirportCode = \"ASY\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"A\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"A\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"A\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"A\" INTERSECT SELECT AirportName FROM airlines WHERE AirportCode = \"A"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+models:
+  - id: codegen-350m-multi          # small-model baseline (HF backend; ~350M)
+    hf_repo: Salesforce/codegen-350M-multi
+    backend: hf
+  - id: qwen3-coder-30b
+    mlx_repo: mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit
+    hf_repo: Qwen/Qwen3-Coder-30B-A3B-Instruct
+    backend: mlx
+  - id: deepseek-coder-33b          # 33B dense
+    mlx_repo: sleepy186247/deepseek-coder-33b-instruct-mlx-4Bit
+    hf_repo: deepseek-ai/deepseek-coder-33b-instruct
+    backend: mlx
+    chat_template: true
+  - id: codestral-22b
+    mlx_repo: mlx-community/Codestral-22B-v0.1-4bit
+    hf_repo: mistralai/Codestral-22B-v0.1
+    backend: mlx
+
+scenarios: [zero_shot, one_shot, finetuned_spider, finetuned_bird, finetuned_combined]
+datasets: [spider, bird]
+
+evaluation:
+  metrics: [ex, ts, ves, component_f1, bleu, bertscore, llm_judge]
+  llm_judge_model: qwen3-coder-30b
+  sample_size: 200   # sample-first default; set null for full dev set
+
+paths:
+  spider_root: data/spider/spider_data
+  bird_root: data/bird/dev_20240627
+  models_dir: models
+  results_dir: results

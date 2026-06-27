@@ -1,0 +1,1218 @@
+{
+  "model": "deepseek-coder-33b",
+  "scenario": "finetuned_spider",
+  "dataset": "spider",
+  "metrics": {
+    "ex": 0.0,
+    "ts": 0.0,
+    "ves": 0.0,
+    "component_f1": 0.0,
+    "bleu": 0.19268140680699186,
+    "bertscore": 0.8316211342811585
+  },
+  "meta": {
+    "sample_size": 200
+  },
+  "per_example": [
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers do we have?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": ",_,__:_:_:_:_:_:TEXT,_:1_:1TEXT:TEXT:TEXT,___________TEXT,__________________________________________________TEXT:TEXT,____TEXT,TEXT:____________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT,TEXT:1TEXT,________TEXT,TEXT:1TEXT,TEXT:1TEXT,TEXT,______________________________TEXT:1TEXT:1TEXT:1TEXT,________________TEXT,___:11TEXT,TEXT:1111TEXT,TEXT:111TEXT,TEXT_______"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the total number of singers?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": ",::,,,_,_:_:_,:_,:TEXT,___:1_______________TEXT:11TEXT:TEXT:TEXT:TEXT,_TEXT:TEXT:TEXT:TEXT__:1|1|TEXT________________________________________________TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,TEXT,__:1|TEXT:1011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": ",_,,_:__:TEXT,_____________TEXT,_____TEXT:TEXT:_____________________________________TEXT:__TEXT,______TEXT,_________________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:_____________________________TEXT,________TEXT,___TEXT,__TEXT,________TEXT,TEXT,_TEXT,TEXT:TEXT:TEXT:1TEXT:TEXT:11TEXT:1111TEXT:111TEXT,___:1|TEXT__________TEXT:1|TEXT__TEXT:1|TEXT______________TEXT:1|_TEXT:"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names, countries, and ages for every singer in descending order of age?",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "::,_,:TEXT,_________________________TEXT,_TEXT:_TEXT_TEXT__TEXT_______:1__TEXT_______________________________________________________________________________________________________________________________________________________________________TEXT,TEXT:1111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age of all singers from France?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": ",_,,_,_,1TEXT,__:________________TEXT,___:1TEXT:_____________________________________________________________________________TEXT,_______________TEXT,TEXT,TEXT,TEXT,TEXT,______TEXT,__________TEXT,___:1TEXT,TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age for all French singers?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": ",_,:_:_:_,_:_,TEXT,__,TEXT:___:1________________________________________________TEXT_:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and the release year of the song by the youngest singer.",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": ",_,:_:_:_:_,__:_:1_______________TEXT,________________________________________________TEXT:_____TEXT,_____________TEXT,TEXT,TEXT,TEXT,TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and release years for all the songs of the youngest singer?",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "::,_,,,,,,:_,_:_:_:_,_:TEXT,____________TEXT,_TEXT:1TEXT,_TEXT:TEXT,TEXT,TEXT:TEXT:TEXT:11_____________________________________________________________________________________________________________________________________________________________________TEXT:11_TEXT:11TEXT:11TEXT:11TEXT:11_____TEXT,_:1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all distinct countries where singers above age 20 are from?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "::,:TEXT,:1:_:_:TEXT,__:TEXT,__:__:1TEXT,______________TEXT:TEXT,TEXT,TEXT:TEXT,TEXT,TEXT,___:TEXT,__:______________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are  the different countries with singers above age 20?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "::,:TEXT,:TEXT:_:TEXT,___:TEXT:__:TEXT,___:___:1TEXT:1TEXT:1TEXT:1_________TEXT:1TEXT:1_______:1TEXT,_________:1___:1_:1_:1_:1_:1_:1_____________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show all countries and the number of singers in each country.",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": ":_,_:_,_:TEXT,___:TEXT,_______________________TEXT,TEXT,_TEXT:TEXT,TEXT:TEXT:TEXT______________________________________________________________________________________________________________________________________________________________________________TEXT,__________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers are from each country?",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": ",:_,:_,,:TEXT,:1___:1TEXT,________________TEXT,TEXT:TEXT,_______TEXT,_TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:____________________________________________________________________________________________________________________________________________________________________TEXT:TEXT:TEXT:11TEXT:11____________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all song names by singers above the average age.",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": ",_,:_:_:_:_,__,TEXT,________________________TEXT_____TEXT___TEXT___________________________TEXT_______TEXT_____TEXT____________TEXT___TEXT_:1TEXT:TEXT:TEXT,________________TEXT:1TEXT,TEXT:11________TEXT,TEXT:11TEXT,__________TEXT,____________TEXT:11TEXT:11TEXT:11TEXT:11____________________________________TEXT,TEXT:11TEXT,TEXT:11TEXT:11___"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all the song names by singers who are older than average?",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": ",::,:_,:_,__:_:_,__:1____________TEXT,______________________________________TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show location and name for all stadiums with a capacity between 5000 and 10000.",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": ",_,:TEXT,__:__:TEXT,_TEXT,_TEXT:TEXT,________________________________________________________________TEXT,___________________TEXT,TEXT,TEXT,1111111111|TEXTTEXT__1|TEXT__1|TEXT1|TEXT1|TEXT1|TEXT1|TEXT1|TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT_TEXT__TEXT__TEXT__TEXT_TEXT_TEXT__TEXTTEXT_TEXT_TEXT_TEXT__TEXT__TEXT______TEXT____TEXT______________________TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__________TEXT___TEXT_"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the locations and names of all stations with capacity between 5000 and 10000?",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": ",_,:TEXT,___:1TEXT:1TEXT:1TEXT:1___:TEXT:1TEXT:1_TEXT,_____________________________________________________________________________________________________________________________________________________________________________TEXT,TEXT:11TEXT,111TEXT:111TEXT:111TEXT:111TEXT:11TEXT,11TEXT:11TEXT:11TEXT:11TEXT:11"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the maximum capacity and the average of all stadiums ?",
+      "gold": "select max(capacity), average from stadium",
+      "pred": ",:::,,_,_:_:_:_:TEXT,:1TEXT,_TEXT,______TEXT,___________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:____________:TEXT,__:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:TEXT:TEXT:_______________________________TEXT,_________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average and maximum capacities for all stadiums ?",
+      "gold": "select avg(capacity) ,  max(capacity) from stadium",
+      "pred": ",_,:_:::::::::::::,_____________TEXT,____TEXT:___________________________________________________________________TEXT,______TEXT,TEXT,TEXT:__________________________________TEXT,TEXT,TEXT,TEXT:11|_|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|TEXT,__"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": ",::,_,_:_:_:_:_:TEXT,________TEXT,_TEXT,_TEXT:____TEXT___TEXT______________________________________________________________TEXT,_____TEXT,TEXT,TEXT,TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with the highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": ",::,_,_:_:_:_:_,_:TEXT,______TEXT:TEXT,_TEXT:_TEXT:1TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT,____________________________TEXT,TEXT,TEXT:TEXT:111TEXT____________TEXT:"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts are there in year 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": ",_,:_:_,_:_,_,_,_:_,_,_,_,_:_:TEXT,_______________TEXT:TEXT:TEXT:TEXT:TEXT:_______TEXT:TEXT:TEXT,_______:1__TEXT:TEXT:_TEXT,______________________TEXT,_________TEXT,TEXT,TEXT:1TEXT,_______________________________________________________TEXT:111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts occurred in 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "::,:TEXT,:TEXT:_,_:TEXT:_:_,:_:TEXT,_:TEXT,_:_:TEXT,__:TEXT,__:TEXT:TEXT,__:TEXT:TEXT,__,:1_TEXT:TEXT,_________________________________________________________________________________________________________________________________________________________________TEXT:TEXT:TEXT,__________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and the number of concerts in each stadium.",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": ",_,:_:_:_:_,__:TEXT,______________TEXT,_TEXT,TEXT:_______TEXT:1TEXT____TEXT__TEXT____TEXT:1TEXT:1TEXT:1_____________________________________________________________TEXT,__________________________TEXT,______TEXT,_________TEXT,TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "For each stadium, how many concerts play there?",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "::,:TEXT,__:TEXT,__:TEXT,TEXT,TEXT:__:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,__:TEXT:TEXT:__:TEXT,__:__:TEXT,__:TEXT,TEXT,_:TEXT,__:_:TEXT,TEXT,__:TEXT,_:TEXT,_:__________________________________________________________________________________________________________________________________TEXT,____:TEXT,____:______________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and capacity with most number of concerts in year 2014 or after.",
+      "gold": "SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1",
+      "pred": ",_,:TEXT,__:__:__:1___________TEXT,_________________________________________________TEXT,___:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity of the stadium with the most concerts after 2013 ?",
+      "gold": "select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1",
+      "pred": ",_,:_:__:1_:1TEXT,___:111111111|TEXT1|TEXT1|_1|TEXTTEXTTEXTTEXTTEXT__TEXT__TEXT__TEXT_TEXT_TEXT__TEXT_____________TEXT____TEXT__TEXT__TEXT__TEXT__TEXT__TEXT___TEXT___TEXT__TEXT__TEXT__TEXT___TEXT_______________TEXT___TEXT____TEXT___________________TEXT_________________TEXT___TEXT___TEXT____________________________________________TEXT:111111111|_1|1|1|1|1|1|1|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Which year has most number of concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": ":::,:_:_,_:_:_:TEXT,:1_:11TEXT,________TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:_____________________________TEXT:TEXT:TEXT:11TEXT:TEXT:1|TEXT_____TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXTTEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_________TEXT,__TEXT,TEXT:1111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the year that had the most concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": ",_,:_:_:_:_,_:_:TEXT,__:1TEXT:1TEXT,_______________TEXT,____________________________________________________________________________TEXT,_________________________________________TEXT,TEXT:11__TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:1|TEXT__TEXT_TEXT___TEXT__TEXT__________TEXT:1|________________TEXT:1|TEXT_____TEXT:1|1|1|1|TEXT___"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium names without any concert.",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": ",_,:_:_:_:_:_,__:TEXT,______________________TEXT:_________________________TEXT:111|TEXT__TEXT___TEXT___TEXT_TEXTTEXT_TEXT_TEXT_TEXT_TEXT_TEXTTEXT__TEXT__TEXT__TEXT_TEXT__TEXT__TEXT__TEXT___TEXT___TEXT_____TEXT:1|TEXT1|_1|TEXT1|TEXT1|TEXT1|TEXT1|TEXTTEXT_TEXT__TEXTTEXT_TEXTTEXTTEXTTEXTTEXT_TEXT___TEXT___TEXT__TEXT____TEXTTEXT_TEXT_TEXTTEXT_TEXT_TEXT_TEXT______TEXT:TEXT___TEXT_______TEXT:1|_|TEXT1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the stadiums without any concerts?",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": ",_,:_:_:_:_,_:TEXT,_______________________TEXT:TEXT:_TEXT:11__1|_1|TEXT__1|TEXTTEXT_TEXT_TEXT__1|TEXTTEXT__TEXT_____________TEXT:1|TEXT__TEXT__TEXT__TEXT_TEXTTEXT_TEXT__TEXT_TEXT_TEXT_TEXT__TEXT__TEXT___TEXT___TEXT_____TEXT___TEXT__TEXT___TEXT______TEXT:1|TEXT_____TEXT__TEXT_TEXT_TEXT__TEXT___TEXT____TEXTTEXT__TEXT_TEXTTEXTTEXTTEXT_TEXT_TEXT__TEXT______________TEXT,______________________TEXT:1|TEXTTEXT__TEXT____TEXT_TEXT___"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show countries where a singer above age 40 and a singer below 30 are from.",
+      "gold": "SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30",
+      "pred": "::,_,:TEXT,:TEXT:__:TEXT,___:TEXT,___:__________TEXT,______________________________________________________________________________________________________________________________________________________________________________________TEXT,___________________________TEXT:TEXT,___"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show names for all stadiums except for stadiums having a concert in year 2014.",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": ",_,:TEXT,_______________TEXT,TEXT,_TEXT,____________________________________________________TEXT,____TEXT,TEXT:_____________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,___:1TEXT,________TEXT,TEXT,_______TEXT,_________TEXT,_____TEXT,_TEXT:1TEXT:1TEXT:1TEXT:1_TEXT:1TEXT:1_________________________________________________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of all stadiums that did not have a concert in 2014?",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": ",_,:_:_:_:_,_:_,_:1______________TEXT,____TEXT__TEXT___TEXT___________TEXT______TEXT_____TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and theme for all concerts and the number of singers in each concert.",
+      "gold": "SELECT T2.concert_name ,  T2.theme ,  count(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.concert_id  =  T2.concert_id GROUP BY T2.concert_id",
+      "pred": ",_,,_,_,_,_:_,_:_,__,__,__,__:TEXT,____________TEXT:_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,TEXT:TEXT,TEXT:____________________TEXT,________________TEXT,TEXT,TEXT:1TEXT,TEXT,TEXT:1TEXT:TEXT:TEXT,TEXT:1TEXT:11___TEXT:11TEXT,TEXT:1|1|1|1|11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names , themes , and number of singers for every concert ?",
+      "gold": "select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id",
+      "pred": ",_,:_:_:TEXT,_____________________TEXT,_TEXT:_____________TEXT,___________TEXT,TEXT:TEXT:11TEXT:11TEXT,TEXT,TEXT:1|_1|TEXT__TEXT__TEXT_TEXT__TEXT_TEXT_TEXT__TEXT_TEXT__TEXT__TEXT__TEXTTEXT,TEXT:11TEXT,TEXT:11TEXT,TEXT:1|1|TEXT____________________TEXT:11_TEXT:11__TEXT:11TEXT,TEXT,______TEXT,TEXT:1|1|TEXT__TEXT_____________________________________TEXT,_____TEXT,TEXT:1|1|_1|1|1|TEXT:1|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List singer names and number of concerts for each singer.",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": ":::::::::::,_:TEXT,:TEXT:_:_:TEXT,:TEXT,_:__:1_:TEXT,____________________________________________________________________________________________________________________________________________________________________________________________TEXT,____________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers and number of concerts for each person?",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": ",_,_:_:_:_,_:_:1TEXT,_________________TEXT,_TEXT,TEXT____TEXT____TEXT__TEXT_______________________________________TEXT:TEXT,______________TEXT,TEXT:TEXT:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT,___:1_TEXT:TEXT:1TEXT,________________________________________________________________________________________________________TEXT,________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all singer names in concerts in year 2014.",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": ",_,:_:_:_:_,__:1___:111111111111TEXT,_TEXT:111TEXT_TEXT__TEXT_____TEXT__TEXT__TEXT__TEXT_________________________TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers who performed in a concert in 2014?",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": ",_,:_:_:_,__:TEXT,_____________TEXT:TEXT:_TEXT:11TEXT:1|TEXT_______TEXT__TEXT__TEXT_TEXT_TEXT_TEXT__TEXT____TEXT:1|TEXT__TEXT_____TEXT___TEXT_TEXT__TEXT__TEXT__________TEXT:1|TEXT_____TEXT___TEXT:1|TEXT____________TEXT:1|_TEXT:1111111111011110|TEXT___TEXT____TEXT_____TEXT__TEXT__TEXT_TEXT_TEXT__TEXT__TEXT____________TEXT,_______________________TEXT:1|TEXT______TEXT__TEXT__TEXT_________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "what is the name and nation of the singer who have a song having 'Hey' in its name?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": ",_,:_:__:_:_:_,__,__:TEXT,____________________________________________________________________________________________TEXT:TEXT,____________________________________TEXT,_____TEXT,TEXT,TEXT,TEXT,TEXT,_TEXT:TEXT,TEXT:TEXT:1_TEXT:111111111111111111111111111111111111111111111111111111110011011|_1|_1|TEXT"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": ",_,,:TEXT,__________TEXT,_TEXT,TEXT:_TEXT:TEXT:11_TEXT____TEXT__TEXT_TEXT__TEXT__TEXT_TEXT_TEXT__TEXT_____________________TEXT___TEXT__TEXT___TEXT___TEXT_____TEXT___TEXT___TEXT__TEXT___TEXT___________TEXT_____TEXT:11TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the name and location of the stadiums which some concerts happened in the years of both 2014 and 2015.",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": ",_:_,__:TEXT,__________TEXT,_TEXT,____TEXT:__TEXT:TEXT:1|_1|_1|TEXT__1|TEXTTEXT_TEXT_TEXT_______TEXT___TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT____TEXT___TEXT__TEXT__TEXT__TEXT___TEXT_____TEXT____TEXT_____TEXT___TEXT____________TEXT:1|TEXT_TEXT__TEXT__TEXT__TEXT__TEXT___TEXT____TEXT_TEXT___TEXTTEXT_TEXT_TEXT__TEXT________________TEXT:1|TEXT______________TEXT:1|TEXT__TEXT____TEXT:1|TEXT___TEXT__TEXT:1|______TEXT___TEXT___"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and locations of the stadiums that had concerts that occurred in both 2014 and 2015?",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": ",_,:_:_,_:TEXT,_________TEXT,TEXT,_TEXT:TEXT_____TEXT__________:1_TEXT:TEXT:TEXT:TEXT:11TEXT,___:11TEXT,____:11_:11TEXT,TEXT,_:11TEXT,_:11_____________________________________________________________________________________________________________________TEXT,____________________________________________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the number of concerts happened in the stadium with the highest capacity .",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": ",_,:TEXT,_:_:TEXT,___:TEXT,_____________________________________________________TEXT,___:TEXT,_______________________________________________________________________________________________________________________________________________________________TEXT,TEXT,TEXT,TEXT:TEXT,________"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the number of concerts that occurred in the stadium with the largest capacity ?",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": ",_,:TEXT,___:TEXT,_TEXT,__________TEXT,TEXT,TEXT________________TEXT,_____TEXT,TEXT,________________:TEXT,________TEXT,________________:TEXT:_TEXT,TEXT:TEXT,TEXT:1_TEXT:1111111111|1|1|1|1|1|TEXT:1|1|1|1|1|TEXT_________________________TEXT__TEXT__TEXTTEXT:1|1|1|1|1|1|TEXT__TEXT____________________________TEXT___TEXT__TEXT___TEXT____TEXT_:1|1|TEXT:1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets whose weight is heavier than 10.",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": ",_:_,:_,:_,:_,::,_,_,:_,:_:_:_,:_,:_:_:_,:_,,ows,_______TEXT,_TEXT,TEXT:_TEXT:1TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_________________________________________________________________________________TEXT:TEXT:TEXT,:1_________________________________________TEXT:TEXT:TEXT:1TEXT,_______________TEXT,_:1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets have a greater weight than 10?",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": ",:_:_,:_,:_,:::::_,::_,_,_,_::_:_:_:_:_,:_:_,:_,_,_,_,_:_:TEXT,__:1__TEXT:TEXT:TEXT:TEXT:TEXT,______________________________________________________________________________________________________________________________TEXT,TEXT:TEXT:TEXT:TEXT:TEXT_________TEXT_________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the weight of the youngest dog.",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": ",_,:_:_:_:::::::::::::::::::::_,_:TEXT,__:1_:11TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:________________TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT______________________________________________________________________________________________________________________TEXT:TEXT:TEXT_TEXT:TEXT__TEXT__TEXT___TEXT___________________TEXT"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How much does the youngest dog weigh?",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": ",_,:_:_:_,_:TEXT,:TEXT,:_:1_:1_:1_:1_:TEXT,_:11TEXT:11__________TEXT:11TEXT:11__TEXT:11_______________________TEXT,:11TEXT,____:11TEXT,TEXT,____:11TEXT:11TEXT,_:11____________________________________________________________________________________________TEXT:11___:11TEXT:11TEXT:11TEXT:1_______TEXT:11___:11TEXT:"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the maximum weight for each type of pet. List the maximum weight and pet type.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": ",_,:_,_:TEXT,_:TEXT:_:_,:1_:TEXT,_:TEXT,TEXT,_:TEXT,_:TEXT,_:_:11_:TEXT:11__:11___________________________TEXT,____:11TEXT,________TEXT,TEXT,TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "List the maximum weight and type for each type of pet.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": ",_:_,_:_,TEXT,__:TEXT,__:_:TEXT,__:TEXT,_TEXT,__:TEXT,__:TEXT,__:_:TEXT:__:TEXT,_:TEXT,TEXT,TEXT,TEXT:TEXT:1TEXT_____________________________________________________________________________________________________________________________:________________________:1TEXT_:11____________TEXT_:11111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": ",_,:_,:::::_,::::::_,_ows________________TEXT,__________________________________________________________TEXT,TEXT,TEXT,TEXT,TEXT::1__TEXT:TEXT:1111111111|1|1|1|1|TEXT______TEXT__TEXT_TEXT_TEXT_TEXT_TEXT__TEXT____TEXT_____TEXT___TEXT__TEXT__TEXT___________________TEXT________TEXT___TEXT___TEXT____TEXT____________________________TEXT,_____"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets are owned by students that have an age greater than 20?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": ",:_,:_,:TEXT,_:TEXT:_:_:TEXT,_:_,_:_,_:TEXT,__:TEXT,__:_:TEXT,__:TEXT,__:__:TEXT,__:TEXT,_TEXT,:1______:TEXT,:11111111111TEXT,____________________________________________________________________________________________________________________________________________TEXT:11111TEXT:11111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of dog pets that are raised by female students (with sex F).",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": ":::::::,_:TEXT,___:TEXT,____,___:_:_:TEXT,_:TEXT,_________________________________________________________________________________________________________________________________________________________________________________________________TEXT,_______:1_______________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": ",:_:::,,:_:_,__:_:_:_:_,_:TEXT,__:1:1TEXT:TEXT:11__________________________TEXT:111111111|1|1|TEXT_________TEXT____________________________________________________TEXT:1|1|TEXT__TEXT___TEXT__TEXT__TEXT__TEXT__TEXT__TEXTTEXT:111111111|1|TEXT_____:11111TEXT:111111111|1|1|1|1|1|1|1|1|1|1|1|TEXT______________TEXT:11111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of distinct type of pets.",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": ",:_,,,:_:_:_,:_:TEXT,__:1_________:11________:01|1|1|1|0|1|1|TEXT:1|1|TEXT____________________________________________________________________________________________TEXT:1|1|TEXT_:10|1|1|TEXT_:1|1|TEXT_:1|1|TEXT_________TEXT,TEXT,__________:1|1|TEXT__:1|1|_TEXT______________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many different types of pet are there?",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": ",_,:TEXT,:_:_,:1_:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_:TEXT:TEXT,_:TEXT,_,:TEXT:TEXT:TEXT_:_:TEXT:TEXT:1TEXT:1TEXT:1TEXT,TEXT:1TEXT:1TEXT:1TEXT:1TEXT,_:1TEXT,:1TEXT,:1_:TEXT,:1TEXT,_:1_:TEXT,__:TEXT,__:___:TEXT,_:TEXT,:1_:TEXT,_:TEXT,_:TEXT,_:_,:1TEXT,:1__________________________________________________________________________TEXT:TEXT:TEXT________________TEXT______________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have cat or dog pet.",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": ",_,,_,TEXT,___________________________________TEXT:1TEXT:111111111|TEXT__TEXT:101|TEXTTEXT______TEXT____TEXT__TEXT__TEXT___TEXT__________________________________________________________________________________________________________________________________________________TEXT___TEXT___TEXT___TEXT_:1111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the first names of every student who has a cat or dog as a pet?",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": ",::::::,:TEXT,______:_:TEXT,_______:TEXT,_TEXT,____:TEXT,_________________________________________________________________________________________________________________________________________________________________________________________________TEXT,_____:1__TEXT:TEXT,_:TEXT:TEXT:"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have both cat and dog pets .",
+      "gold": "select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'dog'",
+      "pred": ",_:_,:TEXT,__:TEXT,__:_:__:TEXT,__:TEXT,_TEXT,_:TEXT,__:TEXT,_:_:1TEXT,TEXT,TEXT,______________________TEXT,____________________________________________________________________________________________________________________________________________TEXT:111111TEXT:111111TEXT:11TEXT:1011111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the students' first names who have both cats and dogs as pets?",
+      "gold": "SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' INTERSECT SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog'",
+      "pred": ",::,,,:_,::_,::::::::::_,:_:_:_:_:_:::::::::_,:_:TEXT,___________________TEXT,TEXT,TEXT,TEXT:__________________TEXT,TEXT,TEXT,TEXT,__________________________________________________________________________________________________________TEXT:1TEXT:1TEXT:1TEXT:1__________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": ",_,,_,TEXT,TEXT::_:1________:TEXT,________:TEXT,TEXT:TEXT:_:11TEXT:TEXT:TEXT:1|TEXT____TEXT___TEXT__TEXTTEXT:11TEXT:11TEXT:11TEXT:11TEXT:11__:11TEXT,____:11TEXT:11_________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What major is every student who does not own a cat as a pet, and also how old are they?",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "::,:TEXT,:TEXT:_,_:TEXT:_:_,__:_,_:_,_:TEXT,__:1TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:____________________________________________________________________________________________________________________________________________________________________________TEXT,________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of students who do not have a cat pet.",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": ",:,,:_,,,:TEXT,__:TEXT:__:TEXT,__:__:__:TEXT,__:TEXT,__:TEXT:TEXT,__:__:TEXT:TEXT:TEXT:__:TEXT:TEXT:TEXT:TEXT,__:__:TEXT,__:TEXT,___,:TEXT,__:TEXT,_TEXT,:1TEXT,_____________________________________________________________________________________________________________________________________________TEXT,____:TEXT,_:11TEXT:"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the ids of the students who do not own cats as pets?",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": ",:_,,,,:_,::_,:_,:_,:_,,:_,,:_,:_,::_:::::::::_,:__:TEXT,_________________TEXT,TEXT,TEXT:_________________TEXT:TEXT,TEXT,TEXT,TEXT:111|1|1|1|1|1|1|TEXT:1|1|TEXT,TEXT_________TEXT:1|1|TEXT______TEXT:1|1|TEXT___11|1|TEXT__TEXT______TEXT___TEXT_____TEXT_____________TEXT________TEXT___TEXT___TEXT_____TEXT_______________________TEXT:1|1|TEXT__"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": ",_,:_,_:TEXT,__,__,TEXT,___:____________________________TEXT,TEXT,_________________________________________________________________________________________________________________________________________________________________________________TEXT,__TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT______"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name of every student who has a dog but does not have a cat?",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": ":,:_:_,:1__:TEXT,:1|_1|TEXT:_TEXT,______________________TEXT,TEXT,TEXT:11TEXT:11TEXT:11_________________________________________________________________________________________________________________________________________________________________________TEXT:11TEXT:11______TEXT:1|1|1|1|"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the type and weight of the youngest pet.",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": ",_,:_,_,TEXT,__,_::_:_:TEXT,__:TEXT,___:TEXT,___:TEXT,TEXT,__:__:TEXT,TEXT:1TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,_________________TEXT,___:1TEXT,TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT,TEXT,TEXT:11____________________________________TEXT,___________________________________________________________________________TEXT:11TEXT:11TEXT:11__"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What type of pet is the youngest animal, and how much does it weigh?",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": ",::::::,_,__:__:TEXT,___:TEXT,___:__:__:TEXT,__:TEXT:__:TEXT,__:TEXT,TEXT,__:TEXT:TEXT:TEXT________________________________________________________________________________________________________________________________________________________________________________TEXT,_____:TEXT:___:TEXT:1__"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id and weight of all pets whose age is older than 1.",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": ",_,:TEXT,:_:_,:1_:TEXT,_:1__:1TEXT,__,_________________TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_:TEXT,_:TEXT,_:_:TEXT,_:TEXT,TEXT,__:TEXT,TEXT,TEXT,TEXT,TEXT:TEXT,TEXT,TEXT:TEXT:TEXT:1TEXT,_:1TEXT,_:1TEXT,TEXT,TEXT:1TEXT,__:TEXT:1TEXT,TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1_______________________________________________________TEXT_________________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id and weight of every pet who is older than 1?",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": ",_,,:_,_,_,_,TEXT,__:_:1TEXT,TEXT,TEXT:_:TEXT:TEXT:11TEXT_:11__:11TEXT_______________TEXT:11TEXT________________:11TEXT:11TEXT,___:11TEXT:11__:1TEXT,TEXT,__________________:11___:11TEXT:11_______TEXT:11_________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average and maximum age for each type of pet.",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": ",_,,:_,_:TEXT,_:TEXT,_:_,_:1_:TEXT,TEXT,TEXT:TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT,TEXT:_:TEXT:TEXT:TEXT:TEXT:TEXT:__,__:TEXT,TEXT,__:TEXT,__:_:TEXT,_:TEXT,TEXT,_:_,TEXT,_:TEXT,_:TEXT,_:_,_:TEXT,TEXT,TEXT_:TEXT:TEXT:1TEXT,TEXT:1TEXT,TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT,TEXT:1TEXT,___:TEXT:1TEXT,__:TEXT:1TEXT:1TEXT:1_________________________________________________TEXT__________________________TEXT___TEXT_:11TEXT:1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average and maximum age for each pet type?",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": ",_,,:_,_:TEXT,:1_:1TEXT,:1TEXT,:1_:1_:1_:1_,_,_,_:TEXT:_:11___________________TEXT,____________________________________________________________________________________________________________________________________________________________________________TEXT:11111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average weight for each pet type.",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": ",_,:TEXT,__:_:_,:1__:11________:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:111TEXT:101111TEXT________________________________________________________TEXT__TEXT__TEXT__TEXT__TEXT_"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average weight for each type of pet?",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": ",_,:TEXT,_:_,_,_:TEXT,_:TEXT:_:_,:TEXT,_:_,_,_,_,_,_,:_:TEXT,:TEXT,_:TEXT,_:TEXT:_:TEXT,:_:TEXT:TEXT,:1TEXT,__________________________________________________________TEXT,____________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a pet.",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": ",_,,TEXT,__:_:TEXT,__:TEXT,TEXT,TEXT,TEXT,_:TEXT,TEXT,TEXT:_:TEXT:_:TEXTows,:11_:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,:11_:TEXT_,:11__________________________________________________________________________________________________________________________________________________________________________TEXT,_____________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the different first names and ages of the students who do have pets?",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": ",::,,,:::::::::::::::::::::::::::::::::::::::_,_:TEXT,____________________________________________________________________________________________________________________________________________________________TEXT,TEXT:______TEXT___TEXT__TEXT_______________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of the pet owned by student whose last name is \u2018Smith\u2019.",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": ",:_,,,:1_______:TEXT,__________________________TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,_____________________________________________________________________________________________________________________________________________________________________TEXT:TEXT:TEXT:TEXT,TEXT:TEXT:TEXT:11111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id of the pet owned by the student whose last name is 'Smith'?",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "::,:TEXT,:TEXT:_:_:_:_:_:_:TEXT,___:TEXT,TEXT:TEXT:___:1TEXT:111111111|TEXT111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:111TEXT:111TEXT_____________________________________________________TEXT:1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets for each student who has any pet and student id.",
+      "gold": "SELECT count(*) ,  T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid",
+      "pred": ",::::::,:_,:TEXT,__:1TEXT:1TEXT,_____________________TEXT,TEXT:1111111111111111111111111111111111TEXT,_________________TEXT,TEXT,TEXT,TEXT:TEXT:111TEXT:111TEXT:111TEXT,TEXT:10111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "For students who have pets , how many pets does each student have ? list their ids instead of names .",
+      "gold": "select count(*) ,  t1.stuid from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid group by t1.stuid",
+      "pred": ":::::,_,:TEXT,__:TEXT,__:TEXT,__:_:TEXT:_:TEXT,__:TEXT,TEXT,__:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT,__:_:TEXT,__:TEXT,__:TEXT,__,:1TEXT,__:TEXT,__:TEXT:1TEXT:11111111111111111TEXT,__:1111TEXT,__:1|TEXT____________________TEXT,TEXT____________________________________________________TEXT______________TEXT_____TEXT___TEXT__TEXT__TEXT___TEXT_:1|_TEXT______TEXT___TEXT___"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and gender of student who have more than one pet.",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": ",:::::::,:_,:TEXT,__:TEXT,__:_:_:TEXT,__:_:__:TEXT,__:TEXT,__:___:TEXT:________________________________________________________________________________________________________________________________________________________________________________________TEXT,TEXT:_____:TEXT,__:__:TEXT"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name and gender of the all the students who have more than one pet?",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": ":,_:_:_:_,TEXT,__:1_:1TEXT,TEXT,TEXT,TEXT:_______________TEXT,_____TEXT,TEXT:11TEXT:11TEXT:1|TEXTTEXT_____________________TEXT,TEXT:11TEXT______TEXT:11TEXT:11TEXT:11TEXT:11TEXT:11TEXT:11TEXT:11______________________________________________________________________________________________________TEXT_________TEXT______________TEXT:"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the last name of the student who has a cat that is age 3.",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": ",::::::,:_,:TEXT,_:1___________________________TEXT,__:1|TEXT___TEXT____TEXT__________________TEXT:TEXT:TEXT:11__TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the last name of the student who has a cat that is 3 years old?",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": ",:,:_:_,:TEXT,_:TEXT,_:_:TEXT,__:TEXT,__,_:TEXT,_:_:_:TEXT,_:_:TEXT,__:TEXT,__,_:TEXT,_:_:TEXT:TEXT,_:_:_:_:TEXT,__:TEXT,_:_,:TEXT,_:_:TEXT,_:TEXT,_:_:TEXT,_:_:TEXT,_:_,:_:TEXT,:TEXT,_:TEXT:_:TEXT:TEXT:TEXT,:TEXT,:TEXT,:__:_______________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average age of students who do not have any pet .",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": ",::,:TEXT,_:TEXT::TEXT,:_:_:_:TEXT,:__:__:__:TEXT,:TEXT,_:_:TEXT:TEXT:_______________TEXT,:TEXT,:1_TEXT:1TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:11TEXT:11TEXT:11TEXT:11TEXT:11TEXT__________________________________________________TEXT___________________"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average age for all students who do not own any pets ?",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": ",::::::,:TEXT,___:TEXT,:TEXT,___:_:__:TEXT,__:_:TEXT,_:TEXT,___:TEXT,___:TEXT,_:__:TEXT,:__:__:___:_____________________________________________________________________________________________________________________________________________________________________TEXT,_____:_____:TEXT,,__"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many continents are there?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": ":_,:_:_:_,_:_:_:_,_:TEXT,________________TEXT,_______________________TEXT,____TEXT,__TEXT,TEXT:TEXT:TEXT:1111111110|TEXT__TEXT_TEXT__TEXT__TEXT___TEXT__TEXT_TEXT_TEXT_TEXT_TEXT__TEXT__TEXT___TEXT___TEXT___TEXT___TEXT__TEXT___TEXT_____________TEXT:1|TEXTTEXT__TEXT_TEXT_TEXT__TEXT__TEXT_TEXT___TEXT__TEXT__TEXT___TEXTTEXT__TEXT_TEXT__TEXT_____TEXT____________TEXT:1|_1|1|1|1|1|1|1|1|1|1|1|1|1|1|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of continents?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": ":_,_:TEXT,_:_:TEXT:__:TEXT,__:1TEXT,TEXT:1TEXT,TEXT:1TEXT,_________________________________TEXT,_________________________TEXT,____________TEXT,TEXT,TEXT:1TEXT,___:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:1TEXT,TEXT,TEXT:1TEXT,________TEXT,TEXT,_____TEXT,TEXT:1TEXT:1TEXT,___:11__TEXT:1111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries does each continent have? List the continent id, continent name and the number of countries.",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": ",_:_,___:__:__:_______________________________________________TEXT,______________________________________TEXT:TEXT:______________TEXT,____TEXT,TEXT,TEXT:11__1|TEXT_TEXT_TEXT_TEXTTEXT_1|TEXTTEXT_TEXT_TEXT_1|TEXT__TEXT_TEXT_TEXT_1|1|111|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|TEXT:1|1|1|TEXT:1|1|1|TEXT:1|1|1|TEXT:1|1|TEXT:1|TEXT:1|_TEXT,TEXT:1|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For each continent, list its id, name, and how many countries it has?",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": ",_:_,_________________________________________________________TEXT,____TEXT:_TEXT:_______________________________TEXT,TEXT,TEXT:1111111111|TEXT__TEXT:1|_1|TEXT__TEXT:1|TEXT______TEXT__TEXT__TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT___TEXT__TEXT__TEXT_TEXT_TEXT__TEXTTEXT:1|1|111111111|1|1|1|1|1|1|TEXT:1|1|1|1|1|1|TEXT:1|1|1|1|1|1|_TEXT:1|1|TEXT:1|TEXT:1|TEXT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries are listed?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": ":_,:_:_:_,_:_:_:_,_:TEXT,________________________TEXT:TEXT:___________________________________________________________________________TEXT,______________________________________TEXT,TEXT:1TEXT,_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:11TEXT:11TEXT:11____TEXT:11TEXT,TEXT,TEXT:11TEXT,TEXT:11____:11___:11__________TEXT,TEXT:11______"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries exist?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": ":_,:_,:__:_:_:_,__:1_:11TEXT,_______________TEXT:TEXT:TEXT______________________TEXT____________________________________________________TEXT:TEXT:TEXT__TEXT:TEXT:11__TEXT,TEXT,TEXT:11TEXT,___:11____________TEXT,TEXT:11______TEXT:TEXT:11___TEXT,TEXT,TEXT:11_________TEXT:11___________________:11_______________TEXT,___________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many models does each car maker produce? List maker full name, id and the number.",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": ",_:_:_:_:_:_:_,___:_______________________________________________________________________________TEXT,_TEXT,TEXT,______________TEXT:__TEXT,_______________________________________________________________________TEXT,______TEXT,TEXT:__TEXT:1TEXT:11TEXT:|TEXT_TEXT_TEXTTEXT:|1|1|1|1|1|1|1|1|1|1|1|1|1|1|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the full name of each car maker, along with its id and how many models it produces?",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": ",_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:TEXT,_______________________________________TEXT,_11101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model of the car has the minimum horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": ",_,_:___:___:TEXT,__:TEXT:________________________________________________________________________________________TEXT,_________________________TEXT,____________TEXT,TEXT,TEXT,TEXT:11_TEXT:1|_|_1|1|1|10|1|1|1|1|1|1|1|TEXT:11TEXT,TEXT:11TEXT,__:11TEXT,________TEXT,_____________TEXT,TEXT,TEXT:11TEXT:11TEXT:11TEXT:11____"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model of the car with the smallest amount of horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:_:__:__:TEXT,:1TEXT,_______________________________________________________TEXT,_TEXT,TEXT:__TEXT:11__TEXT:1|_TEXT_____TEXT:1|TEXT_______TEXT:1|____________TEXT:1|_TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the model of the car whose weight is below the average weight.",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": ",:_:___:__________________________________________________________________________________________________TEXT,___________________________________________________TEXT,11_TEXT:1|_1|TEXT:1|TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model for the car with a weight smaller than the average?",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:__:__:TEXT,_________TEXT,_TEXT,__TEXT:________________________________________________________________________TEXT,____TEXT,_____________TEXT,TEXT,TEXT:11__11TEXT:1|TEXT_TEXT__TEXT_TEXT_TEXT_TEXT_TEXT_TEXT__1|TEXT___TEXT_______TEXT:1|1111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the name of the makers that produced some cars in the year of 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": ",_:_:_:_:_:_:_:_:_:_:_:_:__:__:___________________________________________________________________TEXT,___________________TEXT:1TEXT,_TEXT,____TEXT,____________TEXT,TEXT,TEXT,TEXT:_TEXT:TEXT:11_____TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the different car makers who produced a car in 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": ",_:_:_:_:_:_:_:_:_:_:_:_:_:__:____________________________________________TEXT,__________________TEXT:1TEXT,TEXT:TEXT,TEXT:TEXT:11_____TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the make and production time of the cars that were produced in the earliest year?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": ",::::::,:TEXT,_______:_:TEXT,______________________TEXT,TEXT:TEXT:TEXT__TEXT:TEXT:TEXT:TEXT___:1___________________:1TEXT,_:1TEXT,___:1TEXT,__:1_______________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maker of the carr produced in the earliest year and what year was it?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": ",_:_:_________________________________________________________________________________________________________TEXT,_____________________________________________________________TEXT,TEXT,TEXT:_TEXT:TEXT:11_TEXT:11TEXT,TEXT,TEXT:1|TEXT__TEXT___TEXT__TEXT_TEXT_TEXT_TEXT_TEXT_TEXTTEXT:1|TEXT_____TEXT_______TEXT_________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinct car models are the produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:__:___________________________________________________________________TEXT,__TEXT,TEXT,TEXT,TEXT:___________TEXT,_____TEXT,______________TEXT:1_TEXT:11TEXT,TEXT,TEXT:1|_1|TEXT__TEXT:1|1|TEXT______TEXT__________TEXT:1|1|_1|TEXT____________TEXT:1|1|TEXT_TEXT_TEXT_TEXT_TEXT__TEXT_____________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models for the cards produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": ",_,:_:_:_:_:_:_,__:_:1:1TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:____TEXT:TEXT:TEXT________TEXT:TEXT__TEXT:11_TEXT:1|TEXT__TEXT__________TEXT:1|TEXT_____TEXT:1|TEXT______TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in each continents? List the continent name and the count.",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": ",_,:TEXT,__:________________________________________________TEXT,__________________________________________________TEXT,1111111111|TEXT__TEXT__TEXT__TEXT__1|TEXT___1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|TEXT_______TEXT:TEXT:_____TEXT:1111TEXT:111111111110|TEXT___TEXT_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of each continent and how many car makers are there in each one?",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": ",_,,:TEXT,__:_______________________________________________________________________________TEXT,_____________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which of the countries has the most car makers? List the country name.",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "::,:TEXT,_________________________________________________________________________________TEXT,TEXT,TEXT:_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,TEXT,TEXT:_______TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:1_TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the country with the most car makers?",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": ",:_,:__:__:__:__:__:_:_:_:TEXT,_____________________________________________________________________________TEXT,TEXT,TEXT,TEXT:_________________TEXT,__________________TEXT,TEXT,TEXT:11_TEXT:11TEXT,_____________________________________TEXT,TEXT:11TEXT,_TEXT,______TEXT,TEXT,TEXT:1|TEXT_TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT___________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced by each maker ? Only list the count and the maker full name .",
+      "gold": "select count(*) ,  t2.fullname from model_list as t1 join car_makers as t2 on t1.maker  =  t2.id group by t2.id;",
+      "pred": ":_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:__________________________________________________TEXT,________TEXT:_________TEXT:TEXT,_____________TEXT,TEXT,TEXT:11TEXT,1|_1|TEXT__1|TEXT_TEXT__1|TEXT__TEXT_TEXT__TEXT_TEXT_TEXT__TEXT___TEXT___TEXT__TEXT_TEXT_TEXT__TEXTTEXT__TEXT___TEXT_______TEXT:1|1|1|1|1|1|1|1|1|TEXT:1|TEXT__TEXT______TEXT:1|1|TEXT_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models that are produced by each maker and what is the id and full name of each maker?",
+      "gold": "SELECT Count(*) ,  T2.FullName ,  T2.id FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id GROUP BY T2.id;",
+      "pred": ",:_:_:_:_,__:__:_________________________________________________________________________________________TEXT,_______TEXT,_TEXT,TEXT,_____________TEXT___TEXT__TEXT__TEXT__TEXT__TEXT___TEXT_________TEXT:TEXT:TEXT:11TEXT:1|_|TEXT:1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|TEXT:1|1|TEXT:1|TEXT:1|TEXT___________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the accelerate of the car make amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": ":_:_:_:__:__:__:_:_:__:__:__:_:_:__:_:_:_:_:_:_:_:____________________________________________________TEXT,__TEXT,TEXT,____________TEXT,______TEXT,TEXT:_______________TEXT,TEXT:TEXT,TEXT,TEXT:11__TEXT,TEXT:11_________________________TEXT,________TEXT,__________TEXT,TEXT:11TEXT,TEXT,TEXT:1|TEXT_TEXT_TEXT_____________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How much does the car accelerate that makes amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": ":_:_:_:__:__:__:_:__:__:__:_:_:_:_:_:_:_:_:_:_:____________________________________________________TEXT:____TEXT:1TEXT,__________TEXT,_______________TEXT:11TEXT,11TEXT,11TEXT__TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in france?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "::::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:TEXT,_____________________________TEXT,TEXT,TEXT,TEXT:_TEXT:TEXT:1__TEXT__TEXT__TEXT_TEXT__TEXT__TEXT____________TEXT___TEXT__TEXT_TEXT_TEXT_TEXT__TEXT_______________TEXT:TEXT:11TEXT:101111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of makers of care in France?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": ":_,_:_:_,_:_:_:_:_:_:_:_,:TEXT,________________________________________________________________________________TEXT,TEXT,TEXT:_________________TEXT,_________________________TEXT,TEXT,TEXT:1TEXT,_______TEXT,TEXT,TEXT,TEXT:1TEXT,TEXT:1TEXT,TEXT:1______________TEXT,TEXT:11TEXT,TEXT,_________TEXT:11TEXT,TEXT:11TEXT,TEXT:11TEXT:11TEXT:11TEXT,____"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced in the usa?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:TEXT,_TEXT:_TEXT:TEXT,___________________________TEXT,TEXT:TEXT,TEXT:TEXT:1__TEXT___TEXT__TEXT_TEXT__TEXT__TEXT__TEXT___TEXT_____TEXT___TEXT__TEXT__TEXT__TEXT__TEXT___TEXT_____TEXT:TEXT,___________________TEXT:TEXT:TEXT:11TEXT:TEXT__TEXT__TEXT____TEXT:11_TEXT__TEXT__TEXT_TEXT_TEXT_TEXT__TEXT___________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the count of the car models produced in the United States?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:TEXT,_TEXT:_____________________________________TEXT,TEXT:1TEXT,__________________TEXT,_____TEXT,_____________TEXT,TEXT,______TEXT,TEXT:_TEXT:TEXT,___:1TEXT,__________________________TEXT,_________TEXT,________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:1TEXT:11TEXT:1111TEXT:111TEXT,_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon(mpg) of the cars with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": ":::,_,:_,:_,:_,::_,::_,:_,,:_,__:TEXT,:1TEXT,_TEXT,_:1TEXT:TEXT:TEXT:TEXT,__:1____________________________________TEXT,_______TEXT:11TEXT:1|1|1|1|1|TEXT_____________TEXT___________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon of all the cards with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": ":::::,:_,:_:::::::::::::_:_:___:TEXT,:1__________:TEXT,___:11TEXT,___:1011_________________________________TEXT:1|TEXT__TEXT___TEXT__________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the smallest weight of the car produced with 8 cylinders on 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": ",_:_:______________________________________________________________________________________________TEXT,__TEXT,TEXT,TEXT,TEXT:________________TEXT,____________TEXT:TEXT:TEXT:TEXT:1TEXT,TEXT:TEXT:TEXT:1______TEXT,TEXT:1TEXT,TEXT:1TEXT:11TEXT:11TEXT:11TEXT:11________TEXT,_________________TEXT,TEXT,TEXT:11TEXT:11TEXT:11___________________:11"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the minimum weight of the car with 8 cylinders produced in 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": ",_:_:_:_:_:_:_:_:_:_:_:_:__:__:___________________________________________________________________TEXT,___________________TEXT:TEXT,__TEXT,_____________TEXT:_TEXT,TEXT,TEXT,TEXT:_TEXT:TEXT:1__TEXT:1TEXT,___:1TEXT,___:1TEXT,TEXT,___________________________________________TEXT,_____TEXT:TEXT,____________________:1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are all the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": ",_:_,_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:TEXT,_________________________________________________________________________TEXT,TEXT,TEXT,TEXT:_____TEXT:11__TEXT:1|_1|_1|_1|TEXT:1|TEXT:1|TEXT_______TEXT:1|TEXT__TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": ",_,__:___:TEXT,_:TEXT:___:TEXT:_________________________________________________________________________________________________________________TEXT,__________________________TEXT,TEXT,TEXT,TEXT:TEXT:11____TEXT,TEXT,TEXT:11TEXT,_:10111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the countries having at least one car maker? List name and id.",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": ",_,:_:_:_:_:_:_,__:TEXT,_________TEXT,_TEXT:____TEXT:1TEXT:11TEXT:1|_1|_1|TEXT__TEXTTEXT__TEXT__TEXT_TEXT__TEXT__TEXT_TEXT__TEXT___TEXT_TEXT__TEXT__TEXTTEXT___TEXT___TEXT___TEXT_TEXT_TEXT__TEXT__TEXT___TEXT___TEXT__TEXT___TEXT___TEXT___TEXT_______________TEXT:11TEXT:1011TEXT:1|1|1|TEXT_TEXT__TEXT___TEXTTEXTTEXTTEXT_TEXT_TEXT_____TEXTTEXT___TEXT______TEXT_____TEXT________TEXT______TEXT__TEXT_TEXT_TEXT__TEXT__TEXT_TEXT_______TEXT:1110"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all countries with at least one car maker?",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": ",_,:_:_:_:_,_:_,_:TEXT,________TEXT:TEXT:TEXT:TEXT__TEXT__TEXT____TEXT___TEXT___TEXT__TEXT__TEXT__TEXT__TEXT_______________TEXT:TEXT:TEXT:1_TEXT__TEXT__TEXT___TEXT____TEXT__TEXT_TEXT_TEXT__TEXT__TEXT__TEXT__TEXT_____TEXT:11_TEXT__TEXT_TEXT_TEXT_TEXT_111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of the cars with horsepower more than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": ":::::,:_,:_:_,:_,:_,::_:::::_:_:_:_,_____________________________________________________________TEXT,:1_______TEXT:TEXT,________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a horsepower greater than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "::::,:_,:_:_,:_,:_,::_,::_:_:_:TEXT,______________________________________TEXT,_________________________________________________________________________TEXT,____________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:_TEXT:TEXT:1TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:______________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight of cars each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": ":,:_,_:_:_,:_,:_,::::::,:::::::::::_,_:_:_,_:_:_:TEXT,__:1_____________________________________________________TEXT:TEXT:_TEXT:1111TEXT:1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight and year for each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": ":,:_,_::_:_,_::_,:_,:::_,_:::_::_::_:_,_,__:__:1____________________________________________________________TEXT,:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:___________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which countries in europe have at least 3 car manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": ",_,:_:_:_:_,:_:_,:TEXT,___________TEXT,_TEXT:TEXT:TEXT__TEXT___TEXT____________TEXT:TEXT:TEXT________________________TEXT,______TEXT:TEXT________TEXT:1__TEXT__TEXT_TEXT_TEXT__TEXT__TEXT:1111111111|TEXTTEXT__TEXT_____________TEXT__TEXT__TEXT_TEXT_TEXT_TEXT__TEXT___TEXT___TEXT__TEXT_TEXT__TEXT_TEXT__TEXT___TEXT_____________TEXT:1111111111|_1|TEXTTEXT___TEXT__TEXT_TEXT__1111|TEXT_TEXT__TEXT___TEXT:1|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of all European countries with at least 3 manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": ",_,,:TEXT,__________________________TEXT,_TEXT:TEXT:_TEXT:1__TEXT:11TEXT,TEXT:1|_1|TEXT__TEXT__TEXT__TEXT_TEXT_TEXT_TEXT__TEXT_TEXT_TEXT__TEXT__TEXT__TEXT__TEXT___TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT_TEXT_TEXT_TEXT_TEXT_TEXT__1|1|TEXT__TEXT___TEXT___TEXT___TEXT__TEXT_TEXT_TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT___TEXT_TEXT__TEXT_TEXTTEXT:1|1|TEXT_____TEXT__TEXT___TEXT__________________TEXT:1|1|_1|1|1|1|TEXT__TEXT______TEXT__TEXT__TEXT__"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum horsepower and the make of the car models with 3 cylinders?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": ",_:_:____________________________________________________________________________________________TEXT,__TEXT,TEXT,TEXT,TEXT,____________TEXT,________________________TEXT:____TEXT:__TEXT,TEXT,TEXT,TEXT:TEXT,TEXT,TEXT:1TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the largest amount of horsepower for the models with 3 cylinders and what make is it?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "::,_:_:TEXT,:TEXT:_,:1_:TEXT,_:1TEXT,_______________TEXT,TEXT:11TEXT:11TEXT:1011TEXT:1|1|1|1|1|111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:11TEXT,11TEXT:11____________________________________________TEXT:TEXT:TEXT:TEXT:1|TEXT__111111111111TEXT:1111TEXT:111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.mpg DESC LIMIT 1;",
+      "pred": ",_:_,__:TEXT,:TEXT,_:_:TEXT,__:TEXT,__:TEXT:__:TEXT,__:_:TEXT:TEXT:TEXT,___,___:_________________________________________________________________________________________________________________________________TEXT,________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the car model with the highest mpg ?",
+      "gold": "select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.mpg desc limit 1;",
+      "pred": ",:_,:__:__:TEXT,_______________TEXT,__TEXT,______________________________________________________________________TEXT,TEXT:________________________TEXT,__________________TEXT,TEXT,TEXT,TEXT:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,_____TEXT,TEXT,TEXT:________TEXT,TEXT:TEXT,TEXT,TEXT:TEXT,______________TEXT,TEXT:1TEXT,______TEXT:1TEXT,TEXT,___________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower of the cars before 1980?",
+      "gold": "SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <  1980;",
+      "pred": ":,:_,:_,:_,:_,,,,:TEXT,:1TEXT,:1TEXT,___:1TEXT,___:1_:1TEXT:TEXT:TEXT,___:1TEXT,_TEXT:TEXT:TEXT:1TEXT,___:1_:1________________________TEXT:TEXT:TEXT:TEXT:TEXT:11_____TEXT:1111TEXT:1111TEXT________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower for all cars produced before 1980 ?",
+      "gold": "select avg(horsepower) from cars_data where year  <  1980;",
+      "pred": ":::::,:_,:_:_,:_,:_,::_:_:_:_:TEXT,_______________________________________TEXT,______________________________________________________________________TEXT,_______________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:__:1________TEXT____________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl of the cars of model volvo?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": ":_,_:__,__:__:__:_:_:_:_:_:_:_,____:_:TEXT,_____________________________________________________________________________________________________________________________TEXT,TEXT:TEXT:TEXT:1_____________TEXT,________________TEXT:11TEXT,TEXT:1|TEXT__TEXT:1|TEXT______TEXT,TEXT:1|_1|TEXT______________TEXT,TEXT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl for all volvos?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": ":,:_,:_:_,:_,::::::::::::::::::::::::_:_:_:TEXT,______________________TEXT,____TEXT:TEXT,TEXT:TEXT:TEXT:TEXT____________________________TEXT:TEXT_____________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for different number of cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": ":::::,:_,:_,:_,:_,::::::::::_:_:_:TEXT,:1_____________________________________________________________TEXT,__________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,_____________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for all the different cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": ":,_,:_:::,,,,:TEXT,_:TEXT,:1TEXT,_:TEXT:__:TEXT:TEXT,____________________________________TEXT:_______________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model has the most version(make) of cars?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": ":::,_:_:_:_,__:TEXT,____________________________________TEXT,______TEXT:TEXT:_____________________TEXT,________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What model has the most different versions?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": ",:_,:_:_:_,:__,:_:TEXT,________TEXT,TEXT,TEXT:_____TEXT,TEXT,TEXT:11TEXT,TEXT:1|TEXT____________TEXT:1|TEXT__TEXT:1|TEXT_______TEXT:1|TEXT:11TEXT,TEXT:11TEXT:1|_1|TEXT_________________________________TEXT,TEXT_______________TEXT:1|TEXT____TEXT:1|_1|TEXT______TEXT,_________TEXT:1|_1|_1|TEXT_________TEXT:1|TEXT______TEXT:1|TEXT:111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": ":,:_,:_:_,:_,:::::::::::::::::::::::::_,___:TEXT,:1________________________TEXT:__________________________________TEXT:1TEXT:TEXT:TEXT:TEXT__TEXT:TEXT:11__TEXT_______________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": ":,:_,:_,:_,::,:::::,:::::::::::::_,:_:_:_:_:_,__:TEXT,:1_____________________________________________________TEXT,__TEXT:TEXT:TEXT:TEXT:TEXT_________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "how many cars were produced in 1980?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": ":,:_,:_:_,:_,::::::::::::::::::::::::_,___:TEXT,__________:TEXT,___________:___:TEXT:_____________________________________TEXT:TEXT:TEXT:TEXT___TEXT:TEXT:TEXT:TEXT__________________________:1TEXT,TEXT:11TEXT,TEXT:1|1|1|1|11111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In 1980, how many cars were made?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": ":,_,:_:_,:_,:::,::::::,::::::::::::::_,:_:_:_:_,_:TEXT,_______________________________________________________TEXT:TEXT,_____TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:___________________________:TEXT,___:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:1_______________________:11_____________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models were produced by the maker with full name American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": ":_:_:_:_:_:_:_:_,:__:___:TEXT,_________________________________________TEXT,__TEXT:TEXT:TEXT:TEXT:TEXT:____________________________________________________________________TEXT,TEXT,TEXT:TEXT,TEXT:TEXT,TEXT:TEXT,TEXT,TEXT,TEXT:_____TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_TEXT:TEXT,_______TEXT:TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:____:1___"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models created by the car maker American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": ":_:_:_:_:_:_:_:_::::::::::::_________________________________________________________TEXT___TEXT__TEXT___TEXT____TEXT_____TEXT_______________TEXT____TEXT_____________________TEXT___TEXT___TEXT___TEXT:_________TEXT_:1_TEXT:11TEXT:1|_1|TEXT__TEXT__TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT____TEXT__TEXT__TEXTTEXT:1|1|10|1|1|1|1|1|TEXT____TEXT_______TEXT_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which makers designed more than 3 car models? List full name and the id.",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": ",:_:_:_:_:_:_:_:_,______________________________________________________TEXT,_TEXT,TEXT:________________TEXT:1TEXT:11TEXT:11TEXT,TEXT,_________TEXT,TEXT:1|_0|TEXT:1|1|TEXT:1|1|TEXT_____TEXT__TEXT__TEXT__TEXT__TEXT___TEXT______TEXT___TEXT___TEXT________TEXT:11111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all makers with more than 3 models?",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": ",:_,:__:__:__:__:__:__:__:__:TEXT,________________________________________________________________________TEXT,TEXT,TEXT,_11TEXT,TEXT,_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_____TEXT:11TEXT,TEXT:11TEXT:1111TEXT:1111TEXT,TEXT:11TEXT:11TEXT:11TEXT:11TEXT:1_TEXT:11TEXT:11____________________________TEXT:11TEXT:11TEXT:11___TEXT:11TEXT,____:11"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": ":_:_:_:_,:__:__:__:__:__:__:_:_:_:_:_:_:_:_:_:_________________________________________________________TEXT,_________TEXT:TEXT,____TEXT,TEXT:TEXT:TEXT:1__TEXT___TEXT__TEXT___TEXT____TEXT:1TEXT:TEXT:1TEXT,_:1TEXT,_:1_:11TEXT:11TEXT:11___________TEXT:11_____TEXT:TEXT,TEXT,TEXT:11TEXT:11TEXT:11TEXT:1111TEXT:11TEXT:11TEXT:11TEXT:11TEXT,_______________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models created by either the car maker General Motors or weighed more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": ":_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:__________________________________________________________TEXT,________TEXT:TEXT,__TEXT,TEXT,TEXT:_____________TEXT,TEXT:1__11_11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In which years cars were produced weighing no less than 3000 and no more than 4000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": ",:_,,:_,:_,::_,::_,:_,:_:_,:_:TEXT,__________________TEXT,_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_________________________TEXT:TEXT_____TEXT:TEXT____TEXT:TEXT________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": ",::::,:_,:_:_:_:TEXT,:1TEXT,____________________TEXT:TEXT,:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:TEXT:______TEXT,_____________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the largest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": ",:_:__:_:__:__:__:_:_:__:TEXT::TEXT:TEXT:______________________________________________TEXT,__TEXT___TEXT____TEXT___TEXT___TEXT_______TEXT:TEXT:TEXT:TEXT______TEXT__TEXT__TEXT__TEXT__TEXT__________TEXT:TEXT_____TEXT__TEXT__TEXT_TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_________TEXT:1__TEXT:11TEXT,TEXT:TEXT:TEXT,TEXT:TEXT:TEXT:11TEXT,TEXT:TEXT:TEXT:1|TEXT_TEXT:1|1|1|1|1|1|1|1|1|1|TEXT____________TEXT:"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the greatest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:__:TEXT:_________________TEXT:1TEXT,_TEXT:TEXT,__________TEXT:TEXT:TEXT,TEXT,TEXT:TEXT_____TEXT______TEXT____TEXT_____TEXT:TEXT:TEXT:11_TEXT:TEXT:1|TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT___TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT___TEXT___TEXT____TEXT__TEXT___TEXT__TEXT__TEXT___TEXT___TEXTTEXT,TEXT:11TEXT,_______TEXT,TEXT:1111TEXT,1111TEXT:111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For model volvo, how many cylinders does the car with the least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": ":_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:_______________________________________________________________TEXT,_____________________________________TEXT:TEXT:TEXT,TEXT,TEXT,TEXT:_________TEXT,TEXT:TEXT:TEXT,___:TEXT:_________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For a volvo model, how many cylinders does the version with least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "::::_:_:::::::::::::::::::::,____________________TEXT,_TEXT,___TEXT:_____________________________________________________________________________________________TEXT:TEXT,______TEXT:1__TEXT:11TEXT,TEXT,TEXT,TEXT:1|TEXT__TEXT:1|TEXT_______TEXT:1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have a larger accelerate than the car with the largest horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": ":_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:_____________________________________________________TEXT,_________TEXT:TEXT,______TEXT,______________TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:___________________________________TEXT,________________TEXT,TEXT:TEXT:1__TEXT,______________________:1TEXT,___:1TEXT"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a greater accelerate than the one with the most horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": ":::,:TEXT,:TEXT,__:__:TEXT,___:1______:11_TEXT:TEXT:TEXT:TEXT:TEXT,__:TEXT,11TEXT,TEXT_:TEXT:11TEXT,TEXT:11______________________________TEXT:TEXT:1|1|1|1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT,TEXT:1|1|TEXT_____________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries has more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": ",_:_:_:_,__:_:TEXT,:TEXT,_:1_______________TEXT,____TEXT:TEXT______TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,_______________________TEXT,_TEXT:TEXT:TEXT________TEXT:1TEXT,__________TEXT:1111111111|1|1|1|TEXT___1111111111|1|1|1111111111|1|1|11111TEXT__1111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of countries with more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": ",_,:_:_:_,_:_:_,_:_,_,_:TEXT,________TEXT,_TEXT:TEXT:TEXT__TEXT__TEXT_____________TEXT,_____________TEXT:TEXT_:1TEXT_:11TEXT:TEXT:11TEXT:11_____TEXT______TEXT_________________________________________________TEXT:TEXT:TEXT,_________________TEXT,________TEXT:TEXT:11TEXT,_____________________________TEXT:11TEXT,______TEXT,_____________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars has over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": ":,:_,:_:_:::::::::::::::::::::::::::::::::::_:_:TEXT,:1:1____________________TEXT:TEXT,:1________TEXT,__________________TEXT:TEXT:11__TEXT__TEXT___TEXT_________:11TEXT:TEXT:TEXT:1|1|1|1|1|1|1|1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of carsw ith over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": ":,:_,:_,:_,::,:::::,::::,:::::::_:_:_:_,___:__:TEXT,:1__TEXT,_______________TEXT:TEXT,__________________________________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:__________________________________:TEXT,_____________TEXT,TEXT,TEXT:1TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT__________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For the cars with 4 cylinders, which model has the largest horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": ",_:_:_:_:_:_:TEXT,:1_:1TEXT,__:11TEXT,TEXT,TEXT,TEXT:___________TEXT,TEXT:1|TEXT_______________________TEXT:1|_TEXT:1|TEXT:1|TEXT:101TEXT:1|TEXT:1|TEXT:1|_TEXT:1|_____________________________________TEXT:1|_TEXT:1|_TEXT:1|_____TEXT:1|________TEXT:1|TEXT:1|_TEXT,____________TEXT,TEXT,TEXT,TEXT,TEXT:1|TEXT:1|_1111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For all of the 4 cylinder cars, which model has the most horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": ":_,_:_:_,__,_:_::::::::::::::::,_______________________________________________________________________________________________________________________________TEXT,_______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars with more than lowest horsepower, which ones do not have more than 3 cylinders? List the car makeid and make name.",
+      "gold": "SELECT T2.MakeId ,  T2.Make FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Horsepower  >  (SELECT min(Horsepower) FROM CARS_DATA) AND T1.Cylinders  <=  3;",
+      "pred": ":::::_,_______________________________________________________________________________TEXT,_TEXT,TEXT,TEXT,TEXT:_________TEXT,____TEXT,TEXT,____________TEXT__TEXT__TEXT__TEXT__TEXT___TEXT___TEXT_______TEXT___TEXT:TEXT:TEXT:1TEXT:11_TEXT:11TEXT:11TEXT:11_____TEXT:11TEXT:11______TEXT:11TEXT,______________________:11TEXT:11__________________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars that do not have the minimum horsepower , what are the make ids and names of all those with less than 4 cylinders ?",
+      "gold": "select t2.makeid ,  t2.make from cars_data as t1 join car_names as t2 on t1.id  =  t2.makeid where t1.horsepower  >  (select min(horsepower) from cars_data) and t1.cylinders  <  4;",
+      "pred": "::,_,:TEXT,___:____________________TEXT,TEXT:TEXT:TEXT__TEXT___TEXT__TEXT_______________________________________________________________________________________________________________________________________________________________________________TEXT,TEXT:TEXT:TEXT______________TEXT,_____TEXT,__"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum miles per gallon of the car with 8 cylinders or produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": ",:_:::_:_:_:_:________________________________________________________________________________TEXT,__TEXT,TEXT,TEXT,TEXT:______________________________________________________________________________TEXT,_____TEXT,TEXT:TEXT:1TEXT:11__TEXT,TEXT,TEXT:1|TEXTTEXT__TEXT_TEXT_TEXT_TEXT_TEXT__TEXT___TEXT________TEXT:1|_TEXT__________"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum mpg of the cars that had 8 cylinders or that were produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": ",:::,:TEXT,:1_:1_:TEXT,__________TEXT:____________________________TEXT:______________________________________TEXT:11TEXT:1|1|1|1|11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT,TEXT,TEXT:11"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which models are lighter than 3500 but not built by the 'Ford Motor Company'?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": ",_,:TEXT,:__:1_______________TEXT,_________TEXT:TEXT:__________TEXT,11TEXT:1|TEXTTEXTTEXTTEXT_________TEXT:1|TEXT__TEXT__TEXT__TEXT__TEXT___TEXT___TEXT__TEXTTEXT:1|_1|TEXT____TEXT__TEXT__TEXT__TEXT__TEXT____TEXT:1|TEXT____________TEXT:1|TEXT___TEXT:1111TEXT,11TEXT,1111TEXT:1|1|TEXTTEXT_TEXT__TEXT__TEXT__TEXT_______TEXT:1|TEXT_TEXT:1111TEXT:1|1|_1|TEXT______TEXT:1|TEXT_____TEXT:1|_10111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": ",_:_:_,___:TEXT,____________TEXT,_TEXT,_TEXT:TEXT:__TEXT:1__TEXT:1|TEXTTEXT__TEXT___TEXT__TEXT__TEXT___________TEXT:1|TEXT____TEXT___TEXT______TEXT__TEXT__TEXT__TEXT_TEXT__TEXT___TEXT:1111111111|1|1|1|1|1|TEXT:1|TEXT__TEXT__TEXT___TEXT_TEXT__TEXT___TEXT__TEXT___TEXT__TEXT__TEXT_TEXT_TEXT_TEXT__TEXT___TEXT_____TEXT:1|_111111111|1|1|1|1|1|____TEXT:1|TEXT_TEXT__TEXT___TEXT____TEXT___TEXT___TEXT___TEXT__TEXT__TEXT__"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the name of the countries where there is not a single car maker?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": ",_,:_:_:_:_:_,__,__:TEXT,________TEXT,__TEXT,_TEXT____TEXT:_____TEXT:1_TEXT:11TEXT___TEXT_________TEXT:1|_1|_110111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of the countries with no car makers?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": ",:_,:_,:_,:_,,:_:_,_:1______________TEXT,___TEXT:TEXT:TEXT:_TEXT:11_TEXT__TEXT__TEXT_TEXT_TEXT_TEXT_TEXT__1111111111111TEXT__TEXT_TEXT_TEXT_TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__TEXT____TEXT:1111111111111TEXT___TEXT__TEXT__TEXT__TEXT__TEXT___1111111111111TEXT____TEXT___TEXT___TEXT_____TEXT:111TEXT,__________TEXT,TEXT:1111111TEXT:11111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which are the car makers which produce at least 2 models and more than 3 car makers ? List the id and the maker .",
+      "gold": "select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id having count(*)  >=  2 intersect select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker join car_names as t3 on t2.model  =  t3.model group by t1.id having count(*)  >  3;",
+      "pred": ":_:_:_::_,__,__::____:TEXT,_____________________________________________________________________________________________TEXT,_____TEXT,TEXT:TEXT:TEXT__TEXT___TEXT__TEXT__TEXT__TEXT__TEXT:1TEXT:11TEXT,11TEXT,1|TEXT_____TEXT___TEXT__TEXT____TEXT__TEXT__TEXT__TEXT__TEXT__TEXT__________TEXT:11TEXT,11TEXT_TEXT_TEXT_TEXT___TEXT___TEXT_____________TEXT:1111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and makers of all car makers that produce at least 2 models and make more than 3 cars?",
+      "gold": "SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >=  2 INTERSECT SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": ":_:_::_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:______________________________________________________________TEXT,__________________TEXT:TEXT:__TEXT:1__TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the id and names of the countries which have more than 3 car makers or produce the 'fiat' model?",
+      "gold": "SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.countryId HAVING count(*)  >  3 UNION SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country JOIN MODEL_LIST AS T3 ON T2.Id  =  T3.Maker WHERE T3.Model  =  'fiat';",
+      "pred": ",_::_,___:_________________________________________TEXT,________________TEXT:TEXT,TEXT,TEXT:__TEXT,TEXT:TEXT:TEXT:1_____TEXT:TEXT,TEXT:TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT,___"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "pred": ",_:_,_____________________________________________________TEXT,____TEXT:_TEXT:TEXT,__:1_TEXT,TEXT:1TEXT,______TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which country does Airline \"JetBlue Airways\" belong to?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": ",::,,,:_::_,:_:_,_:TEXT,_______________TEXT:________TEXT:1_TEXT:1111111111|TEXT__TEXT____TEXT___TEXT___TEXT__TEXT__TEXT_TEXT__TEXT__TEXT___TEXT:11111TEXT:111TEXT,_____________________________TEXT,TEXT,TEXT:1111111111|_101110111|_1|TEXT__________________TEXT:1|TEXT______TEXT:1111111111|TEXT_______TEXT:1111111TEXT,111111111|TEXT_________TEXT:1"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What country is Jetblue Airways affiliated with?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": ",::,:_,:_,::_::_,:_,_:TEXT,_TEXT:TEXT,__:TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:__:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_:____________TEXT,________TEXT:1__TEXT:1|TEXTTEXT___________________________TEXT,TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the abbreviation of Airline \"JetBlue Airways\"?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": ",_,,:_:_:_:_,:TEXT,___:1TEXT:1TEXT:1TEXT,_____:11111111111111111110|_|TEXT___________TEXT_____TEXT___TEXT__TEXT__TEXT__TEXT___TEXT______TEXT___________________TEXT___TEXT______________TEXT:1111111TEXT:111111TEXT_______________________________TEXT___TEXT___TEXT___TEXT____________________TEXT_________TEXT_________TEXT____TEXT___TEXT___TEXT_"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which abbreviation corresponds to Jetblue Airways?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": ":,:_,,,:TEXT,___:TEXT,TEXT,1TEXT,TEXT,11TEXT,TEXT:TEXT,TEXT:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,_:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,__,_:TEXT,TEXT,TEXT,__:1TEXT,TEXT,TEXT:11TEXT:11TEXT:1|TEXT__________________________TEXT:1|_TEXT_____________________________________________TEXT:1|TEXT___TEXT:1111TEXT:1|TEXT___________TEXT,_________________TEXT:1|TEXT_TEXT:1111111111111111111111111111111"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List all airline names and their abbreviations in \"USA\".",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": ",:::::,:_:_:_:TEXT,____:1_TEXT,TEXT:TEXT,TEXT:TEXT,TEXT:TEXT:TEXT:TEXT:TEXT,____________________________TEXT,___________TEXT:TEXT:TEXT:11TEXT:1|1|1|TEXTTEXT__TEXT__________________________________TEXT:11TEXT:11TEXT:11TEXT:11TEXT:11_________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What are the airline names and abbreviations for airlines in the USA?",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "::,:TEXT,___:TEXT,__:TEXT:_:TEXT,__:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,_:TEXT,_:TEXT:_:TEXT,_:TEXT,____________________________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:______________________________:TEXT,TEXT,____:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:__________________________:TEXT:TEXT:TEXT:_______________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List the airport code and name in the city of Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "::::::::::_:_,___:_TEXT,:TEXT,____:TEXT,_TEXT,TEXT:_______:1_11|TEXT____________________________________________________________________________TEXT:11111111TEXT:111TEXT,__________________TEXT:111TEXT:111_TEXT___TEXT________________________TEXT,______________TEXT,TEXT,TEXT:111TEXT,TEXT,TEXT:111________TEXT:11TEXT:11TEXT:11TEXT"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airport code and airport name corresonding to the city Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": ":_:_,__,_:_:_:_:_:_:_:_,_:TEXT,___:1TEXT,111|TEXT__________________________________________________TEXT:1|TEXT__TEXT___TEXT____________TEXT___TEXT___TEXT___TEXT__________________TEXT_:111111TEXT___TEXT__TEXT__TEXT_TEXT_TEXTTEXT__TEXT__________TEXT:111111TEXT_TEXT__TEXT_______TEXT_______TEXT:111111TEXT:1|TEXTTEXT______________TEXT_______________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines do we have?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "pler,,:TEXT,,__:__ows:_:____:TEXT,:TEXTET_______________________________________________________________________:______________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the total number of airlines?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "pler,,_,_:_:_:_:_:_:_:_:_:_:_:_:_:_:TEXT,:1TEXT,_:1TEXT,TEXT,_:1_:1TEXT,TEXT,TEXT,_:1TEXT,TEXT,TEXT,TEXT,TEXT,_:TEXT,__:1TEXT,___:TEXT,___:TEXT,TEXT,_________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airports do we have?",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": ",_,,:TEXT,:__:TEXT,______:TEXT,___:TEXT,TEXT,______________________:TEXT,___:1TEXT,TEXT,1111111111|TEXT_________________________TEXT:___:1111111|TEXT______TEXT:1111111111|__TEXT:1|TEXT________TEXT,TEXT___________TEXT:111TEXT,TEXT:1111111111|_TEXT:1111111111|_________TEXT:11111_TEXT,TEXT,TEXT:1111111111|TEXT:1111111111|___________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of  airports.",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "::,_,,:TEXT,__:TEXT,_____________________________________:_:TEXT,__:TEXT,TEXT,TEXT,TEXT:________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT,______________________________________________________________________________TEXT,_________TEXT:1_______________________________________________TEXT,TEXT,TEXT,TEXT:111111111111111111"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": ",_,,:TEXT,:TEXT,______________________________________________________________________________________________________TEXT,_TEXT:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:___________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of flights.",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "::,_,,:TEXT,_:TEXT,_______________________________________:_:TEXT,_:TEXT,TEXT,TEXT,TEXT:________TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,__________________________________________________________________________________TEXT,___________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which airline has abbreviation 'UAL'?",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": ",:::,:_,:_:_:_:_:TEXT,___:1_____________TEXT,___:111|TEXTTEXT__1|1|1|TEXTTEXTTEXTTEXTTEXT_________________________TEXT___TEXT__TEXT___TEXT_____________________________TEXT:1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:111111TEXT__TEXT________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airline with abbreviation 'UAL'.",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": ",::::,:_,:_:_:_:_:TEXT,___:1__TEXT,_TEXT,_TEXT:TEXT,_:TEXT,_:TEXT,_:TEXT:TEXT,_:_________________________________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:_______________________________:TEXT,_:TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:11TEXT,TEXT:11TEXT:11TEXT:11________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines are from USA?",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "pler,,:TEXT,,__,:_,:TEXT,:TEXTplerABLE:__:TEXTABLEpler,:TEXT,__:TEXT:__:TEXT:TEXT,_:TEXT,TEXT,_:TEXT,TEXT,_:TEXT,_:_:TEXT,__,_:_:TEXT,_:TEXT,_:_:__:TEXT,__:TEXT,______:_____________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of airlines in the USA.",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": ":,,,,,,,,,,,,,,,,,,:_:_:TEXT,,TEXT::1_:TEXT,TEXT,TEXT,TEXT::TEXT,TEXT:TEXT,TEXT:TEXT,TEXT,_,_,_,_,_,_:_:_:TEXT,__:TEXT,TEXT,TEXT,TEXT:_:__:TEXT,____________:_:_:TEXT,TEXT:TEXT:TEXT:TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which city and country is the Alton airport at?",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": ",_,,:_:_:_:_,:__,_:TEXT,______________________TEXT:_____TEXT:1__TEXT:111111111|TEXT__TEXT____TEXT___________TEXT___TEXT__TEXT___TEXT__TEXT__TEXT______________TEXT______TEXT:1|TEXTTEXT_____________TEXT:111111111|_TEXT___TEXT__TEXT__TEXT_TEXT__TEXT_____TEXT_______TEXT____TEXT___TEXT__TEXT__TEXT___TEXT________________TEXT:1|_TEXT__________________TEXT_____TEXT__"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the city and country for the Alton airport.",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": ",_,,:_,:_,::_::::::::::::_:_,________________TEXT,____TEXT:TEXT,__________TEXT,TEXT,TEXT,TEXT:_______________________________:1_TEXT:TEXT:TEXT:TEXT:TEXT:111TEXT,111_________________TEXT,TEXT,TEXT:111TEXT:111111TEXT:111111TEXT:11TEXT____________________________________________________________________________________"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the airport name for airport 'AKO'?",
+      "gold": "SELECT AirportName FROM AIRPORTS WHERE AirportCode  =  \"AKO\"",
+      "pred": ",_,,:_:_:_:_,:_:_,:1__:111|_1|TEXTTEXT_TEXT__TEXT_______TEXT__TEXT__TEXTTEXT____________________TEXT___________TEXT___TEXT___TEXT____TEXT_________________________TEXT____________________TEXT:TEXT:TEXT:TEXT:TEXT_______________________________________________________________________________________________________"
+    }
+  ]
+}

@@ -1,0 +1,1218 @@
+{
+  "model": "qwen3-coder-30b",
+  "scenario": "zero_shot",
+  "dataset": "spider",
+  "metrics": {
+    "ex": 0.61,
+    "ts": 0.61,
+    "ves": 0.6127146477588442,
+    "component_f1": 0.3623878066378067,
+    "bleu": 17.778691709002175,
+    "bertscore": 0.9208245292305947
+  },
+  "meta": {
+    "sample_size": 200
+  },
+  "per_example": [
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers do we have?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "SELECT COUNT(*) FROM singer"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the total number of singers?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "SELECT COUNT(*) FROM singer"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "SELECT Name, Country, Age FROM singer ORDER BY Age DESC"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names, countries, and ages for every singer in descending order of age?",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "SELECT Name, Country, Age FROM singer ORDER BY Age DESC"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age of all singers from France?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "SELECT AVG(Aage) AS average_age, MIN(Aage) AS minimum_age, MAX(Aage) AS maximum_age FROM singer WHERE Country = 'France'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age for all French singers?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "SELECT AVG(Aage) AS Average, MIN(Aage) AS Minimum, MAX(Aage) AS Maximum FROM singer WHERE Country = 'France'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and the release year of the song by the youngest singer.",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "SELECT Song_Name, Song_release_year FROM singer ORDER BY Age ASC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and release years for all the songs of the youngest singer?",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "SELECT Song_Name, Song_release_year FROM singer WHERE Age = (SELECT MIN(Aage) FROM singer) AND Song_Name IS NOT NULL AND Song_release_year IS NOT NULL"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all distinct countries where singers above age 20 are from?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "SELECT DISTINCT Country FROM singer WHERE Age > 20"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are  the different countries with singers above age 20?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "SELECT DISTINCT Country FROM singer WHERE Age > 20"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show all countries and the number of singers in each country.",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "SELECT Country, COUNT(*) AS singer_count FROM singer GROUP BY Country"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers are from each country?",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "SELECT Country, COUNT(*) AS Singer_Count FROM singer GROUP BY Country"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all song names by singers above the average age.",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "SELECT Song_Name FROM singer WHERE Age > (SELECT AVG(AAge) FROM singer) UNION SELECT Song_Name FROM singer WHERE Age > (SELECT AVG(AAge) FROM singer)"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all the song names by singers who are older than average?",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "SELECT Song_Name FROM singer WHERE Age > (SELECT AVG(CAST(AAge AS REAL)) FROM singer) UNION SELECT Song_Name FROM singer WHERE Age > (SELECT AVG(CAST(AAge AS REAL)) FROM singer)"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show location and name for all stadiums with a capacity between 5000 and 10000.",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "SELECT Location, Name FROM stadium WHERE Capacity > 5000 AND Capacity < 10000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the locations and names of all stations with capacity between 5000 and 10000?",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "SELECT Location, Name FROM stadium WHERE CAST(Capacity AS INTEGER) BETWEEN 5000 AND 10000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the maximum capacity and the average of all stadiums ?",
+      "gold": "select max(capacity), average from stadium",
+      "pred": "SELECT MAX(Capacity) AS Max_Capacity, AVG(Capacity) AS Avg_Capacity FROM stadium"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average and maximum capacities for all stadiums ?",
+      "gold": "select avg(capacity) ,  max(capacity) from stadium",
+      "pred": "SELECT AVG(CAST(Capacity AS REAL)) AS Average_Capacity, MAX(Capacity) AS Maximum_Capacity FROM stadium"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "SELECT Name, Capacity FROM stadium ORDER BY CAST(Average AS INTEGER) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with the highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "SELECT Name, Capacity FROM stadium ORDER BY CAST(Average AS INTEGER) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts are there in year 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "SELECT COUNT(*) FROM concert WHERE Year = '2014' OR Year = '2015' OR Year = '2015'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts occurred in 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "SELECT COUNT(*) FROM concert WHERE Year = '2014' OR Year = '2015' OR Year = '2016'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and the number of concerts in each stadium.",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "SELECT s.Name, COUNT(c.concert_ID) AS Concert_Count FROM stadium s LEFT JOIN concert c ON s.Stadium_ID = c.Stadium_ID GROUP BY s.Stadium_ID, s.Name"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "For each stadium, how many concerts play there?",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "SELECT Stadium_ID, COUNT(*) AS Concert_Count FROM concert GROUP BY Stadium_ID"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and capacity with most number of concerts in year 2014 or after.",
+      "gold": "SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT s.Name, s.Capacity FROM stadium s JOIN concert c ON s.Stadium_ID = c.St stadium_id WHERE c.Year >= '2014' GROUP BY s.Stadium_ID, s.Name, s.Capacity ORDER BY COUNT(c.concert_ID) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity of the stadium with the most concerts after 2013 ?",
+      "gold": "select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1",
+      "pred": "SELECT T1.Name, T1.Capacity FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.St stadium_ID WHERE T2.Year > 2013 GROUP BY T1.Stadium_ID ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Which year has most number of concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT Year FROM concert GROUP BY Year ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the year that had the most concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "SELECT Year FROM concert GROUP BY Year ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium names without any concert.",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "SELECT stadium.Name FROM stadium LEFT JOIN concert ON stadium.Stadium_ID = concert.Stadium_ID WHERE concert.Stadium_ID IS NULL"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the stadiums without any concerts?",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "SELECT Name FROM stadium WHERE Stadium_ID NOT IN ( SELECT Stadium_ID FROM concert )"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show countries where a singer above age 40 and a singer below 30 are from.",
+      "gold": "SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30",
+      "pred": "SELECT DISTINCT s1.Country FROM singer s1 WHERE s1.Age > 40 AND s1.Country IN ( SELECT s2.Country FROM singer s2 WHERE s2.Age < 30 )"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show names for all stadiums except for stadiums having a concert in year 2014.",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "SELECT Name FROM stadium WHERE Stadium_ID NOT IN ( SELECT Stadium_ID FROM concert WHERE Year = '2014' )"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of all stadiums that did not have a concert in 2014?",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "SELECT Name FROM stadium WHERE Stadium_ID NOT IN ( SELECT Stadium_ID FROM concert WHERE Year = '2014' )"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and theme for all concerts and the number of singers in each concert.",
+      "gold": "SELECT T2.concert_name ,  T2.theme ,  count(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.concert_id  =  T2.concert_id GROUP BY T2.concert_id",
+      "pred": "SELECT c.concert_Name, c.Theme, COUNT(s.Singer_ID) AS singer_count FROM concert c LEFT JOIN singer_in_concert sic ON c.concert_ID = sic.concert_ID LEFT JOIN singer s ON sic.Singer_ID = s.Singer_ID GROUP BY c.concert_ID, c.concert_Name, c.Theme"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names , themes , and number of singers for every concert ?",
+      "gold": "select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id",
+      "pred": "SELECT c.concert_Name, c.Theme, COUNT(si.Singer_ID) AS singer_count FROM concert c JOIN singer_in_concert si ON c.concert_ID = si.concert_ID GROUP BY c.concert_ID, c.concert_Name, c.Theme"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List singer names and number of concerts for each singer.",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "SELECT s.Name, COUNT(si.concert_ID) AS concert_count FROM singer s LEFT JOIN singer_in_concert si ON s.Singer_ID = si.Singer_ID GROUP BY s.Singer_ID, s.Name"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers and number of concerts for each person?",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "SELECT s.Name, COUNT(si.concert_ID) AS concert_count FROM singer s JOIN singer_in_concert si ON s.Singer_ID = si.Singer_ID GROUP BY s.Singer_ID, s.Name ORDER BY s.Name"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all singer names in concerts in year 2014.",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "SELECT DISTINCT s.Name FROM singer s JOIN singer_in_concert sic ON s.Singer_ID = sic.Singer_ID JOIN concert c ON sic.concert_ID = c.concert_ID WHERE c.Year = '2014'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers who performed in a concert in 2014?",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "SELECT DISTINCT s.Name FROM singer s JOIN singer_in_concert sic ON s.Singer_ID = sic.Singer_ID JOIN concert c ON sic.concert_ID = c.concert_ID WHERE c.Year = '2014'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "what is the name and nation of the singer who have a song having 'Hey' in its name?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "SELECT Country, Name FROM singer WHERE Song_Name LIKE '%Hey%' AND Name IS NOT NULL"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "SELECT Name, Country FROM singer WHERE Song_Name LIKE '%Hey%' OR Song_Name LIKE '%Hey%'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the name and location of the stadiums which some concerts happened in the years of both 2014 and 2015.",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "SELECT DISTINCT s.Name, s.Location FROM stadium s JOIN concert c ON s.Stadium_ID = c.Stadium_ID WHERE c.Year = '2014' AND s.Stadium_ID IN ( SELECT s2.Stadium_ID FROM stadium s2 JOIN concert c2 ON s2.Stadium_ID = c2.Stadium_ID WHERE c2.Year = '2015' )"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and locations of the stadiums that had concerts that occurred in both 2014 and 2015?",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "SELECT T1.Location, T1.Stadium_ID FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.St stadium_ID WHERE T2.Year = '2014' INTERSECT SELECT T1.Location, T1.Stadium_ID FROM stadium AS T1 JOIN concert AS T2 ON T1.Stadium_ID = T2.St stadium_ID WHERE T2.Year = '2015'"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the number of concerts happened in the stadium with the highest capacity .",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "SELECT COUNT(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.Stadium_ID = T2.Stadium_ID WHERE T2.Capacity = (SELECT MAX(Capacity) FROM stadium) GROUP BY T2.Stadium_ID"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the number of concerts that occurred in the stadium with the largest capacity ?",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "SELECT COUNT(*) FROM concert WHERE Stadium_ID = ( SELECT Stadium_ID FROM stadium ORDER BY CAST(Capacity AS INTEGER) DESC LIMIT 1 )"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets whose weight is heavier than 10.",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "SELECT COUNT(*) FROM Pets WHERE weight > 10"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets have a greater weight than 10?",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "SELECT COUNT(*) FROM Pets WHERE weight > 10"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the weight of the youngest dog.",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT weight FROM Pets WHERE PetType = 'dog' AND pet_age = (SELECT MIN(pet_age) FROM Pets WHERE PetType = 'dog') LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How much does the youngest dog weigh?",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT weight FROM Pets WHERE PetType = 'dog' AND pet_age = (SELECT MIN(pet_age) FROM Pets WHERE PetType = 'dog') LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the maximum weight for each type of pet. List the maximum weight and pet type.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "SELECT PetType, MAX(weight) AS max_weight FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "List the maximum weight and type for each type of pet.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "SELECT MAX(weight) AS max_weight, PetType FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "SELECT COUNT(*) FROM Has_Pet WHERE StuID IN (SELECT StuID FROM Students WHERE age > 20) GROUP BY StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets are owned by students that have an age greater than 20?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "SELECT COUNT(*) FROM Has_Pet hp JOIN Student s ON hp.StuID = s.StuID WHERE s.Age > 20"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of dog pets that are raised by female students (with sex F).",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "SELECT COUNT(*) FROM Pets p JOIN Has_Pet hp ON p.PetID = hp.PetID JOIN Student s ON hp.StuID = s.StuID WHERE p.PetType = 'dog' AND s.Sex = 'F'"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "SELECT COUNT(*) FROM Has_Pet hp JOIN Students s ON hp.StuID = s.StuID JOIN Pets p ON hp.PetID = p.PetID WHERE p.PetType = 'dog' AND s.Gender = 'F'"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of distinct type of pets.",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "SELECT COUNT(DISTINCT PetType) FROM Pets"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many different types of pet are there?",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "SELECT COUNT(DISTINCT PetType) FROM Pets"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have cat or dog pet.",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "SELECT S.Fname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'cat' OR P.PetType = 'dog'"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the first names of every student who has a cat or dog as a pet?",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "SELECT DISTINCT S.Fname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'cat' OR P.PetType = 'dog'"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have both cat and dog pets .",
+      "gold": "select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'dog'",
+      "pred": "SELECT S.StuID, S.Fname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'cat' AND S.StuID IN ( SELECT S2.StuID FROM Student S2 JOIN Has_Pet HP2 ON S2.StuID = HP2.StuID JOIN Pets P2 ON HP2.PetID = P2.PetID WHERE P2.PetType = 'dog' ) GROUP BY S.StuID, S.Fname HAVING COUNT(DISTINCT P.PetType) = 2 ORDER BY S.StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the students' first names who have both cats and dogs as pets?",
+      "gold": "SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' INTERSECT SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog'",
+      "pred": "SELECT S.StuFname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PPetID WHERE P.PetType = 'cat' INTERSECT SELECT S.StuFname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PPetID WHERE P.PetType = 'dog'"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT Major, Age FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets WHERE PetType = 'cat')) GROUP BY Major, Age"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What major is every student who does not own a cat as a pet, and also how old are they?",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT Major, Age FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets WHERE PetType = 'cat')) ORDER BY Major, Age"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of students who do not have a cat pet.",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "SELECT StuID FROM Has_Pet WHERE StuID NOT IN ( SELECT StuID FROM Has_Pet JOIN Pets ON Has_Pet.PetID = Pets.PetID WHERE PetType = 'cat' ) AND StuID IN ( SELECT StuID FROM Has_Pet ) ORDER BY StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the ids of the students who do not own cats as pets?",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "SELECT StuID FROM Has_Pet WHERE StuID NOT IN (SELECT StuID FROM Has_Pet WHERE PetID IN (SELECT PetID FROM Pets WHERE PetType = 'cat')) GROUP BY StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT S.Fname, S.Age FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'dog' AND S.StuID NOT IN ( SELECT S2.StuID FROM Student S2 JOIN Has_Pet HP2 ON S2.StuID = HP2.StuID JOIN Pets P2 ON HP2.PetID = P2.PetID WHERE P2.PetType = 'cat' ) GROUP BY S.StuID, S.Fname, S.Age HAVING COUNT(P.PetID) = 1 ORDER BY S.Fname"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name of every student who has a dog but does not have a cat?",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "SELECT S.Fname FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'dog' AND S.StuID NOT IN ( SELECT S2.StuID FROM Student S2 JOIN Has_Pet HP2 ON S2.StuID = HP2.StuID JOIN Pets P2 ON HP2.PetID = P2.PetID WHERE P2.PetType = 'cat' ) GROUP BY S.StuID, S.Fname"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the type and weight of the youngest pet.",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT PetType, weight FROM Pets WHERE pet_age = (SELECT MIN(pet_age) FROM Pets) LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What type of pet is the youngest animal, and how much does it weigh?",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "SELECT PetType, weight FROM Pets ORDER BY pet_age ASC LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id and weight of all pets whose age is older than 1.",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "SELECT PetID, weight FROM Pets WHERE pet_age > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id and weight of every pet who is older than 1?",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "SELECT PetID, weight FROM Pets WHERE pet_age > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average and maximum age for each type of pet.",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT PetType, AVG(pet_age) AS avg_age, MAX(pet_age) AS max_age FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average and maximum age for each pet type?",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT PetType, AVG(pet_age) AS avg_age, MAX(pet_age) AS max_age FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average weight for each pet type.",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT PetType, AVG(weight) AS avg_weight FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average weight for each type of pet?",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "SELECT PetType, AVG(weight) AS avg_weight FROM Pets GROUP BY PetType"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a pet.",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "SELECT S.Fname, S.Age FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID GROUP BY S.StuID, S.Fname, S.Age HAVING COUNT(HP.PetID) > 0 ORDER BY S.Fname"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the different first names and ages of the students who do have pets?",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "SELECT DISTINCT s.Fname, s.Age FROM Student s JOIN Has_Pet h ON s.StuID = h.StuID JOIN Pets p ON h.PetID = p.PetID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of the pet owned by student whose last name is \u2018Smith\u2019.",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "SELECT PetID FROM Has_Pet WHERE StuID = (SELECT StuID FROM Student WHERE LName = 'Smith') AND PetID = (SELECT PetID FROM Pets WHERE StuID = Has_Pet.StuID) ORDER BY PetID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id of the pet owned by the student whose last name is 'Smith'?",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "SELECT PetID FROM Has_Pet WHERE StuID = (SELECT StuID FROM Student WHERE LName = 'Smith') LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets for each student who has any pet and student id.",
+      "gold": "SELECT count(*) ,  T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid",
+      "pred": "SELECT StuID, COUNT(PetID) AS pet_count FROM Has_Pet GROUP BY StuID ORDER BY StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "For students who have pets , how many pets does each student have ? list their ids instead of names .",
+      "gold": "select count(*) ,  t1.stuid from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid group by t1.stuid",
+      "pred": "SELECT StuID, COUNT(*) AS pet_count FROM Has_Pet GROUP BY StuID"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and gender of student who have more than one pet.",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "SELECT S.Fname, S.Sex FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID GROUP BY S.StuID, S.Fname, S.Sex HAVING COUNT(HP.PetID) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name and gender of the all the students who have more than one pet?",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "SELECT S.Fname, S.Sex FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID GROUP BY S.StuID, S.Fname, S.Sex HAVING COUNT(HP.PetID) > 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the last name of the student who has a cat that is age 3.",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "SELECT S.LName FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'cat' AND P.pet_age = '3' ORDER BY S.LName ASC"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the last name of the student who has a cat that is 3 years old?",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "SELECT S.LName FROM Student S JOIN Has_Pet HP ON S.StuID = HP.StuID JOIN Pets P ON HP.PetID = P.PetID WHERE P.PetType = 'cat' AND P.pet_age = '3' ORDER BY S.LName LIMIT 1"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average age of students who do not have any pet .",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "SELECT AVG(AAge) FROM (SELECT StuID, Age AS AAge FROM Student WHERE StuID NOT IN (SELECT StuID FROM Has_Pet)) AS Subquery"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average age for all students who do not own any pets ?",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "SELECT AVG(A.age) FROM Student S JOIN (SELECT StuID FROM Student EXCEPT SELECT StuID FROM Has_Pet) AS NoPet ON S.StuID = NoPet.StuID"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many continents are there?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "SELECT COUNT(*) FROM continents"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of continents?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "SELECT COUNT(*) FROM continents"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries does each continent have? List the continent id, continent name and the number of countries.",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "SELECT c.ContId, c.Continent, COUNT(c.CountryId) AS CountryCount FROM countries c JOIN continents cont ON c.Continent = cont.ContId GROUP BY c.ContId, c.Continent"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For each continent, list its id, name, and how many countries it has?",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "SELECT c.ContId, c.Continent, COUNT(c2.CountryId) AS CountryCount FROM continents c LEFT JOIN countries c2 ON c.ContId = c2.Continent GROUP BY c.ContId, c.Continent"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries are listed?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "SELECT COUNT(*) FROM countries"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries exist?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "SELECT COUNT(*) FROM countries"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many models does each car maker produce? List maker full name, id and the number.",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "SELECT c.Maker, c.Id, COUNT(m.Maker) AS model_count FROM car_makers c JOIN model_list m ON c.Id = m.Maker GROUP BY c.Id, c.Maker, c.FullName ORDER BY c.Maker"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the full name of each car maker, along with its id and how many models it produces?",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "SELECT car_makers.Id, car_makers.FullName, COUNT(model_list.ModelId) AS model_count FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker GROUP BY car_makers.Id, car_makers.FullName"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model of the car has the minimum horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names WHERE MakeId = (SELECT Id FROM cars_data WHERE Horsepower = (SELECT MIN(Horsepower) FROM cars_data)) LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model of the car with the smallest amount of horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "SELECT T2.Model FROM car_names AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId JOIN cars_data AS T3 ON T1.MakeId = T3.Id ORDER BY T3.Horsepower ASC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the model of the car whose weight is below the average weight.",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "SELECT T2.Model FROM car_names AS T1 JOIN car_names AS T2 ON T1.MakeId = T2.MakeId JOIN cars_data AS T3 ON T1.MakeId = T3.Id WHERE T3.Weight < (SELECT AVG(Weight) FROM cars_data) GROUP BY T2.Model HAVING COUNT(*) = 1 ORDER BY T2.Model ASC"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model for the car with a weight smaller than the average?",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "SELECT T2.Model FROM cars_data AS T1 JOIN car_names AS T2 ON T1.Id = T2.MakeId WHERE T1.Weight < (SELECT AVG(Weight) FROM cars_data) ORDER BY T1.Weight ASC"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the name of the makers that produced some cars in the year of 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "SELECT DISTINCT cm.Maker FROM car_makers cm JOIN model_list ml ON cm.Id = ml.Maker JOIN car_names cn ON ml.ModelId = cn.MakeId JOIN cars_data cd ON cn.MakeId = cd.Id WHERE cd.Year = '1970'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the different car makers who produced a car in 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "SELECT DISTINCT car_makers.Maker FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker JOIN car_names ON model_list.ModelId = car_names.MakeId JOIN cars_data ON car_names.MakeId = cars_data.Id WHERE cars_data.Year = '1970'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the make and production time of the cars that were produced in the earliest year?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "SELECT c.Maker, c.Model, c.Year FROM car_names c JOIN model_list m ON c.MakeId = m.ModelId WHERE c.Year = (SELECT MIN(Year) FROM car_names)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maker of the carr produced in the earliest year and what year was it?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "SELECT c.Maker, c.Year FROM cars_data c JOIN car_makers cm ON c.Id = cm.Id ORDER BY c.Year ASC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinct car models are the produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "SELECT DISTINCT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Year > '1980') ORDER BY Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models for the cards produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "SELECT DISTINCT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Year > '1980') ORDER BY Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in each continents? List the continent name and the count.",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "SELECT c.Continent, COUNT(*) AS count FROM car_makers cm JOIN countries co ON cm.Country = co.CountryId JOIN continents c ON co.Continent = c.ContId GROUP BY c.Continent"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of each continent and how many car makers are there in each one?",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "SELECT c.Continent, COUNT(*) AS CarMakerCount FROM car_makers cm JOIN countries co ON cm.Country = co.CountryId JOIN continents c ON co.Continent = c.ContId GROUP BY c.ContId, c.Continent ORDER BY c.Continent"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which of the countries has the most car makers? List the country name.",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "SELECT c.CountryName FROM countries c JOIN car_makers cm ON c.CountryId = cm.Country GROUP BY c.CountryName ORDER BY COUNT(cm.Id) DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the country with the most car makers?",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "SELECT c.CountryName FROM countries c JOIN car_makers cm ON c.CountryId = cm.Country GROUP BY c.CountryName ORDER BY COUNT(cm.Id) DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced by each maker ? Only list the count and the maker full name .",
+      "gold": "select count(*) ,  t2.fullname from model_list as t1 join car_makers as t2 on t1.maker  =  t2.id group by t2.id;",
+      "pred": "SELECT COUNT(*) AS count, car_makers.FullName FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker GROUP BY car_makers.FullName"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models that are produced by each maker and what is the id and full name of each maker?",
+      "gold": "SELECT Count(*) ,  T2.FullName ,  T2.id FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id GROUP BY T2.id;",
+      "pred": "SELECT COUNT(Model) AS ModelCount, maker.Id AS MakerId, maker.Maker AS MakerName, maker.FullName AS MakerFullName FROM car_makers AS maker JOIN model_list AS model ON maker.Id = model.Maker GROUP BY maker.Id, maker.Maker, maker.FullName ORDER BY maker.Id"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the accelerate of the car make amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "SELECT accelerate FROM car_names JOIN cars_data ON car_names.MakeId = cars_data.Id WHERE car_names.Make = 'amc hornet sportabout'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How much does the car accelerate that makes amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "SELECT Accelerate FROM cars_data WHERE Id = (SELECT MakeId FROM car_names WHERE Make = 'amc hornet sport about') LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in france?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "SELECT COUNT(*) FROM car_makers WHERE Country = (SELECT CountryId FROM countries WHERE CountryName = 'france')"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of makers of care in France?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "SELECT COUNT(*) FROM car_makers WHERE Country = (SELECT CountryId FROM countries WHERE CountryName = 'France')"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced in the usa?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "SELECT COUNT(*) FROM model_list WHERE Maker IN (SELECT Id FROM car_makers WHERE Country = 1) AND Model IN (SELECT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Id IN (SELECT Id FROM car_makers WHERE Country = 1))) GROUP BY Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the count of the car models produced in the United States?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "SELECT COUNT(*) FROM car_makers cm JOIN countries c ON cm.Country = c.CountryId WHERE c.CountryName = 'United States'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon(mpg) of the cars with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "SELECT AVG(MPG) FROM cars_data WHERE Cylinders = '4'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon of all the cards with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "SELECT AVG(MPG) FROM cars_data WHERE Cylinders = '4'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the smallest weight of the car produced with 8 cylinders on 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "SELECT MIN(Weight) FROM cars_data WHERE Cylinders = '8' AND Year = '1974'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the minimum weight of the car with 8 cylinders produced in 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "SELECT MIN(Weight) FROM cars_data WHERE Cylinders = '8' AND Year = '1974'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are all the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "SELECT Maker, Model FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "SELECT Maker, Model FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the countries having at least one car maker? List name and id.",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "SELECT CountryName, CountryId FROM countries WHERE CountryId IN (SELECT Country FROM car_makers GROUP BY Country HAVING COUNT(*) >= 1)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all countries with at least one car maker?",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "SELECT CountryId, CountryName FROM countries WHERE CountryId IN (SELECT Country FROM car_makers GROUP BY Country HAVING COUNT(*) >= 1) ORDER BY CountryId"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of the cars with horsepower more than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Horsepower > 150"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a horsepower greater than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Horsepower > 150"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight of cars each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "SELECT Year, AVG(Weight) AS AverageWeight FROM cars_data GROUP BY Year ORDER BY Year"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight and year for each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "SELECT Year, AVG(Weight) AS Average_Weight FROM cars_data GROUP BY Year"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which countries in europe have at least 3 car manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "SELECT c.CountryName FROM countries c JOIN car_makers cm ON c.CountryId = cm.Country WHERE c.Continent = '2' GROUP BY c.CountryName HAVING COUNT(cm.Id) >= 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of all European countries with at least 3 manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "SELECT c.CountryName FROM countries c JOIN car_makers cm ON c.ContId = cm.Country WHERE c.Continent = 'Europe' GROUP BY c.CountryName HAVING COUNT(DISTINCT cm.Id) >= 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum horsepower and the make of the car models with 3 cylinders?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT MAX(cars_data.Horsepower) AS MaxHorsepower, car_names.Make AS Make FROM car_names JOIN cars_data ON car_names.MakeId = cars_data.Id WHERE car_names.Model IN (SELECT Model FROM model_list WHERE Maker IN (SELECT Id FROM car_makers WHERE Country = 1)) GROUP BY car_names.Make ORDER BY MaxHorsepower DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the largest amount of horsepower for the models with 3 cylinders and what make is it?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT MAX(Horsepower) AS MaxHorsepower, Make FROM car_names cn JOIN cars_data cd ON cn.MakeId = cd.Id WHERE cd.Cylinders = '3' GROUP BY Make ORDER BY MaxHorsepower DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.mpg DESC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names WHERE MakeId = (SELECT Id FROM cars_data ORDER BY MPG DESC LIMIT 1) LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the car model with the highest mpg ?",
+      "gold": "select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.mpg desc limit 1;",
+      "pred": "SELECT Model FROM car_names WHERE MakeId = (SELECT Id FROM cars_data ORDER BY MPG DESC LIMIT 1) LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower of the cars before 1980?",
+      "gold": "SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <  1980;",
+      "pred": "SELECT AVG(Horsepower) FROM cars_data WHERE Year < '1980' AND Horsepower IS NOT NULL"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower for all cars produced before 1980 ?",
+      "gold": "select avg(horsepower) from cars_data where year  <  1980;",
+      "pred": "SELECT AVG(Horsepower) FROM cars_data WHERE Year < '1980' AND Horsepower != 'null'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl of the cars of model volvo?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "SELECT AVG(Edispl) FROM cars_data WHERE Id IN (SELECT Id FROM car_names WHERE Model = 'volvo') AND Edispl IS NOT NULL"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl for all volvos?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "SELECT AVG(Edispl) FROM cars_data WHERE Id IN (SELECT MakeId FROM car_names WHERE Make = 'volvo')"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for different number of cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "SELECT MAX(accelerate) AS max_accelerate, cylinders FROM cars_data GROUP BY cylinders ORDER BY cylinders ASC"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for all the different cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "SELECT MAX(Aaccelerate) FROM cars_data GROUP BY cylinders"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model has the most version(make) of cars?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names GROUP BY Model ORDER BY COUNT(Make) DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What model has the most different versions?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names GROUP BY Model HAVING COUNT(DISTINCT MakeId) = (SELECT MAX(version_count) FROM (SELECT COUNT(DISTINCT MakeId) AS version_count FROM car_names GROUP BY Model)) LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > '4'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > '4'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "how many cars were produced in 1980?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Year = '1980'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In 1980, how many cars were made?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Year = '1980'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models were produced by the maker with full name American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "SELECT COUNT(*) FROM model_list WHERE Maker = (SELECT Id FROM car_makers WHERE FullName = 'American Motor Company')"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models created by the car maker American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "SELECT COUNT(*) FROM model_list WHERE Maker = (SELECT Id FROM car_makers WHERE Maker = 'American Motor Company')"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which makers designed more than 3 car models? List full name and the id.",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT c.Maker, c.Id FROM car_makers c JOIN model_list m ON c.Id = m.Maker GROUP BY c.Id HAVING COUNT(m.Model) > 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all makers with more than 3 models?",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT M.Maker, M.Id FROM car_makers M JOIN model_list ML ON M.Id = ML.Maker GROUP BY M.Id HAVING COUNT(ML.Model) > 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "SELECT DISTINCT m.Model FROM model_list m JOIN car_makers cm ON m.Maker = cm.Id WHERE cm.FullName = 'General Motors' OR m.Model IN ( SELECT m2.Model FROM model_list m2 JOIN car_names cn ON m2.Model = cn.Model JOIN cars_data cd ON cn.MakeId = cd.Id WHERE cd.Weight > 3500 )"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models created by either the car maker General Motors or weighed more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "SELECT DISTINCT Model FROM model_list WHERE Maker IN (SELECT Id FROM car_makers WHERE Maker = 'General Motors') OR Id IN (SELECT Id FROM cars_data WHERE Weight > 3500) GROUP BY Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In which years cars were produced weighing no less than 3000 and no more than 4000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "SELECT DISTINCT Year FROM cars_data WHERE Weight >= 3000 AND Weight <= 4000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "SELECT DISTINCT c1.Year FROM cars_data c1 WHERE c1.Weight < 4000 INTERSECT SELECT DISTINCT c2.Year FROM cars_data c2 WHERE c2.Weight > 3000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the largest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "SELECT Horsepower FROM cars_data ORDER BY Accelerate DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the greatest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "SELECT Horsepower FROM cars_data ORDER BY Accelerate DESC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For model volvo, how many cylinders does the car with the least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "SELECT c.Cylinders FROM cars_data c JOIN car_names cn ON c.Id = cn.MakeId JOIN model_list ml ON ml.ModelId = cn.Model WHERE ml.Model = 'volvo' ORDER BY c.Accelerate ASC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For a volvo model, how many cylinders does the version with least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "SELECT c.Cylinders FROM car_makers cm JOIN model_list ml ON cm.Id = ml.Maker JOIN car_names cn ON ml.ModelId = cn.MakeId JOIN cars_data c ON cn.MakeId = c.Id WHERE cm.Maker = 'volvo' ORDER BY c.Accelerate ASC LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have a larger accelerate than the car with the largest horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Accelerate > (SELECT MAX(Horsepower) FROM cars_data) AND Accelerate IS NOT NULL AND Accelerate != ''"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a greater accelerate than the one with the most horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Accelerate > (SELECT MAX(Horsepower) FROM cars_data) AND Accelerate IS NOT NULL AND Accelerate != ''"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries has more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "SELECT COUNT(*) FROM (SELECT Country FROM car_makers GROUP BY Country HAVING COUNT(*) > 2) AS subquery"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of countries with more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "SELECT COUNT(*) FROM (SELECT Country FROM car_makers GROUP BY Country HAVING COUNT(*) > 2) AS subquery"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars has over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > '6' AND Cylinders IS NOT NULL AND Cylinders != ''"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of carsw ith over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "SELECT COUNT(*) FROM cars_data WHERE Cylinders > '6' AND Cylinders IS NOT NULL"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For the cars with 4 cylinders, which model has the largest horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Cylinders = '4' AND Horsepower = (SELECT MAX(Horsepower) FROM cars_data WHERE Cylinders = '4')) AND Model IN (SELECT ModelId FROM model_list WHERE Maker = (SELECT Id FROM car_makers WHERE Maker = 'amc')) AND Model IN (SELECT ModelId FROM model_list WHERE Maker = (SELECT Id FROM car_makers WHERE Maker = 'volkswagen')) AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'bmw') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'audi') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'bmw') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'volkswagen') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'bmw') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'volkswagen') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'bmw') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'volkswagen') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = 'bmw') AND"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For all of the 4 cylinder cars, which model has the most horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "SELECT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Cylinders = '4' AND Horsepower = (SELECT MAX(Horsepower) FROM cars_data WHERE Cylinders = '4')) AND MakeId IN (SELECT Id FROM cars_data WHERE Cylinders = '4') AND Model IN (SELECT ModelId FROM model_list WHERE Maker = (SELECT Id FROM car_makers WHERE Maker = (SELECT Maker FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Cylinders = '4') LIMIT 1))) GROUP BY Model HAVING COUNT(*) > 0 ORDER BY Model LIMIT 1"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars with more than lowest horsepower, which ones do not have more than 3 cylinders? List the car makeid and make name.",
+      "gold": "SELECT T2.MakeId ,  T2.Make FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Horsepower  >  (SELECT min(Horsepower) FROM CARS_DATA) AND T1.Cylinders  <=  3;",
+      "pred": "SELECT T1.MakeId, T2.Make FROM cars_data AS T1 JOIN car_names AS T2 ON T1.Id = T2.MakeId WHERE T1.Horsepower > (SELECT MIN(Horsepower) FROM cars_data) AND T1.Cylinders <= 3 ORDER BY T1.Horsepower ASC"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars that do not have the minimum horsepower , what are the make ids and names of all those with less than 4 cylinders ?",
+      "gold": "select t2.makeid ,  t2.make from cars_data as t1 join car_names as t2 on t1.id  =  t2.makeid where t1.horsepower  >  (select min(horsepower) from cars_data) and t1.cylinders  <  4;",
+      "pred": "SELECT c.MakeId, c.Make FROM car_names c JOIN cars_data d ON c.MakeId = d.Id WHERE d.Horsepower != (SELECT MIN(Horsepower) FROM cars_data) AND d.Cylinders < '4' ORDER BY c.MakeId"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum miles per gallon of the car with 8 cylinders or produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "SELECT MAX(MPG) FROM cars_data WHERE Cylinders = '8' OR Year < '1980'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum mpg of the cars that had 8 cylinders or that were produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "SELECT MAX(MPG) FROM cars_data WHERE Cylinders = '8' OR Year < '1980'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which models are lighter than 3500 but not built by the 'Ford Motor Company'?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "SELECT DISTINCT Model FROM model_list WHERE Model IN (SELECT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Weight < 3500) AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company')) AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName = 'Ford Motor Company') AND Model NOT IN (SELECT Id FROM car_makers WHERE FullName"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "SELECT DISTINCT Model FROM model_list WHERE Model IN (SELECT Model FROM car_names WHERE MakeId IN (SELECT Id FROM cars_data WHERE Weight < 3500) AND Make NOT LIKE '%Ford Motor Company') GROUP BY Model"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the name of the countries where there is not a single car maker?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "SELECT CountryName FROM countries WHERE CountryId NOT IN ( SELECT Country FROM car_makers )"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of the countries with no car makers?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "SELECT CountryName FROM countries WHERE CountryId NOT IN ( SELECT Country FROM car_makers )"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which are the car makers which produce at least 2 models and more than 3 car makers ? List the id and the maker .",
+      "gold": "select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id having count(*)  >=  2 intersect select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker join car_names as t3 on t2.model  =  t3.model group by t1.id having count(*)  >  3;",
+      "pred": "SELECT Id, Maker FROM car_makers GROUP BY Id, Maker HAVING COUNT(*) >= 2 AND COUNT(*) > 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and makers of all car makers that produce at least 2 models and make more than 3 cars?",
+      "gold": "SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >=  2 INTERSECT SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "SELECT car_makers.Id, car_makers.Maker FROM car_makers JOIN model_list ON car_makers.Id = model_list.Maker GROUP BY car_makers.Id, car_makers.Maker HAVING COUNT(DISTINCT model_list.Model) >= 2 AND COUNT(*) > 3"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the id and names of the countries which have more than 3 car makers or produce the 'fiat' model?",
+      "gold": "SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.countryId HAVING count(*)  >  3 UNION SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country JOIN MODEL_LIST AS T3 ON T2.Id  =  T3.Maker WHERE T3.Model  =  'fiat';",
+      "pred": "SELECT c.CountryId, c.CountryName FROM countries c JOIN car_makers cm ON c.Continent = cm.Country GROUP BY c.CountryId, c.CountryName HAVING COUNT(cm.Id) > 3 UNION SELECT c.CountryId, c.CountryName FROM countries c JOIN car_makers cm ON c.Continent = cm.Country WHERE cm.Maker = 'fiat'"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "pred": "SELECT c.CountryId, c.CountryName FROM countries c JOIN car_makers cm ON c.CountryId = cm.Country GROUP BY c.CountryId, c.CountryName HAVING COUNT(cm.Id) > 3 UNION SELECT c.CountryId, c.CountryName FROM countries c JOIN car_makers cm ON c.CountryId = cm.Country WHERE cm.Maker = 'fiat' ORDER BY CountryId"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which country does Airline \"JetBlue Airways\" belong to?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Country FROM airlines WHERE Airline = \"JetBlue Airways\""
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What country is Jetblue Airways affiliated with?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Country FROM airlines WHERE Airline = 'Jetblue Airways'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the abbreviation of Airline \"JetBlue Airways\"?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Abbreviation FROM airlines WHERE Airline = \"JetBlue Airways\""
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which abbreviation corresponds to Jetblue Airways?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "SELECT Abbreviation FROM airlines WHERE Airline = 'Jetblue Airways'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List all airline names and their abbreviations in \"USA\".",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT Airline, Abbreviation FROM airlines WHERE Country = 'USA'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What are the airline names and abbreviations for airlines in the USA?",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT Airline, Abbreviation FROM airlines WHERE Country = 'USA'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List the airport code and name in the city of Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "SELECT AirportCode, AirportName FROM airports WHERE City = 'Anthony'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airport code and airport name corresonding to the city Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "SELECT AirportCode, AirportName FROM airports WHERE City = 'Anthony'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines do we have?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "SELECT COUNT(*) FROM airlines"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the total number of airlines?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "SELECT COUNT(*) FROM airlines"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airports do we have?",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "SELECT COUNT(*) FROM airports"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of  airports.",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "SELECT COUNT(*) FROM airports"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "SELECT COUNT(*) FROM flights"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of flights.",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "SELECT COUNT(*) FROM flights"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which airline has abbreviation 'UAL'?",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "SELECT Airline FROM airlines WHERE Abbreviation = 'UAL'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airline with abbreviation 'UAL'.",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "SELECT Airline FROM airlines WHERE Abbreviation = 'UAL'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines are from USA?",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT COUNT(*) FROM airlines WHERE Country = 'USA'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of airlines in the USA.",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "SELECT COUNT(*) FROM airlines WHERE Country = 'USA'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which city and country is the Alton airport at?",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "SELECT City, Country FROM airports WHERE AirportCode = 'ALTON'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the city and country for the Alton airport.",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "SELECT City, Country FROM airports WHERE AirportName = 'Alton'"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the airport name for airport 'AKO'?",
+      "gold": "SELECT AirportName FROM AIRPORTS WHERE AirportCode  =  \"AKO\"",
+      "pred": "SELECT AirportName FROM airports WHERE AirportCode = 'AKO'"
+    }
+  ]
+}

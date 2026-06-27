@@ -1,0 +1,15 @@
+models:
+  - id: deepseek-coder-33b
+    mlx_repo: sleepy186247/deepseek-coder-33b-instruct-mlx-4Bit
+    hf_repo: deepseek-ai/deepseek-coder-33b-instruct
+    backend: mlx
+    chat_template: true
+scenarios: [zero_shot]
+datasets: [spider]
+evaluation:
+  metrics: [ex, component_f1, bleu]
+  llm_judge_model: deepseek-coder-33b
+  sample_size: 5
+paths:
+  spider_root: data/spider/spider_data
+  bird_root: data/bird/dev_20240627

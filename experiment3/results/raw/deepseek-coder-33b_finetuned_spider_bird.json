@@ -1,0 +1,1218 @@
+{
+  "model": "deepseek-coder-33b",
+  "scenario": "finetuned_spider",
+  "dataset": "bird",
+  "metrics": {
+    "ex": 0.0,
+    "ts": 0.0,
+    "ves": 0.0,
+    "component_f1": 0.0,
+    "bleu": 0.13373885554128923,
+    "bertscore": 0.816782386302948
+  },
+  "meta": {
+    "sample_size": 200
+  },
+  "per_example": [
+    {
+      "db_id": "california_schools",
+      "question": "What is the highest eligible free rate for K-12 students in the schools in Alameda County?",
+      "gold": "SELECT `Free Meal Count (K-12)` / `Enrollment (K-12)` FROM frpm WHERE `County Name` = 'Alameda' ORDER BY (CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)`) DESC LIMIT 1",
+      "pred": "___________________________________________________________________________________________________________________TEXT,::____________________________________________________:_:_:_:_:TEXT,_:TEXT,:TEXT,_:_________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the lowest three eligible free rates for students aged 5-17 in continuation schools.",
+      "gold": "SELECT `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` FROM frpm WHERE `Educational Option Type` = 'Continuation School' AND `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` IS NOT NULL ORDER BY `Free Meal Count (Ages 5-17)` / `Enrollment (Ages 5-17)` ASC LIMIT 3",
+      "pred": "_____:__:_:___:___________________________________________________:_:_:_:__:_:_:__________________________________:_:__:_:TEXT:__:_:_:TEXT:TEXT:TEXT:__:TEXT,_:_:_:TEXT_______:TEXT:TEXT:_:_:_:_________________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the zip code of all the charter schools in Fresno County Office of Education.",
+      "gold": "SELECT T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`District Name` = 'Fresno County Office of Education' AND T1.`Charter School (Y/N)` = 1",
+      "pred": ":__:_:__:__________________________________________________________________________:__:TEXT:_:____________________________________________:TEXT:_:TEXT:TEXT,__:TEXT,_:_:_:___:_:___:TEXT:TEXT:___:_:_:TEXT:_:_:_:_:_:TEXT,_:_:_:TEXT,_:TEXT:TEXT:TEXT:TEXT:_______________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the unabbreviated mailing street address of the school with the highest FRPM count for K-12 students?",
+      "gold": "SELECT T2.MailStreet FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 1",
+      "pred": "______________TEXT___TEXT_____TEXT_TEXT____TEXT________TEXT_________________________TEXT__________TEXT_______________________________________________________________________TEXT:TEXT:__:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT________TEXT:__:__:TEXT:TEXT:___:1:TEXT____:1___:1TEXT:__:TEXT:__________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the phone numbers of the direct charter-funded schools that are opened after 2000/1/1.",
+      "gold": "SELECT T2.Phone FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`Charter School (Y/N)` = 1 AND T2.OpenDate > '2000-01-01'",
+      "pred": ":________________________________________TEXT______TEXT_TEXT____TEXTTEXT_________________________________________________TEXT______:_________________________________________________________________________________________:TEXT___________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools with an average score in Math greater than 400 in the SAT test are exclusively virtual?",
+      "gold": "SELECT COUNT(DISTINCT T2.School) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' AND T1.AvgScrMath > 400",
+      "pred": "________________________________TEXT__::_:____:_:TEXT____________TEXT______________________________________________________________________________________________________________________________________________________________:_____________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with the SAT test takers of over 500, please list the schools that are magnet schools or offer a magnet program.",
+      "gold": "SELECT T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Magnet = 1 AND T1.NumTstTakr > 500",
+      "pred": "::____________________________________________________________________________:_____________________________________________________________________________________________:___:_:_:_:___________:TEXT,:__________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number of the school that has the highest number of test takers with an SAT score of over 1500?",
+      "gold": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "_____________TEXT___TEXT__________TEXT_____TEXTTEXT____________________________TEXT_________TEXT__TEXT____________________________________________________________________TEXT:__:TEXT:_:__:1_:11TEXT:TEXT______________:1TEXT:__:TEXT_______________:1TEXT:__:___________:1_:1TEXT:____________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the number of SAT test takers of the schools with the highest FRPM count for K-12 students?",
+      "gold": "SELECT NumTstTakr FROM satscores WHERE cds = ( SELECT CDSCode FROM frpm ORDER BY `FRPM Count (K-12)` DESC LIMIT 1 )",
+      "pred": "______________TEXT___TEXT________TEXT______TEXT___TEXT______________________________TEXT_______TEXT_TEXT_______________________________________________________________________TEXT:__:__________:TEXT,:TEXT,:___________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with the average score in Math over 560 in the SAT test, how many schools are directly charter-funded?",
+      "gold": "SELECT COUNT(T2.`School Code`) FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath > 560 AND T2.`Charter Funding Type` = 'Directly funded'",
+      "pred": "_____________TEXT_____TEXT___TEXT_______TEXT_______________________________TEXT____________TEXT__TEXT__________________________________________________________________TEXT:____________:TEXT:_:_:_:_:_:_:________________________________________________________:________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "For the school with the highest average score in Reading in the SAT test, what is its FRPM count for students aged 5-17?",
+      "gold": "SELECT T2.`FRPM Count (Ages 5-17)` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrRead DESC LIMIT 1",
+      "pred": "_____________TEXT_____TEXT________TEXT__TEXT___TEXT___________________________TEXT_______________TEXT___________________________________________________________________TEXT:_____________:_:_:_:TEXT:TEXT:______:1_:1___:1TEXT_______________:11_:1|TEXT___________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the codes of the schools with a total enrollment of over 500.",
+      "gold": "SELECT T2.CDSCode FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` + T2.`Enrollment (Ages 5-17)` > 500",
+      "pred": "_____________________________________________________________________________:_______________________________________________:TEXT:________________________________________:___:_:_:_:_:_:_:_:_:_:_:_:_:___________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Among the schools with an SAT excellence rate of over 0.3, what is the highest eligible free rate for students aged 5-17?",
+      "gold": "SELECT MAX(CAST(T1.`Free Meal Count (Ages 5-17)` AS REAL) / T1.`Enrollment (Ages 5-17)`) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr > 0.3",
+      "pred": "___________________________________________________________________________________________________________________________________:______________________________:TEXT,,_______________________________________________________________________________________:__"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please list the phone numbers of the schools with the top 3 SAT excellence rate.",
+      "gold": "SELECT T1.Phone FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds ORDER BY CAST(T2.NumGE1500 AS REAL) / T2.NumTstTakr DESC LIMIT 3",
+      "pred": "_______________________________________________________TEXT_____TEXT__TEXT___________________________________________________________________TEXT_________________________TEXT_____________TEXT___________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the top five schools, by descending order, from the highest to the lowest, the most number of Enrollment (Ages 5-17). Please give their NCES school identification number.",
+      "gold": "SELECT T1.NCESSchool FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T2.`Enrollment (Ages 5-17)` DESC LIMIT 5",
+      "pred": "_______________TEXT_:______________:___:__:TEXT_________________TEXT__TEXT________________________________________________________________________________________________________________________________________________________:_________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which active district has the highest average score in Reading?",
+      "gold": "SELECT T1.District FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.StatusType = 'Active' ORDER BY T2.AvgScrRead DESC LIMIT 1",
+      "pred": "__________________________________________________________________________________________________________________________:______________________________________________________________________________________________:___:_:_:_:___________:1_______________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in merged Alameda have number of test takers less than 100?",
+      "gold": "SELECT COUNT(T1.CDSCode) FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.StatusType = 'Merged' AND T2.NumTstTakr < 100 AND T1.County = 'Lake'",
+      "pred": ":__________________________TEXT_:____________________________________________________TEXT____________________________________:_:_______________:TEXT:_:__:_________________________:_:_:_:_:_:_:_:__:___:_____:TEXT_____________:_:_:_:_:_____________:TEXT____________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Rank schools by their average score in Writing where the score is greater than 499, showing their charter numbers.",
+      "gold": "SELECT CharterNum, AvgScrWrite, RANK() OVER (ORDER BY AvgScrWrite DESC) AS WritingScoreRank FROM schools AS T1  INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T2.AvgScrWrite > 499 AND CharterNum is not null",
+      "pred": "________________________________________________________________________________________________________________________________________TEXT,::_______________________________________________________:_______________:1:TEXT:_________________TEXT:TEXT:TEXT__________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in Fresno (directly funded) have number of test takers not more than 250?",
+      "gold": "SELECT COUNT(T1.CDSCode) FROM frpm AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.`Charter Funding Type` = 'Directly funded' AND T1.`County Name` = 'Fresno' AND T2.NumTstTakr <= 250",
+      "pred": "________________TEXT___TEXT________TEXT_______TEXTTEXT__________________________________TEXT_____TEXT________________________________________________________________________TEXT:__:_______:1:TEXT:TEXT:__:TEXT:_:_:_:TEXT,__:TEXT:_::_:______________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number of the school that has the highest average score in Math?",
+      "gold": "SELECT T1.Phone FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds ORDER BY T2.AvgScrMath DESC LIMIT 1",
+      "pred": "_________________________TEXT______TEXT__TEXT___TEXT_____TEXT_____________________________TEXT_________TEXT_______________________________________________________________________TEXT:____________________________________________________________________________________:____________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many schools in Amador which the Low Grade is 9 and the High Grade is 12?",
+      "gold": "SELECT COUNT(T1.`School Name`) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Amador' AND T1.`Low Grade` = 9 AND T1.`High Grade` = 12",
+      "pred": "_________________________TEXT_:____________________________:_:________________________________________________________:___:TEXT_:______:TEXT__:TEXT_:___:_::____________:_:_:_:_:_:_:_:_:_:_:_:TEXT:_:__:_:_:_:_:_:_:_:__:___:_:_:_:_:_:_:_:__:_________________:TEXT:____________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In Los Angeles how many schools have more than 500 free meals but less than 700 free or reduced price meals for K-12?",
+      "gold": "SELECT COUNT(CDSCode) FROM frpm WHERE `County Name` = 'Los Angeles' AND `Free Meal Count (K-12)` > 500 AND `FRPM Count (K-12)`< 700",
+      "pred": "_______________________________________________:____________________________________________:TEXT:__::_:_:_:____________:TEXT_:_:_:TEXT:TEXT:____________________:_:TEXT,:__:_:TEXT,:TEXT:_:_:_:__:_:_:TEXT:TEXT:_______:_:_:_:_:_:_:_:___________:_:___TEXT__________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which school in Contra Costa has the highest number of test takers?",
+      "gold": "SELECT sname FROM satscores WHERE cname = 'Contra Costa' AND sname IS NOT NULL ORDER BY NumTstTakr DESC LIMIT 1",
+      "pred": ":____________________________________________________________________:______________________________________________:TEXT__:__:_:_:_:__:_________:TEXT:_:TEXT:TEXT:___________________:TEXT:TEXT:TEXT:TEXT,_:TEXT,:TEXT,:__:_:TEXT:__::_:_:_:_:_________:__:_:TEXT:_:TEXT,_:TEXT:TEXT,_:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT_:________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the names of schools with more than 30 difference in enrollements between K-12 and ages 5-17? Please also give the full street adress of the schools.",
+      "gold": "SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30",
+      "pred": ":::::::::::___________________________________________________________:__________________________________________________________________________________:______:_:TEXT,:__________________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Give the names of the schools with the percent eligible for free meals in K-12 is more than 0.1 and test takers whose test score is greater than or equal to 1500?",
+      "gold": "SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1 AND T1.NumGE1500 > 0",
+      "pred": ":_::_:_____________TEXT____________________________________________________________________________TEXT:_________________________________________________________________________________:___:TEXT:______________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Name schools in Riverside which the average of average math score for SAT is grater than 400, what is the funding type of these schools?",
+      "gold": "SELECT T1.sname, T2.`Charter Funding Type` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE T2.`District Name` LIKE 'Riverside%' GROUP BY T1.sname, T2.`Charter Funding Type` HAVING CAST(SUM(T1.AvgScrMath) AS REAL) / COUNT(T1.cds) > 400",
+      "pred": "__________________________________________________________________________________________________________________________________________________________________________________________________:_____________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "State the names and full communication address of high schools in Monterey which has more than 800 free or reduced price meals for ages 15-17?",
+      "gold": "SELECT T1.`School Name`, T2.Street, T2.City, T2.State, T2.Zip FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Monterey' AND T1.`Free Meal Count (Ages 5-17)` > 800 AND T1.`School Type` = 'High Schools (Public)'",
+      "pred": "_____________________________________________________________________________________________________________________TEXT,__________________________TEXT_______________________________:______________________________________________________________________TEXT__TEXT__TEXTTEXT"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average score in writing for the schools that were opened after 1991 or closed before 2000? List the school names along with the score. Also, list the communication number of the schools if there is any.",
+      "gold": "SELECT T2.School, T1.AvgScrWrite, T2.Phone FROM schools AS T2 LEFT JOIN satscores AS T1 ON T2.CDSCode = T1.cds WHERE strftime('%Y', T2.OpenDate) > '1991' OR strftime('%Y', T2.ClosedDate) < '2000'",
+      "pred": "________:__:___:TEXT,:TEXT_:TEXT____________________________________________________________________________________________________________________________________________:_:_:_:_:____________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Consider the average difference between K-12 enrollment and 15-17 enrollment of schools that are locally funded, list the names and DOC type of schools which has a difference above this average.",
+      "gold": "SELECT T2.School, T2.DOC FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.FundingType = 'Locally funded' AND (T1.`Enrollment (K-12)` - T1.`Enrollment (Ages 5-17)`) > (SELECT AVG(T3.`Enrollment (K-12)` - T3.`Enrollment (Ages 5-17)`) FROM frpm AS T3 INNER JOIN schools AS T4 ON T3.CDSCode = T4.CDSCode WHERE T4.FundingType = 'Locally funded')",
+      "pred": "__:_:_:_:____:______________________:_:TEXT______________________________________________________________________________________:_:_:_:_:_:___________________:TEXT:______________________________________________________________________________________:1:__:1TEXT:1TEXT"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "When did the first-through-twelfth-grade school with the largest enrollment open?",
+      "gold": "SELECT T2.OpenDate FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T1.`Enrollment (K-12)` DESC LIMIT 1",
+      "pred": "_________________________________________________________________________________________________:____:TEXT_:_______:TEXT__:TEXT:_:_:_:______________:TEXT:TEXT:_:1_:1TEXT:_:TEXT:TEXT:TEXT,_:TEXT:TEXT:___:__:_:_:TEXT:TEXT_______:TEXT:TEXT:_:TEXT:_:TEXT:___________:TEXT:_:TEXT:TEXT:TEXT:TEXT:TEXT______TEXT_______________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which cities have the top 5 lowest enrollment number for students in grades 1 through 12?",
+      "gold": "SELECT T2.City FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode GROUP BY T2.City ORDER BY SUM(T1.`Enrollment (K-12)`) ASC LIMIT 5",
+      "pred": "_________________________________________________________TEXT_______TEXT_TEXT___________________________________________________________________TEXT__________:_________________________________________________________________________:TEXT__________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the eligible free rate of the 10th and 11th schools with the highest enrolment for students in grades 1 through 12?",
+      "gold": "SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2",
+      "pred": "______________________________________________________________________________________________________________________________________________::::::::_____________________:TEXT,:TEXT:_______________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the eligible free or reduced price meal rate for the top 5 schools in grades 1-12 with the highest free or reduced price meal count of the schools with the ownership code 66?",
+      "gold": "SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 5",
+      "pred": "__:_______________________________________________________________________________________________________________________________:__:_:__:___________________:TEXT,:_________________________________________________________________________________________:TEXT,__"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "If there are any, what are the websites address of the schools with a free meal count of 1,900-2,000 to students aged 5-17? Include the name of the school.",
+      "gold": "SELECT T2.Website, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Free Meal Count (Ages 5-17)` BETWEEN 1900 AND 2000 AND T2.Website IS NOT NULL",
+      "pred": "__:_:__:TEXT:____________TEXT:TEXT:_TEXT______________TEXT________TEXT___TEXT________________________________________________________________________________________________TEXT,____________:TEXT_________________:____________:TEXT:_______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the free rate for students between the ages of 5 and 17 at the school run by Kacey Gibson?",
+      "gold": "SELECT CAST(T2.`Free Meal Count (Ages 5-17)` AS REAL) / T2.`Enrollment (Ages 5-17)` FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.AdmFName1 = 'Kacey' AND T1.AdmLName1 = 'Gibson'",
+      "pred": ":__:__:__:_:_____________________________________________________________________________________________________________________________________________________________________________:__:TEXT,:____:___________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's email address of the chartered school with the fewest students enrolled in grades 1 through 12?",
+      "gold": "SELECT T2.AdmEmail1 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`Charter School (Y/N)` = 1 ORDER BY T1.`Enrollment (K-12)` ASC LIMIT 1",
+      "pred": ":__:_:_:TEXT____________TEXT____TEXT________________________________________________________________________TEXT:_____:TEXT:TEXT:__:_:_:_:_:_:_:TEXT:___:_:_:_:_:_________________:_:_:___________:TEXT:________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Under whose administration is the school with the highest number of students scoring 1500 or more on the SAT? Indicate their full names.",
+      "gold": "SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": ":_:_:___________TEXT_____TEXT__TEXT___________________________________________________________________TEXT_______________TEXT___________________________________________________________________________________________________________________TEXT___TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT______TEXT__________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+      "gold": "SELECT T2.Street, T2.City, T2.State, T2.Zip FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY CAST(T1.NumGE1500 AS REAL) / T1.NumTstTakr ASC LIMIT 1",
+      "pred": "_______________________________________________________________________________________________________________________________________________________________________:______________________________:TEXT,_______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the webpages for the Los Angeles County school that has between 2,000 and 3,000 test takers?",
+      "gold": "SELECT T2.Website FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.NumTstTakr BETWEEN 2000 AND 3000 AND T2.County = 'Los Angeles'",
+      "pred": "_____________TEXT___TEXT___________TEXT_____TEXT____________________________TEXT_______TEXT___TEXT____________________________________________________________________TEXT:__:__:1:_:1__:1TEXT:TEXT:__:1_:1___:TEXT:_:_:TEXT:TEXT__:TEXT____:1TEXT___:TEXT___:TEXT:________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average number of test takers from Fresno schools that opened between 1/1/1980 and 12/31/1980?",
+      "gold": "SELECT AVG(T1.NumTstTakr) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE strftime('%Y', T2.OpenDate) = '1980' AND T2.County = 'Fresno'",
+      "pred": "_____:_:_:_:_:_:____________________________________________________:_:_:_:__:TEXT:________________________________________:TEXT:TEXT,:___:_:_:_:_:__:TEXT:___:TEXT_________:TEXT__:_:_:_:_:____________:TEXT:_______________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the telephone number for the school with the lowest average score in reading in Fresno Unified?",
+      "gold": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.District = 'Fresno Unified' AND T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1",
+      "pred": "______________________________________________________________TEXT_____TEXT_____________________________________________________________________TEXT:_________________________________________________________________________________:__________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the names of virtual schools that are among the top 5 in their respective counties based on average reading scores.",
+      "gold": "SELECT School FROM (SELECT T2.School,T1.AvgScrRead, RANK() OVER (PARTITION BY T2.County ORDER BY T1.AvgScrRead DESC) AS rnk FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' ) ranked_schools WHERE rnk <= 5",
+      "pred": "__:_:_:_:______________________________________________TEXT::________________________________________________________________________________________________________________________________________________________:_____________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the type of education offered in the school who scored the highest average in Math?",
+      "gold": "SELECT T2.EdOpsName FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrMath DESC LIMIT 1",
+      "pred": "_________________________TEXT_:___TEXT:TEXT:_____________________________________________TEXT____TEXT_________________________________________________________________________TEXT,____________:__________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average math score of the school with the lowest average score for all subjects, and in which county is it located?",
+      "gold": "SELECT T1.AvgScrMath, T2.County FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrMath IS NOT NULL ORDER BY T1.AvgScrMath + T1.AvgScrRead + T1.AvgScrWrite ASC LIMIT 1",
+      "pred": "____________________________________________________________________________________________________________________TEXT,:_:_______________________________________________________________________________:_______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average writing score of the school who has the highest number of test takers whose total SAT sscores are greater or equal to 1500? Indicate the city to where the school is situated.",
+      "gold": "SELECT T1.AvgScrWrite, T2.City FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "__:_:_:TEXT__________TEXT_____TEXT_______________TEXT________________________________________________________________________________________________________________TEXT:TEXT:____:1___:1TEXT_____:11_,11_:11_:11___________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the average writing score of each of the schools managed by Ricci Ulrich? List the schools and the corresponding average writing scores.",
+      "gold": "SELECT T2.School, T1.AvgScrWrite FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.AdmFName1 = 'Ricci' AND T2.AdmLName1 = 'Ulrich'",
+      "pred": ":::::________________________________________________________________________________________________________________________________________________________________________________________________________:__________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which state special schools have the highest number of enrollees from grades 1 through 12?",
+      "gold": "SELECT T2.School FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.DOC = 31 ORDER BY T1.`Enrollment (K-12)` DESC LIMIT 1",
+      "pred": "__:_:_:_:___________________________________________TEXT____TEXT_________________________________________________________________________________________________TEXT:_______________________________:___________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the monthly average number of schools that opened in Alameda County under the jurisdiction of the Elementary School District in 1980?",
+      "gold": "SELECT CAST(COUNT(School) AS REAL) / 12 FROM schools WHERE DOC = 52 AND County = 'Alameda' AND strftime('%Y', OpenDate) = '1980'",
+      "pred": ":______________________________________________________________________________________________________________________________________________:____:_______________________:TEXT,:________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the ratio of merged Unified School District schools in Orange County to merged Elementary School District schools?",
+      "gold": "SELECT CAST(SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange'",
+      "pred": "__:__:_:__:_:_:_:_:_:_:_:________________________________________________:_:_:_:TEXT_____________________________________________________________________________________:_:_:_:_:TEXT::______________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which different county has the most number of closed schools? Please provide the name of each school as well as the closure date.",
+      "gold": "SELECT DISTINCT County, School, ClosedDate FROM schools WHERE County = ( SELECT County FROM schools WHERE StatusType = 'Closed' GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1 ) AND StatusType = 'Closed' AND school IS NOT NULL",
+      "pred": "_::__:_________________________________________________________________________:____________________________________________________________________________________________:___:_:TEXT::_:________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the postal street address for the school with the 7th highest Math average? Indicate the school's name.",
+      "gold": "SELECT T2.MailStreet, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrMath DESC LIMIT 6, 1",
+      "pred": "_____________________________________________________________________________________________________________________________________________________________________________________________________________________:__________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In which mailing street address can you find the school that has the lowest average score in reading? Also give the school's name.",
+      "gold": "SELECT T2.MailStreet, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T1.AvgScrRead IS NOT NULL ORDER BY T1.AvgScrRead ASC LIMIT 1",
+      "pred": "_____________TEXT_:___TEXT:________________TEXT______________________________________________________________________________________________________________________________________________________________________________________________:___________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of schools whose total SAT scores are greater or equal to 1500 whose mailing city is Lakeport?",
+      "gold": "SELECT COUNT(T1.cds) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.MailCity = 'Lakeport' AND (T1.AvgScrRead + T1.AvgScrMath + T1.AvgScrWrite) >= 1500",
+      "pred": "_____________________________________TEXT___________________________________________________________________________TEXT::________________________________________________________________________________:___________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many test takers are there at the school/s whose mailing city address is in Fresno?",
+      "gold": "SELECT T1.NumTstTakr FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.MailCity = 'Fresno'",
+      "pred": "________________________TEXT______TEXT___TEXT______TEXT____TEXT_________________________TEXT________TEXT_1:__TEXT___________________________________________________:TEXT_:1_______________________________________________________________:___:TEXT:_________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please specify all of the schools and their related mailing zip codes that are under Avetik Atoian's administration.",
+      "gold": "SELECT School, MailZip FROM schools WHERE AdmFName1 = 'Avetik' AND AdmLName1 = 'Atoian'",
+      "pred": ":______________TEXT_:___________________________:___________________________________________________________________________________________________________________________________________________________:____:TEXT:_______________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of the schools with a mailing state address in California, what is the ratio of the schools located in the county of Colusa against the school located in the county of Humboldt?",
+      "gold": "SELECT CAST(SUM(CASE WHEN County = 'Colusa' THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN County = 'Humboldt' THEN 1 ELSE 0 END) FROM schools WHERE MailState = 'CA'",
+      "pred": "______________________________________________________________________________________________________________________________________________________________________:____________________________:TEXT,:_________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of all the schools with a mailing state address in California, how many are active in San Joaquin city?",
+      "gold": "SELECT COUNT(CDSCode) FROM schools WHERE City = 'San Joaquin' AND MailState = 'CA' AND StatusType = 'Active'",
+      "pred": "___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________:____________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number and extension number for the school that had the 333rd highest average writing score?",
+      "gold": "SELECT T2.Phone, T2.Ext FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.AvgScrWrite DESC LIMIT 332, 1",
+      "pred": "_______________TEXT___TEXT______TEXT______TEXT___TEXT____________________________TEXT___________TEXT_TEXT_____________________________________________________________________TEXT:__:TEXT:___:TEXT:TEXT:_:_:_:TEXT:___:TEXT:_:_:_:TEXT,__:TEXT:_____:TEXT__:_:TEXT__:TEXT_______________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the phone number and extension number for the school with the zip code 95203-3704? Indicate the school's name.",
+      "gold": "SELECT Phone, Ext, School FROM schools WHERE Zip = '95203-3704'",
+      "pred": "________________________________________________________________TEXT____TEXT___TEXT__________________________________________________TEXT__TEXT___________________________________________TEXT:___:TEXT:TEXT:___________________:TEXT:___________:TEXT,:TEXT:TEXT:TEXT:TEXT_______________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the website for the schools under the administrations of Mike Larson and Dante Alvarez?",
+      "gold": "SELECT Website FROM schools WHERE (AdmFName1 = 'Mike' AND AdmLName1 = 'Larson') OR (AdmFName1 = 'Dante' AND AdmLName1 = 'Alvarez')",
+      "pred": "___________________TEXT___TEXT_______TEXT_____TEXT___TEXT____________TEXT_____________TEXT__________TEXT_1_TEXT__TEXT___TEXT_______________TEXT________________________________________TEXT_______TEXT:_:TEXT:_:TEXT:1TEXT:TEXT:TEXT___:TEXT:TEXT:TEXT___:TEXT:_:_:TEXT:TEXT:__:TEXT____________:1____________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the websites for all the partially virtual chartered schools located in San Joaquin?",
+      "gold": "SELECT Website FROM schools WHERE County = 'San Joaquin' AND Virtual = 'P' AND Charter = 1",
+      "pred": "__:_:_:_:___________________________________________TEXT:_________________________________________________________________________TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT___:TEXT:__:_:TEXT:TEXT,___:__:TEXT__:_:_:_:TEXT__:TEXT_:_:TEXT:_:TEXT,___________:TEXT:TEXT:_________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many chartered schools located in the city of Hickman are owned by the Elementary School District?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE DOC = 52 AND Charter = 1 AND City = 'Hickman'",
+      "pred": ":________________________________________TEXT_______________________________________________________________________________________________________________________________________________________________:______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of non-chartered schools in the county of Los Angeles with a percent (%) of eligible free meals for grades 1 through 12 that is less than 0.18%?",
+      "gold": "SELECT COUNT(T2.School) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Los Angeles' AND T2.Charter = 0 AND CAST(T1.`Free Meal Count (K-12)` AS REAL) * 100 / T1.`Enrollment (K-12)` < 0.18",
+      "pred": ":__:_:_:__:__::_:_:_:__:__:___________________________________________________________________________________:__:_:_:_:_____________:1:TEXT::______________________________________________________________________________________________:TEXT,____________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In chartered schools with charter number 00D2, what are the names of all the administrators? Include the name of the school and the city to which it belongs",
+      "gold": "SELECT AdmFName1, AdmLName1, School, City FROM schools WHERE Charter = 1 AND CharterNum = '00D2'",
+      "pred": "______:__:_:TEXT:_:TEXT____________TEXT_____TEXT___________________________________________________________________________________________________TEXT:TEXT:____:1:TEXT:___:1_:TEXT__:1TEXT__:TEXT:TEXT:_:TEXT,____________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total number of schools with a mailing city in Hickman belonging to the charter number 00D4?",
+      "gold": "SELECT COUNT(*) FROM schools WHERE CharterNum = '00D4' AND MailCity = 'Hickman'",
+      "pred": "________________TEXT___TEXT_________TEXT_____TEXTTEXT_______________________________TEXT________TEXT__TEXT____________________________________________________________________TEXT:__:__:TEXT:TEXT_:TEXT_:TEXT:_:TEXT:_:____:TEXT:_:_:_:_:_:_:_______________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the ratio in percentage of Santa Clara County schools that are locally funded compared to all other types of charter school funding?",
+      "gold": "SELECT CAST(SUM(CASE WHEN FundingType = 'Locally funded' THEN 1 ELSE 0 END) AS REAL) * 100 / SUM(CASE WHEN FundingType != 'Locally funded' THEN 1 ELSE 0 END) FROM schools WHERE County = 'Santa Clara' AND Charter = 1",
+      "pred": ":__:_:_:_:_:_:____________________________________________________:_:_:TEXT:___________________________________________________________________________________:_:_:_:_:_:_______________________:TEXT:_______________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Between 1/1/2000 to 12/31/2005, how many directly funded schools opened in the county of Stanislaus?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE strftime('%Y', OpenDate) BETWEEN '2000' AND '2005' AND County = 'Stanislaus' AND FundingType = 'Directly funded'",
+      "pred": "____________________________________TEXT___________________________________:::::::___________:TEXT_:TEXT____________________________:__:_:_:_:_:_:TEXT_______:__:_:TEXT____:TEXT_____:__:_:_:_:_:_:__________:__:1________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the total amount of Community College District closure in 1989 in the city of San Francisco?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE strftime('%Y', ClosedDate) = '1989' AND City = 'San Francisco' AND DOCType = 'Community College District'",
+      "pred": "__________________________________________________________________________________________________________________________________________________________________________________________________________________________________________:_____________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which county reported the most number of school closure in the 1980s with school wonership code belonging to Youth Authority Facilities (CEA)?",
+      "gold": "SELECT County FROM schools WHERE strftime('%Y', ClosedDate) BETWEEN '1980' AND '1989' AND StatusType = 'Closed' AND SOC = 11 GROUP BY County ORDER BY COUNT(School) DESC LIMIT 1",
+      "pred": ":__:__:__:_:________________________________________________________________________________________________________________________________________________:_:_:_:_:_____________:TEXT::__________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Please provide the National Center for Educational Statistics school district identification number for all schools with a School Ownership Code that are part of the State Special Schools.",
+      "gold": "SELECT NCESDist FROM schools WHERE SOC = 31",
+      "pred": "_:_:__:_______________________________________TEXT::___________________________________________________________________________________________________________________________________:_:______________:TEXT:________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many active and closed District Community Day Schools are there in the county of Alpine?",
+      "gold": "SELECT COUNT(School) FROM schools WHERE (StatusType = 'Closed' OR StatusType = 'Active') AND SOC = 69 AND County = 'Alpine'",
+      "pred": "_________________________TEXT_:___________________________________________________TEXT______________________________________:_:_______________:TEXT:__:_:________________________:TEXT:TEXT:_:_:_:_:_:_:__:__:TEXT:__:_:_:___:_:_:_:_:_:_:_:_:_:_:_:_:_:_:________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the district code for the School that does not offer a magnet program in the city of Fresno?",
+      "gold": "SELECT T1.`District Code` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.City = 'Fresno' AND T2.Magnet = 0",
+      "pred": "_______________________________________________________________________________________________________________________________________________________________________________:__:_:_:TEXT________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "How many students from the ages of 5 to 17 are enrolled at the State Special School school in Fremont for the 2014-2015 academic year?",
+      "gold": "SELECT T1.`Enrollment (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.EdOpsCode = 'SSS' AND T2.City = 'Fremont' AND T1.`Academic Year` BETWEEN 2014 AND 2015",
+      "pred": "::_______________________________________TEXT_______________________________________________________________________________________________________________________________________________________________:______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the free or reduced price meal count for ages 5 to 17 in the Youth Authority School with a mailing street address of PO Box 1040?",
+      "gold": "SELECT T1.`FRPM Count (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.MailStreet = 'PO Box 1040' AND T2.SOCType = 'Youth Authority Facilities'",
+      "pred": "_____________________________________________________________TEXT____TEXT__TEXT___TEXT________________________________________________________________TEXT:___:TEXT:TEXT:_:TEXT:_:TEXT:_:TEXT:_:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:__:TEXT:TEXT__________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the lowest grade for the District Special Education Consortia School with National Center for Educational Statistics school district identification number of 0613360?",
+      "gold": "SELECT MIN(T1.`Low Grade`) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.NCESDist = '0613360' AND T2.EdOpsCode = 'SPECON'",
+      "pred": "______________________________________________________________________________________________________________TEXT,:_________________________________________________________________________________:_____________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the educational level name for the schools with Breakfast Provision 2 in county code 37? Indicate the name of the school.",
+      "gold": "SELECT T2.EILName, T2.School FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`NSLP Provision Status` = 'Breakfast Provision 2' AND T1.`County Code` = 37",
+      "pred": "_____________TEXT_______________TEXT___TEXT________________________________TEXT______TEXT________________________________________________________________________TEXT:_________________:__:____________________:1:1______:TEXT__:TEXT_:_____________:1TEXT_________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the city location of the high school level school with Lunch Provision 2 whose lowest grade is 9 and the highest grade is 12 in the county of Merced?",
+      "gold": "SELECT T2.City FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T1.`NSLP Provision Status` = 'Lunch Provision 2' AND T2.County = 'Merced' AND T1.`Low Grade` = 9 AND T1.`High Grade` = 12 AND T2.EILCode = 'HS'",
+      "pred": "_________________________________________________________________________________________________________________________TEXT,:_:______________________________________________________________________________:___________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which schools served a grade span of Kindergarten to 9th grade in the county of Los Angeles and what is its Percent (%) Eligible FRPM (Ages 5-17)?",
+      "gold": "SELECT T2.School, T1.`FRPM Count (Ages 5-17)` * 100 / T1.`Enrollment (Ages 5-17)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Los Angeles' AND T2.GSserved = 'K-9'",
+      "pred": "____________________________________________________________________________________________________________________________________::::::::_:___________________:TEXT,__________________________________________________________________________________________:_"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the most common type of grade span served in the city of Adelanto?",
+      "gold": "SELECT GSserved FROM schools WHERE City = 'Adelanto' GROUP BY GSserved ORDER BY COUNT(GSserved) DESC LIMIT 1",
+      "pred": "___________________________TEXT_:__________________________________________________TEXT______________________________________________________________________________TEXT:________________________________________________________________________________:______________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Between San Diego and Santa Barbara, which county offers the most number of schools that does not offer physical building? Indicate the amount.",
+      "gold": "SELECT County, COUNT(Virtual) FROM schools WHERE (County = 'San Diego' OR County = 'Santa Barbara') AND Virtual = 'F' GROUP BY County ORDER BY COUNT(Virtual) DESC LIMIT 1",
+      "pred": "__:_:_:_:__:__:_:TEXT_______________________________TEXT:____________________________________________________________________________________________________TEXT,:_________________________________________:__:TEXT:_______________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the school type of the school with the highest latitude? Indicate the name of the school as well as the latitude coordinates.",
+      "gold": "SELECT T1.`School Type`, T1.`School Name`, T2.Latitude FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode ORDER BY T2.Latitude DESC LIMIT 1",
+      "pred": "_____________TEXT______TEXT___TEXT___TEXT___TEXT__TEXT_________:__________________________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "In which city can you find the school in the state of California with the lowest latitude coordinates and what is its lowest grade? Indicate the school name.",
+      "gold": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' ORDER BY T2.Latitude ASC LIMIT 1",
+      "pred": "_:_:______________________________________________________________________________________________________________________________________________________________________________________________________:_____________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the grade span offered in the school with the highest longitude?",
+      "gold": "SELECT GSoffered FROM schools ORDER BY ABS(longitude) DESC LIMIT 1",
+      "pred": "_______________________________________________________________________________________________:_____________________________________________________________________________________________:___:_:_:____________:TEXT,:TEXT_:TEXT:TEXT:___________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Of the schools that offers a magnet program serving a grade span of Kindergarten to 8th grade, how many offers Multiple Provision Types? List the number of cities that offers a Kindergarten to 8th grade span and indicate how many schools are there serving such grade span for each city.",
+      "gold": "SELECT T2.City, COUNT(T2.CDSCode) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.Magnet = 1 AND T2.GSoffered = 'K-8' AND T1.`NSLP Provision Status` = 'Multiple Provision Types' GROUP BY T2.City",
+      "pred": ":__::::_::::_:____________________________________________________________________________________________::_::_:____________:______:TEXT,:TEXT:________________________________________________________________________________________:TEXT,___________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the two most common first names among the school administrators? Indicate the district to which they administer.",
+      "gold": "SELECT DISTINCT T1.AdmFName1, T1.District FROM schools AS T1 INNER JOIN ( SELECT admfname1 FROM schools GROUP BY admfname1 ORDER BY COUNT(admfname1) DESC LIMIT 2 ) AS T2 ON T1.AdmFName1 = T2.admfname1",
+      "pred": "_____________TEXT___TEXT____________________________________________________TEXT________TEXT_____________________________________________________________________TEXT:_____________:TEXT:TEXT:__:_:_:_:_:_______________________________________________________:____________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the Percent (%) Eligible Free (K-12) in the school administered by an administrator whose first name is Alusine. List the district code of the school.",
+      "gold": "SELECT T1.`Free Meal Count (K-12)` * 100 / T1.`Enrollment (K-12)`, T1.`District Code` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.AdmFName1 = 'Alusine'",
+      "pred": ":______________________________________________________________________________________________________________________________________________::__:_:_:_____________________:TEXT,:TEXT,_____________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's last name that oversees the school with Charter number 40? Indicate the district, the county where the school is situated, and the name of the school.",
+      "gold": "SELECT AdmLName1, District, County, School FROM schools WHERE CharterNum = '0040'",
+      "pred": "__________________________________________________________________________________________________________________TEXT:___________________________________________________________________________________________________:________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What are the valid e-mail addresses of the administrator of the school located in the San Bernardino county, City of San Bernardino City Unified that opened between 1/1/2009 to 12/31/2010 whose school types are public Intermediate/Middle Schools and Unified Schools?",
+      "gold": "SELECT T2.AdmEmail1, T2.AdmEmail2 FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'San Bernardino' AND T2.City = 'San Bernardino' AND T2.DOC = 54 AND strftime('%Y', T2.OpenDate) BETWEEN '2009' AND '2010' AND T2.SOC = 62",
+      "pred": "_______________________________________________________________________::______:__:_,_:_________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the administrator's email address for the school with the highest number of test takers who received SAT scores of at least 1500?Provide the name of the school.",
+      "gold": "SELECT T2.AdmEmail1, T2.School FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+      "pred": "_________________________________________________________________________________________________________________________________________________________________________________________________________________________:______________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts who choose issuance after transaction are staying in East Bohemia region?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE T1.A3 = 'east Bohemia' AND T2.frequency = 'POPLATEK PO OBRATU'",
+      "pred": ",:_:_,:_:_:::::,:_:_:_:_,:TEXT,_:TEXT,_:__:__:_:__:_:_:_:TEXT,___:1_:1TEXT:TEXT:TEXT:TEXT:_:TEXT:TEXT:_:_:TEXT:_:TEXT:_:_:TEXT:TEXT:_:_:_:_:TEXT,:__:TEXT,___:TEXT:TEXT:_:_:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT,___:TEXT:TEXT______:TEXT:_:TEXT:TEXT:__________________:_:TEXT,_:TEXT,_:111|1|1|1|1|1|1|TEXTTEXT_________________________TEXT________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts who have region in Prague are eligible for loans?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T1.district_id = T3.district_id WHERE T3.A3 = 'Prague'",
+      "pred": ",:_::::::,,:_:_:_:_:_:____________________:_:_:_______________________________________:TEXT,:TEXT,:_:_:_:::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_________________:__:_:TEXT:______________________:TEXT,_____:TEXT,__________________:TEXT,_:1___________________________________:111|1"
+    },
+    {
+      "db_id": "financial",
+      "question": "The average unemployment ratio of 1995 and 1996, which one has higher percentage?",
+      "gold": "SELECT DISTINCT IIF(AVG(A13) > AVG(A12), '1996', '1995') FROM district",
+      "pred": ":_,_:_,_,TEXT,_:TEXT:__:TEXT:__:_:_:_:_:_:_:_,_:_:TEXT,_:__________________________________________________________________________________:___:TEXT:__:TEXT,_:_:_:_,_:TEXT:TEXT:TEXT:TEXT:_______________________:1TEXT:TEXT:TEXT:TEXT:TEXT,_:1TEXT,_:1__________________:1TEXT,_________________:1TEXT,_:1__________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the no. of districts that have female average salary is more than 6000 but less than 10000?",
+      "gold": "SELECT COUNT(DISTINCT T2.district_id)  FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A11 BETWEEN 6000 AND 10000",
+      "pred": ",:_:_,:_:_:_:_:_:_:_,:TEXT,____________________________TEXT,_TEXT:_________________________________________________________________:TEXT,___:TEXT:TEXT:TEXT,__:_:_:TEXT,_:TEXT:_:TEXT:TEXT:TEXT:______________________:TEXT:______________________________:____:____________________:TEXT,:TEXT,_:TEXT,_________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male customers who are living in North Bohemia have average salary greater than 8000?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A3 = 'north Bohemia' AND T2.A11 > 8000",
+      "pred": ",:::_:::,::,::::::_:_:_:_:_:_:_:_:___:__:__:TEXT,,__________:TEXT,_____:______:TEXT:___:TEXT,_:TEXT,_:_:_:_:_:_:_:__:TEXT,_:_:_:TEXT:_____:_:_:___________________________________________________________:TEXT:TEXT:TEXT:TEXT:TEXT:______________________:TEXT,_:TEXT,_:TEXT,:TEXT,:TEXT:____:TEXT:TEXT:_:__:_:TEXT:___:TEXT:_"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the account numbers of female clients who are oldest and has lowest average salary, calculate the gap between this lowest average salary with the highest average salary?",
+      "gold": "SELECT T1.account_id , ( SELECT MAX(A11) - MIN(A11) FROM district ) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T1.account_id = T3.account_id INNER JOIN client AS T4 ON T3.client_id = T4.client_id WHERE T2.district_id = ( SELECT district_id FROM client WHERE gender = 'F' ORDER BY birth_date ASC LIMIT 1 ) ORDER BY T2.A11 DESC LIMIT 1",
+      "pred": "_____TEXT____TEXTTEXT_________________________________________________________________________________________________________________________________________________TEXT________________________________________TEXT____TEXT____________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the account numbers of clients who are youngest and have highest average salary?",
+      "gold": "SELECT T1.account_id  FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id INNER JOIN client AS T3 ON T2.client_id = T3.client_id INNER JOIN district AS T4 on T4.district_id = T1.district_id WHERE T2.client_id = ( SELECT client_id FROM client ORDER BY birth_date DESC LIMIT 1) GROUP BY T4.A11, T1.account_id",
+      "pred": "_______________________________________________TEXT___TEXTTEXTTEXT_________________________________________________________TEXT_TEXT_________________________________________________________________________________________________________________________________________TEXT____"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many customers who choose statement of weekly issuance are Owner?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T2.type = 'OWNER' AND T1.frequency = 'POPLATEK TYDNE'",
+      "pred": ",_:_,__,__,_:_::::_:_:_:_:_:TEXT,_____________:TEXT,_TEXT,_________________________________________________________________________TEXT:TEXT,:___________________________:TEXT:_____________________:1___________________________:TEXT,_:11TEXT,____TEXT,__:11__TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:___:TEXT,_:TEXT,_"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the id number of client who choose statement of issuance after transaction are Disponent?",
+      "gold": "SELECT T2.client_id FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T1.frequency = 'POPLATEK PO OBRATU' AND T2.type = 'DISPONENT'",
+      "pred": "______________________________________________________________________________________________:_______________________________________________________________________________________________________________:_____1__TEXT:_______________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have approved loan date in 1997, list out the accounts that have the lowest approved amount and choose weekly issuance statement.",
+      "gold": "SELECT T2.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T1.date) = '1997' AND T2.frequency = 'POPLATEK TYDNE' ORDER BY T1.amount LIMIT 1",
+      "pred": "___________________________________:::______________________________________________________________________:________________________________________________:TEXT:__:_:__________________________________________________________________:TEXT:TEXT:TEXT:TEXT:________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have loan validity more than 12 months, list out the accounts that have the highest approved amount and have account opening date in 1993.",
+      "gold": "SELECT T1.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T2.date) = '1993' AND T1.duration > 12 ORDER BY T1.amount DESC LIMIT 1",
+      "pred": "_______________________________________________TEXT:________________________________________________________________TEXT______________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the account opened, how many female customers who were born before 1950 and stayed in Sokolov?",
+      "gold": "SELECT COUNT(T2.client_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.gender = 'F' AND STRFTIME('%Y', T2.birth_date) < '1950' AND T1.A2 = 'Sokolov'",
+      "pred": ":_______________________________________TEXT::_____________________________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List out the accounts who have the earliest trading date in 1995 ?",
+      "gold": "SELECT account_id FROM trans WHERE STRFTIME('%Y', date) = '1995' ORDER BY date ASC LIMIT 1",
+      "pred": ":___________:__:__:_:_:_:__:_________________________________________________________________________________________:______________________________:1:__________________________:1TEXT______________TEXT_____________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "State different accounts who have account opening date before 1997 and own an amount of money greater than 3000USD",
+      "gold": "SELECT DISTINCT T2.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T2.date) < '1997' AND T1.amount > 3000",
+      "pred": "_____::_______:_______:___:__:_:__:__:_:_:__:_:__:______:__:TEXT______________________________________________________________________________________________________________________________________________________________:TEXT:___________:TEXT__:1:TEXT_______________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which client issued his/her card in 1994/3/3, give his/her client id.",
+      "gold": "SELECT T2.client_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T3.issued = '1994-03-03'",
+      "pred": "_________________________________________________________________________________________________________________________________________________________________________________________________________________________________:______________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "The transaction of 840 USD happened in 1998/10/14, when was this account opened?",
+      "gold": "SELECT T1.date FROM account AS T1 INNER JOIN trans AS T2 ON T1.account_id = T2.account_id WHERE T2.amount = 840 AND T2.date = '1998-10-14'",
+      "pred": "______:__:______:_:_:__:_:_:_:_:_:_:_:_:_:_:_:_:_:__:__:_:_:_:_:_:_:_:_:________________TEXT_____________________________________________________________TEXT___TEXTTEXTTEXT___TEXT_______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "There was a loan approved in 1994/8/25, where was that account opened, give the district Id of the branch.",
+      "gold": "SELECT T1.district_id FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.date = '1994-08-25'",
+      "pred": "_________________________________________________________________________________________________________________________________________________________________________________________________________________________:______________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the biggest amount of transaction that the client whose card was opened in 1996/10/21 made?",
+      "gold": "SELECT T4.amount FROM card AS T1 JOIN disp AS T2 ON T1.disp_id = T2.disp_id JOIN account AS T3 on T2.account_id = T3.account_id JOIN trans AS T4 on T3.account_id = T4.account_id WHERE T1.issued = '1996-10-21' ORDER BY T4.amount DESC LIMIT 1",
+      "pred": ":__________________________________________________________________________________________________________________________________________________________TEXT___TEXT________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the gender of the oldest client who opened his/her account in the highest average salary branch?",
+      "gold": "SELECT T2.gender FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id ORDER BY T1.A11 DESC, T2.birth_date ASC LIMIT 1",
+      "pred": "_______:_______________________TEXT____TEXTTEXT____________________________________________________TEXT_________________________________________________________________________________________________TEXT___________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client who applied the biggest loan, what was his/her first amount of transaction after opened the account?",
+      "gold": "SELECT T3.amount FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id ORDER BY T1.amount DESC, T3.date ASC LIMIT 1",
+      "pred": "__:__:________________________________________________TEXT_____TEXTTEXTTEXT______________________________________________________TEXT__________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients opened their accounts in Jesenik branch were women?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A2 = 'Jesenik'",
+      "pred": ":_:_:_:_,:_:_,_:TEXT,:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,:_:_,:_:_:_,_,_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,:_,:_:TEXT:_:_:_:_:_:____________________________________:TEXT:_________________________:TEXT,:1_:1111111111|TEXTTEXT_________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the disposition id of the client who made 5100 USD transaction in 1998/9/2?",
+      "gold": "SELECT T1.disp_id FROM disp AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.date='1997-08-20' AND T3.amount = 5100",
+      "pred": "_______________________________________________________________________________________________________________________________________________________________________________________________________________________________:::::____________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts were opened in Litomerice in 1996?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) = '1996' AND T1.A2 = 'Litomerice'",
+      "pred": ":_::::,:_:_:_:_:_:_:_:_:_:_:_:_:_:_,_:_:_:_:_:_:_:_:_:_:_,_:TEXT,_:TEXT:TEXT:______:1_:111|TEXT__TEXT__________________________TEXT:1|TEXT___________________________________________________________________:TEXT:TEXT:_:TEXT,TEXT,TEXT:TEXT:TEXT:_______________TEXT,______________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the female client who was born in 1976/1/29, which district did she opened her account?",
+      "gold": "SELECT T1.A2 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.birth_date = '1976-01-29' AND T2.gender = 'F'",
+      "pred": ":____________________TEXT_:______________TEXT_:______:_:_:_:_:_:TEXT_____________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client who applied 98832 USD loan in 1996/1/3, when was his/her birthday?",
+      "gold": "SELECT T4.birth_date FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id INNER JOIN client AS T4 ON T3.client_id = T4.client_id WHERE T1.date = '1996-01-03' AND T1.amount = 98832",
+      "pred": ":______________________________________________________________________::::::___________________:TEXT____:1_TEXT_________________________________________:111|1|TEXT________TEXT____________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the first client who opened his/her account in Prague, what is his/her account ID?",
+      "gold": "SELECT T1.account_id FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'Prague' ORDER BY T1.date ASC LIMIT 1",
+      "pred": "______________________________________________________________TEXT___TEXT______________________________________________________TEXT_______________TEXT______________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the branch which located in the south Bohemia with biggest number of inhabitants, what is the percentage of the male clients?",
+      "gold": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'south Bohemia' GROUP BY T2.A4 ORDER BY T2.A4 DESC LIMIT 1",
+      "pred": ":::,_:_,_:TEXT,___:TEXT:__________________________________________________________________________________________________________________:TEXT:___:TEXT,:_:_:_:_:_:____________________________________________________:_:_:__:__:TEXT:_____:____:TEXT,_____:TEXT:_:_:_:TEXT,_:_:_:_:TEXT:"
+    },
+    {
+      "db_id": "financial",
+      "question": "For the client whose loan was approved first in 1993/7/5, what is the increase rate of his/her account balance from 1993/3/22 to 1998/12/27?",
+      "gold": "SELECT CAST((SUM(IIF(T3.date = '1998-12-27', T3.balance, 0)) - SUM(IIF(T3.date = '1993-03-22', T3.balance, 0))) AS REAL) * 100 / SUM(IIF(T3.date = '1993-03-22', T3.balance, 0)) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T3.account_id = T2.account_id WHERE T1.date = '1993-07-05'",
+      "pred": "__________________________________________________________________________________________________________________________:______________________________________________________________________________________________:____:_:_______________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the percentage of loan amount that has been fully paid with no issue.",
+      "gold": "SELECT (CAST(SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) AS REAL) * 100) / SUM(amount) FROM loan",
+      "pred": ":_:_:_:::::::::::::::::::::::::::::::_:____________________:__________________:TEXT,:_____:_____________________________________________________________________________TEXT_______________________________________:TEXT:________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For loan amount less than USD100,000, what is the percentage of accounts that is still running with no issue.",
+      "gold": "SELECT CAST(SUM(status = 'C') AS REAL) * 100 / COUNT(account_id) FROM loan WHERE amount < 100000",
+      "pred": "::::::::::::::::::::::::::::::::::::::::__:_____________:__:_:_:_:_:_:_:_:_:__________:_:_:_:_:_:_:_:_:_:_:_:_:_:______________:TEXT,:___:TEXT:___:TEXT:TEXT:_:_:__:________________________:TEXT:TEXT:__:TEXT:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For accounts in 1993 with statement issued after transaction, list the account ID, district name and district region.",
+      "gold": "SELECT T1.account_id, T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.frequency = 'POPLATEK PO OBRATU' AND STRFTIME('%Y', T1.date)= '1993'",
+      "pred": ":::::::________________________________________________________:___:TEXT:_________________________________________________________________________________:_:_::_:______________________:1_________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "From Year 1995 to 2000, who are the accounts holders from 'east Bohemia'. State the account ID the frequency of statement issuance.",
+      "gold": "SELECT T1.account_id, T1.frequency FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A3 = 'east Bohemia' AND STRFTIME('%Y', T1.date) BETWEEN '1995' AND '2000'",
+      "pred": "_________________________________________________________________________:_____________:TEXT:__:__:_:_:_:_:_:TEXT:TEXT:____________:TEXT_:1_:11011|1|TEXT______TEXT_______________________:1|1|TEXT:101|TEXT____________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List account ID and account opening date for accounts from 'Prachatice'.",
+      "gold": "SELECT T1.account_id, T1.date FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A2 = 'Prachatice'",
+      "pred": "________________________________________________________________TEXT_____TEXTTEXT__________________________________________TEXT__TEXT______________TEXT_______________________________TEXT___________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "State the district and region for loan ID '4990'.",
+      "gold": "SELECT T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.loan_id = 4990",
+      "pred": "_________________________________________________________________________________________________:_:___:1______________________________________________________________________________________:TEXT:_:TEXT:TEXT,__:TEXT:TEXT:__:_:TEXT:TEXT_:TEXT______________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Provide the account ID, district and region for loan amount greater than USD300,000.",
+      "gold": "SELECT T1.account_id, T2.A2, T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.amount > 300000",
+      "pred": "___________________________:______________________________________:_________________________________:1___TEXT________:11|TEXT1|TEXT1|1|1|1|1|1|1|1|11|TEXT1|TEXTTEXTTEXTTEXT___________________________________:1|1|TEXT1|_TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT______TEXTTEXT_______________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the loan ID, district and average salary for loan with duration of 60 months.",
+      "gold": "SELECT T3.loan_id, T2.A2, T2.A11 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.duration = 60",
+      "pred": "____________________________________________________________________________________________::_____________________________________________________________________________________:__:_:_:___________:TEXT:_____1__TEXT__TEXTTEXT__________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "For loans contracts which are still running where client are in debt, list the district of the and the state the percentage unemployment rate increment from year 1995 to 1996.",
+      "gold": "SELECT CAST((T3.A13 - T3.A12) AS REAL) * 100 / T3.A12 FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.status = 'D'",
+      "pred": "__:__:_:_:_:_:____________:____________________________________________________________________________________________________________________________________________________________________________TEXT::______________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Calculate the percentage of account from 'Decin' district for all accounts are opened in 1993.",
+      "gold": "SELECT CAST(SUM(T1.A2 = 'Decin') AS REAL) * 100 / COUNT(account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) = '1993'",
+      "pred": "::::::::::::::_:_:_________:________________________________________TEXT:____TEXT__TEXTTEXT____________________________________________________________TEXT____TEXT__TEXT____________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the account IDs with monthly issuance of statements.",
+      "gold": "SELECT account_id FROM account WHERE Frequency = 'POPLATEK MESICNE'",
+      "pred": ":____________________________________________________________________TEXT_____TEXT__TEXTTEXTTEXT_____________________________________________________________TEXT__TEXT__TEXT____TEXT______________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List the top nine districts, by descending order, from the highest to the lowest, the number of female account holders.",
+      "gold": "SELECT T2.A2, COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' GROUP BY T2.district_id, T2.A2 ORDER BY COUNT(T1.client_id) DESC LIMIT 9",
+      "pred": "__________________TEXT_::__________________________:___:____:1______________________________________________________________________________________________________________________________________________________________________:_:__:1________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which are the top ten withdrawals (non-credit card) by district names for the month of January 1996?",
+      "gold": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ' AND T3.date LIKE '1996-01%' ORDER BY A2 ASC LIMIT 10",
+      "pred": ":____________________________________________________________________________________________________________________________________________________________TEXT___TEXT______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many of the account holders in South Bohemia still do not own credit cards?",
+      "gold": "SELECT COUNT(T3.account_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.client_id = T3.client_id WHERE T1.A3 = 'south Bohemia' AND T3.type != 'OWNER'",
+      "pred": "______:_:_______________:_____________________________________:__________:1______:TEXT:::_:_:_:_:_:_:__:TEXT:TEXT_________________________________________________________________________________:TEXT:____________:TEXT:TEXT____________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which district has highest active loan?",
+      "gold": "SELECT T2.A3 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.status IN ('C', 'D') GROUP BY T2.A3 ORDER BY SUM(T3.amount) DESC LIMIT 1",
+      "pred": "__:_:_:_:_:_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average loan amount by male borrowers?",
+      "gold": "SELECT AVG(T4.amount) FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN loan AS T4 ON T3.account_id = T4.account_id WHERE T1.gender = 'M'",
+      "pred": ":_:_:_:______________________________________________________________________________________________________________________________________________________________________________:_:_:_:_:_:_:_:_:_:TEXT::______________________________:TEXT:____________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "In 1996, which districts have the highest unemployment rate? List their branch location and district name.",
+      "gold": "SELECT district_id, A2 FROM district ORDER BY A13 DESC LIMIT 1",
+      "pred": ":_:_:_,__,__::__:_:_:_:_,_:_:TEXT,:1TEXT:TEXT:11111111111111111111111111111111TEXT:1|TEXTTEXT_:1|_____________________________________________TEXT:1|_TEXT______________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "In the branch where the largest number of crimes were committed in 1996, how many accounts were opened?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id GROUP BY T1.A16 ORDER BY T1.A16 DESC LIMIT 1",
+      "pred": ",,,,::_,:_,,::_,::_,::_,:::_:_:_:_:_:_:_:_:_,::::_,:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:___:________________:_:_:_:______________:TEXT,:TEXT,__:TEXT:__:_:_:_:_:_:_:TEXT:TEXT:____________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "After making a credit card withdrawal, how many account/s with monthly issuance has a negative balance?",
+      "gold": "SELECT COUNT(T1.account_id) FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T1.balance < 0 AND T1.operation = 'VYBER KARTOU' AND T2.frequency = 'POPLATEK MESICNE'",
+      "pred": "_____:______________________________________________TEXT___TEXT__________________________________________________TEXT___:TEXT:______________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Between 1/1/1995 and 12/31/1997, how many loans in the amount of at least 250,000 per account that chose monthly statement issuance were approved?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.date BETWEEN '1995-01-01' AND '1997-12-31' AND T1.frequency = 'POPLATEK MESICNE' AND T2.amount >= 250000",
+      "pred": ":__:____:_____:TEXT______________TEXT________________________________________________________________________________________________________________________________________:_:_:_:_:_:_:_:_:TEXT_______________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts have running contracts in Branch location 1?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T1.district_id = 1 AND (T3.status = 'C' OR T3.status = 'D')",
+      "pred": "_________:_______________________________________________________________________________________________________________:__________________:TEXT______:______:_____________:TEXT____:TEXT____:TEXT____________________________:TEXT:_:_:_:_:_:_:____________:TEXT:TEXT:TEXT:___________"
+    },
+    {
+      "db_id": "financial",
+      "question": "In the branch where the second-highest number of crimes were committed in 1995 occurred, how many male clients are there?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A15 = (SELECT T3.A15 FROM district AS T3 ORDER BY T3.A15 DESC LIMIT 1, 1)",
+      "pred": ",:::::::,,:_:_:_:_:_,:_:_,:_::::::_,:_,:_,:_,::_::::::_:_:_:_:_:_,:_,:_,:::::::::_,:_:_:_:_:_:_:_:_:_:_:_:_:__:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,:_:_:_:_:_:_:_:TEXT,:TEXT:__:TEXT:TEXT:TEXT,:__:_________:TEXT,__:TEXT:TEXT:_:TEXT:TEXT:TEXT:TEXT:TEXT:_:TEXT:_:_:_:_:_:_:_:_:__:___________:_:_:_:_:_:_:__"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many high-level credit cards have \"OWNER\" type of disposition?",
+      "gold": "SELECT COUNT(T1.card_id) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'gold' AND T2.type = 'OWNER'",
+      "pred": ":::,:_:_:_:_:_:_:_:_:______________________________________________________TEXT,_________________________:____:1:TEXT:___________________________________________________:1________________________________________________________________________:1___________:1TEXT:TEXT_"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts are there in the district of \"Pisek\"?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T2.A2 = 'Pisek'",
+      "pred": "::,:_::::::::::::::::::_:_:_________________:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:TEXT::TEXT,__:1_:111111111|1|1|1|_TEXT:TEXT:____________________________________________________________________________:111111TEXT:__:TEXT:TEXT,_:TEXT,TEXT:___________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which districts have transactions greater than USS$10,000 in 1997?",
+      "gold": "SELECT T1.district_id FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T1.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date) = '1997' GROUP BY T1.district_id HAVING SUM(T3.amount) > 10000",
+      "pred": "___________________________________________________________________________________________________________________________________________________________________________________________________________________________________:::::________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which accounts placed orders for household payment in Pisek?",
+      "gold": "SELECT DISTINCT T2.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.k_symbol = 'SIPO' AND T3.A2 = 'Pisek'",
+      "pred": ",____:_:_:__________________________________________________________________________________________________________________________________________________TEXT,____TEXT__TEXT__________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What are the accounts that have gold credit cards?",
+      "gold": "SELECT T2.account_id FROM disp AS T2  INNER JOIN card AS T1 ON T1.disp_id = T2.disp_id  WHERE T1.type = 'gold'",
+      "pred": ",,,,,,,,,,::_,_:TEXT,:TEXT,_______________________________________________________________:___________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How much is the average amount in credit card made by account holders in a month, in year 2021?",
+      "gold": "SELECT AVG(T4.amount) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE STRFTIME('%Y', T4.date) = '1998' AND T4.operation = 'VYBER KARTOU'",
+      "pred": "________________________________________________________________________________________________________________________________________________________________________________________________________________________________________::::::__________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who are the account holder identification numbers whose who have transactions on the credit card with the amount is less than the average, in 1998?",
+      "gold": "SELECT T1.account_id FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE STRFTIME('%Y', T1.date) = '1998' AND T1.operation = 'VYBER KARTOU' AND T1.amount < (SELECT AVG(amount) FROM trans WHERE STRFTIME('%Y', date) = '1998')",
+      "pred": "_____________________:______________________:______________________________:TEXT:___:___:____:_:_:_:_:___________:__:1:TEXT_:__:_:_:TEXT:TEXT:___:TEXT_:___:_:_:_:_:_:_:___:__:_:_:_:_:_________:TEXT:___:________:_:_::_:_:_______________________:TEXT:TEXT_:TEXT________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who are the female account holders who own credit cards and also have loans?",
+      "gold": "SELECT T1.client_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T5 ON T2.account_id = T5.account_id INNER JOIN loan AS T3 ON T5.account_id = T3.account_id INNER JOIN card AS T4 ON T2.disp_id = T4.disp_id WHERE T1.gender = 'F'",
+      "pred": "____TEXT_________________________________________________________________________________________TEXT___________________________________________________________TEXT_______________TEXT_____________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many female clients' accounts are in the region of South Bohemia?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' AND T2.A3 = 'south Bohemia'",
+      "pred": "::::::::_:::::,::_,_:_:_,_:_,_:_:_:_:_:_:_,_:_:_:_:_:_:_:_:_:_:_,_:_,:TEXT,:TEXT,:_:TEXT,:TEXT,:_,,:_:TEXT,:_:TEXT,:TEXT,:TEXT,:_,:_:_:_:_:_:__:_:__:__:__:_:_:_:__:__:__:___:__:TEXT,______:_:TEXT,:____________________:TEXT,:1_:111|_1|TEXTTEXT_TEXT__TEXT___TEXT__TEXTTEXTTEXT__________________________TEXT___TEXT___TEXT____"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the accounts whose district is Tabor that are eligible for loans.",
+      "gold": "SELECT T2.account_id FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'OWNER' AND T1.A2 = 'Tabor'",
+      "pred": "_______________________________________________________________________________TEXT____TEXT_______________________________________________________TEXT_______________________________________TEXT___________________________:__:_:TEXT____________:1_:11_______________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the account types that are not eligible for loans, and the average income of residents in the district where the account is located exceeds $8000 but is no more than $9000.",
+      "gold": "SELECT T3.type FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id WHERE T3.type != 'OWNER' AND T1.A11 BETWEEN 8000 AND 9000",
+      "pred": "________:__:_:_:__________________________________________________:_:_:_:_:TEXT:___________________________________________________________________________________:TEXT:_:_:_:_______________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts in North Bohemia has made a transaction with the partner's bank being AB?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.bank = 'AB' AND T1.A3 = 'north Bohemia'",
+      "pred": ",:::__:_______::_:_____:_:_____________________________________________________________________________________________________________________________:______:____________________:1__________________________________________________________:1TEXT:_____________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list the name of the districts with accounts that made withdrawal transactions.",
+      "gold": "SELECT DISTINCT T1.A2 FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.type = 'VYDAJ'",
+      "pred": ":_______________________________::::::_:_:_______:______________________________:__:_:________________________________________________:TEXT:_:_________:__:TEXT_:1_____TEXT______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average number of crimes committed in 1995 in regions where the number exceeds 4000 and the region has accounts that are opened starting from the year 1997?",
+      "gold": "SELECT AVG(T1.A15) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T2.date) >= '1997' AND T1.A15 > 4000",
+      "pred": ",::::::,:_:_:_:__:TEXT,:TEXT,:TEXT,:_____:TEXT:___:TEXT,___:__________________________:_:TEXT:1_____________________________________:111|TEXTTEXT______________TEXT:1|TEXT____TEXT_______________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many 'classic' cards are eligible for loan?",
+      "gold": "SELECT COUNT(T1.card_id) FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'classic' AND T2.type = 'OWNER'",
+      "pred": "_____________________________________________________________________________________________________________________________:_________________________________________________________________________________________________:___:_:_:__________:TEXT:_:_________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male clients in 'Hl.m. Praha' district?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A2 = 'Hl.m. Praha'",
+      "pred": ",:::::::,,:_:_:_:_:_:_:_:_:_:TEXT,:TEXT,_____________________________________________________________________________________________________________TEXT,__________________________________:TEXT:___:TEXT:TEXT:__:TEXT,:_:_:_:_:_:_:_:_:_:_:TEXT,,_:_:TEXT,:TEXT:_______________________:TEXT,__"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many percent of 'Gold' cards were issued prior to 1998?",
+      "gold": "SELECT CAST(SUM(type = 'gold' AND STRFTIME('%Y', issued) < '1998') AS REAL) * 100 / COUNT(card_id) FROM card",
+      "pred": ":___:_____________________TEXT:_________________:___:__:_:_:_:_:___________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who is the owner of the account with the largest loan amount?",
+      "gold": "SELECT T1.client_id FROM disp AS T1 INNER JOIN account AS T3 ON T1.account_id = T3.account_id INNER JOIN loan AS T2 ON T3.account_id = T2.account_id WHERE T1.type = 'OWNER' ORDER BY T2.amount DESC LIMIT 1",
+      "pred": "__:__________________________________________________________________________________________TEXT_____TEXTTEXT___________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the number of committed crimes in 1995 in the district of the account with the id 532?",
+      "gold": "SELECT T1.A15 FROM district AS T1 INNER JOIN `account` AS T2 ON T1.district_id = T2.district_id WHERE T2.account_id = 532",
+      "pred": ":________________________________________TEXT___TEXT______TEXTTEXT___________________________________________________TEXT:__:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT__:TEXT_:TEXT:_____________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the district Id of the account that placed the order with the id 33333?",
+      "gold": "SELECT T3.district_id FROM `order` AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN district AS T3 ON T2.district_id = T3.district_id WHERE T1.order_id = 33333",
+      "pred": "_____________________________________________________________________________________________________________________________________________________________________________________________________________:_________TEXT___TEXT____________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all the withdrawals in cash transactions that the client with the id 3356 makes.",
+      "gold": "SELECT T4.trans_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id = T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 3356 AND T4.operation = 'VYBER'",
+      "pred": "_____________________________________________________TEXT__TEXTTEXT_____________________________________________TEXT_____:_____:1:_________________________________________________________________________________________________________________________________________TEXT"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the weekly issuance accounts, how many have a loan of under 200000?",
+      "gold": "SELECT COUNT(T1.account_id) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T2.frequency = 'POPLATEK TYDNE' AND T1.amount < 200000",
+      "pred": ",:::::::_:_:_________________:_:_:_:_:_:_:::::::___:_____________:___:TEXT,:TEXT:________________________:TEXT:_:_:_:_:_:__:_____________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What type of credit card does the client with the id 13539 own?",
+      "gold": "SELECT T3.type FROM disp AS T1 INNER JOIN client AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T1.disp_id = T3.disp_id WHERE T2.client_id = 13539",
+      "pred": "_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________:__:_:TEXT:_______________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the region of the client with the id 3541 from?",
+      "gold": "SELECT T1.A3 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.client_id = 3541",
+      "pred": "______________________________________________________________________________________________________________________________________________________________________________________________________:__________TEXT__TEXT___________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which district has the most accounts with loan contracts finished with no problems?",
+      "gold": "SELECT T1.A2 FROM District AS T1 INNER JOIN Account AS T2 ON T1.District_id = T2.District_id INNER JOIN Loan AS T3 ON T2.Account_id = T3.Account_id WHERE T3.status = 'A' GROUP BY T1.District_id ORDER BY COUNT(T2.Account_id) DESC LIMIT 1",
+      "pred": ":::::::::_______________::______________:____________________________________________________________________________________________________:_____:___:TEXT:_____:1_______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Who placed the order with the id 32423?",
+      "gold": "SELECT T3.client_id FROM `order` AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T4 ON T4.account_id = T2.account_id  INNER JOIN client AS T3 ON T4.client_id = T3.client_id WHERE T1.order_id = 32423",
+      "pred": "________________________________________________________________________________________________________________________:___________________________________________________________________________________________:___:_:_____________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please list all the transactions made by accounts from district 5.",
+      "gold": "SELECT T3.trans_id FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T1.district_id = 5",
+      "pred": ",:_:_,,_:_:_:_:_:_:_:TEXT,_____:1____:111|1|1|1|1|TEXT___________________________________________________________________________________________________________________________________________________________________________________:111|TEXT_______________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many of the accounts are from Jesenik district?",
+      "gold": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id WHERE T1.A2 = 'Jesenik'",
+      "pred": "::,,:_:_,::::::::::::::::::::::::_:_:_:_:_:_:_:__:__________:__:_:_:_:_:_:_:_:_:_:_:_:_:_:_,_:TEXT,_:1_:11111110|1|TEXT______________________________________________________________________________________________________________________:101|1|_______:1|TEXT_:1|TEXT_:"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all the clients' IDs whose junior credit cards were issued after 1996.",
+      "gold": "SELECT T2.client_id FROM card AS T1 INNER JOIN disp AS T2 ON T1.disp_id = T2.disp_id WHERE T1.type = 'junior' AND T1.issued >= '1997-01-01'",
+      "pred": ":_:_::::::::::___________________________________________________________________TEXT:________________________________________________________________________________________________________________________________:_:_:_:_:_:_:_:_:_:TEXT_:1______TEXT_______________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What percentage of clients who opened their accounts in the district with an average salary of over 10000 are women?",
+      "gold": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) * 100 / COUNT(T2.client_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A11 > 10000",
+      "pred": ":_::,:_,_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,_:_:_:TEXT,:1_:TEXT,_:1TEXT:TEXT:TEXT,_:1TEXT,___________:11TEXT:11TEXT:1|1|TEXT_____________________________________________________________________________________________:11TEXT:11_:11_:11_:11_:11_:1______________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What was the growth rate of the total amount of loans across all accounts for a male client between 1996 and 1997?",
+      "gold": "SELECT CAST((SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1997' THEN T1.amount ELSE 0 END) - SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END)) AS REAL) * 100 / SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T3.account_id = T2.account_id INNER JOIN client AS T4 ON T4.client_id = T3.client_id WHERE T4.gender = 'M' AND T3.type = 'OWNER'",
+      "pred": ":___::___:::__:::::::::::_______________________________________________________________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many credit card withdrawals were recorded after 1995?",
+      "gold": "SELECT COUNT(account_id) FROM trans WHERE STRFTIME('%Y', date) > '1995' AND operation = 'VYBER KARTOU'",
+      "pred": ",_,:_,:::,:,,,,,:_,:_:TEXT,:_____________________________________________________________________:_:______:_____________:____:__:_:_:_:_:_:_:_:___________:TEXT:_______________________________________:______:TEXT:_____________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What was the difference in the number of crimes committed in East and North Bohemia in 1996?",
+      "gold": "SELECT SUM(IIF(A3 = 'east Bohemia', A16, 0)) - SUM(IIF(A3 = 'north Bohemia', A16, 0)) FROM district",
+      "pred": ":_:_,_:__:___:TEXT,:____:TEXT,_:TEXT,_:____________:_:_:TEXT,_:1________________________:TEXT,_:111|1|1|1|1|1|1|1|TEXT_:10|1|1|TEXT_:1|1|TEXT___:1|1|TEXT_________________________:1|1|________________________________:1|TEXT_:1|_____________TEXT:TEXT:___________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many owner and disponent dispositions are there from account number 1 to account number 10?",
+      "gold": "SELECT SUM(type = 'OWNER') , SUM(type = 'DISPONENT') FROM disp WHERE account_id BETWEEN 1 AND 10",
+      "pred": "__________________________________________________________________________________________________________TEXT__TEXT___TEXT___________________________________________________________TEXT__________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How often does account number 3 request an account statement to be released? What was the aim of debiting 3539 in total?",
+      "gold": "SELECT T1.frequency, T2.k_symbol FROM account AS T1 INNER JOIN (SELECT account_id, k_symbol, SUM(amount) AS total_amount FROM `order` GROUP BY account_id, k_symbol) AS T2 ON T1.account_id = T2.account_id WHERE T1.account_id = 3 AND T2.total_amount = 3539",
+      "pred": "___________________________________________________________________________________________________________________:_______________________________________________________________________________________________:___:_:_:_________:1:TEXT::_____________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What year was account owner number 130 born?",
+      "gold": "SELECT STRFTIME('%Y', T1.birth_date) FROM client AS T1 INNER JOIN disp AS T3 ON T1.client_id = T3.client_id INNER JOIN account AS T2 ON T3.account_id = T2.account_id WHERE T2.account_id = 130",
+      "pred": "______________TEXT_:________________________________________________________________________________________________________________________________________________________________________________________________________________________________________:::::_:"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts have an owner disposition and request for a statement to be generated upon a transaction?",
+      "gold": "SELECT COUNT(T1.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T1.account_id = T2.account_id WHERE T2.type = 'OWNER' AND T1.frequency = 'POPLATEK PO OBRATU'",
+      "pred": ",:_,,:_,::::::::::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,_:TEXT,_:1_:TEXT:___:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111TEXT:_____________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the amount of debt that client number 992 has, and how is this client doing with payments?",
+      "gold": "SELECT T4.amount, T4.status FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 on T2.account_id = T3.account_id INNER JOIN loan AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 992",
+      "pred": "___:__:_:__:_:__:__________________________________________________________:__:TEXT,:TEXT,:______________________________________________________________________:1_:TEXT:_______________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the sum that client number 4's account has following transaction 851? Who owns this account, a man or a woman?",
+      "gold": "SELECT T4.balance, T1.gender FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN account AS T3 ON T2.account_id =T3.account_id INNER JOIN trans AS T4 ON T3.account_id = T4.account_id WHERE T1.client_id = 4 AND T4.trans_id = 851",
+      "pred": "_____________________:_TEXT_:_________________________________________________________________________________________:_____________________________________________________________________________:_:_:_:_:__________:TEXT__________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Which kind of credit card does client number 9 possess?",
+      "gold": "SELECT T3.type FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T1.client_id = 9",
+      "pred": "::::::::__:___:__:_:_:_:_:_:_:_,:_:_:_:TEXT,_:TEXT,___:TEXT,_________:TEXT,_________:_________:TEXT,_:_:TEXT,_:_:_:_:_:TEXT:_:_:TEXT,___:TEXT,________:TEXT,_________:TEXT:________:_____________________________________________________________________________________________:TEXT,_:__:TEXT,__:___"
+    },
+    {
+      "db_id": "financial",
+      "question": "How much, in total, did client number 617 pay for all of the transactions in 1998?",
+      "gold": "SELECT SUM(T3.amount) FROM client AS T1 INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date)= '1998' AND T1.client_id = 617",
+      "pred": "::__:__,:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:___________________________________________:_:_:_:TEXT,_______:1__TEXT:TEXT:_________:1111111111|1|1|TEXTTEXT________________________TEXT________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please provide a list of clients who were born between 1983 and 1987 and whose account branch is in East Bohemia, along with their IDs.",
+      "gold": "SELECT T1.client_id, T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id and T4.account_id = T3.account_id WHERE T2.A3 = 'east Bohemia' AND STRFTIME('%Y', T1.birth_date) BETWEEN '1983' AND '1987'",
+      "pred": ":______________________________________________________________________TEXT:_______________________________________________________________________________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Please provide the IDs of the 3 female clients with the largest loans.",
+      "gold": "SELECT T1.client_id FROM client AS T1 INNER JOIN disp AS T4 on T1.client_id= T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id  INNER JOIN loan AS T3 ON T2.account_id = T3.account_id and T4.account_id = T3.account_id WHERE T1.gender = 'F' ORDER BY T3.amount DESC LIMIT 3",
+      "pred": ",_:_:_:_:::::::::::::::::::::::::::::_,_:1___________:TEXT,:TEXT:__:11TEXT:11TEXT______:TEXT,_:TEXT:1|1|1|1|1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male customers who were born between 1974 and 1976 have made a payment on their home in excess of $4000?",
+      "gold": "SELECT COUNT(T1.account_id) FROM trans AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T4 ON T2.account_id = T4.account_id INNER JOIN client AS T3 ON T4.client_id = T3.client_id WHERE STRFTIME('%Y', T3.birth_date) BETWEEN '1974' AND '1976' AND T3.gender = 'M' AND T1.amount > 4000 AND T1.k_symbol = 'SIPO'",
+      "pred": ",:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:______________________________________________________________________________________________________________________________________________________________:_______________________:1:TEXT,:TEXT:___:1TEXT:TEXT:1TEXT:TEXT:TEXT:TEXT:_"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many accounts in Beroun were opened after 1996?",
+      "gold": "SELECT COUNT(account_id) FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T1.date) > '1996' AND T2.A2 = 'Beroun'",
+      "pred": "_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________:__________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many female customers have a junior credit card?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T1.gender = 'F' AND T3.type = 'junior'",
+      "pred": "::,,:_:_:::::::,:::::::::::::::::::::::::_:_:_:_:_:_:_:_:_:_:_:_,:_:_,:::,::::::,:,:::::::::::::::::::::::::::_:_:_:_,:_,:_,:_:_:_:_:_:_:_:_:_:_:_:_::::::_,:_:_:_:_:_:_:_:_:_:_:_:_:_:_:__:___:__:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_____"
+    },
+    {
+      "db_id": "financial",
+      "question": "What proportion of customers who have accounts at the Prague branch are female?",
+      "gold": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) / COUNT(T2.client_id) * 100 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A3 = 'Prague'",
+      "pred": "::::::,:_:_:_:_:_:_,:__:_:_:_:_:_:_:_:_:_,:_:_:_:_:_:_,:_,:_:TEXT,:TEXT:__:TEXT:TEXT:TEXT:__:_:_:_:_:_:TEXT:TEXT:TEXT:_:_:_:_:_:TEXT,__:TEXT:TEXT:_:____:TEXT:TEXT:TEXT:TEXT,:__:__:TEXT:TEXT:TEXT:___________:__:TEXT,:_:___________:TEXT,:TEXT,:1_:1TEXT:TEXT,______________________________:111111111|1|1|TEXT___________________TEXT:1|"
+    },
+    {
+      "db_id": "financial",
+      "question": "What percentage of male clients request for weekly statements to be issued?",
+      "gold": "SELECT CAST(SUM(T1.gender = 'M') AS REAL) * 100 / COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T3 ON T1.district_id = T3.district_id INNER JOIN account AS T2 ON T2.district_id = T3.district_id INNER JOIN disp as T4 on T1.client_id = T4.client_id AND T2.account_id = T4.account_id WHERE T2.frequency = 'POPLATEK TYDNE'",
+      "pred": ":_::,,:TEXT,:_:_,:_:_:_:_:_:_:_,:_:_,_:_:_:TEXT,:__:_:_:_:___:__:TEXT,:TEXT,:TEXT,___:TEXT,______:_________________:__:TEXT,:TEXT,:TEXT,:TEXT,:TEXT,_:TEXT,:TEXT,________________________:TEXT,,__:_________:TEXT,:TEXT:_:___:TEXT,:TEXT:_____:TEXT,:__:_:___:TEXT:_:___:____________:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients who choose statement of weekly issuance are Owner?",
+      "gold": "SELECT COUNT(T2.account_id) FROM account AS T1 INNER JOIN disp AS T2 ON T2.account_id = T1.account_id WHERE T1.frequency = 'POPLATEK TYDNE' AND T2.type = 'OWNER'",
+      "pred": ":_::::,:_,_:_:_,_:_:_:_:_:_:_,_:_,_:_:TEXT,_:1:1_:1_:1TEXT_:TEXT_:TEXT:TEXT:_:TEXT:_:_:TEXT:_:__:_:TEXT:__:TEXT,__:11111111111111111111111111111111TEXT__:TEXT:TEXT:_:_:TEXT:_:_:TEXT:TEXT:_:TEXT:_:_:_:_:_:_:_:_:_:_:TEXT,_:_:_:TEXT:TEXT:______________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Among the accounts who have loan validity more than 24 months, list out the accounts that have the lowest approved amount and have account opening date before 1997.",
+      "gold": "SELECT T1.account_id FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id WHERE T1.duration > 24 AND STRFTIME('%Y', T2.date) < '1997' ORDER BY T1.amount ASC LIMIT 1",
+      "pred": ":___:::::::___:__:_:_____:___:TEXT:__________________________________________TEXT________________________________________________________________TEXT____________________________________________________________________________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Name the account numbers of female clients who are oldest and have lowest average salary?",
+      "gold": "SELECT T3.account_id FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN account AS T3 ON T2.district_id = T3.district_id INNER JOIN disp AS T4 ON T1.client_id = T4.client_id AND T4.account_id = T3.account_id  WHERE T1.gender = 'F' ORDER BY T1.birth_date ASC, T2.A11 ASC LIMIT 1",
+      "pred": ":___:_:_:_:_:_:_:_:_:_:_:__:_:__:_:_:_:_:_:__:____________TEXT____TEXTTEXTTEXT_____________________________________________________________TEXT____________________________________________________________________:TEXT______________________:TEXT:________:TEXT:TEXT:TEXT:________:TEXT:_______"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many clients who were born in 1920 stay in east Bohemia?",
+      "gold": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE STRFTIME('%Y', T1.birth_date) = '1920' AND T2.A3 = 'east Bohemia'",
+      "pred": "::,,:_:_:_:_:_,_:TEXT,:_:TEXT:_:_:_,:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,:_:_,:_,:_,,:_:_:_:_:_,:_:_:_:_:_:_:_:_:_:_,:_::_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_:_,__:TEXT,:TEXT:___________________________:1_:111|TEXTTEXTTEXTTEXT________________________________________TEXT___________"
+    },
+    {
+      "db_id": "financial",
+      "question": "How many loan accounts are for pre-payment of duration of 24 months with weekly issuance of statement.",
+      "gold": "SELECT COUNT(T2.account_id) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.duration = 24 AND T1.frequency = 'POPLATEK TYDNE'",
+      "pred": ":____________________________________:::::_____________________:________________________________________________________________________________:TEXT,:__________:__________________________________________________:___:TEXT:____________________:1___:11____________"
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average amount of loan which are still on running contract with statement issuance after each transaction?",
+      "gold": "SELECT AVG(T2.amount) FROM account AS T1 INNER JOIN loan AS T2 ON T1.account_id = T2.account_id WHERE T2.status IN ('C', 'D') AND T1.frequency = 'POPLATEK PO OBRATU'",
+      "pred": "___________:____________:____:_:_:_:______________________:__:TEXT::_:_:_:___________________________________________:TEXT:_:TEXT:TEXT:__________________________________________________________________________________:__________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "List all ID and district for clients that can only have the right to issue permanent orders or apply for loans.",
+      "gold": "SELECT T3.client_id, T2.district_id, T2.A2 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T1.account_id = T3.account_id WHERE T3.type = 'OWNER'",
+      "pred": ":________________________________________________________________________________________________________________________________________________________________________________________________________:::____________________________________________________"
+    },
+    {
+      "db_id": "financial",
+      "question": "Provide the IDs and age of the client with high level credit card, which is eligible for loans.",
+      "gold": "SELECT T1.client_id, STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', T3.birth_date) FROM disp AS T1 INNER JOIN card AS T2 ON T2.disp_id = T1.disp_id INNER JOIN client AS T3 ON T1.client_id = T3.client_id WHERE T2.type = 'gold' AND T1.type = 'OWNER'",
+      "pred": "::::::_:_:_:_:_________________________________________________________________________________________:_:_:_:_:_:_:_:_:_:_:_:TEXT,,_:TEXT:_:TEXT:TEXT:___________________________________________________________________________________:___:TEXT:_:_________________________"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "What is the most common bond type?",
+      "gold": "SELECT T.bond_type FROM ( SELECT bond_type, COUNT(bond_id) FROM bond GROUP BY bond_type ORDER BY COUNT(bond_id) DESC LIMIT 1 ) AS T",
+      "pred": "_,::_,:_,_,_,_,:__,_:TEXT,___:1_________________________TEXT:TEXT:_____________________________________________________________________________________________________________TEXT:TEXT__TEXT__TEXT___TEXT___TEXT:TEXT___TEXT__TEXT__TEXT______TEXT:TEXT_____TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:______TEXT,TEXT,TEXT:TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT:1TEXT"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "In the non-carcinogenic molecules, how many contain chlorine atoms?",
+      "gold": "SELECT COUNT(DISTINCT T1.molecule_id) FROM molecule AS T1 INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.element = 'cl' AND T1.label = '-'",
+      "pred": ",_,,:_:__:TEXT,__:TEXT,__:TEXT,__,__:_:_:TEXT:_:____________________________________________________________________________________________________TEXT:1TEXT:1TEXT:1TEXT,________________________________________________TEXT,TEXT,___:1TEXT,TEXT,TEXT,TEXT:1TEXT:1__________________TEXT,TEXT:1_______TEXT,________"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "Calculate the average number of oxygen atoms in single-bonded molecules.",
+      "gold": "SELECT AVG(oxygen_count) FROM (SELECT T1.molecule_id, COUNT(T1.element) AS oxygen_count FROM atom AS T1 INNER JOIN bond AS T2 ON T1.molecule_id = T2.molecule_id  WHERE T2.bond_type = '-' AND T1.element = 'o'  GROUP BY T1.molecule_id) AS oxygen_counts",
+      "pred": ",_,:TEXT,:TEXT,_:TEXT,_:TEXT,_:_:TEXT:_:_:TEXT:TEXT,_:TEXT:TEXT:TEXT:TEXT:_:_:_______________________________________________________________________________________TEXT:TEXT:TEXT:TEXT:TEXT______________________TEXT:TEXT:TEXT:______________TEXT,________________TEXT,TEXT,_________TEXT:TEXT:TEXT:TEXT:1_11111111111111111111111111111111"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "On average how many carcinogenic molecules are single bonded?",
+      "gold": "SELECT AVG(single_bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS single_bond_count FROM bond AS T1  INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN molecule AS T3 ON T3.molecule_id = T2.molecule_id WHERE T1.bond_type = '-' AND T3.label = '+' GROUP BY T3.molecule_id) AS subquery",
+      "pred": ":_,___:__:__:TEXT,:_:_:_:_:_:_:_:TEXT:_:TEXT,______________________________________________________________________________TEXT:1TEXT:11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "db_id": "toxicology",
+      "question": "In the molecule containing sodium atoms, how many are non-carcinogenic?",
+      "gold": "SELECT COUNT(DISTINCT T2.molecule_id) FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.element = 'na' AND T2.label = '-'",
+      "pred": ",_,:TEXT,:TEXT:_:_:_:_:TEXT,_:TEXT,_:TEXT,_:TEXT:_:1_______________________________________________________________________________TEXT,_________________________TEXT:111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ]
+}

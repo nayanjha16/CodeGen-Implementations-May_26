@@ -1,0 +1,1218 @@
+{
+  "model": "deepseek-coder-33b",
+  "scenario": "finetuned_bird",
+  "dataset": "spider",
+  "metrics": {
+    "ex": 0.0,
+    "ts": 0.0,
+    "ves": 0.0,
+    "component_f1": 0.0,
+    "bleu": 0.5411925253973705,
+    "bertscore": 0.836214872598648
+  },
+  "meta": {
+    "sample_size": 200
+  },
+  "per_example": [
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers do we have?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "INTEGER______00000000000coleidb_cb___:id___:_00000000000coleid_b00000000011cole_id11111cole_id11111cule___00011111cule0000011111011111cINTEGER,____________|_0-0000000000000000000000001|None|None|None|TRPRINTE__011111100000000000000000000000000000000000000000000000000100111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the total number of singers?",
+      "gold": "SELECT count(*) FROM singer",
+      "pred": "oleid_id_ole_X_ole_IdIdXXINTEINTETEXT/*_IdIdX_X_X_IdIdIdIdIdIdX_X,TEXT,INTEINTETEXT)"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "id###oleidb###INTEINGER__INTE_INTE,INTE_INTE_INTE_INTE_INTE_INTE,INTE0_ole_ole000000011111111cINTE:INTE_INTE:ole_INTE:Xidididid_INTE,INTE10011111101111111cX_INTE:X:ole00000000010011111110111111111111111111111111110011111111001111111111111111000111111111111110000000000000101011111111111111111111111111000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names, countries, and ages for every singer in descending order of age?",
+      "gold": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+      "pred": "id_id_ole_INTETEXT_X_X:_ole_INTEINTEINTEINTEIdTEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEXTEXT,TEXT,TEXT,TEXT,TEXT,GER_IdINTETEXT:_ole:_X:_id00000000000000000000_ole000000000000000000000000000000100000000000000000000000000000000000000000000001101000000000000000000000000000000000000001101000000000000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age of all singers from France?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "###INTEINGER__bINTE__bINTE,bINTE_,bINTE,IdINTE__IdINTE,INTE,INTE__XXINTE__INTE,INTE:INTE__idINTE__INTE,INTE:INTE,INTE:INTE:INTE,INTE11:id_INTE00000001000111111100110000000000100011111111111111111111111111111111001101011111101100000000000000000000000000000000000000000000000101111111111111111111111100000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average, minimum, and maximum age for all French singers?",
+      "gold": "SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",
+      "pred": "INTEGER__bole_bb_b_XbINTEGER,INTEINTEINTEbINTE_IdINTE_IdINTE__IdINTE_____________cINTE,INTE____________cidXididIdXIdIdX_IdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:INTE,INTE,INTE,IdIdIdId_Id_Id_Id_Id_Id:INTE,INTE0:INTE00000100011111111110000000000000000000000000001000000000000000000000000000010101011100-NoneNoneNoneNoneNoneNoneTR_-__00-NoneNoneNone__00-"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and the release year of the song by the youngest singer.",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "INTEGER__bINTEGER__bINTEGER,bINTEGER,INTEGER,GER__XIdINTEGER,INTEGER,GER:INTEGER,INTEINTEINTEINTEINTEXGER__IdINTEGER,GER_,INTEINTE_XXINTEGER,INTEINTE,INTE_IdINTEGER,INTE__XIdINTEGER,INTE___XIdINTEGER,INTE,INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT:INTEGER,INTE_________________________________|X:INTEINTE________|IdIdXIdXIdIdIdX_IdIdIdIdId_Id_____00000000000000010111111111111111110010000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and release years for all the songs of the youngest singer?",
+      "gold": "SELECT song_name ,  song_release_year FROM singer ORDER BY age LIMIT 1",
+      "pred": "id_id_ole_INTEINTEINTEId_INTE_INTE_INTE_INTE_GERINTEId_INTE,TEXT,GERId:TEXT,TEXT,TEXT,INTE_INTE,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTE_TEXT:TEXT,INTE:INTE_INTE_INTE,TEXT,INTE,TEXT,TEXT,INTE,INTE,INGER,INTE,TEXT:TEXT:TEXT:TEXT:TEXT:ule_ole_ole:INTE_XbX_INTE_INTE,INTE:INTE,TEXT:ole_ole000000000_ole0000000000000000000000000001-cTRcTR000000000000000000000000000010010010010111111cole00000000001010111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all distinct countries where singers above age 20 are from?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "oleid_X_ole_ole_INTETEXT_IdINTEINTEINTEINTEINTEINTEINTEXGERINTEXGERTEXTIdTEXTIdTEXTIdTEXT/*_TEXT,TEXT,TEXT,TEXT:TEXT,TEXT0000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000111111000000000000000000000000000000000000000000000000000000000000000000000001111111111111111111111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are  the different countries with singers above age 20?",
+      "gold": "SELECT DISTINCT country FROM singer WHERE age  >  20",
+      "pred": "id_id_ole_INTEole_INTEINTEGERIdTEXTIdINTEINTEXGERINTEINTEINTEINTEINTEINTETEXTIdINTETEXTIdTEXT/*_TEXT/*,TEXT_TEXT,TEXT0:ole_ole000:id000000000000000000000000000000001000000000000110000000000-cbc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111ccTRcbccole_INTEid_INTE_INTE_INTE_INTE_GER"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show all countries and the number of singers in each country.",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "oleididididididididIdINTEINTEXTEXT__IdINTEIdXINTE_INTE,INTE,INTE/*IdINTE/*XIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GER_IdTEXT:ole_id_id_XIdINTE_TEXT0_ole_id:ole_id_id_id_ole_Idid_X_X_X_X_X:ole_id00:ole_id00000000000cididididole_X_ole_id_id_ole_Id_ole_Id_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE:INTE_INTE:INTE_INTE:INGER,INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ule_id_X_ole_id11000001111101"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many singers are from each country?",
+      "gold": "SELECT country ,  count(*) FROM singer GROUP BY country",
+      "pred": "id_id_ole_TEXT,X_TEXT,IdIdTEXT,IdINTEGER,IdTEXT,TEXT,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEGER,TEXT,INTETEXT,INTEGER,TEXT,TEXT,INTEGER,INTEGER:ole_INTEGER,TEXT,TEXT,TEXT0:id:INTEINTEINTEINTEINTEXGER_INTEINTEIdTEXT,TEXT,TEXT,TEXT:TEXT:INTEid_INTE_INTE_INTE_INTE_INTE_INTE,TEXT:ole_ule_ole00:ole000000000000000000000000000010000000001111100000000000000000000000001111111111cTRINTE_id000000000001"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all song names by singers above the average age.",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "INTETE###INTEINTEbINTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE:INTE,INTE:INTE:INTE:INTE_ole_INTE:ole0:id_INTE:INTE1-_ole00-100000000000100000000110000000011111000000000000000000000000000100000000010101111110100000000100000000000000000000000000000000000000000000000000000000000000001010000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are all the song names by singers who are older than average?",
+      "gold": "SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)",
+      "pred": "###INTEINGER__###INTE__bINTE_:ole_bbINTE:INTE:INTE:INTE,INTE,INTE,INTE,INTE__idXINTE:INTE:INTE:INTE,INGER,INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ule_Idole_IdTEXT,TEXT,TEXT:INTE:TEXT00:id_ole:INTE000000100010111111111110000000000000000000000000000000000000100000000000000000000000000100000001000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show location and name for all stadiums with a capacity between 5000 and 10000.",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "###INTEGER__ididole_ole_INTEGER:X_X_INTEGER,INTEINTEINTEINTEXGER_INTEINTEXGER,INTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INGER,TEXT,INTE,TEXT0__ole000000000000000000000001011111111111001111111111111110000000000000000000000000000000000000010111111111111111111111110000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the locations and names of all stations with capacity between 5000 and 10000?",
+      "gold": "SELECT LOCATION ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",
+      "pred": "ididoleoleINTEGERandoleididoleINTEGERIdINTEGER__INTEINTEINTETEXTIdTEXT_IdTEXT/*_IdTEXT_IdTEXT_TEXT_INTE_GER_TEXT,TEXT,INTE_XINTE_IdINTE_INTE/*IdTEXT,TEXT,INTE:TEXT,INTE_TEXT:INTE,TEXT:TEXT:oleididoleoleoleididoleXXINTE_INTE_INTE_INTE_INTE_XIdTEXT,INTE_TEXT,INTE,INGER_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ole_INTE,INTE0_ole_INTE0000000_INTE11011111111011111100111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the maximum capacity and the average of all stadiums ?",
+      "gold": "select max(capacity), average from stadium",
+      "pred": "INTEGER__b###INTEGER0:_culeididididididbole___________00000000000000000010111111cid_cole__cole____cINTEINTEid_Id_Id|X|id|X|Id|Id|Id|Id|INTEINTE_Id|Id|Id|Id|INTE________|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the average and maximum capacities for all stadiums ?",
+      "gold": "select avg(capacity) ,  max(capacity) from stadium",
+      "pred": "INTEINTEoleidb###INTE###INTE_INTE_INTE_INTE_INTE_INGER,INTE,INTE:INTE,INTE:INTE,INTE:INTE_INTE:INTE_ole_INTE:X_X100000000000000100000010000001011111010000000000000000000000000000000000010111110011111110111111111111111111011111110000000000000000000000000000000000000000000011111100111101100000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "###INTEGER__###INTEGER,INTEGER,INTEINTEINTEINTEINTEIdINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEXGER,INTEINTE_INTE_INTE,INTE_INTE,INTE,INTE_IdINTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT:TEXT:INTE,INTE,INTE:INTE:TEXT:INTE:INTE:INTE:INTE:INTE:INTE:INGER,X_X:X000000000000000000000000000000100000000000000000000000000001100000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity for the stadium with the highest average attendance?",
+      "gold": "SELECT name ,  capacity FROM stadium ORDER BY average DESC LIMIT 1",
+      "pred": "###INTEGER__###INTEGER,INTEINTEINTEXGER,INTE_XGER,INTE_INTE,INTE,INTE_bINTE__idINTE__RINTE_______________cGER____________cGER:INTE_IdINTE,INTE:INTE,INTE:INTE,INTE,INGER,INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT:ole_ole0010000000000000000000000110111111110111111111111111111111111111100100000000000000000000000011111111111111111111111110000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts are there in year 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "ole###INTEINGER__INGER_INTEbGER_INTEINTE_GER,INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_XINTE_X_INTE,INTE:INTE:INTE:X_X:ole_ole10000011111111111101111111111111cIdX_Id_INTE,INTE,INTE:TEXT,TEXT:TEXT000000000001011111111111111111111011111100111111111111111111111111111111111000000000000000010011011101111111111111111111110000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "How many concerts occurred in 2014 or 2015?",
+      "gold": "SELECT count(*) FROM concert WHERE YEAR  =  2014 OR YEAR  =  2015",
+      "pred": "oleid_ole_INTEole_INTEGER,IdTEXT,IdTEXT,IdINTEINTEINTEGER,INTEINTETEXT,TEXT/*,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTETEXT,TEXT,TEXT:TEXT,TEXT:TEXT:INTETEXT:INTEole_INTEINTETEXT,TEXT,INTEINTETEXT,TEXT,INTEIdINTEINTEIdINTETEXT,TEXT:TEXT:TEXT:ole_ole_ole_ule_ole_ole_INTEINTEINTEINTEINTEINTEINTETEXT,INTEREINTEXGER,INTETEXT,INTEINTEINTEINTEeded_INTEINTEed_INTEed_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_XGERIdGERINTEINTEINTEINTEINTEINTEXGER_INTE_INTE_INTE,INTE_INTE_INTE,INTE_INTE,INTE_INTE,INTE_XGER_INTE"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and the number of concerts in each stadium.",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "INTEGER__###INTEGER,INTEGER_:id_id_bid_ole_X_bX_id:X:INTEINTEINTE###ole_INTEINTE_INTE_INTE_INTE_INTE_INTE,INTE_X:INTE:INTE:INTE00000000000011111111111111111cIdId_X:INTE___________0000000000100010111111111111111111111111011111100111111111111111111111111111111110000000000000000000111111111111111111111111110000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "For each stadium, how many concerts play there?",
+      "gold": "SELECT T2.name ,  count(*) FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id GROUP BY T1.stadium_id",
+      "pred": "X_Id______________________:id___:X:id0000000000000000000cTRccTR00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001cbbcole_ole_INGERINTEole_INTE###ole00000000000000011cbcule_INTEid_INTE_ole000-cTR0000000000000011101111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium name and capacity with most number of concerts in year 2014 or after.",
+      "gold": "SELECT T2.name ,  T2.capacity FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  >=  2014 GROUP BY T2.stadium_id ORDER BY count(*) DESC LIMIT 1",
+      "pred": "###INTEININGERINTE_ule_INTE_INTE,INTE,INTE_INTE,INTE,INTE_INTE,INTE,INTE_INTE_INTE_INTE_INTE,INTE:INTE,INTE:INTE,INTE:INTE,ole_INTE:INTE,INTE0:INTE00-_ole0000000000001011111111111101111111011111111111111111111111111111111111111111100111111111111111111111111111111111000000000000001100100000110000000011011000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and capacity of the stadium with the most concerts after 2013 ?",
+      "gold": "select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >  2013 group by t2.stadium_id order by count(*) desc limit 1",
+      "pred": "###INTEGER__###INTEGER,X____bINTEINTEINTEXGER,INTEGER,INTEINTEidINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEXGER,GER_IdINTEINTE_INTE_INTE,GER,GER:X,INTE_IdIdINTE_X_X:INTE,INTE,INTE_________|X|Id0000000000000000000000010000111011111000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Which year has most number of concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "INTEGER______cINTEGER,bINTEGER,bbINTEbINTEINTEINTEINTEbXINTEXINTE_XXINTE_________________cINTEINTE___:INTEole___:INTEINTE___:INTEINTE,idXXIdINTE_,IdX________|Id__:ole_00|_00|00|00|None|None|None|None|None|Id00|01|11|None|None|None|None|None|Id01|11|11|None|None|None|None|None|id11|11|11|None|None00|10|10|None|id00|10|10|None|None|None|TRNone|None|None|TRNone|TR_|id00|11|11|None|None|TR-00|None|None|None|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the year that had the most concerts?",
+      "gold": "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      "pred": "INTEGER______cINTEGER,_______________________0_000000000000000000111111111111coleididididididididIdINTEGER,_,_|ole_ole0001000111111111111cINTEGER:ole_INTETP,_00000000000111111000000000000000001111111001111111111110000000000000000000001111111111100000000000000011001111111111100001011100000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the stadium names without any concert.",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "INTEGER__###INTEGER,INTEGER,GERINTEINTEINTEINTEbGERbGER_INTEbINTE_XINTE_X_INTE,INTE__bINTE:oleididid_id_id_id_id_id:INTE___________cXid________|X0-0000-1000-1001|id|ole_id|ole0-1000|id|id|id|id|id|id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id1|_0000|None|None|None|None|TR0000|None|None|TR0100|None|TR0000|"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the stadiums without any concerts?",
+      "gold": "SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)",
+      "pred": "INTETE###INTEINTEXINTE_b_b_INTE___INTE,INTE,INTE,INTE,INTE,X_id_X:ole_id_INTE,INTE0:ole:ole:INTE0000000010000000111cccccccccccccccccccccccccccccccccc_Id_INTE:ole_id000000000010000101100000001110100111111110111110111111111111111111111110000000000000000000000000000000000001011111110001011110001000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show countries where a singer above age 40 and a singer below 30 are from.",
+      "gold": "SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30",
+      "pred": "ole_ole_ule_INTEINTEINTEXGERGERIdINTE_INTE,INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTE_INTE,TEXT:TEXT,TEXT:TEXT:TEXT:INTE:INTE:INTE,INTE0_ole_ole00-_ole000:ole000000000000000000000000000000000000010111110000000000000000000000000000000000000111111111111111111111011100000000000000000000000000000000000000000011111110111011"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show names for all stadiums except for stadiums having a concert in year 2014.",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "###INTEuleoleINTEINTEbINTE_ole_INTE_bXINTE,INTE______________0_000000000111cidid_id_id:ole_T___cid_id00111111111111111111cX_____|_0|None-None0|0|None1|None0|None1|None1|None1|None1|None1|TRNone1|TR1|IdIdId__0|None0|None1|None1|TR1|id|id|id|T0|None0|None1|TR0|None0|TR0|id|id|id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id0"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of all stadiums that did not have a concert in 2014?",
+      "gold": "SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.year  =  2014",
+      "pred": "id###INTEINGER###INTE_Xb____b____________________00000100000101111111111111111111ccTRINTE__|T_0.0|id0-01-10-10-10-11-110-10-00-0000000000000000000000000001000010111111111111111111110101111110000000000000000010000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Show the name and theme for all concerts and the number of singers in each concert.",
+      "gold": "SELECT T2.concert_name ,  T2.theme ,  count(*) FROM singer_in_concert AS T1 JOIN concert AS T2 ON T1.concert_id  =  T2.concert_id GROUP BY T2.concert_id",
+      "pred": "###INTEININGERGERINTE_bbbbboleidXINTE,INTE,INTE,INTE_Xb_________000000111111111cidididididididIdXXidid_IdIdIdIdIdIdId_Id_________cXIdIdX_Id_Id_Id_Id_Id_Id_____|X:_|_0.0|TR000000010111011111111011111111111111111111110011011111110110011000000000000001000000000000000111111111111111111111111111111100000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names , themes , and number of singers for every concert ?",
+      "gold": "select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id",
+      "pred": "###INTEINGER__INTEINTEINTE__INTEbGER,INTE_bGER,INTE,INTE_IdINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_XINTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,INTE,INGER,INTE,INTE:INTE,INTE,INTE:INTE,TEXT,TEXT0:TEXT00-00000000000000000000001000110111111100000000000000000000000000000000000000000000000000000010001101111111010000000-000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List singer names and number of concerts for each singer.",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "ole_ule_ule_INTEole_INTEINTEGERTEXTIdTEXT_INTETEXT_IdINTEINTEINTEINTEINTEINTETEXT,IdTEXT,IdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTETEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,TEXT,GERTEXT:TEXT:TEXT,INTEIdINTEXole_TEXT,TEXT,TEXT0_ole0000000000_ole0000000000000000000000000000000000000000000000100000000000000000000000000000000110000000000000000000000000000000000000000001111111cole_ole00000idTRule:id_ole000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers and number of concerts for each person?",
+      "gold": "SELECT T2.name ,  count(*) FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id GROUP BY T2.singer_id",
+      "pred": "###INTEGER__bb_cbccb_INTEGER:ole_ole0:id_ule00000000000000000000000000011cbccccbcccccccccccccccccccccccccccccccccccccc_INTEGER:IdId_INTEGER:ole_ule00000000000011100011111101110111111110111111111100111111100000100100000000000000001000000000000000000000000000110101111111111111111111110000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "List all singer names in concerts in year 2014.",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "INTETEINTE###INTEINTEbINTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE_INTE_X_X0_____cid_id0100000001000011111111111111111111011111111111111111111111111111111111111111111111111111111111111111111100111111111111111111111111111111111100000000000000001011111110111111111111111111000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names of the singers who performed in a concert in 2014?",
+      "gold": "SELECT T2.name FROM singer_in_concert AS T1 JOIN singer AS T2 ON T1.singer_id  =  T2.singer_id JOIN concert AS T3 ON T1.concert_id  =  T3.concert_id WHERE T3.year  =  2014",
+      "pred": "###INTEATINGERINTEINTE_INTE_INTE_INTE_INTE_GER_INTE,INTE_INTE,INTE:INTE,INTE,INTE,INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,XIdINTE,INTE,INTE:INTE,INTE,INGER,INTE:INTE,INTE:INTE,TEXT,TEXT,TEXT00000000000000000000001011111111111001111111111111111111111111111111111111111101010000000000001011111101111111111111111111000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "what is the name and nation of the singer who have a song having 'Hey' in its name?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "###INTEGER__###INTEGER,INTEGER:id_X_X_b_X:###X_ole_id_X0000000000001011111111ccccccccccccccccccccccccccccccccccccccccc_INTEGER:X1000010000000000110011111101011111111111111111101111111011111011111111111111111110010000000000000000000000000000001011111111111001000000000000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?",
+      "gold": "SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",
+      "pred": "ididole__bbcbcole__b_Xb_____c_______ccb__0000100000011cbccTR_TR0100000000111ccTR000101111111111cIdIdole_______c0111111111111c_IdIdTEXT,TEXT,TEXT,TEXT,INTEGER,INTEGER:X_IdIdINTEGER,INTEINTEGER,INTEIdINTEINTETEXT,INTE_IdIdINTEIdINTEINTEINTEINTEIdTEXT,GERINTEIdTEXT,INTE,INTE,TEXT,TEXT,TEXT:ole_____00000000000000010000000001100100111111111110000000000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the name and location of the stadiums which some concerts happened in the years of both 2014 and 2015.",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "ididoleoleoleuleINTEINGER__INTEid_INTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,GER/*,GERIdINTE,GER,GER,GER,GER,GER:INTE,INTE,INTE,INTE:TEXT,INTE,INTE:TEXT,TEXT:TEXT,TEXT:INTE,INTE0:X_ole_INTE:INTE,INTE:INTE,ININTE_INTE_INTE_X_INTE_INTE,INTE,INTE,INTE,INTE:INTE,TEXT:TEXT:TEXT:TEXT:INTE:INTE:INTE:INTE:INTE:INTE:X:INTE:X|id|_0|_1|None|None|_1|None|None|None|None|None|_1|None|None|None|None|None|None|None|None|None|None"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the names and locations of the stadiums that had concerts that occurred in both 2014 and 2015?",
+      "gold": "SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2014 INTERSECT SELECT T2.name ,  T2.location FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id  =  T2.stadium_id WHERE T1.Year  =  2015",
+      "pred": "ole_ule_ule_INTEole_INTEINTEINTEINTETEXT_TEXT/*,TEXT0_ole0_ole0:ole0_ule000000000000000000000000010000000000000000000000001100000000000000000000000000000000000000000000001100000000000000000000_ule000000000000000110000000000000000000000000000000000001100cTRINTE_ole00000000000000011011111111111111111"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "Find the number of concerts happened in the stadium with the highest capacity .",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "id_bc000000000000001000cc10000000000000000000000001011c111c11cccccbTRTRTRidc_cc1111cccccccccNoneIdIdINTEGER,INTEGER,INTEINTEXGER,INTEXGER,GER__IdINTEIdINTEIdINTEIdTEXT,TEXT,TEXT,TEXT,INTEIdINTEIdINTEIdINTEIdINTE/*_IdTEXT,INTE_TEXT:X_X:_________cIdINTE,INTE,INTE,INTE,INTE,INTE,TEXT0:_______0001000000000000000000000000110111011111111111111000000000"
+    },
+    {
+      "db_id": "concert_singer",
+      "question": "What are the number of concerts that occurred in the stadium with the largest capacity ?",
+      "gold": "select count(*) from concert where stadium_id = (select stadium_id from stadium order by capacity desc limit 1)",
+      "pred": "ididoleoleoleoleINTEINGER__INTEbINTE_bXXXXIdINTE_X_INTE_X_INTE,INTE_X:oleToleidoleoleINTE_________________cINTE,INTE11:TidoleidINTE:idXIdINTE:X_ole_X:X_X:X:IdIdX_Id_X0:id_id_Id_Id_Id_Id:Id_Id:Id:Id:Id:Id:Id:Id0:_____0110011111011111111101111111111111011110000000000000010000000000000001000110111000011000000000000000000000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets whose weight is heavier than 10.",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "oleoleoleoleoleoleoleuleoleoleoleoleoleoleoleoleoleuleoleoleoleoleoleoleoleoleoleoleoleoleoleINTEGER/*____________________________:id___:ole_________________cINTEGER,XXIdGER__11__110TRoleidididididididididid__________________TRTEXT,TEXT,TEXT,GERIdIdXTEXT,INTEGER/*__:ole__:TEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets have a greater weight than 10?",
+      "gold": "SELECT count(*) FROM pets WHERE weight  >  10",
+      "pred": "oleidTRoleidoleidoleidoleidule_ole_ule:ole_ule_ule_ule_ule,ole_ule_GERidole_GERidule1TRule_ule1ole1ole_ule1idule1ole1ole1ole_ule1ole_ule_ule_GER_GER/*/*PRTE/*IdGER/*IdGER/*IdGER/*IdGER_GER_GER,ole_GER:INTEGER,INTEGER,INTEGER:TEXT,TEXT:TEXT,TEXT:INTEINTETEXT,INTETEXT,INTEINTEGER/*IdINTETEXT/*IdGERIdGER/*IdGERIdGER_GER,TEXT/*IdGER/*_GER_GER,TEXT,TEXT:TEXT,TEXT:TEXT,TEXT:TEXT:TEXT,TEXT,TEXT:TEXT:INTEIdINTEIdGER_GER,INTETEXT,INTEIdINTEIdGER,TEXT,TEXT:INTEidTEXT,XIdTEXT,IdTEXT,TEXT,TEXT0_ule:ule:ule:ule_ole0_ole0:ule1_ole1_TEXT,TEXT:TEXT00_ole00-ole"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the weight of the youngest dog.",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "idTRoleoleoleoleoleuleoleoleoleoleoleoleuleoleoleoleoleoleTEXT/*_idididididididididididididoleoleINTEGER/*_INTEGER_RGERINTEGER/*/*REGERRGERPRTEGERREGERIdINTEGER/*/*REGER/*IdGERIdGERIdGERIdGERIdGERREGERTEXT/*/*TEXT/*TEXT/*INTEGER/*_GER_GER_GER,XIdGER_TEXT,XIdGER/*IdGER/*IdGERIdGERIdGER/*IdTEXT/*IdINTEGER,REGER/*IdINTEGER,TEXT/*IdTEXT,TEXT/*TEXT/*TEXT/*TEXT_TEXT,TEXT,INTEGER,INTETEXT/*gTEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How much does the youngest dog weigh?",
+      "gold": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "oleididididididid_ole_ole_TEXT_ole_INTEGER,INTEGER,INTEGER,INTEINTEXINTEIdINTEXINTEIdXTEXT/*_TEXT,TEXT,TEXT,TEXT,TEXT,INTEIdIdXTEXT_TEXT,TEXT0_ole_ule_ole:oleidid_ule_ule_INTETEXT,INTEINTEId_INTE_TEXT,TEXT,TEXT:ole_ole:ole_TEXT,INTE_INTE,INTE_TEXT:TEXT:ole_ole0_ole0000000c_ole00000010:ole:ole00000000000000000000000000000000000000000000000000011cccbbccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the maximum weight for each type of pet. List the maximum weight and pet type.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "oleididididididididididididIdINTEINTEINTEXINTE_INTE_INTE,INTE,INTE,INTE,TEXT,INTE:TEXT,ole_TEXT,ole_TEXT0_id_ole_uleidididididididididIdTEXT,TEXT:TEXT:TEXT:ole_INTE_ole_ole_ole_ole_ole_ole_ole_TEXT,TEXT00:ole_ole:ole0000000000000000cid_ole_ole0000001cole:ole00000000001001-cole000_ole00000000000000000000000000000110100000000100000000000000001111111colecINTE_INTE_INTE_INTE_INTE,INTE00000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "List the maximum weight and type for each type of pet.",
+      "gold": "SELECT max(weight) ,  petType FROM pets GROUP BY petType",
+      "pred": "ole_ole_ole_ule_ule_TEXT,ole:ole_INTEGER,INTEGER,INTEGER,INTEINTEINTEINTEINTEIdINTEINTETEXT,TEXT,TEXT:TEXT,TEXT,TEXT:INTEidididididIdXTEXT,TEXT:TEXT:ule_ule_ule,TEXT:TEXT:TEXT:TEXT:INTE_ule:ule:INTE,ole0:ole0-_ole00-000000000000000000000000000000000000000000000000000000001000000000000000000010000000000000000001000000000000000000000000000000000011111cTRINTE_ole0000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find number of pets owned by students who are older than 20.",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "ondidoleididididididididididididididididididididRGERoleoleoleGERoleoleGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERTEXT/*_______________________________________:_____:__:_:_0000000000000000000000001000101111111011111101100000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many pets are owned by students that have an age greater than 20?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.age  >  20",
+      "pred": "id_id_ole_ule_ule_INTEINTEINTEXGERGERXIdIdXINTE_INTE,INTE,INTE,INTE/*,TEXT,TEXT,TEXT,TEXT,INTE/*_TEXT,TEXT000000000000000000000000000000000000000000000000000000000000000000000000000000001c01011c0000000000000000000000000000000000000000000000000000000000000000000000000-c000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of dog pets that are raised by female students (with sex F).",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "id_id_ole_ule_INTEole_INTEINTEINTEINTEINTEXGERINTEINTEXGERINTEXGERXINTE,TEXT/*_TEXT,TEXT,INTE_INTE,TEXT0:id_id0000000000000000000000000000000000000000000000000000000000100000000000000011011111111111111000000000000000000000000000000000000000000000000000000000000000000000000000001111111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many dog pets are raised by female students?",
+      "gold": "SELECT count(*) FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T2.petid  =  T3.petid WHERE T1.sex  =  'F' AND T3.pettype  =  'dog'",
+      "pred": "TRoleoleoleoleuleuleuleuleuleuleuleuleuleuleINTEGER/*/*oleidididididididididididididididididididRGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERTEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of distinct type of pets.",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "oleoleoleoleuleoleoleoleoleoleoleoleoleoleoleuleididoleidididididididididididididididididididididididididididIdINTEGER/*_____________________,IdINTEGER)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "How many different types of pet are there?",
+      "gold": "SELECT count(DISTINCT pettype) FROM pets",
+      "pred": "oleidididididididididid_ole_ole_ule_ule:ole_ole_ule_INTEINTEId_INTEXGERINTE_INTE,INTE,INTE/*/*IdIdXTEXT/*IdIdIdTEXT/*IdIdTEXT_INTE,TEXT0:id_ule_ule:ole_ole:ole_ule_ule:ole:TEXT:INTE_INTE,ole:ole0:ole000000000000000000000000000000000000000000000000000010100000000000000000000000000111100000000000000000000000000000000000000000000000000001111111cole_ule11111cole"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have cat or dog pet.",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "ididoleidididididid_ole_TEXT,id_INTEINTE_GER,INTEPRTEIdIdIdIdIdXINTEXINTE_GER,INTEIdIdXTEXT/*IdIdTEXT/*TEXT,TEXT,INTEId_INTEId_INTE/*XTEXT,TEXT,TEXT:TEXT,TEXT:TEXT:INTE_INTE_INTE,TEXT:INTE:oleid_TEXT,id:TEXT:ole_INTE_INTE_INTE,XIdIdIdIdIdIdIdIdIdIdIdIdIdXREINTE_INTE_INTE,X_INTE_id_INTE,X_TEXT:ole_TEXT:ole0_ole0000000000000000cccb_INTE_INTE:INTE000000000011cccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the first names of every student who has a cat or dog as a pet?",
+      "gold": "SELECT DISTINCT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' OR T3.pettype  =  'dog'",
+      "pred": "id_id_ole_ole_ule_ule_INTE_GER,XIdX_INTE:INTE,X_INTE_INTE,INTE,INTE,TEXT,INTE,TEXT,TEXT,INTE,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTE,TEXT:ole_INTE_GER,id_ole0_ole00-id00000000000000000000000000000000000000000000000001001.TRTRid_ole00000000000000000000000000000000000001111cbcbcbccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name of students who have both cat and dog pets .",
+      "gold": "select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'cat' intersect select t1.fname from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t3.petid  =  t2.petid where t3.pettype  =  'dog'",
+      "pred": "idTRule__ididole_ididole_ididule,ole_idole_idole,ole_idole,ule_idole_idole,ule_idole1TRule:idTRule__ole1idole1ole1ole1ole1ole1ole1ole:ole_ole:ule_ole:ole_ole0idole0TRule:idule_idole1ole1ole1ole1ole1ole1ole1ole1ole1ole1ole0idole1idole1_idXidididididIdidididIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,TEXT,GERTEXT/*_TEXT,TEXT,TEXT,INTETEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the students' first names who have both cats and dogs as pets?",
+      "gold": "SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat' INTERSECT SELECT T1.Fname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog'",
+      "pred": "oleididTRoleididididole_idididole_idididole_ididole_idole_ole_ole_INTEGER/*_RGER_ole_ole_GER_ole_INTETEPRTEole_TEXT/*/*/*IdTEXT,TEXT/*/*/*IdGERIdGER/*/*IdTEXT,GERIdGER/*REGER_GER_GER,INTEGER/*_INTEGER/*IdINTEGER/*IdGERIdGER/*IdTEXT,GERIdGER/*IdTEXT:TEXT,INTEGER_INTEGER,INTEGER,INTETEXT,GERIdTEXT,TEXT,TEXT,GER_GER,INTEGER,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEGER,ININTEGER,GER_GER,INTEGER,INTEINTEGER,INTEINTETEXT,INTEIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT,TEXT0_ole_ole_ule_ole:INTEGER_TEXT:TEXT:TEXT:INTEINTEINTETEXT,TEXT,"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the major and age of students who do not have a cat pet.",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "ididoleidididididididididIdXINTEINTEINTEXINTEXINTEIdXXINTE_INTE,INTE,INTE,INTE/*/*IdRETEXT,TEXT:ole_ole_ole0_________________000000000000000000000000000000cidididididIdXINTE_XIdIdXIdIdIdole_IdIdole_id_X_X_X_bb_X_id_X:ole:ole0000000000000000000000000000000000000000000000001cbbcole00000000000000000000000101111cTR_idcidbidcX_id_id_id_id011111c"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What major is every student who does not own a cat as a pet, and also how old are they?",
+      "gold": "SELECT major ,  age FROM student WHERE stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "id_id_ole_ole_INTEole_INTEINTEINTEINTEINTEINTEINTEINTEINTEXINTE/*,TEXT,TEXT,TEXT,TEXT:TEXT:INTE_ule_ole:TEXT:INTE_ole0:ole00000:ole00000000000000000000000000000000000000000000000000000000000000100010000001000100000010000000000000000000000000000000000100000000000000000000000000000000000110110110110110110110110000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of students who do not have a cat pet.",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "id_id_ole_TEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the ids of the students who do not own cats as pets?",
+      "gold": "SELECT stuid FROM student EXCEPT SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat'",
+      "pred": "oleidididididoleidid_id_id_ole_ole_ole_ole_GER_id_ole_ole_GER,ole_ole_ole_GER,INTEid_ole1_ule101:idTRole_ole1110101001-TRTRole0000000000000000000000000000010111TRTRole1_ule_ule_ule_TEXT_INTE_INTE_INTE_INTE,TEXT:TEXT,TEXT:TEXT,ole_ule1010000000000000000000000000000000000000000000000000000000000000000000000000000000000001011cidididididid_ole:ole_ole11_ole0000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a dog but do not have a cat as a pet.",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "id_ole_ole_ole_INTEINGER/*_Id_INTEId_INTEXX_INTE_INTE_INTE_INTE/*_TEXT,Id_TEXT,Id:TEXT,ole:INTEid0:INTE_ule_ole000000000:ule_ule:ule_ule:INTE_ole00000000000000000000000000000000000000000000000000110111111110000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name of every student who has a dog but does not have a cat?",
+      "gold": "SELECT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'dog' AND T1.stuid NOT IN (SELECT T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pettype  =  'cat')",
+      "pred": "id_id_ole_ule_ule_INTEIdIdXINTE,INTE,INTE,INTE_INTE_INTE,INTE,XIdX_TEXT,TEXT:ole:id_id000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the type and weight of the youngest pet.",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "ididoleidididididid_ole_ole_ule_ole_ole_ule:id_id_X_X:id_id________________________________cole_X0000000000000000cole_id_X00000exole_ole0:id_id000000000000000000000000000000000000000000000001cole_id000000000000000000000000001000000000000000011cINTEINTEcINTE_X0000000000000000000010111cule_ole101111cole1111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What type of pet is the youngest animal, and how much does it weigh?",
+      "gold": "SELECT pettype ,  weight FROM pets ORDER BY pet_age LIMIT 1",
+      "pred": "id_id_ole_ole_ule_ule_ule_INTEINTEXXId_XX_X_Id_X_Id_X_ole:X_ole0_id:id:id:ole:id|id|id|id|id|Id001|id|ole0|ole0|ole1|ole1|ule1|ole1|ole1|ole1|ule1|ole1|ule1|ule1|ule0|ule1|ule1|ule1|ule1|ule1|ule1|ule0|ole0|ole1|ole1|ole1|ole1|ole1|ole1|ole1|ole1|ole1|ole1|ule1|ole1|ole1|INTE_INTE000|id|###ole0|###ole0|ole0|ole1|ole1|INTE1000|id|id|id|id|id|_id|_id|__id|_1000|TR1000|TR000|ole0|ole1|ole1|ole1|ule1|"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id and weight of all pets whose age is older than 1.",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "id_ole__ole_ule_ole_ole_INTEINTEXINTEIdXINTE_GERINTE_GERXXINTE,IdIdXIdIdIdId_TEXT,IdId_TEXT,Id_INTE_TEXT,Id_TEXT,Id_TEXT,Id_TEXT,id_TEXT,Id_TEXT,Id_TEXT,XId_INTE_GER/*,ole_TEXT:_TEXT:_TEXT:_INTE_INTE_INTE,INTE_TEXT:_TEXT00000000000ccbbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id and weight of every pet who is older than 1?",
+      "gold": "SELECT petid ,  weight FROM pets WHERE pet_age  >  1",
+      "pred": "id_id_oleid_TEXT,id_TEXT,id_INTEGER,X_INTEINTEINTEGER,INTEINTEINTEINTEINTEINTETEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,INTETEXT,TEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTETEXT:ole_ule_ole_INTEid_INTEid:ole_INTE_TEXT:id:ole:ole:INTE,ole0000000000000000000ccccccccccccid_X:ole:ole00000_ole0000000000000000001ccccccccccccbbb_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,_X0000000000011cTRid_ole00000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average and maximum age for each type of pet.",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "ididoleoleoleoleoleuleuleuleuleuleTEXT__INTEGER/*__________________________:TEXT,ole___0000000000cidididididididididid_____:INTEINTEole__:ole__:ole__:ole_00000__000000000000000000000000000000000000000001_cid_id______cole__00000000000000000000000000000000000000000000000000000000000000000000011colecule__cINTE___11cole__cole____"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average and maximum age for each pet type?",
+      "gold": "SELECT avg(pet_age) ,  max(pet_age) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "ole_ole_ole:id_id_ole:_ole:_ule_ole:_ole:_INTEINTEIdIdXINTE_XXXIdIdIdIdX_X/*,TEXT,TEXT,TEXT,INTE_Id_TEXT,TEXT0000000000000000000000000000000000000000000000000000000000000000000000000000000000101011111111111111101000000000000000000000000000000000000000000000000000000000000000000000000001111111111111111010"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average weight for each pet type.",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "id_id_ole_ole_ule_ule_TEXT,X_TEXT,_INTEGER,_INTEINTEGER,IdINTEINTEIdINTEXGER/*_TEXT,IdINTE_INTE/*IdTEXT,IdTEXT,IdTEXT,IdTEXT_INTE_TEXT,X_TEXT0_ole00000000000000000000000000000000000000000001000000000000000000000000001101111111111111111111111010000000000000000000000000000000000000000000000000000000000000000000011011111111cTRole_INTE"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average weight for each type of pet?",
+      "gold": "SELECT avg(weight) ,  pettype FROM pets GROUP BY pettype",
+      "pred": "ole_ole_ole:id_id_ole:_ole:_ule_ole:_ole:_ole:_INTEINTEid_INTE_INTE_INTE_INTE/*_TEXT,TEXT,TEXT,TEXT,TEXT,INTE_TEXT0000000000000000000000000000000000000000000000000000000000000000000000000000000001000011111111111111111111000000000000000000000000000000000000000000000000000000000000000000000101011111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and age of students who have a pet.",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "ididoleidididididid_ole_ole_ule_ole_ole_ule,X_X__________________________________cole_ole0____cole00000000000000000000000000000cole00000000000000000000000001cule00000:idcole_bbcole00000000010000110101010000000000000100000000000000000001110101000000000000000000000000001111111cule11cule_idididTR_cINTE_id_"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What are the different first names and ages of the students who do have pets?",
+      "gold": "SELECT DISTINCT T1.fname ,  T1.age FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid",
+      "pred": "oleididTRididididididid_idid_ole_TEXT,ole1100000001111TRTRole11000000001111TRTRole1111111_ole0100000000000000000000000000111TRTRule11000idTRTRole110000000000000000000011001TRTRule:id_id_id_id_id:ole_INTEole_INTEole:ole_ole_TEXT,ole000000000000000000000000000000000000000000000000000000000000000000000010111cid_ole01101000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the id of the pet owned by student whose last name is \u2018Smith\u2019.",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "id_ole_ole_ole_ule_INTEINTEINTEXINTE,INTE,INTE,INTE_INTE,INTE,TEXT,INTE,TEXT,TEXT,TEXT,TEXT,INTE,TEXT:ole_ule:ole0_ole00000000000000000000000000000000000000000000001000000000000000000000010000000000101000000000000000000100000000110100000000000000000000000000000000000000000000000000000001101-TRTRidcole0000000001010101"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the id of the pet owned by the student whose last name is 'Smith'?",
+      "gold": "SELECT T2.petid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid WHERE T1.Lname  =  'Smith'",
+      "pred": "id_ole_ole_ole_INTEINGER,IdINTEIdINTEINTEINTEINTEINTEINTEIdINTEXINTE_TEXT,XIdINTE_TEXT,IdTEXT,TEXT,TEXT,TEXT,INTEIdTEXT,TEXT,TEXT,INTE_TEXT,TEXT,INTE_TEXT:TEXT,INTE_INTE_TEXT,TEXT,TEXT:TEXT,TEXT:TEXT:INTE_INTE_INTE,INTE,INTE,TEXT:TEXT:TEXT:ole_ule_ole:ule:ole:ole:INTE_###ole_XXidid_ole0_ole0:ole0-id_ole0000000000000000000000000000000cbccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the number of pets for each student who has any pet and student id.",
+      "gold": "SELECT count(*) ,  T1.stuid FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid",
+      "pred": "id_ole_ole_ole_INTEule_INTEINTEGER_INTEINTEINTEINTEINTEINTEXGER,IdXINTEDTEXT,TEXT,INTEIdIdTEXT,TEXT,TEXT,TEXT,INTETEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GERXIdIdTEXT:ole_INTEid_ule000000000_ole00000000000000000000000000000000000000000011011111111111110111111101000000000000000000000000001100000000000000000000000000000000000011111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "For students who have pets , how many pets does each student have ? list their ids instead of names .",
+      "gold": "select count(*) ,  t1.stuid from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid group by t1.stuid",
+      "pred": "oleidididoleid_INTEGER,idXIdINTEGER,Id_INTEGER,INTEGER,INTETEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the first name and gender of student who have more than one pet.",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "id_ole_ole_ole_INTETEXTid_INTEINTEGERIdINTEINTEINTEINTEINTEINTEINTEINTEINTEINTETEXT/*_TEXT,IdIdXTEXT,Id_TEXT,XIdIdXTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GERTEXT,INTETEXT,INTEIdINTEIdTEXT,TEXT:ole_TEXT:ole:ole0_ole0000000000000000000000000000000000000000000000101010101000000000000000000011000000000000000000000000000000000000000000000000000001101000000000000000000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the first name and gender of the all the students who have more than one pet?",
+      "gold": "SELECT T1.fname ,  T1.sex FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid GROUP BY T1.stuid HAVING count(*)  >  1",
+      "pred": "id_ole_ole_ole_INTEINGER,IdINTEIdINTEINTEINTEINTEINTEINTEINTEINTEXGER,TEXT)"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the last name of the student who has a cat that is age 3.",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "ididoleidididididididididIdole_REINGER,______________________:____:____|_-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001cccidcoleid_id_id00000000000000000000000000000000000000010000000001100000000000000000000000000111cTRcidTR0111cidTR00000000"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the last name of the student who has a cat that is 3 years old?",
+      "gold": "SELECT T1.lname FROM student AS T1 JOIN has_pet AS T2 ON T1.stuid  =  T2.stuid JOIN pets AS T3 ON T3.petid  =  T2.petid WHERE T3.pet_age  =  3 AND T3.pettype  =  'cat'",
+      "pred": "ididoleidididididididididIdXINTEINTEXINTEIdIdIdIdXINTEIdIdIdXINTE_INTE,INTE,TEXT,INTE/*_TEXT,TEXT:ole_ole0___id_id00000:ole000000000000000000000000000000000c_id00000000000000000000000000000001110111111000000000000000000000000000000000000000000000000111000000000000000000000000000000000111111111111111111111111111"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "Find the average age of students who do not have any pet .",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "id_id_ole_TEXT,id_TEXT,ole_INTEGER,IdINTEGER,IdIdINTEGER,XIdINTEGER,Id_INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,INTEGER,TEXT,TEXT,INTETEXT,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,INTEGER,INTEGER:id_id:ole_TEXT,id0_ule_ule_INTEGER,id00000000000000000000c_INTEGER,bXb_INTEINTEGER,Id_INTEGER:ole_INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEed_INTEGER:INTEINTEXINTE_INTE_INTE_INTE:INTE_INTE:INTE_X_INTE:X_INTE:id_INTE,ole_INTE_X"
+    },
+    {
+      "db_id": "pets_1",
+      "question": "What is the average age for all students who do not own any pets ?",
+      "gold": "select avg(age) from student where stuid not in (select stuid from has_pet)",
+      "pred": "id_id_ole_ole_ule_ule_INTEINTEREINTE_GERIdIdINTE_INTE,INTE,INTE,INTE,INTE/*/*IdIdTEXT,TEXT,TEXT,INTE)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many continents are there?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "INTEET_______cINTEbbb__:ididbole_______________________________cINTE__00000000000000000000010000000110101111111111111111111cINTE_11100000000000000111111110100000001101011001111111111111111110001100000000000000000001010100000000000000001100000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of continents?",
+      "gold": "SELECT count(*) FROM CONTINENTS;",
+      "pred": "INTEET______cINTE###INTEINTEbbbb__:______00000000000000000000000000000111cTRidINTE__0000000000000000000011111011111110cINTE_00000_10111111110011111111111111111111111111111111111111100111100110010111111111111011111111111101110000000000000010000000000000001100000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries does each continent have? List the continent id, continent name and the number of countries.",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "id_###ole_ole_ole_INTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE_INTE:INTE_Xidididid_X_id_X:ole_INTE:INTE:ole011111111111011111111111111cX_IdIdX_Id_X00101111111111111111111111111111111111110011111101111111111111111111111111111111110000000000000000000000000000000000001011000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For each continent, list its id, name, and how many countries it has?",
+      "gold": "SELECT T1.ContId ,  T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.Continent GROUP BY T1.ContId;",
+      "pred": "###INTEINGER###INTE###INTE_bb_cb:______c_b00000000000000000000010000000100000000010010000000100001010101111111cTRINTE__:_010000000000000100000100000001010101111111011111111111101111110000000000000000000000000100000000000000000000100000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries are listed?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "INTEET_id###INTEINTE###INTEbINTE_bbbbb_b______________cb___:#########ole__:c_c__c0010000000011010000000000000010101010000000000000010000000000000000000000000000000000001110101011010111111001010000000000000000000000000000000000000000000000000000000000000000000000000000000001010000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries exist?",
+      "gold": "SELECT count(*) FROM COUNTRIES;",
+      "pred": "INTEET_______cINTE###INTEINTEXbINTE__:_______0_:_0000000000000000000000001000000010000000011111100001011111111111111111111111111cINTE_00000000000000011111111111111111100111111111111111111111111000110110111000010000000001000000000000000000010000000000000011111000001000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many models does each car maker produce? List maker full name, id and the number.",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "ole_ole_ole_ole_ule_ule,ole00000:id_ole00000000000000000c###ole00000000000000000cTR###ule00000000000000000cole000_ole00000000000000000cole000000000001011111111111111cule0000000idididididididididididIdXINTEIdIdIdIdXTEXT,TEXT,INTE_INTE,INTE,INTE,TEXT,INTE,INTE,INTE_TEXT,TEXT:ole:X_INTE_INTE:ole:id_INTE:INTE:INTE:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:INTE:TEXT:INTE0:_id_id_id:id0"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the full name of each car maker, along with its id and how many models it produces?",
+      "gold": "SELECT T1.FullName ,  T1.Id ,  count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id;",
+      "pred": "id0:id0:oleid:id0000000000cole_ole0000000000cule_ole00000c###ole_ule_ole_ole:ole_ule_ule_INGER_INTE_INTE_INTE_INTE,INTE:INTE:ole_INTE:ole:INTE:INTE:INTE,INTE:INTE:INTE:ole:ole00000000101111111111111111111cole010001111100000111111011111110011111101111111111110011111111001000000000110000000000111111111111111111000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model of the car has the minimum horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "oleididididididbole_bXation_____________cole_XXXX_IdIdXX_X_INTEbINGER,INTE_____cINTE______________cINTE:X__________00000000000001011111111cINTE:_00000000000001011111111111111111cINTE_00000_0100000000000010111001000000000011011111001111110110010000000000000110100000000000001101000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model of the car with the smallest amount of horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.horsepower ASC LIMIT 1;",
+      "pred": "###ole###INTEININGERINTE_bINTE_XINTE,INTE,INTE,INTE_IdINTE,INTE,INGER_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_XIdINTE,INTE:ole_INTE,INTE:INTE:INTE,INTE:INTE:INTE,INTE:INTE:INole_INTE:INTE:INTE:INTE,INTE0:ole:ole000_INTE000000001101110011111111101101001101000000000000000100000010011111100111100001000000000000000000000001011000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the model of the car whose weight is below the average weight.",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "oleid_coleid_XbX_bX_bole_X_X_Idole_TEXT,TEXT,INTEGER,INTEINTEINTEINTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,GER_INTE,INTE,GER,GER:INTE_ole_INTE,INTE_INTE,INTE,INTE:INTE_INTE,ININTE,INTE:INTE,INTE_X_INTE,INTE:INTE,INTE,INTE:TEXT,TEXT:TEXT:TEXT:INTE:TEXT:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:TEXT:INTE:INTE:ole_INTE:INTE:INTE0:X0000000000000000000000010000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the model for the car with a weight smaller than the average?",
+      "gold": "SELECT T1.model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Weight  <  (SELECT avg(Weight) FROM CARS_DATA)",
+      "pred": "###oleid__id_id_ole_id_XidIdTEXT,XIdINTEGER,TEXT,INTEINTEGER,GERINTEGER,GERINTEGER,INTEbINTEINTEbINTEINTEbbINTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,GER_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INIdINTE/*IdINTE/*XIdINTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,TEXT,TEXT,TEXT,INTE,INTE,INTE,INTE,INTE:TEXT,INTE:INTE_TEXT:TEXT:TEXT:TEXT:INTE,INTE:INTE,INTE:INTE:INTE:TEXT:INTE0_id_id00:id00000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the name of the makers that produced some cars in the year of 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "id_id_ole_ole_ule_ole:id_ole0_ule000:ond_ole0000000000000000cbbccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccNoneIdIdINTEINTEPRTE_INTE,INTE,INTE,INTE_INTE_INTE_INTE/*_TEXT,TEXT00000000000000100101000000000101000000000000000000000000000000001000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the different car makers who produced a car in 1970?",
+      "gold": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+      "pred": "###ole_ole_ole_ole_ule_ule_INTEole_INTETEXT_REGERINTEXINTEINTEINTEINTEINTEINTEbINTE_INTE_INTE_INGERbINTE_bINTE_idINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,GER_INTE,INTE:INTE_ole0000000010011111111111111111cX_X000010001000100011110000111100000100001111000111111100111100001100001111000001000000010001111000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Find the make and production time of the cars that were produced in the earliest year?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "id_id_ole_INTEINTEINTETEXTIdTEXT/*_REINTE,INTE,INTE,INTE,INTE,ININTE,INTE,TEXT/*,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GERXIdTEXT/*_TEXT,INTE0_ole:ole_ule_ule0_ule0:ole00:ole0000000000000000000000000000000000000000000000000000000001ccccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maker of the carr produced in the earliest year and what year was it?",
+      "gold": "SELECT T2.Make ,  T1.Year FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Year  =  (SELECT min(YEAR) FROM CARS_DATA);",
+      "pred": "id_____________cule__,id:id:X_id_____cINTEbINGER,INTE_cINTE_cINTE_bGER,INTE_____________cGER____________________cGER,INTE,INTE,INTE,GER,INTE,INTE,INTE,INTE,INTE,INTE,GER,GER:INTE,INTE0:ole___________________cGER000000000000000000000000000000000000000000000000000000000100000000000000000110100000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinct car models are the produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "ole_###ole_id__X_bid_id__INGERTEXT,TEXT,INTETEXT,INTEGER/*:_INTEGER_X:_INTEGER:_###INTEGER:_ole_bINTEINTEGER_ididX_INTEINTEGER__INTEINTEGER,INTEINTEGER,INTEXINTE_INTE_INTE_INTE,INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:X_INTE_X000001000011101100110100000000000000100000000000000001000001111100001101100000000000000000000000000000000100000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models for the cards produced after 1980?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.model  =  T2.model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.id WHERE T3.year  >  1980;",
+      "pred": "###INTEGER__###INTEGER,INTEINTEbINTE__bINTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE___________cINTE,X____________cINTE,X:oleidididid_id_IdINTE_______________________cINTE,TEXT,INTE,INTE:ole_IdIdIdIdIdIdId_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id_Id:INTE,INTE:INTE:INTE:INTE:TEXT,TEXT:INTE:TEXT0:ole_id_id:ole00:id00-0000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in each continents? List the continent name and the count.",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "idcoleINTEINGER,ididINTE###XXbINTEINTE_X_INTE_INTE_INTE_INTE,INTE:X_X:oleoleoleoleoleINTE____________cGER_____________cGER0_000001000011111111111111111cINTE_0000000000100001111111111111100111111001111111010111111111111111111111111101111111111000000000000000000000000000000001000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of each continent and how many car makers are there in each one?",
+      "gold": "SELECT T1.Continent ,  count(*) FROM CONTINENTS AS T1 JOIN COUNTRIES AS T2 ON T1.ContId  =  T2.continent JOIN car_makers AS T3 ON T2.CountryId  =  T3.Country GROUP BY T1.Continent;",
+      "pred": "idcoleINTEINGER,bINTE######bINTEINTEbINTE_bINTE,XINTE______________cGERidINTE###INTE_______________cGERXINTE,INTE,INTE:INTE,INTE:INTE,INTE:INTE:INTE,INGER,INTE,INTE,INTE,INTE,INTE,TEXT,INTE,INTE:TEXT,TEXT0:__0100000001011111111111111110000000000000000000000000000000001000000000000000000000000000000000000000000001010000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which of the countries has the most car makers? List the country name.",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "###INTEINGERidINTE###INTEINTEbINTE_X_______________:INTE___:INTE,INTE:INTE,INTE:INTE,INTE__:INTE,ole__:INTE,INTE:INTE:INTE:INTE,INTE:ININTE,INTE:INTE:INTE:INTE:INTE:INTE:INTE,INTE:INTE:X:TEXT:TEXT:INTE0:TEXT000001000001011110111111111111011111110000000000000000000000001100000000000000000000000000000000001010110000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the name of the country with the most car makers?",
+      "gold": "SELECT T2.CountryName FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId GROUP BY T1.Country ORDER BY Count(*) DESC LIMIT 1;",
+      "pred": "###INTEATINAToleidbidXINGER__oleIdINTETEXT,XINTETEXT,TEXT,INTEINTEGER,INTEINTEINTEINTEINTEINTEINTEINTEbINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_XINTE_INTE_INTE,INTE_INTE,INTE,INTE,INTE,GER_IdINTE_INTE,GER,GER,GER,GER,GER,GER,GER,INTE_INTE,INTE,ININTE,GER,GER:INTE_INTE,INTE,ININTE0_ole_INTE_INTE,INTE:INTE,INTE,TEXT,TEXT,TEXT,INTE,INTE,INTE,INTE,INTE:INTE,INTE:INTE,INTE:INTE,INTE,INTE:INTE,INTE,INTE:INTE,INTE:TEXT:INTE,TEXT0000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced by each maker ? Only list the count and the maker full name .",
+      "gold": "select count(*) ,  t2.fullname from model_list as t1 join car_makers as t2 on t1.maker  =  t2.id group by t2.id;",
+      "pred": "ole_ididididole_ole_ididXole_ole_INTEINTEINTEIdINTE_INTE_GERINTE_GERINTE,INTE,INTE_GER_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE:INTE,INTE,IN,GER_INTE:INTE,INTE:INTE,INTE,INTE:INTE,INTE:INTE,XidXINTE,INTE:INTE,INTE:INTE,INTE0:INTE00000000000000000000000001001111111011111111111001111100111110001111101111100000000000100000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models that are produced by each maker and what is the id and full name of each maker?",
+      "gold": "SELECT Count(*) ,  T2.FullName ,  T2.id FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id GROUP BY T2.id;",
+      "pred": "id,uleid,uleid0000000000000000000cole###ole###ole_###ule_###bb_cb000000000010111101111111000000000000000000000000011111111111111111111111111111111111111111cIdIdIdIdIdIdIdIdId_Id_Id:______cId__________|_|1|None|_|0|1|1|1|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the accelerate of the car make amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "ole_idididididididid_ole:id_id_Xidid_INTEINTEINTEid_INTE_GERINTE_GERINTE,INTE_GER_INTE_INTE_GER_INTE_INTE_GER,INGER_INTE,INTE,INTE,INTE,GER,INTE,INTE,INTE,GER,INTE,GER,GER,GER,GER,GER,GER,GER,GER:INTE_INTE,INTE:INTE_INTE,INTE10000111111111111011111111111111001111111111111111111111111111111011111110011111111111111111111110001111111111111100001000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How much does the car accelerate that makes amc hornet sportabout (sw)?",
+      "gold": "SELECT T1.Accelerate FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Make  =  'amc hornet sportabout (sw)';",
+      "pred": "ole_ididole_ididole_idXXREINGER:ole:id_ole_id_ole_bINGER:###INTEidcole_###INTEbINTE_INTE_INTE_INTE_INTE_INTE:X_X:________:cINTE_id_INTE:_________cINTE:__:_0000010000000111111111111111111cX___|_.0000000001000000000000000000010000000010111111111111100111100110000000000000000000000001011111111111000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car makers are there in france?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "oleid__######ole_INGER__bid_INTEINTEole_INTEIdINTETEXT_TEXT_INTETEXT,INTEINTEINTEGER,INTEINTEGER_INTEGER_INTEGER,INTEINTEGER_INTEGER,INGER_INTEGER_INTEGER,INTE_INTEINTEINTEINTEINTEINTEINTEINTEINTEXGER,INTE_INTE_GER,GERIdGERINTEINTEINTEIdINTEINTEINTEINTEINTEINTEINTEINTEINTEIdINTEIdINTEIdINTEIdINTEIdINTEIdINTEIdINTEIdINTE_INTE,GERIdINTE_INTE,GERIdTEXT,INTEIdINTEIdTEXT,INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,TEXT:X_X_IdTEXT,TEXT:IdTEXT:ole_TEXT:X:X0:_IdINTE_IN"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of makers of care in France?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN COUNTRIES AS T2 ON T1.Country  =  T2.CountryId WHERE T2.CountryName  =  'france';",
+      "pred": "oleid_id_###INTEININGERINTE_INTE,INTE,INTE,INTE,INTE,INTE:INTE_XIdINTE,INTE:INTE_###INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE0_id_INTE:INTE:ole_ole_INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE0:ole_INTE00:INTE00-ididididididid_ole_INTE00000000000000000000000000000000000000000000000000000000000000000000000001None_ole_IdIdXIdIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT:INTE:"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models are produced in the usa?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "ole###INTEININGERINGERINTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,GER,INTE_INTE,GER:INTE_###INTE_bINTE_bole_INTE:INTE:INTE_idINTE_INTE,INTE:INTE,INTE:INTE,INTE:INTE,INGER_INTE,INTE0_idINTE:INTE:INTE,INTE:INTE:INTE,INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE,XXIdINTE,INTE00000000000000000000000000010011111100111111101110000000000000000000011001110000000000100110000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the count of the car models produced in the United States?",
+      "gold": "SELECT count(*) FROM MODEL_LIST AS T1 JOIN CAR_MAKERS AS T2 ON T1.Maker  =  T2.Id JOIN COUNTRIES AS T3 ON T2.Country  =  T3.CountryId WHERE T3.CountryName  =  'usa';",
+      "pred": "###oleidid_###ole_X_bid_X0_ole_idid_ole_ole_ole_ule_ole_INTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE_INTE,INGER_INTE,INTE,INTE:INTE,INTE,INTE,INTE,INTE,INTE,GER_INTE,GER:INTE,INTE:INTE,INTE,INTE:INTE,INTE:INTE:INTE,INTE:INTE,INTE:INTE:INTE,INTE:INTE:INTE:INTE:INTE:TEXT,TEXT:TEXT0:TEXT00-_id_ole_ole:INTE,INTE:INTE:INTE:INTE:INTE00000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon(mpg) of the cars with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "ole_ole_ole,ole0:__________________________________0_____cole:________0000000cole___________________cINTEPRTEIdGERINTEGERPRTETEXTIdGERIdGERIdGER_IdINTEINTEGERTEXTIdGERIdGER,TEXT_TEXT,TEXT,GERIdGER,GER/*___________________:IdINTEINTEINTEINTEINTEXGERTEXT_IdTEXT,TEXT,TEXT:TEXT,INTEidINTE_bXINTE_______________cTEXT,INTE_________________cGER_____cINTEbbINTE_:bbbbbbXbXb__:_:_:"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average miles per gallon of all the cards with 4 cylinders?",
+      "gold": "SELECT avg(mpg) FROM CARS_DATA WHERE Cylinders  =  4;",
+      "pred": "oleidididididid_id_IdIdIdId_XIdIdIdId_IdIdIdId_IdIdIdId_Id_XId_Id_X_TEXT,Id_TEXT,Id_GERId,Id_TEXT,Id_TEXT,Id:TEXT,Id_INTEGER,Id_INTEGER,Id,Id,Id,Id:INTEINTEId_INTEINTEId,TEXT,TEXT,TEXT,TEXT,TEXT,INTEXINTE_INTE/*_TEXT,TEXT,TEXT:TEXT,TEXT0_id_oleid_ole_ole_ule_ule_ule_ule_ule_ule_ule,ole00000_ole000000000000010010000000000000010000001101100110000000000000000000000000000000000000000000111cbbccb"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the smallest weight of the car produced with 8 cylinders on 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "id______________cINTEINGER,INTEGER,INTEINTEXGER,INTEbGER,INTEbGER,INTEbGER,INTEbGER,INTE_____________0000000000000000000001000000000000000000010000000000000000001000000010000000100010000000000000000100000000000000000101000000010000000000000000000100000_NoneTR_00000000000000000000NoneTR000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the minimum weight of the car with 8 cylinders produced in 1974 ?",
+      "gold": "select min(weight) from cars_data where cylinders  =  8 and year  =  1974",
+      "pred": "id_____________cINTEINGER,TEXT,INTEGER,INTEINTE_____________cINTEbGER,INTEINTE_,INTEbGER,INTE_,INTE__:INTEidINTE_,INTE_:INTEidINTE,INTE_:INTE__,INGER,INTE_:INTE__,INTE_10000000000000111cINTE_000000001101110111111111001111111111111111111111111111111cINTE:INTE,INTE_00000__000000000000000000000000000000001100000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are all the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "id_id_id_ole_INTE_X_bb_b_id_b_X:id:id:id|id|id|X|Id|__000000000000000000000000000000010000000000000000000000000000000000000000000000011c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the makers and models?",
+      "gold": "SELECT Maker ,  Model FROM MODEL_LIST;",
+      "pred": "ole_ole_ole:id_###ole_ole:###ole0000000000c_id_ole0000000000c000000000c000000000ccbccole000000101110101111100000000000000000000000000000000000011ccTRTRINTE_INTE_INTE,INTE,INTE,INTE,INTE:ole01011111110100000000000000000000000000000000000000000110010110111101000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the countries having at least one car maker? List name and id.",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "_###ole###INTEINGER_###INTE_INTE_INTE_GER,INTE__INTE,INTE:INTE,INTE,INTE,INGER,INTE:INTE,INTE,INTE_X_INTE,INTE:INTE,INTE:INTE,INTE,INTE,INTE:INTE,INTE:INTE,INTE:INTE,INTE:ole_INTE,X_INTE,INTE:ole_INTE0:TEXT,ole000000100011010111011111111111111111001000000000000000000000000001000000000000000000000000000000000000000000000000000100000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all countries with at least one car maker?",
+      "gold": "SELECT T1.CountryName ,  T1.CountryId FROM COUNTRIES AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.CountryId HAVING count(*)  >=  1;",
+      "pred": "_ole_###ole_bole0_idcbbb_ole000000000cid_INTEINTEINTE###INTEINTEbINTE_INTE_INTE,INTE_INTE_INTE,INTE:INTE,ole_Xididididid_INTE,INTE,INTE:INTE,INTE1_INTE00010101101111111111111111111cTEXT,TEXT,INTE,INTE00000000001011111101111111001110011111111111111111111111110111111111111100000000000000000000000000000100010000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of the cars with horsepower more than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "oleididididididid_id_IdIdIdId_XIdIdIdId_IdIdIdId_IdIdIdId_IdIdId_XId_Id_X_TEXT,Id_TEXT,Id_INTEGER,Id_TEXT,Id,TEXT,TEXT,TEXT,INTETEXT,GERIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTEGER,INTEGER,INTEGER,INTEGER,TEXT,INTEINTEGER_TEXT,INTEINTEGER/*Id_TEXT,TEXT,TEXT:ole_TEXT:ole_INTEGER:ole_INTEGER:ole_ole_INTEGER0,id_ole_ole_ole_ule_INTEINTEINTETEXT,TEXT:ole_TEXT000:ole00000000000000000000000000000cole_INTEINTEole_INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEbINTE_INTE_INTE_INTE_IN"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a horsepower greater than 150?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE horsepower  >  150;",
+      "pred": "oleididididididid_id_IdIdIdId_XIdIdIdId_IdIdId_IdIdIdId_IdIdId_Id_Id_Id_Id_id_X_id_Id_X:ole_ole_TEXT,TEXT:TEXT,TEXT:TEXT:INTEGER,INTEGER:INTEINTEXole_INTEINTEXINTEIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,INTETEXT,INTEINTEIdIdId_TEXT,TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:INTEole_INTE_INTE_ole_ole_INTE,INTE_INTE,TEXT:INTE_ole_INTE,X_TEXT:ole_ole_ole_ole_ule_ole:INTE_INTE_INTE_INGER,INTE:INTE,ole_ole0_ole0:ole0:ole00000000000000c###INTE_INTE_INTE_INTE_INTE:INTE:INTE,X:INTE"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight of cars each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "id_id_ole_ule_TEXT,TEXT,TEXT,INTEole,INTEINTE_INTE_INTE/*,TEXT,INTE/*Id:ole_ole:ole_TEXT,ole0:TEXT:ole0_ule_ule00:ule00:ule000:ule0000:ule:ule:ule000000:INTE_ole0000000000000000000000000000000000000000000000000000011000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000011"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average weight and year for each year?",
+      "gold": "SELECT avg(Weight) ,  YEAR FROM CARS_DATA GROUP BY YEAR;",
+      "pred": "ole_ole_ole_ule_TEXT,ole_INTEGER,INTEGER,INTEidINTEINTETEXT,INTEIdINTEIdTEXT,TEXT,GERINTEIdGER/*_XIdGER_TEXT,TEXT,INTEIdTEXT,GERIdTEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GER_TEXT:TEXT,INTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,TEXT0__idole_ule_INTEidINTEole_INTEidule,ule_ule_TEXT,TEXT:TEXT:TEXT:TEXT:INTE_ole_INTE_ole0_idole00:ole00:ole000-_ole00000000000000000000000000000000000000000000000000000001000000000000000000000000000011"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which countries in europe have at least 3 car manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "###INTEGER_cINTEGER,bINTEINTEbINTEINTEb__X______________________-cINTEINTE________cX____0011111111cidoleidTINTE__|X|X|INTE_|ole__011110011000111111001111111111111111111111111111011111110111111111111001111011110011110000000000001110000000000000000000000000000000000100000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of all European countries with at least 3 manufacturers?",
+      "gold": "SELECT T1.CountryName FROM COUNTRIES AS T1 JOIN CONTINENTS AS T2 ON T1.Continent  =  T2.ContId JOIN CAR_MAKERS AS T3 ON T1.CountryId  =  T3.Country WHERE T2.Continent  =  'europe' GROUP BY T1.CountryName HAVING count(*)  >=  3;",
+      "pred": "###INET###INTEINGER__INTEbGER__INTE_INTE_GER,INTE_INTE_INTE,INTE:INTE_INTE_INTE,INTE_idINTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,GER,GER:INTE,INTE:INTE,INTE,INTE,INTE:INTE,INTE:INTE,INTE,INGER,INTE,TEXT,INTE,INTE,INTE,INTE,INTE,INTE,GER00000100011111101011111111111111111111111111111111111111100000000000000000000000000001000010000100001000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum horsepower and the make of the car models with 3 cylinders?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "id______________cINTEINTEid______________cINTEbINTE__:###ole_id__:ole_id00000000000000100000000000000000000000000000000000011cTRole0000000000000111111111111111111cule_id00000TR_00000000010000110000000000001111111111001111100100011111101111111110000111111111111111111110000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the largest amount of horsepower for the models with 3 cylinders and what make is it?",
+      "gold": "SELECT T2.horsepower ,  T1.Make FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.cylinders  =  3 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "id_id_ole_INTEINTETEXT/*_TEXT_INTE/*_INTE_GER_INTE_GER,X_INTE_GER,IdTEXT)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model saves the most gasoline? That is to say, have the maximum miles per gallon.",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id ORDER BY T2.mpg DESC LIMIT 1;",
+      "pred": "ole_X_ididX_ole_ididole_idole_IdTEXT,X_IdINTEINTEREINTEIdINTEIdTEXT,TEXT,TEXT,INTEIdINTE_INTE_INTE_INTE_INTE_INTE_INTE_TEXT,INTE_TEXT,ININTE,INTE,INGERIdGERX,INTE_INTE,INTE_INTE,INTE_bINTE_bINTE,INTE_bINTE,INTE__INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,INTE,INTE,INTE:INTE,INTE1:X:X0000000100011-010000010000000000001000000000100011.None0100000011111011000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the car model with the highest mpg ?",
+      "gold": "select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.mpg desc limit 1;",
+      "pred": "###INTEATINGER________________cINTETEXT,IdINTEINTEINTEINTEINTEXGER,INTEINTE_INTE_INTE_bINTEbbINTE_____________-cXXXX_________-c__:id____:b__:_:_:_00000000000cTRoleidINTEidINTE__________|Id,Id011011111001101111111111011111111111111111111111cId__011001111111011000000000000011011111000001111111111111111110000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower of the cars before 1980?",
+      "gold": "SELECT avg(horsepower) FROM CARS_DATA WHERE YEAR  <  1980;",
+      "pred": "oleidididididididid_IdINTEINTEIdINTE_INTE/*_____________cTEXT/*IdIdXTEXT/*TEXT_IdXTEXT/*TEXT/*TEXT/*TEXT/*TEXT_TEXT,TEXT,TEXT,TEXT,GERIdTEXT,GERIdTEXT:INTE_TEXT,TEXT:INTE,INTE:INGER,INTE,INTE,INTE:INTE,TEXT:INTE,TEXT0_ole_ule_ole0_ole0:ule_ole00000000000000000000000000000000000:ole0000000000000101011110000000000000000000000000000000000011110000000000000111110100000000000001111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average horsepower for all cars produced before 1980 ?",
+      "gold": "select avg(horsepower) from cars_data where year  <  1980;",
+      "pred": "oleididididididid_id_IdIdIdId_XIdIdIdId_IdIdIdId_IdIdIdId_IdIdId_XId_Id_Id_Id_ole_ole_TEXT_TEXT,TEXT:TEXT,TEXT:TEXT,TEXT:INTETEXT_INTEGER/*_TEXT,INTEGER,INTEGER,INTEGER,INTEINTEINTEXINTEIdIdIdIdIdXXTEXT,TEXT,TEXT0_id_ole_ule_ule:ule_ule:ule:ule_ole_TEXT0:ule00000000000000000000cccc_ole0000000000000001001000100000000000000000000000000000000000100100000000000000000000000000000011ccbbc"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl of the cars of model volvo?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "ole_ole_ule_ule_INTEINTEole_ole:id_ole:ole_ule_ule_INTEid_INTEXINTEXXTEXT,TEXT,INTEIdTEXT,TEXT,TEXT,TEXT,INTEidid_ole_INTEid_INTE_INTE_INTE_INTE,INTE_TEXT,INTE,INTE,INTE,GERINTE_INTE,INTE,INTE_INTE,INTE_INTE,INTE_INGER_INTE,INTE,INTE,INTE,GER_INTE,INTE:ole_INTE,INTE,INTE:INTE,INTE:INTE,INTE:INTE,INTE,ININTE,INTE:INTE,INTE:INTE:INTE,INTE:INTE:INTE:INTE:INTE:ole_INTE:INTE:ole:INTE:INTE:INTE:INTE:TEXT:TEXT:TEXT:TEXT:INTE:INTE:INTE0:ole:ole0000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the average edispl for all volvos?",
+      "gold": "SELECT avg(T2.edispl) FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T1.Model  =  'volvo';",
+      "pred": "ole_idole_ididTEXT)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for different number of cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "ole_ole_ule_ule_TEXT,IdINTEINTE_GER/*,INTE_INTE/*_TEXT,TEXT,TEXT,INTE,GER/*_TEXT,GERPRTEIdTEXT,TEXT,INTE,GER/*,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GER_TEXT,GER,GER,GER,GER,GER,GER,GER,GER:X_idX:X:id_INTE_TEXT,TEXT:id:ole:ule:ule0:id00000000000000000000000000000000010000000000000000000011010000-cididididcole_ole000000000000000000000000000001110000-idcule_ole000bcole0000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum accelerate for all the different cylinders?",
+      "gold": "SELECT max(Accelerate) ,  Cylinders FROM CARS_DATA GROUP BY Cylinders;",
+      "pred": "id_idididole_ole_INTEid_ole0_ole0:id_ole100000000_ole0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000100111010000000000000000000000000000000000000111000000000000000000000000000000000000000000000000000000000000000000000000000011110"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which model has the most version(make) of cars?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "ole_ididole_Xidole__IdINTEINTEINTETEXTTEXTGERTEXTGERIdINTETEXTXTEXTTEXTTEXTINTE_INTE_INTE/*_TEXTIdTEXT/*IdTEXT,TEXT_TEXT_TEXT_INTE_X_X_X_bb_X:ole__id_ole___id_ole0:ole000_ole000000000000000cbcbbbbccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc_TEXT,TEXT|INTE,INTE:INTE:INTE:INTE:INTE:ININTE"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What model has the most different versions?",
+      "gold": "SELECT Model FROM CAR_NAMES GROUP BY Model ORDER BY count(*) DESC LIMIT 1;",
+      "pred": "ole_idididole_idXXINTETEXT________________cule___:___________________cGERididXidXididbINTEINTEINTE_cINTE___________________________cINTE___:_:_:_:cINTE__:_00000000000cINTE:_00000000000000000000001000111111101111111111cole_idididINTE_|id|id|id|id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id|Id"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "oleoleoleoleuleididididid_TEXT,TEXT,INTEGER,INTEGER,INTEX_INTEIdTEXT)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with more than 4 cylinders?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE Cylinders  >  4;",
+      "pred": "oleididididididididid_id_IdIdIdId_XIdIdIdId_IdIdIdId_IdIdIdId_Id_PRGERTEXT_IdIdIdId_X_TEXT,IdIdId_TEXT,Id_TEXT,TEXT/*_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GERId/*/*_GER,INTEGER,INTEGER,INTEINTEINTEXGERIdIdXTEXT,TEXT,INTETEXT,TEXT,INTETEXT,INTEINTE_TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,GER_GER,TEXT,TEXT:INTEINTE_INTE_INTE/*Id_INTE/*Id_INTE_TEXT,TEXT:INTE_ole_TEXT:ole_TEXT:TEXT:ule_ole_ule_ole_ole_ole_ole_ole_ole_ole:INTE_ole00000_ole00000:ole00000000000000cXbbb###INTE_INTE_INTE_bb_INTE_b_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "how many cars were produced in 1980?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "oleididididididididididIdoleIdREINTE/*Id_IdIdXXINTE/*Id_IdIdTEXT,IdIdTEXT,TEXT/*Id_IdIdTEXT,XIdTEXT,TEXT,ole_TEXT/*id_id_TEXT:ole_TEXT,id:TEXT,ole_TEXT,id_XIdTEXT,TEXT,TEXT,TEXT,INTEINTEIdXINTE_INTE/*Id_IdIdINTE/*Id/*TEXT,TEXT,TEXT,TEXT0_id_ole_ule_ule_ule_ule_ule,ole0:ule:ole0:ole00:ole00000_ole0000000000cididididididid_ole_ole:ole:ole00000000000000000000000000000000000:ole00000000001000000000000000000000000000000001"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In 1980, how many cars were made?",
+      "gold": "SELECT count(*) FROM CARS_DATA WHERE YEAR  =  1980;",
+      "pred": "oleidididididididididididIdole_IdIdIdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdRETEXT_IdIdREGERIdIdIdTEXT,TEXT,INTEGER)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many car models were produced by the maker with full name American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "oleid__ole_id__X_ole_id0000000000cid__ole:_ole_b_id_cINTEINTEb_INTEb_INTE_INTE_INTE_INTE,INTE_INTE_INTE_INTE,INTE,INTE,INTE,INGER_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,GER_GER0000100101000000000000000000000000110111111111111111111110011111110011111111011111111111111111111111111111111111100010000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of car models created by the car maker American Motor Company?",
+      "gold": "SELECT count(*) FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker WHERE T1.FullName  =  'American Motor Company';",
+      "pred": "oleid_id_id_oleid_oleid_INTEINTETEXTXINTE_INTE_GERINTE_INTE_GER_GER_INTE,INTE_INTE_GER_GER:INTE_bINTE,INTE:INTE_XXX_INTE,INTE:INTE:ole_INTE,INTE:INTE:INTE:INTE:INTE,INTE:ININTE,INTE:INTE0,ole_ole:INTE:INTE00000000000000000000cINTE,ole_INTE00000000000000000000000000000100110111111100110111111111100000000000001100000000000000110000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which makers designed more than 3 car models? List full name and the id.",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "###ole###ole_ole_INTEole_INTEole:ole_INTEole:ole:ole:INTEole_ole_INTEINTEINTEINTEINTEbINTEcINTE_INTE_INTE_INTE_INTE_XINTE_X_INTE:X:id_INTE_X000000000000000100000001000000000100000000011ccccccccccccccccIdINTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,TEXT,TEXT,TEXT,TEXT,INTE,TEXT,INTE,INTE,INTE,INGER/*_IdTEXT,INTE,INTE:TEXT:TEXT:INTE:INTE:INTE:INTE:INTE:INTE:INTE:TEXT00000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names and ids of all makers with more than 3 models?",
+      "gold": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "###INTEININETole###INGER_________________________________cINTE_bINTE:###ole__000000000000011111000000000000000000000000010111cINTE:id___00000TRidTR_cole00000011011111111111110111001111110000000000111111000001111111001111111111100111111100000000000011111111111000111111111111111100000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "ole_id__ididole_id__ole_id__ole_id__INTEGER,INTEGER,INTEINTEINTEINTEbGER,INTEINTEbGER,INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,GER,INTE,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER:INTE__IdINTE__IdINTE0:INTE:INTE:INTE:TEXT,TEXT:TEXT:TEXT:INTE:INTE:INTE0-0000-0010|0|0|0|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|None|_None|None|None|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models created by either the car maker General Motors or weighed more than 3500?",
+      "gold": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+      "pred": "id_id_ole_ole:ole_ole:ole:ole:ule_ole0_ole0000000ccccbbbcbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc_IdTEXT,IdINTEGER,IdINTEGER,IdINGER,INTEINTEINTE/*_INTEIdINTE_INTE,INTE,INTE,INTE,TEXT,INTE,TEXT000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "In which years cars were produced weighing no less than 3000 and no more than 4000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "ole_id_______________________________________________0000NoneTRole_id___:_______0000cole_________cINTEXINTETEXT/*,TEXT/*________________cTEXT/*,TEXT,INTEGER,GERTEXT,GERGERINTEGER,GERINTEGER,GERationINTEGER,GERINTEGER,GERTEXT,GERINTEINTEINTEINTETEXT,GERTEXT,GERTEXT,GERTEXT,GERTEXT,GERINTE_bINTE____________________cINTEIdINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEedINTEedINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEedINTEgINTE__"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different years in which there were cars produced that weighed less than 4000 and also cars that weighted more than 3000 ?",
+      "gold": "select distinct year from cars_data where weight between 3000 and 4000;",
+      "pred": "id___________coleid________________________cTEXT,IdTEXT,IdTEXT:id:__:__:_:_:00-0000-000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100-01000|None|TRNone|TR00|None|TR00|TR00|"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the largest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "###oleidid_###ole_id__id_id_ole_id__XXXXIdINTEINTEINTEIdINTEXINTE_INTE_GER_bINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE_X_INTE,INTE,INTE,INGER,INTE,INTE,INTE,GER,GER,GER,GER,GER,GER,GER,INTE,INTE,INTE,INTE,GER:INTE,INTE:INTE,INTE:INTE,INTE0:X_ole_ole_INTE,INTE:INTE:TEXT,INTE:TEXT:TEXT:TEXT,TEXT:INTE,INTE00000000000000000000000000000000cX_X_IdINTE_INTE,INTE000000000000001000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the horsepower of the car with the greatest accelerate?",
+      "gold": "SELECT T1.horsepower FROM CARS_DATA AS T1 ORDER BY T1.accelerate DESC LIMIT 1;",
+      "pred": "###ole###INTEININGERINATINGERoleidole_XIdINTE_IdTEXT_INTE,INTE,INTE,INTE,INTE,INTE,INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE:INTE_INTE:INTE:INTE:INTE:X_INTE,INTE:INTE0:ole_ole0:INTE0000000000000011c_INTE1111110111111100001111111111111110011111111111111111111111110011111001111111111111111110110000111111111111111101000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For model volvo, how many cylinders does the car with the least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "id__id__ole_ole:id__id:ole_ole:ole:ole:ole:ole:INTEole_INTEINTEINTE#########INTEbbbbINTE_INTE_INTE_INTE_INTE:Xid______________cINTE,X_INTE,INTE,INTE,INTE,INGER,GER_IdXIdIdINTE,INTE,INTE,INTE,INTE,INTE,GER,GER,GER,GER,GER,GER,GER:ole_INTE,INTE:INTE,INTE0:X_ole_INTE:TEXT,TEXT00000000000000000000000000000000000000000000000000001000000000000000110111100000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For a volvo model, how many cylinders does the version with least accelerate have?",
+      "gold": "SELECT T1.cylinders FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T2.Model  =  'volvo' ORDER BY T1.accelerate ASC LIMIT 1;",
+      "pred": "X_id_________cole_____________cINTEIdTEXT)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars have a larger accelerate than the car with the largest horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "id__id__ole_ole:ole_ole:ole:ole:ole:ule_ole0_ole00000000000000000cbbbbccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccNoneIdIdINTEINTEINTEINTEINTEXGERGERINTE_INTE_INTE,INTE,INTE,TEXT,TEXT,TEXT,TEXT,INTE,INTE,INGERIdTEXT,INTE,INTE:INTE,INTE,INTE:TEXT:INTE_ole:ole00000:ole00000000000000000001000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of cars with a greater accelerate than the one with the most horsepower?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Accelerate  >  ( SELECT Accelerate FROM CARS_DATA ORDER BY Horsepower DESC LIMIT 1 );",
+      "pred": "ole_ole_ule_INTEGER,IdINTEGER,XTEXT,IdTEXT,IdTEXT,TEXT,TEXT,GERGERTEXT,GERTEXT,GERIdGERTEXT,GERTEXT,GERTEXT,GERTEXT,GERTEXT,GERTEXT,GERTEXT,GERTEXT,GERGERGERGERTEXT,GERTEXT:TEXT,INTEGER,INTEGER:INTEINTEINTEINTEXINTEIdTEXT/*_TEXT,TEXT,TEXT,TEXT00_ididididididididididididididididIdTEXT,TEXT:TEXT:INTEole_INTEINTEididididididididgINTEGER,INTEGER,INTEINTE_TEXT,INTEIdINTEXTEXT:TEXT,TEXT:TEXT:ole_ole_ule_ole_ole_INTEINTE_INTE_INTE_INTE_REINTE_TEXT:TEXT:TEXT:INTE_ole_ole_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE_XX"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many countries has more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "INTETE###INTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE:INTE,INTE:INTE:INTE:INGER,INTE:INTE:INTE:INTE0:ole_ole10-_TR_ididididididididididid_X_Idid_X0001000000110001111111cidid_id_X00010001111110111111110011100111111100101111111111111111111111110111111111111110000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of countries with more than 2 car makers ?",
+      "gold": "select count(*) from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  2",
+      "pred": "###INTEGER__###INTETEINGER,INTEGER,GERINTEINTEbINTE__X__________cX____:ole__:__:_000000000cTRexole_____000000001cINTEidINTE_____:INTE_____:IdINTE_:Id____|Id000000000000011111111011111101111111111110011111110011111000000000000000000000000010000000000000000000000000000000000010000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "How many cars has over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "oleidididididididididididIdoleIdTEXT/*__________________cTEXT____________________________________________cGERTEXT,IdINTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,GERINTEGER)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the number of carsw ith over 6 cylinders?",
+      "gold": "SELECT COUNT(*) FROM CARS_DATA WHERE Cylinders  >  6;",
+      "pred": "oleidididididididididid_PRTE,TEXT,INTEINTE,GERX/*_TEXT,INTE/*_TEXT,TEXT,TEXT,GER_TEXT,INTE/*_INTE,INTE_INTE,GER,GER,TEXT,TEXT,TEXT,TEXT,TEXT,GER,INTE,INTE,INGER/*Id,TEXT0:ole_INTE_INTE:ole_INTE:INTE,INTE_TEXT,TEXT:TEXT,TEXT00000000_ule_ule:ule_ule_ule_ule,TEXT00000000000000000000000000000000000000cINTE_TEXT:TEXT010100000000000000000000000010000000000010110000000000000010100000000000000011"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For the cars with 4 cylinders, which model has the largest horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "oleid_id_id_oleid_oleid_uleid_ule_INTETEXTTEXTGERTEXTINTEINTE_GERIdINTETEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXTINTE_GERINTE_INTE_INTE_INTE_INTE_TEXT,INTE,INTE,TEXT,INTE:oleid_ole_INTEid_INTE_INTE:INTE_INTE_INTE_INTE_INGER_INTE_INTE,INTE:INTE,INTE:INTE,ole_INTE,INTE:INTE,INTE:INTE,INTE:INGER,INTE:INTE:INTE,INTE:INTE:INTE:INTE,INTE:INTE:TINTE,INTE:INTE1000000000010111100000000000000100000000001000000000010111100000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "For all of the 4 cylinder cars, which model has the most horsepower?",
+      "gold": "SELECT T1.Model FROM CAR_NAMES AS T1 JOIN CARS_DATA AS T2 ON T1.MakeId  =  T2.Id WHERE T2.Cylinders  =  4 ORDER BY T2.horsepower DESC LIMIT 1;",
+      "pred": "ole_XidXidole_idXidule__idole__idole__idINTEINTEINTEIdINTE_TEXT/*_IdIdTEXT_TEXTIdTEXT,TEXT_TEXTIdINTE_INTE_INTE_INTE_INTE_INTE_TEXT_INTE,TEXT,INTE:ole_ididole:ole_ididole_idbINTE_INTE_INTE_INGER_GER_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE:INTE_INTE_INTE:INTE,INTE:INTE_ole_TINTE_INTE:INTE,INTE:INTE,INTE:INTE:INTE,INTE:ININTE,INTE10:INTE110:ule_ole0:ole00000000000000000000000000000000000000000000011011111001111"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars with more than lowest horsepower, which ones do not have more than 3 cylinders? List the car makeid and make name.",
+      "gold": "SELECT T2.MakeId ,  T2.Make FROM CARS_DATA AS T1 JOIN CAR_NAMES AS T2 ON T1.Id  =  T2.MakeId WHERE T1.Horsepower  >  (SELECT min(Horsepower) FROM CARS_DATA) AND T1.Cylinders  <=  3;",
+      "pred": "oleid_id:_id_id_oleid:_ole_INTEINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INGER_GER_INTE,INTE,INTE,INTE:###INTE_INTE,INTE:X_INTE_INTE,INTE:INTE,INTE:INTE,INTE:ole_INTE:ole:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ole_INTE:INTE0000000000000000000000100000110000011011111111110111111000000000000000000000000000111000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Among the cars that do not have the minimum horsepower , what are the make ids and names of all those with less than 4 cylinders ?",
+      "gold": "select t2.makeid ,  t2.make from cars_data as t1 join car_names as t2 on t1.id  =  t2.makeid where t1.horsepower  >  (select min(horsepower) from cars_data) and t1.cylinders  <  4;",
+      "pred": "id_id_id_ole_INTE_INTE,INTE,INTE,INTE,INGER,INTE:ole_TEXT,TEXT:ole0000000000_ole000000000000000000000000000000000000000000000000001011010100000000000000000000000000000000000000000000000000000000000000000000000000000110100000000-cTR_ole00000000000000000000000000000000000001000000010000101101"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum miles per gallon of the car with 8 cylinders or produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "id_____________cINTEINTEINTEXGERINTEbINTE_______cINTE___________________________cINTE,__,_:INTE_:INTE,_0:INTE:INTE:INTE:INGER,_0-0-0000-0000-0000-0001-1100|TR0-0000|None|TR100|None|TR100|None|ule__0-0000|id0000|id100|id111|ole_101|INTE_0|ule0000|ole101|ole111|ule111|INTE0|INTE0|ole100|ule111|ole100|ole100|ole100|ule0000|ole100|ole100"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What is the maximum mpg of the cars that had 8 cylinders or that were produced before 1980 ?",
+      "gold": "select max(mpg) from cars_data where cylinders  =  8 or year  <  1980",
+      "pred": "ole_ole_ole_INTEINGER_INTEIdINTETEXT/*,TEXT/*_TEXT/*_GERTEXT/*_INTEIdTEXT/*_INTETEXT)"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which models are lighter than 3500 but not built by the 'Ford Motor Company'?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "###INTETPb_###INTEGERb_b_INTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEINTEXGER_INTEINTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,GER,GER-id_INTE_INTE_ole_INTE,INTE:INTE,INTE,INTE,INTE,INGER,INTE,TEXT,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,INTE:INTE_INTE,INTE:TEXT,INTE,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:INTE_id_INTE:INTE:INTE:INTE:INTE:INTE:ole_XIdTEXT,INTE,INTE:INTE:TEXT:INTE:INTE:INTE:INTE:INTE:INTE:INTE:ole_"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the different models wthat are lighter than 3500 but were not built by the Ford Motor Company?",
+      "gold": "SELECT DISTINCT T1.model FROM MODEL_LIST AS T1 JOIN CAR_NAMES AS T2 ON T1.Model  =  T2.Model JOIN CARS_DATA AS T3 ON T2.MakeId  =  T3.Id JOIN CAR_MAKERS AS T4 ON T1.Maker  =  T4.Id WHERE T3.weight  <  3500 AND T4.FullName != 'Ford Motor Company';",
+      "pred": "id_###INTEINGER,INGERididINTEINTEINTEXGER__INTEINTEINTEXGER_,GERINTE_bGER__XINTE___RGER____IdINTE______IdINTE,INTE,INTE,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER,GER:TEXT,INTE,INTE,TEXT0:TEXT:INTE,INTE00000000000000000000000100111111000000000000000000000000011111000000000000000000000000000000000000000100000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the name of the countries where there is not a single car maker?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "idcoleINTEINGER,###INTEINTE###INTEXGER__INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE_INTE,INTE_INTE,INTE:INTE_XINTE_XididXINTE,INTE,INTE:INTE_INTE:INTE,INTE,INPRTE,REINTE,INTE0_IdINTE,ole_INTE,INTE:INTE,XIdX_TEXT,TEXT,TEXT:INTE,TEXT0:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INTE:INET,TEXT:INTE:TEXT0-idididididid_ole_ole_INTE:ole:INTE:ole0:ole0-ole00_ole0000:ole0000-ole000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the names of the countries with no car makers?",
+      "gold": "SELECT CountryName FROM countries EXCEPT SELECT T1.CountryName FROM countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.countryId  =  T2.Country;",
+      "pred": "###INTEGER__###INTEGER,INTEGER,INTEINTEINTEXGER__INTEINTEbGER,INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,GER,GER,GER,GER:INTE___________cINTE,INTE:INTE,INTE:INTE,INTE:INTE:INTE:INTE:INTE0:ole_IdINTE,TEXT,INTE,TEXT00000000000000000000000000000000000000000000000000100000001001100000000000000000000000000000000000000000000000001100-NoneNoneNoneNoneNoneNoneNoneNoneNone"
+    },
+    {
+      "db_id": "car_1",
+      "question": "Which are the car makers which produce at least 2 models and more than 3 car makers ? List the id and the maker .",
+      "gold": "select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id having count(*)  >=  2 intersect select t1.id ,  t1.maker from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker join car_names as t3 on t2.model  =  t3.model group by t1.id having count(*)  >  3;",
+      "pred": "ole_ole_ole_ole_ule_ule,XIdididIdXole_INTEINTEXINTE_INTE_GERbINTE_INTE_GER_INTE_GER_INTE_GER_INTE_GER_INTE,INTE,GER,GER,GER,GER,GER,GER,INTE:INTE:INTE:INTE:INTE:INTE:ININTE,INTE:INTE0_idididTole_INTE_INTE,INTE00:ole_INTE0000000000000000_INTE00000000010000000011000000001100000011101000001110000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and makers of all car makers that produce at least 2 models and make more than 3 cars?",
+      "gold": "SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >=  2 INTERSECT SELECT T1.Id ,  T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model GROUP BY T1.Id HAVING count(*)  >  3;",
+      "pred": "ole_id__id_ole_id_id_ule__XididididbINTEINTEINTEXGERGERINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,INTE,INTE,INTE,INTE,INGER,INTE,INTE,INTE_INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE,INTE:INTE,INTE:INTE,INTE:INTE:INTE,INTE:ole_id__IdIdXXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_TEXT,INTE,INTE00001000100010011111111011100100000000000000000000001111111000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the id and names of the countries which have more than 3 car makers or produce the 'fiat' model?",
+      "gold": "SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country GROUP BY T1.countryId HAVING count(*)  >  3 UNION SELECT T1.countryId ,  T1.CountryName FROM Countries AS T1 JOIN CAR_MAKERS AS T2 ON T1.CountryId  =  T2.Country JOIN MODEL_LIST AS T3 ON T2.Id  =  T3.Maker WHERE T3.Model  =  'fiat';",
+      "pred": "id_id_ole_INTE_INTE,INTE:######id_INTE,INTE,INTE:id_INTE:ole_id:ole:ole:INTE:ole:INTE:ole000000000001000001111111111111111111cIdIdXIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdIdId_INTE000000010111110111111111111001111000000000000000101111100000000000000000000000000000000000000011000000000000000000000000000000000000"
+    },
+    {
+      "db_id": "car_1",
+      "question": "What are the ids and names of all countries that either have more than 3 car makers or produce fiat model ?",
+      "gold": "select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country group by t1.countryid having count(*)  >  3 union select t1.countryid ,  t1.countryname from countries as t1 join car_makers as t2 on t1.countryid  =  t2.country join model_list as t3 on t2.id  =  t3.maker where t3.model  =  'fiat';",
+      "pred": "id____________0000000000000000000000001-0100000000000000000000000000100000000000010000101011110000000000000000000000001000010101111010000000000011110100000000000000000000000000000000000010000000000000000000000000001000000000000000100000000000000000000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which country does Airline \"JetBlue Airways\" belong to?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "id______________________cidid______________0000000000000000000000000000000000cid__0000000000000000000000000000000000000000000000000000000000010011011111111111111111000000000000000000010000000000000000000000000000000000000000000000000111cbbccccccccccccccccccccc"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What country is Jetblue Airways affiliated with?",
+      "gold": "SELECT Country FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "X_id___________coleid_id_id_ole_TEXT_TEXT,TEXT,INTETEXT/*_TEXT,TEXT,TEXT,TEXT,INTETEXT_TEXT:TEXT,INTEINTEIdIdTEXT,INTEIdIdINTEIdIdINTEIdIdINTEIdIdINTEId_INTE/*IdIdTEXT,TEXT:TEXT,TEXT0_id:ole_ule000:ole0000000000000010000000000000000000000000000111c_id_id000000000000000000000000000000010010000001110100000000000000000000000000000000000111111ccccccccccccccc"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the abbreviation of Airline \"JetBlue Airways\"?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "ole_ole:ole_ole:ole:ole:ole:ole:ole:ule_ole:ole:ole:ole:ole0_idTR_ididididid_TEXT_INTEGER_INTETEXGERIdINTEGERIdTEXT/*_INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,GERTEXT/*,TEXT,INTEGER,TEXT,INTEINTEINTEXGER_INTEPRTEIdTEXT,INTEGER,TEXT,INTEINTEIdINTEGER,TEXT,TEXT,TEXT,INTEGER,INTEGER,TEXT,INTE_INTE_INTE_TEXT,TEXT:TEXT,TEXT0_idole:ule:ole0000000000000000000cole001000000011cidole0000000000110cbINTEINTEbINTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE_INTE,"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which abbreviation corresponds to Jetblue Airways?",
+      "gold": "SELECT Abbreviation FROM AIRLINES WHERE Airline  =  \"JetBlue Airways\"",
+      "pred": "oleidididididididididididididididididididididididididididididididRGERRERERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGER"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List all airline names and their abbreviations in \"USA\".",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "id_________________________________________0000000000NoneTR____cId_________:___:___cole__::___0000000000cole000000000cule_:0000000000000000000cole000__:00000id_0000000000010000000000000000000000000000110000000000000000000000000000000000000000111cole000000000000000000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What are the airline names and abbreviations for airlines in the USA?",
+      "gold": "SELECT Airline ,  Abbreviation FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "oleidididididididididididIdoleIdoleIdTEXT/*____________________________________________________:X________________0_cIdX________0000000cidididididididididididididid__000000000cid___:id___________coleidIdid_____cX__|id|id|id|id|id|id|id|Id0001000000000000000000000000000000000000000100111111cbX:id0000000000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "List the airport code and name in the city of Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "oleidididexididididididididididIdoleidIdINTEGER/*,INTEGER/*/*/*idPRTEid_INTEGER,INTEGER,GERTEXT,INTEGER,GERGERTEXT,TEXT,GERIdGERTEXT,GERTEXT,GERGERTEXT,GERINTEGER,GERINTEGER,GERINTEGER,GERTEXT,GERIdGERTEXT,GERTEXT,GERTEXT,GERIdGERTEXT,GERTEXT:TEXT,INTETEXT_IdTEXT,TEXT,TEXT:TEXT,TEXT:INTEINTEINTETEXT,INTEINTEREGERIdGERINTEINTETEXT,INTEIdINTEINTEINTEINTEINTETEXT,TEXT,TEXT,TEXT:TEXT,TEXT0_ole_ule_id_ule_ole_ole_ole_ole_ule:INTETEXT:TEXT:TEXT:TEXT:INTEid_ole_ole:ole_ole_ole_ole_ole_ole_ole,INTETEXT:INTEid:TEXT:ole_ole0_ole0:ole00:ole0000:ole0000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airport code and airport name corresonding to the city Anthony.",
+      "gold": "SELECT AirportCode ,  AirportName FROM AIRPORTS WHERE city  =  \"Anthony\"",
+      "pred": "oleididididididididididididIdTEXT/*/*TEXT/*TEXTidTEXT/*TEXTIdGERRINTE_IdGERIdGERIdGERIdGER_RETEXT_TEXT/*IdTEXT/*IdTEXT/*IdTEXT/*IdTEXT/*IdTEXTIdGER_TEXT,TEXT,INTE_REINTE,INTE,INTE,INTE_IdTEXT_TEXT,TEXT:TEXT,TEXT:INTE,INTE:INTE:TEXT,XIdTEXT_TEXT,TEXT,TEXT,TEXT,TEXT:TEXT,TEXT:TEXT,TEXT:INTE,X_TEXT:INTE,X_INTE:INGER,X_X_X_idTEXT,TEXT0_ole_ole:ule_ole:ole:ule:ule:ule00000_ole000000000000000000000000000000000000cid_ole000001000000000000000000000100010011111"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines do we have?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "uleidididididididididididididididididididididididididididididididid_id/*/*REGER____________TRPRINGERGERRINTERREINTE/*/*_/*/*/*/*/*__/*/*____10_TRTRidTRididid_ole_ole:ole_ole_ole_INTE_ole:ole:ole_ole:INTE,INTE:INTE,INTE,INTE,INidididIdREGER/*/*IdTEXT,TEXT/*/*IdGER/*IdGER/*REGER/*IdTEXT,GER/*IdGER/*IdINTE/*RGER_IdGER,GER,GER,GER:INTE,TEXT,TEXT:TEXT,TEXT:TEXT:TEXT:INTE,INTE:INidid_INTE_TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:INTE,ole_TEXT:INTE,TEXT0_TEXT:ule_ole:TEXT00_ole000:ule000-id_ule:ole:ule00"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the total number of airlines?",
+      "gold": "SELECT count(*) FROM AIRLINES",
+      "pred": "oleididididididididididididididididididididididididididididididididididididisGER_RGER,INTE_id_INTER/*/*REGER/*REGERididRGER_REGER/*REGER/*GER/*GERisGER/*GER_GER/*REGER/*REGER_GER_GER/*REGER/*REGER/*REGER_GER:INTEidididididididididididididididid_INTE/*XXRGER/*REGER/*GER/*GER/*GER/*GERIdREGERIdGERIdGERIdGERIdGERIdGERIdGERIdGERIdGER_GER,INTE_id:INTE_id_INTE_gTEXT/*gTEXT/*IdTEXT,TEXT,TEXT,GERIdTEXT,INTE,GER_REGER,INTE,INTE,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:TEXT:INTE,TEXT:INTE:TEXT:TEXT"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airports do we have?",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "ule_idididididididididididididididIdINTEGER/*,TEXT/*,GERGERole,GERidididole_ididPRTEGERINTETEGERINTETEGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERINTETEGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERINTEGERGERGERGERGERGERGERGERGERGERGERGERGERGERGERTEXT,TEXT,TEXT,TEXT,INTEGER,INTEGER,X"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of  airports.",
+      "gold": "SELECT count(*) FROM AIRPORTS",
+      "pred": "oleidididididididididididididididididididIdPRTE,TEXT,GER,TEXT0_idididididTRoleididididididididididididid_TEXT:INTEINTEid_TEXT,TEXT00:oleid_uleid_ole_ole_ule_INTE_INTE,INTE,INTE,TEXT:ole_ole_ole_TEXT:TEXT,TEXT:TEXT:INTE_ole_ole_TEXT:ole_ole:TEXT:TEXT:TEXT:TEXT:INTE,TEXT:TEXT:TEXT:INTE:INTE,INTE:INTE,INTE,INTE,INTE,INTE,INTE,TEXT:ule_ole0:ule0000000000_ole0000000000000000000000000000000000000010000000000000000000000010000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many flights do we have?",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "oleid__idid_idid_oleid_idid:oleid:oleid_id_oleid_id_ule_ole_INTEINTEXINTE_INTE/*_INTE_INTE_INTE,TEXT,TEXT:TEXT:TEXT:TEXT:TEXT,TEXT:TEXT0__id_id_ole_ole_ule_INTE,INTE,INTE,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT_PRTE,id_XId__Id_Id_X_TEXT:ole_ole0_id:ole:ole_ole:ole:ole:ole:ole:INTE,INTE:INTE,X_INTE:INTE:ole_ole0:ole00:ole000-id_ole0000:ole00000000000000000000cid_ole00000000000000000000cid000000100000000000000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of flights.",
+      "gold": "SELECT count(*) FROM FLIGHTS",
+      "pred": "oleidididididididididididididididididIdREINTEIdIdRGERIdIdIdRGERIdIdIdXTEXT/*/*XINTE_RGERRGERIdIdIdIdXINTE/*TEXT_TEXT,TEXT,TEXT:TEXT,TEXT:TEXT:TEXT:INTE__id_XXINTE___________________________________________________________________0_cIdIdIdIdIdIdIdIdIdIdXIdIdIdRETEXT,INTE/*IdIdREINTE/*IdIdXIdIdXId_IdIdXId_IdIdIdIdXId__________0000000cididid_________cole_Id_Id_Id_Id_Id_Id_Id_id_id:INTE____:id__"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which airline has abbreviation 'UAL'?",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "oleid__id__id_id_id_ole_TEXT,X_TEXT,id_INTEINTEIdTEXT)"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the airline with abbreviation 'UAL'.",
+      "gold": "SELECT Airline FROM AIRLINES WHERE Abbreviation  =  \"UAL\"",
+      "pred": "oleidid_id_oleid_TEXT,ole_ole_TEXT,TEXT,TEXT,INTETEXT/*_IdTEXT,TEXT,GER/*IdTEXT,TEXT:TEXT,TEXT:TEXT,TEXT:INTETEXT_ole_TEXT,XIdINTETEXT,INTEINTEGERIdGERINTEINTEINTEINTEINTEINTETEXT/*IdTEXT,TEXT,TEXT,TEXT:INTEINTE_INTE_INTE_TEXT,TEXT:INTE_ole_TEXT:ole_ole:INTE_X_id_INTE,ole_ole0_ole0:ole0:ole00:ule_ole00000_ole00000000000000000000cb_ole0000000010101000111000-TR00000000000000000000cc00000000000001111101111100000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "How many airlines are from USA?",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "oleoleoleoleoleoleoleuleoleoleoleoleoleuleididididid_ole_ole/*/*id/*ole/*id,ole_ole_ole/*id,ole_ole_INTEGER,GER_INTEPRTEINTERREGER_REGER/*INTEGER,GER,GER,GER,GER,GER,GER,GER,GER,GER:ole_ule_ule_INTEGER,GER:ole_ole:INTEGER,GER:ole_ole:ule_ole_ule,INTEGER0:ole_ole0000000_ole100001000000000001000000000000001000001011TRule_ole:ule_ole1:ule:ule,ule:INTEGER:INTEINTEid_TEXT,TEXT,INTETEXT,TEXT/*/*IdTEXT,TEXT,TEXT/*_TEXT,TEXT,INTETEXT:TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT:TEXT:TEXT,TEXT:TEXT:INTETEXT:"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Return the number of airlines in the USA.",
+      "gold": "SELECT count(*) FROM AIRLINES WHERE Country  =  \"USA\"",
+      "pred": "oleoleoleoleoleoleoleoleoleuleoleidididididididid/*____cole/*/*_:TRTRondTR,oleTR__TR:ole___TR:ole___TR_TR:ole__TR,ole__exTR:ule___TR0TR0TR0oleTR0TR0oleTR0oleididTR0TR0oleTR0oleTR0oleTR0oleTR0oleTR0oleTR0oleoleoleoleoleoleoleoleoleoleoleoleoleoleoleoleoleoleoleoleTEXT/*____idIdTEXT/*_/*___id/*___________cINTEGER______IdTEXT)"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Which city and country is the Alton airport at?",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "id_____________coleTEXT,id______________id______________IdIdIdIdTEXT,IdIdTEXT,Id__,Id______________Id_,Id_:oleid_0:oleid0_000000000_culeid000000000000000000000000000000000001000010101101001000000000000000010000000000000001010110100000000000000000000000000000000000000001111111culeid0000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "Give the city and country for the Alton airport.",
+      "gold": "SELECT City ,  Country FROM AIRPORTS WHERE AirportName  =  \"Alton\"",
+      "pred": "id_id_ole_INTEid_ole_TEXT,id0_ule0,ole0_INTEid0:ule:INTEole0:INTEole0:ole:ule_INTEole0:INTEule:INTEole:INTEXINTE_INTE_INTE,INTE_INTE_INTE/*,TEXT/*,TEXT,TEXT,TEXT,TEXT00:ule0000000000000000000000000000000000000000000000000101111101111111111011110000000000000010111010111111111111111111000000000100000000000000000010111010000000000000000"
+    },
+    {
+      "db_id": "flight_2",
+      "question": "What is the airport name for airport 'AKO'?",
+      "gold": "SELECT AirportName FROM AIRPORTS WHERE AirportCode  =  \"AKO\"",
+      "pred": "id____________coleTEXT,id_______________________________________cGERINTEIdINTEIdIdINTEIdIdINTEIdINTEIdINTEIdTEXT,TEXT,GERIdTEXT,TEXT,INTE_IdTEXT,INTE_IdINTE_IdTEXT,INTE,INTE,INTE/*,TEXT,GER_X_REINTE/*,TEXT0_idexoleoleoleoleoleoleoleuleoleX_idIdX:oleoleoleoleoleoleoleoleoleoleTEXT:oleidididididididid_bINTE__________________________cGER_IdINTE_________cGER_bINTE:b#########INTE:_________cGER,INTE00:_:_0000000000"
+    }
+  ]
+}

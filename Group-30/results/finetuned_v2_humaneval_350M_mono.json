@@ -1,0 +1,21 @@
+{
+  "model": "codegen-350M-mono + LoRA(MBPP, HumanEval-shape)",
+  "dataset": "humaneval",
+  "n": 5,
+  "temperature": 0.6,
+  "seed": 1234,
+  "num_problems": 164,
+  "pass@1": 0.1207,
+  "pass@5": 0.2073,
+  "baseline_pass@1": 0.111,
+  "baseline_pass@5": 0.177,
+  "failure_modes": {
+    "wrong_output": 563,
+    "runtime_error": 113,
+    "timeout": 3,
+    "compile_error": 41,
+    "oom": 1
+  },
+  "note": "Stage-1 LoRA on MBPP reformatted to HumanEval continuation shape. Lift over baseline: pass@1 +0.010, pass@5 +0.030. pass@1
+single-seed; multi-seed (0,42) confirmation pending on GPU."
+}

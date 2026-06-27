@@ -1,0 +1,21 @@
+{
+  "model": "codegen-350M-mono + LoRA(MBPP, naive format)",
+  "dataset": "humaneval",
+  "n": 5,
+  "temperature": 0.6,
+  "seed": 1234,
+  "num_problems": 164,
+  "pass@1": 0.1061,
+  "pass@5": 0.1829,
+  "baseline_pass@1": 0.111,
+  "baseline_pass@5": 0.177,
+  "failure_modes": {
+    "wrong_output": 598,
+    "compile_error": 14,
+    "runtime_error": 118,
+    "timeout": 2,
+    "oom": 1
+  },
+  "note": "FIRST attempt. MBPP formatted as docstring+test-asserts -> full def from scratch. FLAT vs baseline (pass@1 0.106). Diagnosed as
+train/eval format mismatch -> motivated the v2 HumanEval-shape reformat, which lifted to 0.121/0.207."
+}

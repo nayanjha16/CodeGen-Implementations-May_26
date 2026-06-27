@@ -30,7 +30,7 @@ CodeGen-Implementations-May_26/
 │   └── utils/               # Config, paths, logging, seeds
 ├── models/
 │   ├── base/                # Downloaded HuggingFace base models (cached once)
-│   └── checkpoints/         # LoRA adapter weights (one dir per task)
+│   └── checkpoints/         # LoRA adapter weights (one dir per run, then task)
 ├── data/
 │   ├── spider_gold_validation.jsonl   # Frozen 50-example eval set
 │   └── DATASETS.md
@@ -76,6 +76,7 @@ BERTSCORE_MODEL_NAME=distilbert-base-uncased
 
 # Optional: load a LoRA adapter at inference time
 # MODEL_ADAPTER=text2sql
+# MODEL_ADAPTER_RUN=v1
 
 # Local storage paths (defaults shown)
 MODELS_BASE_DIR=models/base
@@ -95,6 +96,7 @@ OLLAMA_TIMEOUT=120
 | `MODEL_NAME` | HuggingFace base model identifier (**required**) | — |
 | `BERTSCORE_MODEL_NAME` | BERTScore metric model (**required**) | — |
 | `MODEL_ADAPTER` | Task name whose LoRA adapter to load (`text2sql`, `sql2nosql`, `nosql2doc`) | — |
+| `MODEL_ADAPTER_RUN` | Checkpoint run folder under `models/checkpoints/` (e.g. `v1`) | — |
 | `MODELS_BASE_DIR` | Where base models are cached | `models/base` |
 | `MODELS_CHECKPOINTS_DIR` | Where LoRA adapters are stored | `models/checkpoints` |
 | `TEND_DATASET_ID` | Hugging Face TEND dataset id | `care2achieve/tend` |
@@ -129,16 +131,16 @@ python scripts/run_baseline_eval.py --max-samples 50
 python scripts/build_sft_dataset.py
 
 # 5. Train one task (smoke run)
-python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
+python scripts/train_lora.py --version v1 --task text2sql --max-samples 50 --epochs 1 --no-mlflow
 
 # 6. Full training (all three tasks)
-python scripts/train_all_lora.py --no-mlflow
+python scripts/train_all_lora.py --version v1 --no-mlflow
 
 # 7. Verify adapter artifacts
-python scripts/verify_lora_adapters.py
+python scripts/verify_lora_adapters.py --version v1
 
-# 8. Evaluate with LoRA adapter
-MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
+# 8. Evaluate with LoRA adapters (one adapter per task)
+python scripts/run_baseline_eval.py --adapter-run v1 --max-samples 50
 ```
 
 ---
@@ -200,7 +202,9 @@ Prints attention module suffixes and confirms trainable parameter count > 0. For
 
 ## Training (LoRA Fine-Tuning)
 
-LoRA fine-tuning trains **one adapter per task** on the causal LM base model (`MODEL_NAME`). Base weights stay frozen in `models/base/`; only adapter weights are saved under `models/checkpoints/<task>/`.
+LoRA fine-tuning trains **one adapter per task** on the causal LM base model (`MODEL_NAME`). Base weights stay frozen in `models/base/`; only adapter weights are saved under `models/checkpoints/<run>/<task>/`.
+
+Pass **`--version`** (alias `--name`) to name the checkpoint run folder (e.g. `v1`, `2506-full`). If omitted, the run folder defaults to today's date as `DDMM` (e.g. `2706` on 27 June).
 
 ### Supported tasks
 
@@ -230,24 +234,26 @@ Long prompts are truncated from the **start** (schema head dropped, question + t
 
 ```bash
 # Full training (default: 5 epochs, spider+bird train/eval)
-python scripts/train_lora.py --task text2sql
+python scripts/train_lora.py --version v1 --task text2sql
 
 # Smoke / debug run
-python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
+python scripts/train_lora.py --version v1 --task text2sql --max-samples 50 --epochs 1 --no-mlflow
 
 # Override device or output directory
-python scripts/train_lora.py --task sql2nosql --device mps --output-dir models/checkpoints/sql2nosql_v2
+python scripts/train_lora.py --version v1 --task sql2nosql --device mps
+python scripts/train_lora.py --task sql2nosql --output-dir models/checkpoints/v2/sql2nosql
 
 # Custom training data
-python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --eval-csv data/my_eval.jsonl
+python scripts/train_lora.py --version v1 --task nosql2doc --train-csv data/my_train.jsonl --eval-csv data/my_eval.jsonl
 ```
 
 | Flag | Default | Description |
 | ---- | ------- | ----------- |
 | `--task` | *(required)* | `text2sql`, `sql2nosql`, or `nosql2doc` |
+| `--version` / `--name` | `DDMM` | Checkpoint run folder under `models/checkpoints/` (e.g. `v1`) |
 | `--train-csv` | HF spider+bird train | Optional CSV/JSONL training rows |
 | `--eval-csv` | HF spider+bird test | Optional CSV/JSONL eval rows |
-| `--output-dir` | `models/checkpoints/<task>/` | Adapter output directory |
+| `--output-dir` | `models/checkpoints/<run>/<task>/` | Adapter output directory (overrides `--version`) |
 | `--max-samples` | all rows | Limit rows for smoke/debug |
 | `--epochs` | `5` (from config) | Override epoch count |
 | `--device` | `auto` | `auto`, `cuda`, `mps`, or `cpu` |
@@ -258,19 +264,26 @@ python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --
 
 ```bash
 # Train text2sql → sql2nosql → nosql2doc sequentially
-python scripts/train_all_lora.py
+python scripts/train_all_lora.py --version v1
 
 # Smoke run
-python scripts/train_all_lora.py --max-samples 50 --epochs 1 --no-mlflow
+python scripts/train_all_lora.py --version v1 --max-samples 50 --epochs 1 --no-mlflow
 
 # Run baseline eval first, then train
-python scripts/train_all_lora.py --run-baseline --baseline-max-samples 50
+python scripts/train_all_lora.py --version v1 --run-baseline --baseline-max-samples 50
 
 # Dry run (print planned tasks)
-python scripts/train_all_lora.py --dry-run
+python scripts/train_all_lora.py --version v1 --dry-run
 ```
 
-After all tasks complete, `train_all_lora.py` verifies adapter artifacts and writes a timestamped summary JSON to `models/checkpoints/training_summary_<timestamp>.json`.
+| Flag | Default | Description |
+| ---- | ------- | ----------- |
+| `--version` / `--name` | `DDMM` | Checkpoint run folder under `models/checkpoints/` (e.g. `v1`) |
+| `--tasks` | all three | Subset of tasks to train |
+| `--run-baseline` | off | Run baseline eval before training |
+| `--dry-run` | off | Print planned runs without training |
+
+After all tasks complete, `train_all_lora.py` verifies adapter artifacts and writes a timestamped summary JSON to `models/checkpoints/<run>/training_summary_<timestamp>.json`.
 
 ### Training hyperparameters (`configs/default.yaml`)
 
@@ -307,18 +320,23 @@ lora:
 Training uses TRL `SFTTrainer` with **completion-only loss** (prompt tokens masked). Each run writes:
 
 ```
-models/checkpoints/text2sql/
-├── adapter_config.json
-├── adapter_model.safetensors
-└── run_metadata.json          # train/eval loss, filter stats, token stats
+models/checkpoints/v1/
+├── text2sql/
+│   ├── adapter_config.json
+│   ├── adapter_model.safetensors
+│   └── run_metadata.json      # train/eval loss, filter stats, token stats
+├── sql2nosql/
+├── nosql2doc/
+├── train_all_lora.log
+└── training_summary_<timestamp>.json
 ```
 
 ### Verify trained adapters
 
 ```bash
-python scripts/verify_lora_adapters.py
-python scripts/verify_lora_adapters.py --task text2sql
-python scripts/verify_lora_adapters.py --no-require-metadata
+python scripts/verify_lora_adapters.py --version v1
+python scripts/verify_lora_adapters.py --version v1 --task text2sql
+python scripts/verify_lora_adapters.py --version v1 --no-require-metadata
 ```
 
 Checks for `adapter_config.json`, `adapter_model.safetensors`, and optionally `run_metadata.json`.
@@ -369,6 +387,7 @@ python scripts/run_baseline_eval.py --full-split --split test --tend-config spid
 | `--max-samples` | `50` | Number of examples |
 | `--mlflow` | off | Log metrics to MLflow |
 | `--output` | auto-generated | Run folder name under `results/` |
+| `--adapter-run` / `--version` / `--name` | none | LoRA checkpoint run (e.g. `v1`) |
 | `--no-judge` | off | Skip Ollama semantic judge |
 
 **Metrics computed:** Exact Match, Execution Accuracy, Syntax Validity, BLEU, ROUGE-L, BERTScore, CodeBLEU, Ollama judge correct rate.
@@ -383,17 +402,21 @@ results/<run_name>/
 └── documentation_details.csv
 ```
 
-#### Evaluate with a LoRA adapter
+#### Evaluate with LoRA adapters
 
-Set `MODEL_ADAPTER` in `.env` or inline:
+Use `--adapter-run` to load task-specific adapters from a checkpoint run:
 
 ```bash
-MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
-MODEL_ADAPTER=sql2nosql python scripts/run_baseline_eval.py --max-samples 50
-MODEL_ADAPTER=nosql2doc python scripts/run_baseline_eval.py --max-samples 50
+python scripts/run_baseline_eval.py --adapter-run v1 --max-samples 50
 ```
 
-The loader applies the adapter from `models/checkpoints/<task>/` on top of the base model in `models/base/`.
+Each task loads its own adapter from `models/checkpoints/v1/<task>/` on top of the base model in `models/base/`.
+
+For single-task loading via `.env`, set both `MODEL_ADAPTER` and `MODEL_ADAPTER_RUN`:
+
+```bash
+MODEL_ADAPTER=text2sql MODEL_ADAPTER_RUN=v1 python scripts/run_baseline_eval.py --max-samples 50
+```
 
 ### `run_all_baseline_eval.py` — Multi-model comparison
 
@@ -429,15 +452,18 @@ Checked before every load. Downloaded from HuggingFace only when missing. Config
 
 ```
 models/checkpoints/
-├── text2sql/
-│   ├── adapter_config.json
-│   ├── adapter_model.safetensors
-│   └── run_metadata.json
-├── sql2nosql/
-└── nosql2doc/
+└── v1/                          # --version v1 (or DDMM if omitted)
+    ├── text2sql/
+    │   ├── adapter_config.json
+    │   ├── adapter_model.safetensors
+    │   └── run_metadata.json
+    ├── sql2nosql/
+    ├── nosql2doc/
+    ├── train_all_lora.log
+    └── training_summary_<timestamp>.json
 ```
 
-Set `MODEL_ADAPTER=text2sql` in `.env` to load an adapter at inference time.
+Set `MODEL_ADAPTER=text2sql` and `MODEL_ADAPTER_RUN=v1` in `.env` to load a single adapter at inference time, or pass `--adapter-run v1` to `run_baseline_eval.py` for all three tasks.
 
 ### TEND dataset (Hugging Face)
 
@@ -560,7 +586,7 @@ Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All 
 | Model re-downloads every run | Check `models/base/<slug>/.downloaded` exists; ensure write permissions |
 | Out of memory on GPU/MPS | Reduce `--max-samples`, set `--device cpu`, or lower `per_device_train_batch_size` in config |
 | Zero trainable LoRA params | Run `inspect_lora_modules.py`; fix `lora.target_modules` in config |
-| Adapter not found | Ensure `models/checkpoints/<task>/adapter_config.json` exists; set `MODEL_ADAPTER=<task>` |
+| Adapter not found | Ensure `models/checkpoints/<run>/<task>/adapter_config.json` exists; use `--adapter-run <run>` or set `MODEL_ADAPTER=<task>` and `MODEL_ADAPTER_RUN=<run>` |
 | Ollama judge fails | Start Ollama locally or pass `--no-judge` to skip semantic scoring |
 | Token length warnings during training | Update to latest code; prompts are truncated to 2048 before SFT tokenization |
 | Training very slow on Mac | Expected on MPS/CPU; use smoke runs (`--max-samples 50 --epochs 1`) to validate first |

@@ -4,6 +4,10 @@ Baseline model evaluation.
 Uses the frozen Spider gold validation set (data/spider_gold_validation.jsonl)
 for all baseline runs.
 
+Evaluates three independent tasks on gold dataset rows:
+  text2sql (question + schema), sql2nosql (gold sql), nosql2doc (gold nosql_query).
+Each task uses its own adapter when --adapter-run is set; outputs are not chained.
+
 Computes: Exact Match, Execution Accuracy, Syntax Validity,
           BLEU, ROUGE-L, BERTScore, CodeBLEU
           Ollama judge semantic correctness (qwen3:4b by default)

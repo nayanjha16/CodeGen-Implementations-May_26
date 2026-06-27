@@ -40,7 +40,7 @@ def load_task_model(
 
 
 class BenchmarkRunner:
-    """Run comprehensive benchmarks on text-to-SQL datasets."""
+    """Run independent benchmarks for text2sql, sql2nosql, and nosql2doc on gold rows."""
 
     def __init__(
         self,
@@ -76,10 +76,7 @@ class BenchmarkRunner:
             sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
             self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
         else:
-            self.nosql_generator = NoSQLGenerator(
-                model=self.sql_generator.model,
-                config=self.config,
-            )
+            self.nosql_generator = NoSQLGenerator(config=self.config)
 
         if doc_generator is not None:
             self.doc_generator = doc_generator
@@ -90,10 +87,7 @@ class BenchmarkRunner:
                 config=self.config,
             )
         else:
-            self.doc_generator = DocumentationGenerator(
-                model=self.sql_generator.model,
-                config=self.config,
-            )
+            self.doc_generator = DocumentationGenerator(config=self.config)
         self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
         self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
@@ -123,10 +117,9 @@ class BenchmarkRunner:
 
     def evaluate_sql2nosql(
         self,
-        gen_results: list[dict[str, Any]],
         samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Generate predicted MongoDB from reference SQL; derive reference MongoDB from the same SQL."""
+        """Generate MongoDB from gold SQL in each sample (independent of text2sql output)."""
         from src.text2sql.sql_validator import SQLValidator
 
         sql_validator = SQLValidator()
@@ -137,16 +130,13 @@ class BenchmarkRunner:
         nosql_results: list[dict[str, Any]] = []
 
         nosql_samples = []
-        for result, example in zip(gen_results, samples):
-            schema = result.get("schema", example.get("schema", ""))
-            ref_sql = result.get("ground_truth", example.get("sql", ""))
+        for example in samples:
+            ref_sql = example.get("sql", "")
             nosql_samples.append(
                 {
-                    "question": result.get("question", example.get("question", "")),
-                    "schema": schema,
-                    "nosql_schema": result.get(
-                        "nosql_schema", example.get("nosql_schema", "")
-                    ),
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "nosql_schema": example.get("nosql_schema", ""),
                     "sql": ref_sql,
                     "ground_truth_sql": ref_sql,
                 }
@@ -154,11 +144,8 @@ class BenchmarkRunner:
 
         nosql_gen_results = self.nosql_generator.generate_batch(nosql_samples)
 
-        for result, example, nosql_gen in zip(gen_results, samples, nosql_gen_results):
-            pred_sql = result.get("sql", "")
-            ref_sql = result.get("ground_truth", example.get("sql", ""))
-
-            pred_sql_valid = self._is_valid_select_sql(pred_sql, sql_validator)
+        for example, nosql_gen in zip(samples, nosql_gen_results):
+            ref_sql = example.get("sql", "")
             ref_sql_valid = self._is_valid_select_sql(ref_sql, sql_validator)
 
             pred_mongo = nosql_gen.get("mongodb_query", "")
@@ -208,10 +195,10 @@ class BenchmarkRunner:
 
             nosql_results.append(
                 {
-                    **result,
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "db_id": example.get("db_id", ""),
                     "reference_sql": ref_sql,
-                    "predicted_sql": pred_sql,
-                    "predicted_sql_valid": pred_sql_valid,
                     "reference_sql_valid": ref_sql_valid,
                     "nosql_schema": nosql_gen.get("nosql_schema", ""),
                     "nosql_prompt": nosql_gen.get("prompt", ""),
@@ -248,9 +235,9 @@ class BenchmarkRunner:
 
     def evaluate_documentation(
         self,
-        nosql_results: list[dict[str, Any]],
+        samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Generate documentation for MongoDB queries produced during sql2nosql."""
+        """Generate documentation from gold MongoDB queries (independent of sql2nosql output)."""
         pred_docs: list[str] = []
         ref_docs: list[str] = []
         mongodb_queries: list[str] = []
@@ -259,28 +246,29 @@ class BenchmarkRunner:
         doc_results: list[dict[str, Any]] = []
 
         doc_samples = []
-        for result in nosql_results:
+        for example in samples:
+            gold_nosql = example.get("nosql_query", "").strip()
             doc_samples.append(
                 {
-                    "question": result.get("question", ""),
-                    "schema": result.get("schema", ""),
-                    "nosql_schema": result.get("nosql_schema", ""),
-                    "mongodb_query": result.get("predicted_mongodb_query", ""),
-                    "predicted_mongodb_query": result.get("predicted_mongodb_query", ""),
-                    "reference_mongodb_query": result.get("reference_mongodb_query", ""),
-                    "reference_sql": result.get("reference_sql", result.get("ground_truth", "")),
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "nosql_schema": example.get("nosql_schema", ""),
+                    "mongodb_query": gold_nosql,
+                    "nosql_query": gold_nosql,
+                    "reference_mongodb_query": gold_nosql,
+                    "reference_sql": example.get("sql", ""),
                 }
             )
 
         doc_gen_results = self.doc_generator.generate_batch(doc_samples)
 
-        for result, doc_gen in zip(nosql_results, doc_gen_results):
+        for example, doc_gen in zip(samples, doc_gen_results):
             mongodb_query = doc_gen.get("mongodb_query", "")
             predicted_doc = doc_gen.get("documentation", "")
-            reference_doc = result.get("reference_documentation", "").strip()
+            reference_doc = example.get("documentation", "").strip()
             if not reference_doc:
                 reference_doc = doc_gen.get("reference_documentation", "")
-            reference_mongodb = result.get("reference_mongodb_query", "")
+            reference_mongodb = example.get("nosql_query", "").strip()
 
             pred_warnings: list[str] = []
             if not mongodb_query.strip():
@@ -309,7 +297,11 @@ class BenchmarkRunner:
 
             doc_results.append(
                 {
-                    **result,
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "reference_sql": example.get("sql", ""),
+                    "reference_mongodb_query": reference_mongodb,
+                    "input_mongodb_query": mongodb_query,
                     "doc_prompt": doc_gen.get("prompt", ""),
                     "doc_raw_output": doc_gen.get("raw_output", ""),
                     "predicted_documentation": predicted_doc,
@@ -368,8 +360,8 @@ class BenchmarkRunner:
             db_paths = [None] * len(samples)
 
         eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
-        nosql_metrics, nosql_results = self.evaluate_sql2nosql(gen_results, samples)
-        doc_metrics, doc_results = self.evaluate_documentation(nosql_results)
+        nosql_metrics, nosql_results = self.evaluate_sql2nosql(samples)
+        doc_metrics, doc_results = self.evaluate_documentation(samples)
 
         run_id = None
         if self.tracker:

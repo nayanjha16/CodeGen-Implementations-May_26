@@ -321,8 +321,11 @@ def save_documentation_details_csv(
 
         for pred in predictions:
             mongodb_query = pred.get(
-                "predicted_mongodb_query",
-                pred.get("mongodb_query", ""),
+                "input_mongodb_query",
+                pred.get(
+                    "reference_mongodb_query",
+                    pred.get("mongodb_query", pred.get("predicted_mongodb_query", "")),
+                ),
             )
             prompt = pred.get("doc_prompt", pred.get("prompt", ""))
             input_token_count = pred.get("input_token_count")

@@ -334,7 +334,7 @@ class DocumentationGenerator:
             schema = example.get("schema", "")
             mongodb_query = example.get(
                 "mongodb_query",
-                example.get("predicted_mongodb_query", ""),
+                example.get("nosql_query", example.get("predicted_mongodb_query", "")),
             )
             nosql_schema = example.get("nosql_schema") or (
                 derive_mongo_schema_json(schema) if schema.strip() else ""

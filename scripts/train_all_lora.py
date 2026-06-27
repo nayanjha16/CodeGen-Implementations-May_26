@@ -19,6 +19,7 @@ from src.training.adapter_verify import verify_all_adapters
 from src.training.lora_trainer import train_lora
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_model_name, load_config
+from src.utils.device import resolve_device
 from src.utils.paths import build_results_run_name, get_models_checkpoints_dir, resolve_adapter_run_name
 
 DEFAULT_TASK_ORDER = ("text2sql", "sql2nosql", "nosql2doc")
@@ -124,9 +125,12 @@ def main() -> int:
     run_name = resolve_adapter_run_name(args.run)
     run_dir = get_models_checkpoints_dir() / run_name
     started_at = datetime.now(timezone.utc).isoformat()
+    device_request = args.device or config.get("model", {}).get("device", "auto")
+    resolved_device = resolve_device(device_request)
 
     if args.dry_run:
         print(f"Model: {model_name}")
+        print(f"Device: {resolved_device} (requested: {device_request})")
         print(f"Checkpoint run: {run_name}")
         for task in args.tasks:
             print(f"  would train: {task} -> models/checkpoints/{run_name}/{task}/")
@@ -165,6 +169,7 @@ def main() -> int:
     try:
         print(f"\n=== LoRA training batch ===")
         print(f"Model: {model_name}")
+        print(f"Device: {resolved_device} (requested: {device_request})")
         print(f"Checkpoint run: {run_name}")
         print(f"Started: {started_at}")
 

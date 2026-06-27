@@ -151,6 +151,7 @@ def _write_run_metadata(
     *,
     task: str,
     model_name: str,
+    device: str,
     checkpoint_run: str,
     output_dir: Path,
     train_rows: int,
@@ -167,6 +168,7 @@ def _write_run_metadata(
     metadata = {
         "task": task,
         "model_name": model_name,
+        "device": device,
         "checkpoint_run": checkpoint_run,
         "adapter_path": str(output_dir),
         "train_rows": train_rows,
@@ -346,6 +348,7 @@ def train_lora(
         resolved_output / "run_metadata.json",
         task=task,
         model_name=model_name,
+        device=resolved_device,
         checkpoint_run=checkpoint_run,
         output_dir=resolved_output,
         train_rows=train_result.row_count,

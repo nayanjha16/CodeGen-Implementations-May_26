@@ -32,7 +32,6 @@ if TYPE_CHECKING:
 # Call Expression
 # ------------------------------------------------------------
 
-@dataclass
 class Call(Expression):
     """
     Function or method invocation.

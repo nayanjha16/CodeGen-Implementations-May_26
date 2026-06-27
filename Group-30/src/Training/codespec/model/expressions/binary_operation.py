@@ -10,40 +10,27 @@ Examples:
 - comparison: >, <, ==
 - logical: AND, OR
 """
-
 from __future__ import annotations
-
-from dataclasses import dataclass
 
 from codespec.model.expressions.base import Expression
 from codespec.core.enums import ExpressionKind
 
 
-# ------------------------------------------------------------
-# Binary Operation Expression
-# ------------------------------------------------------------
-
-@dataclass
 class BinaryOperation(Expression):
     """
-    Represents a binary operation between two expressions.
+    Represents a binary operation like a + b.
     """
 
-    left: Expression
-    right: Expression
-    operator: str  # normalized operator (ADD, SUB, GT, AND, etc.)
+    def __init__(self, left, right, operator: str):
+        super().__init__()
 
-    # --------------------------------------------------------
+        self.left = left
+        self.right = right
+        self.operator = operator
 
-    def __post_init__(self):
         self.kind = ExpressionKind.BINARY_OPERATION.name
-        self.pure = True  # assumed pure unless later analysis says otherwise
+        self.pure = True
 
-        # Attach children in ownership tree
-        self.add_child(self.left)
-        self.add_child(self.right)
-
-    # --------------------------------------------------------
-
-    def get_operator(self) -> str:
-        return self.operator
+        # attach children for CSR graph traversal
+        self.add_child(left)
+        self.add_child(right)

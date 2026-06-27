@@ -1,49 +1,24 @@
 """
-codespec.model.expressions.base
+codespec.model.expressions.variable_reference
 
-CSR v1.0 Expression Base Class
-
-Expressions represent value-producing semantic constructs.
-They are the computation layer of CSR.
+Safe CSR VariableReference (no circular imports)
 """
-
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional, Any
-
-from codespec.core.node import CSRObject
+from codespec.model.expressions.base import Expression
 from codespec.core.enums import ExpressionKind
-from codespec.core.ids import CSRIdentifier
 
 
-# ------------------------------------------------------------
-# Expression Base Class
-# ------------------------------------------------------------
-
-@dataclass
-class Expression(CSRObject):
+class VariableReference(Expression):
     """
-    Base class for all CSR expressions.
+    Read access to a variable.
     """
 
-    # Optional inferred/static type (resolved later in pipeline)
-    inferred_type: Optional[str] = None
+    def __init__(self, variable):
+        super().__init__()
+        self.variable = variable
+        self.kind = ExpressionKind.VARIABLE_REFERENCE.name
+        self.pure = True
 
-    # Indicates if expression is pure (no side effects)
-    pure: bool = True
-
-    # --------------------------------------------------------
-
-    def __post_init__(self):
-        self.kind = ExpressionKind.LITERAL.name
-
-    # --------------------------------------------------------
-    # Semantic helpers
-    # --------------------------------------------------------
-
-    def has_side_effects(self) -> bool:
-        """
-        Returns True if expression modifies state.
-        """
-        return not self.pure
+    def get_name(self):
+        return getattr(self.variable, "name", "unknown")

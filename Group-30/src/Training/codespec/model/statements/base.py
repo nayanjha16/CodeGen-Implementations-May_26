@@ -19,8 +19,7 @@ Blocks define:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
-
+from typing import List, Optional, Any
 from codespec.core.node import CSRObject
 from codespec.core.enums import StatementKind
 from codespec.core.ids import CSRIdentifier
@@ -30,6 +29,47 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from codespec.model.statements.base import Statement
 
+"""
+codespec.model.statements.base
+
+Safe CSR Statement Base Class
+(no circular dependencies)
+"""
+
+
+# ------------------------------------------------------------
+# Statement Base Class
+# ------------------------------------------------------------
+
+@dataclass
+class Statement(CSRObject):
+    """
+    Base class for all CSR statements.
+    """
+
+    source_hint: Optional[str] = None
+    order_index: Optional[int] = None
+
+    def __post_init__(self):
+        # SAFE default only
+        self.kind = "STATEMENT"
+
+    # --------------------------------------------------------
+
+    def is_control_flow(self) -> bool:
+        return self.kind in {
+            StatementKind.LOOP.name,
+            StatementKind.DECISION.name,
+            StatementKind.RETURN.name,
+        }
+
+    def is_terminal(self) -> bool:
+        return self.kind in {
+            StatementKind.RETURN.name,
+            StatementKind.BREAK.name,
+            StatementKind.CONTINUE.name,
+        }
+        
 
 # ------------------------------------------------------------
 # Block Statement

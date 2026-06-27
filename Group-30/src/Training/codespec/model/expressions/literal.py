@@ -25,7 +25,6 @@ from codespec.core.enums import ExpressionKind
 # Literal Expression
 # ------------------------------------------------------------
 
-@dataclass
 class Literal(Expression):
     """
     Immutable constant value.

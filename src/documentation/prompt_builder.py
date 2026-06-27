@@ -36,7 +36,7 @@ Output Requirements:
 * Maximum 300 characters preferred.
 * Documentation text only.
 
-{question_section}MongoDB Schema:
+MongoDB Schema:
 {mongodb_schema}
 
 MongoDB Query:
@@ -62,7 +62,7 @@ Documentation:
         nosql_schema: str | None = None,
         question: str = "",
     ) -> str:
-        """Build a documentation prompt from a MongoDB query, schema, and question."""
+        """Build a documentation prompt from a MongoDB query and schema."""
         from src.utils.schema_conversion import derive_mongo_schema_json
 
         if nosql_schema is None:
@@ -70,16 +70,7 @@ Documentation:
         else:
             mongo_schema = nosql_schema.strip() or "{}"
 
-        question_text = question.strip()
-        question_section = ""
-        if question_text:
-            question_section = (
-                "Natural language question:\n"
-                f"{question_text}\n\n"
-            )
-
         prompt = self.template.format(
-            question_section=question_section,
             mongodb_schema=mongo_schema,
             mongodb_query=mongodb_query.strip(),
         ).strip()

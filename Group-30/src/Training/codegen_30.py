@@ -1008,62 +1008,6 @@ def materialize_and_enrich_dataset(
 
     return materialized_dataset
 
-if False:
-  # Example usage:
-  # Ensure FilteredDataset is initialized
-  filtered_dataset = FilteredDataset()
-
-  # --- Demonstrate local documentation update before full materialization ---
-  print("\n--- Demonstrating local documentation update ---")
-  # Fetch a sample record to get its hexsha
-  sample_record = None
-  filtered_dataset.reset_iterator()
-  for i, record in enumerate(filtered_dataset):
-      if record['is_processable_code'] and record.get('hexsha'):
-          sample_record = record
-          break
-
-  if sample_record:
-      original_hexsha = sample_record['hexsha']
-      print(f"Original documentation for record {original_hexsha[:10]}...: {sample_record['documentation']}")
-      new_doc = "This is a manually updated documentation for a test record to check local cache handling."
-      filtered_dataset.update_documentation(original_hexsha, new_doc)
-      print(f"Updated documentation locally for record {original_hexsha[:10]}...")
-
-      # Iterate again to confirm the local update is visible
-      print("Confirming local update in next iteration:")
-      filtered_dataset.reset_iterator()
-      for i, record in enumerate(filtered_dataset):
-          if record.get('hexsha') == original_hexsha:
-              print(f"Fetched record {original_hexsha[:10]}... has documentation: {record['documentation']}")
-              break
-
-  # --- Now, materialize and enrich the dataset ---
-  # For demonstration, let's process a small number of samples
-  # For the full dataset, remove num_samples_to_process=100
-  num_samples_to_process_full = 100
-  full_enriched_dataset = materialize_and_enrich_dataset(
-      filtered_dataset,
-      num_samples_to_process=num_samples_to_process_full,
-      force_reprocess=True # Set to False if you want to load existing cache
-  )
-
-  print(f"\nSuccessfully created/loaded a fully enriched dataset with {len(full_enriched_dataset)} samples.")
-  print("First sample from fully enriched dataset (should contain documentation and AST string):")
-  print(full_enriched_dataset[0])
-
-  # If the sample_record's hexsha was processed, its documentation should reflect the update
-  if sample_record:
-      print(f"\nChecking if locally updated doc for {original_hexsha[:10]}... is in the materialized dataset:")
-      found_in_materialized = False
-      for record in full_enriched_dataset:
-          if record.get('hexsha') == original_hexsha:
-              print(f"Materialized record {original_hexsha[:10]}... has documentation: {record['documentation']}")
-              found_in_materialized = True
-              break
-      if not found_in_materialized:
-          print(f"Record {original_hexsha[:10]}... was not found in the {num_samples_to_process_full} samples processed.")
-
 import os
 from datasets import Dataset
 
@@ -1252,7 +1196,7 @@ class BaselineData(metaclass=SingletonMeta):
         self._model_codegen.config.pad_token_id = self._model_codegen.config.eos_token_id
         print("Code generation model loaded.")
 
-    def _generate_code_from_model(self, input_text: str, target_lang: str, is_cpp_to_py: bool = False) -> str:
+    def _generate_code_from_model(self, input_text: str, target_lang: str, is_py_to_cpp: bool = False) -> str:
         """
         Generates code using the base codegen model from a given input text (documentation or code).
 
@@ -1264,8 +1208,8 @@ class BaselineData(metaclass=SingletonMeta):
         Returns:
             str: The generated code.
         """
-        if is_cpp_to_py:
-            prompt = f"Convert the following C++ code to Python:\n{input_text}\nPython code:\n"
+        if is_py_to_cpp:
+            prompt = f"Convert the following Python code to C++:\n{input_text}\nC++ code:\n"
         else:
             prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
 
@@ -1549,11 +1493,11 @@ class BaselineData(metaclass=SingletonMeta):
                 AST similarity and the GraphCodeBERTScore (both averaged). The documentation that generates the highest
                 score is saved.
        Phase 2 (PL1 -> PL2) : The second phase threre are three steps.
-            Step 1 For the python code the saved best documentation from phase 1 is taken and given to the model
-                   to generate C++ Code.
-            Step 2 is where the genereated C++ code is given to the model to generate python code.
+            Step 1 For the C++ code the saved best documentation from phase 1 is taken and given to the model
+                   to generate Python Code.
+            Step 2 is where the genereated Python code is given to the model to generate C++ code.
             Step 3 is where the generated python code is AST and GraphBertScore compared (both values averaged)
-                   with the ground truth python code.
+                   with the ground truth C++ code.
 
             For each record, the phase 2 is done three times, and for each record the best score is saved.
 
@@ -1651,8 +1595,8 @@ class BaselineData(metaclass=SingletonMeta):
             best_gcb_score_nl_pl1_pl2 = None
             best_avg_score_nl_pl1_pl2 = None
 
-            # --- Phase 2: NL -> PL1 -> PL2 (Documentation -> C++ -> Python) for Python records ---
-            if language.lower() == 'python':
+            # --- Phase 2: NL -> PL1 -> PL2 (Documentation -> Python -> C++) for C++ records ---
+            if language.lower() == 'cpp':
                 current_best_avg_phase2 = -1.0
                 temp_best_ast_phase2 = 0.0
                 temp_best_gcb_phase2 = 0.0
@@ -1661,42 +1605,44 @@ class BaselineData(metaclass=SingletonMeta):
                     # print(f"Skipping Phase 2 for {original_hexsha} due to no valid documentation from Phase 1.")
                     pass
                 else:
-                    best_llm_judge_score_for_intermediate_cpp = -1.0
-                    best_generated_cpp_code_for_phase2 = ""
+                    best_llm_judge_score_for_intermediate_python = -1.0
+                    best_generated_python_code_for_phase2 = ""
 
                     # Step 1: Generate C++ code from best_documentation (from Phase 1) and use LLM Judge to pick the best
                     for _ in range(num_tries):
-                        generated_cpp_candidate = self._generate_code_from_model(best_documentation.replace("Python", 'cpp').replace('python','cpp'), 'cpp', is_cpp_to_py=False)
-                        if generated_cpp_candidate.strip():
-                            llm_judge_current_score = self._llm_judge.qwen_code_judge(best_documentation.replace("Python","C++").replace("python","C++"), generated_cpp_candidate)
-                            if llm_judge_current_score > best_llm_judge_score_for_intermediate_cpp:
-                                best_llm_judge_score_for_intermediate_cpp = llm_judge_current_score
-                                best_generated_cpp_code_for_phase2 = generated_cpp_candidate
+                        import re
+                        documentation_for_pl2 = re.sub(r'cpp|c\+\+', 'Python', best_documentation, flags=re.IGNORECASE)
+                        generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
+                        if generated_python_candidate.strip():
+                            llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
+                            if llm_judge_current_score > best_llm_judge_score_for_intermediate_python:
+                                best_llm_judge_score_for_intermediate_python = llm_judge_current_score
+                                best_generated_python_code_for_phase2 = generated_python_candidate
 
-                    generated_cpp_code_from_doc = best_generated_cpp_code_for_phase2
+                    generated_python_code_from_doc = best_generated_python_code_for_phase2
 
-                    if not generated_cpp_code_from_doc.strip():
+                    if not generated_python_code_from_doc.strip():
                         continue # Skip if no good C++ code was generated even after tries
 
                     #for _ in range(num_tries): This we do not have to do thrice
                     if True:
-                        # Step 2: Generate Python code from the best generated C++ code
-                        final_generated_python_code = self._generate_code_from_model(generated_cpp_code_from_doc, 'python', is_cpp_to_py=True)
+                        # Step 2: Generate C++ code from the best generated Python code
+                        final_generated_cpp_code = self._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
 
-                        if not final_generated_python_code.strip():
+                        if not final_generated_cpp_code.strip():
                             continue
 
                         # Step 3: Compare final generated Python code with original Python code
                         try:
                             original_ast = self._ast_processor.generate_ast(original_code, language)
-                            generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_python_code, language)
+                            generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_cpp_code, language)
                             ast_similarity_phase2 = self._ast_processor.compare_ast(original_ast, generated_ast_phase2)
                         except Exception as e:
                             print(f"Forcing AST Similarity to : AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
                             ast_similarity_phase2 = 0.0
 
                         try:
-                            semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_python_code)
+                            semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_cpp_code)
                         except RuntimeError as e:
                             print(f"Forcing  GCB comparison for {original_hexsha} (Phase 2) to 0 due to CUDA error: {e}")
                             semantic_similarity_phase2 = 0.0
@@ -1748,7 +1694,7 @@ class BaselineData(metaclass=SingletonMeta):
                     'nl_pl_best_average_score': best_average_score_nl_pl
                 }
 
-                if language.lower() == 'python':
+                if language.lower() == 'cpp':
                     record_result.update({
                         'nl_pl1_pl2_best_ast_score': best_ast_score_nl_pl1_pl2,
                         'nl_pl1_pl2_best_graphcodebert_score': best_gcb_score_nl_pl1_pl2,
@@ -1853,14 +1799,14 @@ for record in filtered_dataset_instance_for_metrics:
       overall_scores_nl_pl.append(avg_score_nl_pl)
 
       language = record.get('language')
-      if language.lower() == 'python':
+      if language.lower() == 'cpp':
         python_scores_nl_pl.append(avg_score_nl_pl)
-        # Collect scores for Phase 2 (NL->PL1->PL2) for Python records
+        # Collect scores for Phase 2 (NL->PL1->PL2) for C++ records
         if score_data['nl_pl1_pl2_best_average_score'] is not None:
           avg_score_nl_pl1_pl2 = score_data['nl_pl1_pl2_best_average_score']
           overall_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
           python_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
-      elif language.lower() == 'cpp':
+      elif language.lower() == 'python':
         cpp_scores_nl_pl.append(avg_score_nl_pl)
 
       processed_for_metrics_count += 1
@@ -1883,9 +1829,9 @@ print(f"Overall Average Code Generation Accuracy (NL->PL): {overall_average_accu
 print(f"Python Average Code Generation Accuracy (NL->PL):    {python_average_accuracy_nl_pl:.4f} (based on {len(python_scores_nl_pl)} records)")
 print(f"C++ Average Code Generation Accuracy (NL->PL):       {cpp_average_accuracy_nl_pl:.4f} (based on {len(cpp_scores_nl_pl)} records)")
 
-print(f"\nPhase 2 (NL->C++->Python) Evaluation for Python:")
-print(f"Redundant: Overall Average Code Generation Accuracy (NL->C++->Python): {overall_average_accuracy_nl_pl1_pl2:.4f} (based on {len(overall_scores_nl_pl1_pl2)} records)")
-print(f"Python Average Code Generation Accuracy (NL->C++->Python):    {python_average_accuracy_nl_pl1_pl2:.4f} (based on {len(python_scores_nl_pl1_pl2)} records)")
+print(f"\nPhase 2 (NL->Python->C++) Evaluation for Python:")
+print(f"Redundant: Overall Average Code Generation Accuracy (NL->Python->C++): {overall_average_accuracy_nl_pl1_pl2:.4f} (based on {len(overall_scores_nl_pl1_pl2)} records)")
+print(f"Python Average Code Generation Accuracy (NL->Python->C++):    {python_average_accuracy_nl_pl1_pl2:.4f} (based on {len(python_scores_nl_pl1_pl2)} records)")
 
 """# Create LORA of codegen-multi-350B for code generation where the input is code documentation and output is the code.
 
@@ -1895,11 +1841,11 @@ print(f"Python Average Code Generation Accuracy (NL->C++->Python):    {python_av
 #### The generated code must be same as the code for which the documetation was generated.
 
 #### The second set of train is where we give documentation of a python code and have the model generate C++ Code:
- 1. Take Python code.
+ 1. Take C++ code.
  2. generate documentation,
- 3. Generated documentation input to model to genreate C++ Code
- 4. C++ Code as input to model to generate Python Code
- 5. Python code comparison gives the loss.
+ 3. Generated documentation input to model to genreate Python Code
+ 4. Python Code as input to model to generate C++ Code
+ 5. C++ code comparison gives the loss.
 """
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -2100,16 +2046,16 @@ print("LORA training complete.")
 model_codegen_lora.save_pretrained("codegen_lora_adapter")
 print("LORA adapter model saved to 'codegen_lora_adapter'.")
 
-"""### LORA Training Phase 2 (PL1->PL2): C++ to Python Code Generation
+"""### LORA Training Phase 2 (PL1->PL2): Python to C++ Code Generation
 
 This phase aims to train the LORA-adapted model to translate C++ code back into Python. The process involves:
 
-1.  **Extract Python Data**: Obtain records from the Python stream of the `FilteredDataset`.
-2.  **Generate Python Documentation**: For each original Python code snippet, generate its documentation using `CodeDocumentationGenerator`.
-3.  **Generate Intermediate C++ Code**: Using the *base* `codegen-350M-multi` model (not the LORA-adapted one), generate C++ code based on the Python documentation. This generated C++ code will serve as the *input prompt* for the LORA training.
-4.  **LORA Training Pair**: The LORA model will be trained on pairs of (`generated_cpp_code`, `original_python_code`), effectively learning to translate from C++ back to Python. The goal is for the LORA model to output Python code that has high similarity (AST and GraphCodeBERT) to the original Python code.
+1.  **Extract C++ Data**: Obtain records from the C++ stream of the `FilteredDataset`.
+2.  **Generate  Documentation**: For each original C++ code snippet, generate its documentation using `CodeDocumentationGenerator`.
+3.  **Generate Intermediate Python Code**: Using the *base* `codegen-350M-multi` model (not the LORA-adapted one), generate Python code based on the C++ documentation. This generated Python code will serve as the *input prompt* for the LORA training.
+4.  **LORA Training Pair**: The LORA model will be trained on pairs of (`generated_python_code`, `original_cpp_code`), effectively learning to translate from Python back to C++. The goal is for the LORA model to output C++ code that has high similarity (AST and GraphCodeBERT) to the original C++ code.
 
-This is a specific form of code-to-code translation where the C++ code serves as the source and Python code as the target.
+This is a specific form of code-to-code translation where the Python code serves as the source and C++  code as the target.
 
 #### NL -> PL1 from fine tuned cogden model
 """
@@ -2119,7 +2065,7 @@ from datasets import Dataset
 from tqdm import tqdm
 import os
 
-print("Generating LORA training dataset for C++ to Python translation...")
+print("Generating LORA training dataset for Python to C++ translation...")
 
 # --- Reload models if not accessible (User Requirement 3) ---
 # Ensure tokenizer_codegen and model_codegen are loaded
@@ -2202,7 +2148,7 @@ def generate_code_from_lora_model(model, tokenizer, documentation: str, target_l
         generated_code = generated_code.replace(documentation, "").strip()
     return generated_code
 
-cpp_to_python_training_examples = []
+pl1_to_pl2_training_examples = []
 processed_python_records = 0
 MAX_RECORDS_FOR_LORA_CPP_TO_PY = 500 # Limit for demonstration, adjust as needed
 
@@ -2210,61 +2156,61 @@ MAX_RECORDS_FOR_LORA_CPP_TO_PY = 500 # Limit for demonstration, adjust as needed
 # If it hasn't been run yet, this will initialize it.
 baseline_evaluator = BaselineData()
 
-# Get a fresh iterator for the Python stream only
-python_stream_iterator = baseline_evaluator._filtered_dataset.get_python_stream_iterator()
+# Get a fresh iterator for the C++ stream only
+pl2_stream_iterator = baseline_evaluator._filtered_dataset.get_cpp_stream_iterator()
 
-for record in tqdm(python_stream_iterator, desc="Processing Python records for C++ to Python data"):
+for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for Python to C++ data"):
     if processed_python_records >= MAX_RECORDS_FOR_LORA_CPP_TO_PY:
-        print(f"Reached max records for C++ to Python LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
+        print(f"Reached max records for Python to C++ LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
         break
 
     if not record['is_processable_code'] or record['language'].lower() != 'python':
         continue
 
-    original_python_code = record['content']
+    original_pl2_code = record['content']
 
     # Step 1: Use the python documentation from the dataset itself (User Requirement 1)
-    python_documentation = record.get('documentation', '')
-    if not python_documentation.strip():
-        print(f"Warning: Python documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
+    pl2_documentation = record.get('documentation', '')
+    if not pl2_documentation.strip():
+        print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
         # Fallback: Generate documentation if not present in the record (against 'not recreate' instruction, but necessary if empty)
-        python_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_python_code, max_length=256)
-        if not python_documentation.strip(): # If still no documentation, skip
+        pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+        if not pl2_documentation.strip(): # If still no documentation, skip
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")
             continue
 
-    best_llm_judge_score_for_intermediate_cpp = -1.0
-    best_generated_cpp_code_for_phase2 = ""
-    num_tries_llm_judge = 3 # Generate C++ code three times as requested
+    best_llm_judge_score_for_intermediate_pl1 = -1.0
+    best_generated_pl1_code_for_phase2 = ""
+    num_tries_llm_judge = 3 # Generate PL2 code three times as requested
 
     # Step 2: Use the fine-tuned LORA model to generate C++ code and use LLM Judge to pick the best
     for _ in range(num_tries_llm_judge):
-        generated_cpp_candidate = generate_code_from_lora_model(model_codegen_lora, tokenizer_codegen, python_documentation, target_lang='cpp', device=baseline_evaluator.device)
-        if generated_cpp_candidate.strip():
+        generated_pl1_candidate = generate_code_from_lora_model(model_codegen_lora, tokenizer_codegen, pl2_documentation, target_lang='python', device=baseline_evaluator.device)
+        if generated_pl1_candidate.strip():
             # Call the LLM Judge
-            llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(python_documentation, generated_cpp_candidate)
-            if llm_judge_current_score > best_llm_judge_score_for_intermediate_cpp:
-                best_llm_judge_score_for_intermediate_cpp = llm_judge_current_score
-                best_generated_cpp_code_for_phase2 = generated_cpp_candidate
+            llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(pl2_documentation, generated_pl1_candidate)
+            if llm_judge_current_score > best_llm_judge_score_for_intermediate_pl1:
+                best_llm_judge_score_for_intermediate_pl1 = llm_judge_current_score
+                best_generated_pl1_code_for_phase2 = generated_pl1_candidate
 
-    generated_cpp_code = best_generated_cpp_code_for_phase2
+    generated_pl1_code = best_generated_pl1_code_for_phase2
 
-    if generated_cpp_code.strip(): # Only add if C++ code was successfully generated and deemed best
+    if generated_pl1_code.strip(): # Only add if C++ code was successfully generated and deemed best
         # The training pair will be (generated_cpp_code, original_python_code)
-        cpp_to_python_training_examples.append({
-            "cpp_code_prompt": generated_cpp_code,
-            "python_code_target": original_python_code
+        pl1_to_pl2_training_examples.append({
+            "pl1_code_prompt": generated_pl1_code,
+            "pl2_code_target": original_pl2_code
         })
         processed_python_records += 1
 
 # Convert the list of dictionaries to a Hugging Face Dataset
-if cpp_to_python_training_examples:
-    cpp_to_python_training_dataset = Dataset.from_list(cpp_to_python_training_examples)
-    print(f"Successfully created cpp_to_python_training_dataset with {len(cpp_to_python_training_dataset)} examples.")
-    print("First training example for C++ to Python:")
-    print(cpp_to_python_training_dataset[0])
+if pl1_to_pl2_training_examples:
+    pl1_to_pl2_training_dataset = Dataset.from_list(pl1_to_pl2_training_examples)
+    print(f"Successfully created pl1_to_pl2_training_dataset with {len(pl1_to_pl2_training_dataset)} examples.")
+    print("First training example for Python to C++:")
+    print(pl1_to_pl2_training_dataset[0])
 else:
-    cpp_to_python_training_dataset = Dataset.from_list([])
+    pl1_to_pl2_training_dataset = Dataset.from_list([])
     print("No suitable training examples were generated for C++ to Python.")
 
 """#### PL1 -> PL2 fine tuning"""
@@ -2275,43 +2221,43 @@ from transformers import Trainer, TrainingArguments, DataCollatorForLanguageMode
 def tokenize_function_cpp_to_py(examples):
     # Combine generated C++ code (prompt) and original Python code (target) into a single text string
     full_texts = []
-    for cpp_code, py_code in zip(examples['cpp_code_prompt'], examples['python_code_target']):
-        prompt = f"Convert the following C++ code to Python:\n{cpp_code}\nPython code:\n"
-        full_texts.append(prompt + py_code)
+    for pl1_code, pl2_code in zip(examples['pl1_code_prompt'], examples['pl2_code_target']):
+        prompt = f"Convert the following C++ code to Python:\n{pl1_code}\nPython code:\n"
+        full_texts.append(prompt + pl2_code)
     return tokenizer_codegen(full_texts, truncation=True, max_length=512)
 
 # Map the new training_dataset with the updated tokenize_function
-tokenized_cpp_to_python_training_dataset = cpp_to_python_training_dataset.map(tokenize_function_cpp_to_py, batched=True)
+tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize_function_cpp_to_py, batched=True)
 
 # Data collator for language modeling (will handle padding and labels for CausalLM)
 # Use the same data_collator as before
 
 # Define training arguments (can reuse or modify from previous phase)
 # It's good practice to have separate output directories for different training phases
-training_args_cpp_to_py = TrainingArguments(
-    output_dir="./codegen_lora_results_cpp_to_py",
+training_args_py_to_cpp = TrainingArguments(
+    output_dir="./codegen_lora_results_py_to_cpp",
     per_device_train_batch_size=2, # Adjust based on GPU memory
     gradient_accumulation_steps=4, # Increase if batch size is small
     num_train_epochs=3, # Number of training epochs
     learning_rate=2e-4,
-    logging_dir="./codegen_lora_logs_cpp_to_py",
+    logging_dir="./codegen_lora_logs_py_to_cpp",
     logging_steps=10,
     save_strategy="epoch", # Save checkpoint every epoch
     save_total_limit=1, # Only keep the best model
 )
 
 # Initialize Trainer for the new training phase
-trainer_cpp_to_py = Trainer(
+trainer_py_to_cpp = Trainer(
     model=model_codegen_lora, # Continue training on the already LORA-adapted model
-    args=training_args_cpp_to_py,
-    train_dataset=tokenized_cpp_to_python_training_dataset,
+    args=training_args_py_to_cpp,
+    train_dataset=tokenized_pl1_to_pl2_training_dataset,
     data_collator=data_collator,
 )
 
 # Start training
-print("Starting LORA training for C++ to Python translation...")
-trainer_cpp_to_py.train()
-print("LORA training for C++ to Python complete.")
+print("Starting LORA training for Python to C++ translation...")
+trainer_py_to_cpp.train()
+print("LORA training for Python to C++ complete.")
 
 # Save the final LORA model (or the best model if validation is used)
 model_codegen_lora.save_pretrained("codegen_lora_adapter_cpp_to_py")

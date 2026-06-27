@@ -1,0 +1,299 @@
+mongodb_query,prompt,input_token_count,raw_output,judge_doc_correct,judge_reason,judge_raw_response
+,"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the average, minimum, and maximum age of all singers from France?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+
+
+Documentation:",384,"* Query:
+{
+  ""singer"": {
+    ""$match"": {
+      ""Country"": ""France""
+    }
+  }
+}
+
+* Query:
+{
+  ""singer"": {
+    ""$group"": {
+      ""_id"": {
+        ""$avg"": ""$singer.Age""
+      },
+      ""$max"": {
+        ""$max"": ""$s",False,Missing MongoDB query,Skipped judge evaluation: missing MongoDB query
+db.singer.countDocuments({}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show all countries and the number of singers in each country.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+db.singer.countDocuments({})
+
+Documentation:",390,"* The query returns a single document.
+* The document contains the following fields:
+  - singer
+  - age
+  - country
+  - is_male
+  - name
+  - song_name
+  - song_release_year
+
+* The query returns multiple documents.
+* The documents contain the following fields:
+  - singer
+  - age
+  - country
+  - is_male
+  - name",False,"The query `db.singer.countDocuments({})` returns a count of documents, not individual documents. The documentation incorrectly states it returns multiple documents and lists fields that are not present in the singer collection. It also misses the fact that the operation is a count.","{
+  ""doc_correct"": false,
+  ""reason"": ""The query `db.singer.countDocuments({})` returns a count of documents, not individual documents. The documentation incorrectly states it returns multiple documents and lists fields that are not present in the singer collection. It also misses the fact that the operation is a count.""
+}"
+db.singer.countDocuments({}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many singers are from each country?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+db.singer.countDocuments({})
+
+Documentation:",386,"* The query returns a single document.
+* The document contains a single field named ""singer"" containing the number of singers.
+* The field contains a single field named ""name"" containing the name of the singer.
+* The field contains a single field named ""song_Name"" containing the name of the song.
+* The field contains a single field named ""song_release_year"" containing the release year of the song.
+* The",False,"The documentation completely misunderstands the query. `db.singer.countDocuments({})` returns the total number of documents in the singer collection, not a count by country as implied by the SQL example. It does not describe the projection or aggregation behavior.","{
+  ""doc_correct"": false,
+  ""reason"": ""The documentation completely misunderstands the query. `db.singer.countDocuments({})` returns the total number of documents in the singer collection, not a count by country as implied by the SQL example. It does not describe the projection or aggregation behavior.""
+}"
+,"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List the maximum weight and type for each type of pet.
+
+MongoDB Schema:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+
+
+Documentation:",360,"* The query is a simple, non-aggregated query.
+* The query is a simple, non-aggregated query.
+* The query is a simple, non-aggregated query.
+* The query is a simple, non-aggregated query.
+* The query is a simple, non-aggregated query.
+* The query is a simple, non-aggregated query.
+* The query is",False,Missing MongoDB query,Skipped judge evaluation: missing MongoDB query
+db.pets.find({pet_age: 1}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the id and weight of every pet who is older than 1?
+
+MongoDB Schema:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.find({pet_age: 1})
+
+Documentation:",377,"* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is",True,The documentation accurately describes the MongoDB query's purpose – to find documents in the 'pets' collection where the 'pet_age' field is greater than 1. It correctly identifies it as a simple language query and doesn't miss any key aspects of the query's behavior.,"{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the MongoDB query's purpose – to find documents in the 'pets' collection where the 'pet_age' field is greater than 1. It correctly identifies it as a simple language query and doesn't miss any key aspects of the query's behavior.""
+}"

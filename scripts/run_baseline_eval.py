@@ -253,7 +253,7 @@ def main() -> None:
         print(f"Adapter run: {args.adapter_run}")
         for task in ("text2sql", "sql2nosql", "nosql2doc"):
             print(f"  {task}: {get_adapter_path(task, config, run=args.adapter_run)}")
-    print(f"Ollama Judge: {judge_model_name}")
+    print(f"Judge model (Ollama tag): {judge_model_name}")
     if use_gold_validation:
         print(
             f"Dataset: {GOLD_VALIDATION_DATASET_NAME} "
@@ -321,6 +321,7 @@ def main() -> None:
     judge = None
     if use_judge:
         judge = OllamaJudge(model_name=judge_model_name)
+        print(f"Judge resolved to: {judge.backend_name} ({judge.model_label})")
 
     _, _, judge_text2sql_metrics = save_text2sql_details_csv(
         text2sql_details_path,

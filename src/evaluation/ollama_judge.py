@@ -7,6 +7,7 @@ import logging
 import re
 from typing import Any
 
+from src.llm.judge_backend import JudgeBackend, create_judge_backend
 from src.llm.ollama_client import OllamaClient
 from src.utils.config import get_ollama_judge_model
 
@@ -184,24 +185,31 @@ def _strip_thinking(text: str) -> str:
 
 
 class OllamaJudge:
-    """Use a local Ollama model to judge semantic equivalence."""
+    """Judge semantic equivalence via Ollama or Hugging Face fallback."""
 
     def __init__(
         self,
         model_name: str | None = None,
         client: OllamaClient | None = None,
+        backend: JudgeBackend | None = None,
     ):
         self.model_name = model_name or get_ollama_judge_model()
-        self._client = client or OllamaClient()
+        self._client = client
+        self._backend = backend or create_judge_backend(
+            self.model_name,
+            ollama_client=client,
+        )
+
+    @property
+    def backend_name(self) -> str:
+        return self._backend.backend_name
+
+    @property
+    def model_label(self) -> str:
+        return self._backend.model_label
 
     def _generate(self, prompt: str) -> str:
-        messages = [{"role": "user", "content": prompt}]
-        response = self._client.chat(
-            self.model_name,
-            messages,
-            format_json=True,
-            think=False,
-        )
+        response = self._backend.generate(prompt, format_json=True)
         return _strip_thinking(response)
 
     def _extract_eval_json(self, text: str, required_keys: set[str]) -> dict[str, Any] | None:

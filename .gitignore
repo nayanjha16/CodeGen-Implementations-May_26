@@ -9,6 +9,8 @@ build/
 venv/
 .venv/
 env/
+myvenv/
+*.pyc
 
 # Data & models (downloaded content)
 models/base/*
@@ -17,6 +19,7 @@ models/checkpoints/*
 !models/checkpoints/.gitkeep
 *.sqlite
 *.db
+data/cache/
 
 # MLflow
 mlruns/

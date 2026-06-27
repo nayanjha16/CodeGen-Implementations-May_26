@@ -74,6 +74,7 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
     eval_cfg["bertscore_model"] = os.environ.get("BERTSCORE_MODEL_NAME")
     eval_cfg["ollama_base_url"] = os.environ.get("OLLAMA_BASE_URL")
     eval_cfg["ollama_judge_model"] = os.environ.get("OLLAMA_JUDGE_MODEL")
+    eval_cfg["judge_hf_model"] = os.environ.get("JUDGE_HF_MODEL")
     eval_cfg["ollama_timeout"] = os.environ.get("OLLAMA_TIMEOUT")
 
     # Apply model.max_length as default training max_length when not set in YAML.
@@ -115,6 +116,17 @@ def get_ollama_judge_model(config: dict[str, Any] | None = None) -> str:
         os.environ.get("OLLAMA_JUDGE_MODEL")
         or config.get("evaluation", {}).get("ollama_judge_model")
         or "qwen3:4b"
+    )
+
+
+def get_judge_hf_model(config: dict[str, Any] | None = None) -> str | None:
+    """Return an explicit Hugging Face judge model id for Ollama fallback."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return (
+        os.environ.get("JUDGE_HF_MODEL")
+        or config.get("evaluation", {}).get("judge_hf_model")
     )
 
 

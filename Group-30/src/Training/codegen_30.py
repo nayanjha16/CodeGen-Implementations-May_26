@@ -152,7 +152,7 @@ class CodeDocumentationGenerator(QwenModelBase):
         self._tokenizer = QwenModelBase._tokenizer
 
 
-    def generate_documentation(self, code: str, max_length=512, num_return_sequences=1, prompt=None) -> list:
+    def generate_documentation(self, code: str, max_length=512, num_return_sequences=1,  prompt=None) -> list:
       """
         Generates documentation for a given code snippet using the CoDoCGen model.
 
@@ -164,13 +164,50 @@ class CodeDocumentationGenerator(QwenModelBase):
       Returns:
           list: A list of generated documentation strings.
       """
+      system_prompt = f"""You are an expert software reverse engineering assistant.
+
+                        Your task is to convert source code into a structured semantic specification.
+
+                        You are generating a lossless semantic specification.
+
+                        The specification will be consumed by another code generation model.
+
+                        Rules:
+
+                        1. Do not summarize.
+                        2. Do not explain.
+                        3. Do not document.
+                        4. Do not infer intent.
+                        5. Preserve all classes.
+                        6. Preserve all fields.
+                        7. Preserve all methods.
+                        8. Preserve all constructors.
+                        9. Preserve all parameter names.
+                        10. Preserve parameter order.
+                        11. Preserve all assignments.
+                        12. Preserve all function calls.
+                        13. Preserve all control flow.
+                        14. Preserve all return values.
+                        15. Preserve method overloading.
+                        16. Emit every method separately.
+                        17. Never merge methods.
+                        18. Never group constructors.
+                        19. Never use phrases such as:
+                            "various types",
+                            "etc",
+                            "and so on",
+                            "multiple constructors",
+                            "different overloads".
+
+                        Output only a structured semantic specification."""
       if prompt is None:
-        prompt = f"generate good detailed documentation for what this software code does, do not include a pseudo code or example usage, just the intent of what the program should do, if it follows a design pattern, what actions to take under what conditions. The first line of the documentation should start with 'A software program in ProgLang, where ProgLan is the programming language of the program: {code}"
+        prompt = f"""Convert the following source code into the required semantic specification.
+                    Source Code:: {code}"""
       else:
         prompt = f"{prompt}"
 
       messages = [
-        {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
+        {"role": "system", "content":system_prompt},
         {"role": "user", "content": prompt}
       ]
       text = self._tokenizer.apply_chat_template( messages, tokenize=False, add_generation_prompt=True)
@@ -275,18 +312,9 @@ from contextlib import redirect_stdout
 from typing import Union
 from tree_sitter import Tree
 import numpy as np
-# Add path of this file to be able to import the code to code spec language
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tree_sitter import Language, Parser
 import tree_sitter_cpp as tscpp
 import tree_sitter_python as tspy
-from codespec.core.graph import CSRGraph
-# Example language-specific entry (we will mock AST input here)
-from codespec.builders.simple_cpp_python import build_csr_from_code
-from codespec.prompting.csr_prompt_optimizer import CSRPromptOptimizer
-
 
 
 class AST(metaclass=SingletonMeta):
@@ -364,14 +392,6 @@ class AST(metaclass=SingletonMeta):
                 language_name = "python"
             else:
                 return ""
-
-            # Code Spec language generator
-            csr_graph_generator = graph_cpp = CSRGraph()
-            output_graph = build_csr_from_code(code, language_name, csr_graph_generator)
-            optimizer = CSRPromptOptimizer(output_graph)
-            csr_prompt = optimizer.optimize()
-            print(f"CSL Output for  {language_name} : {csr_prompt}")
-            return csr_prompt
 
 
     def compare_ast(self, ast1: Tree, ast2: Tree) -> float:
@@ -622,7 +642,7 @@ class LLMJudge(QwenModelBase):
 
             return score
         except json.JSONDecodeError:
-            print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}\ndocumentation:\n{documentation}\ncode:\n{generated_code}\nreference code:\n{reference_code}")
+            print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}")
             return 0.0 # Return 0.0 if JSON is invalid
         except ValueError:
             print(f"Warning: 'score' field not a valid number in JSON response:\n{response_str}")
@@ -1252,10 +1272,14 @@ class BaselineData(metaclass=SingletonMeta):
             #             """
         else:
             #prompt = f"Generate {target_lang} code based on the following documentation:\n{input_text}\n{target_lang} code:"
-            prompt = f"""You are a code generation model.\nGenerate {target_lang} code from this CSR:\n{input_text}\nRules:\n- preserve semantics exactly\n- do not add new logic\n- output only code\n"""
+            #prompt = f"""You are a code generation model.\nGenerate {target_lang} code from this CSR:\n{input_text}\nRules:\n- preserve semantics exactly\n- do not add new logic\n- output only code\n"""
+            prompt = f"""
+                Target Language: {target_lang}
+                Semantic Specification
+                {input_text}
 
-        # Store prompt for potential re-tokenization during retries
-        original_prompt = prompt
+                ### {target_lang}
+                """
 
         # Option 1 & 2: Reduced max_new_tokens and added memory cleanup
         max_new_tokens = 128  # Reduced from 256 to prevent CUDA errors
@@ -1270,7 +1294,7 @@ class BaselineData(metaclass=SingletonMeta):
         # Use a very conservative limit to prevent position index out of bounds
         max_input_length = min(model_max_length - max_new_tokens - 100, 256)  # Extra safety margin
 
-        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=256, padding=True).to(self.device)
+        inputs = self._tokenizer_codegen(prompt, truncation=True, return_tensors="pt", max_length=512, padding=True).to(self.device)
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
 
@@ -1351,7 +1375,6 @@ class BaselineData(metaclass=SingletonMeta):
         with torch.no_grad():
             if True: #try:
                 # Use greedy decoding for stability (do_sample=False avoids numerical issues)
-                print("self._model_codegen.generate: Start")
                 # Create explicit position_ids to prevent index out of bounds
                 #position_ids = torch.arange(input_ids.shape[1], dtype=torch.long, device=self.device).unsqueeze(0)
 
@@ -1401,6 +1424,7 @@ class BaselineData(metaclass=SingletonMeta):
                     print(f"DEBUG - {input_ids.shape[1]} + {max_new_tokens} > {self._model_codegen.config.n_positions}")
                     print("CUDA devices:", torch.cuda.device_count())
                     print("Model parameters on device:", next(self._model_codegen.parameters()).device)
+                print("\tself._model_codegen.generate: Start")
                 output_ids = self._model_codegen.generate(
                     input_ids,
                     attention_mask=attention_mask,
@@ -1411,7 +1435,7 @@ class BaselineData(metaclass=SingletonMeta):
                     use_cache=False,
                     pad_token_id=self._tokenizer_codegen.eos_token_id
                 )
-                print("self._model_codegen.generate: Done")
+                print("\tself._model_codegen.generate: Done")
             # except RuntimeError as e:
             #     error_msg = str(e)
             #     is_cuda_error = any(err in error_msg for err in [
@@ -1593,12 +1617,14 @@ class BaselineData(metaclass=SingletonMeta):
 
             print(f"  Generating documentation for {original_hexsha[:8]}...")
             # Generate documentation for Phase 1
-            #generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
-            generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
+            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
+            #generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
 
             print(f"  Generating code from documentation for {language}...")
             # Generate code from the generated documentation using the base model
             generated_code_phase1 = self._generate_code_from_model(generated_doc_phase1, language)
+            print(f"*************\nDocumentation:\n{generated_doc_phase1}")
+            print(f"*************\nCode:\n{generated_code_phase1}")
 
             if not generated_code_phase1.strip():
                 print(f"  Warning: Empty generated code, skipping...")
@@ -1656,6 +1682,7 @@ class BaselineData(metaclass=SingletonMeta):
                         documentation_for_pl2 = re.sub(r'cpp|c\+\+', 'Python', best_documentation, flags=re.IGNORECASE)
                         generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
                         if generated_python_candidate.strip():
+                            print(f"----------\nInput to LLM Judge documentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
                             llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
                             if llm_judge_current_score > best_llm_judge_score_for_intermediate_python:
                                 best_llm_judge_score_for_intermediate_python = llm_judge_current_score
@@ -2013,8 +2040,8 @@ for record in tqdm(cpp_stream_iterator, desc="Processing C++ records for LORA NL
     documentation = record.get('documentation')
     if not documentation or not documentation.strip():
         # Fallback to generating documentation if not present or empty
-        #documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
-        documentation= baseline_evaluator._ast_processor.generate_ast_documentation(record['content'], record['language'])
+        documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
+        #documentation= baseline_evaluator._ast_processor.generate_ast_documentation(record['content'], record['language'])
         if not documentation.strip():
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
             continue
@@ -2217,8 +2244,8 @@ for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for Python 
     if not pl2_documentation.strip():
         print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
         # Fallback: Generate documentation if not present in the record (against 'not recreate' instruction, but necessary if empty)
-        #pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
-        pl2_documentation= baseline_evaluator._ast_processor.generate_ast_documentation(original_pl2_code, "cpp")
+        pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+        #pl2_documentation= baseline_evaluator._ast_processor.generate_ast_documentation(original_pl2_code, "cpp")
 
         if not pl2_documentation.strip(): # If still no documentation, skip
             print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")

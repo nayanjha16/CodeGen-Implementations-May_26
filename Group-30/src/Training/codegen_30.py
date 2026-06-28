@@ -95,6 +95,9 @@ class QwenModelBase(metaclass=SingletonMeta):
 
     def __init__(self):
         if QwenModelBase._initialized_qwen:
+            # Ensure device is set even when returning early
+            if not hasattr(self, "device"):
+                self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             return
         QwenModelBase._initialized_qwen = True
 
@@ -141,10 +144,16 @@ class CodeDocumentationGenerator(QwenModelBase):
         """
 
         if hasattr(self, "_initialized"):
+            # Ensure device is available even for reinitialized instances
+            if not hasattr(self, "device"):
+                self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             return
 
         super().__init__() # Initialize the QwenModelBase
         self._initialized = True
+        # Ensure device is set (may not be set if QwenModelBase.__init__ returned early)
+        if not hasattr(self, "device"):
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(f"CodeDocumentationGenerator using device: {self.device}")
 
         # Use the model and tokenizer from the base class
@@ -164,53 +173,67 @@ class CodeDocumentationGenerator(QwenModelBase):
       Returns:
           list: A list of generated documentation strings.
       """
-      system_prompt = f"""You are an expert software reverse engineering assistant.
+    #   system_prompt = f"""You are an expert software reverse engineering assistant.
 
-                        Your task is to convert source code into a structured semantic specification.
+    #                     Your task is to convert source code into a structured semantic specification.
 
-                        You are generating a lossless semantic specification.
+    #                     You are generating a lossless semantic specification.
 
-                        The specification will be consumed by another code generation model.
+    #                     The specification will be consumed by another code generation model.
 
-                        Rules:
+    #                     Rules:
 
-                        1. Do not summarize.
-                        2. Do not explain.
-                        3. Do not document.
-                        4. Do not infer intent.
-                        5. Preserve all classes.
-                        6. Preserve all fields.
-                        7. Preserve all methods.
-                        8. Preserve all constructors.
-                        9. Preserve all parameter names.
-                        10. Preserve parameter order.
-                        11. Preserve all assignments.
-                        12. Preserve all function calls.
-                        13. Preserve all control flow.
-                        14. Preserve all return values.
-                        15. Preserve method overloading.
-                        16. Emit every method separately.
-                        17. Never merge methods.
-                        18. Never group constructors.
-                        19. Never use phrases such as:
-                            "various types",
-                            "etc",
-                            "and so on",
-                            "multiple constructors",
-                            "different overloads".
+    #                     1. Do not summarize.
+    #                     2. Do not explain.
+    #                     3. Do not document.
+    #                     4. Do not infer intent.
+    #                     5. Preserve all classes.
+    #                     6. Preserve all fields.
+    #                     7. Preserve all methods.
+    #                     8. Preserve all constructors.
+    #                     9. Preserve all parameter names.
+    #                     10. Preserve parameter order.
+    #                     11. Preserve all assignments.
+    #                     12. Preserve all function calls.
+    #                     13. Preserve all control flow.
+    #                     14. Preserve all return values.
+    #                     15. Preserve method overloading.
+    #                     16. Emit every method separately.
+    #                     17. Never merge methods.
+    #                     18. Never group constructors.
+    #                     19. Never use phrases such as:
+    #                         "various types",
+    #                         "etc",
+    #                         "and so on",
+    #                         "multiple constructors",
+    #                         "different overloads".
 
-                        Output only a structured semantic specification."""
+    #                     Output only a structured semantic specification."""
+    #   if prompt is None:
+    #     prompt = f"""Convert the following source code into the required semantic specification.
+    #                 Source Code:: {code}"""
+    #   else:
+    #     prompt = f"{prompt}"
+
+    #   messages = [
+    #     {"role": "system", "content":system_prompt},
+    #     {"role": "user", "content": prompt}
+    #   ]
+    #   text = self._tokenizer.apply_chat_template( messages, tokenize=False, add_generation_prompt=True)
+    #   model_inputs = self._tokenizer([text], return_tensors="pt").to(self.device)
+
       if prompt is None:
-        prompt = f"""Convert the following source code into the required semantic specification.
-                    Source Code:: {code}"""
+        prompt = f"generate good detailed documentation for what this software code does, do not include a pseudo code or example usage, just the intent of what the program should do, if it follows a design pattern, what actions to take under what conditions. The first line of the documentation should start with 'A software program in ProgLang, where ProgLan is the programming language of the program: {code}"
       else:
         prompt = f"{prompt}"
 
       messages = [
-        {"role": "system", "content":system_prompt},
+        {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
         {"role": "user", "content": prompt}
       ]
-      text = self._tokenizer.apply_chat_template( messages, tokenize=False, add_generation_prompt=True)
+
+      # Apply chat template and tokenize
+      text = self._tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
       model_inputs = self._tokenizer([text], return_tensors="pt").to(self.device)
 
       # Validate input token IDs are within valid range
@@ -298,13 +321,112 @@ class CodeDocumentationGenerator(QwenModelBase):
       response = decoded[0]
       return response
 
+class QwenCodeGenerator(QwenModelBase):
+    def __init__(self):
+        """
+        Constructor.
 
-"""# Singleton for AST Generation and Comparison
+        IMPORTANT:
+        Since SingletonMeta returns the same object every time,
+        __init__ may be called multiple times.
 
+        Therefore we guard against reinitialization.
+        """
+
+        if hasattr(self, "_initialized"):
+            # Ensure device is available even for reinitialized instances
+            if not hasattr(self, "device"):
+                self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            return
+
+        super().__init__() # Initialize the QwenModelBase
+        self._initialized = True
+        # Ensure device is set (may not be set if QwenModelBase.__init__ returned early)
+        if not hasattr(self, "device"):
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        print(f"QwenCodeGenerator using device: {self.device}")
+
+        # Use the model and tokenizer from the base class
+        self._model = QwenModelBase._model
+        self._tokenizer = QwenModelBase._tokenizer
+
+    def _generate_code_from_model(self, input_text: str, target_lang: str, is_py_to_cpp: bool = False) -> str:
+        """
+        Generate code from input text using Qwen model.
+
+        Args:
+            input_text: The documentation or code to convert
+            target_lang: Target language ('python' or 'cpp'/'c++')
+            is_py_to_cpp: If True, input is Python code and target is forced to C++
+
+        Returns:
+            Generated code as string
+        """
+        # Normalize target_lang (case insensitive, cpp and c++ are same)
+        target_lang_lower = target_lang.lower()
+
+        # If is_py_to_cpp flag is True, force target to cpp
+        if is_py_to_cpp:
+            target_lang_lower = 'cpp'
+            prompt = f"Convert the following Python code to C++ code:\n{input_text}\nC++ code:"
+        else:
+            # Build prompt based on target language
+            if target_lang_lower in ['python']:
+                prompt = f"Generate Python code from the following documentation:\n{input_text}\nPython code:"
+            elif target_lang_lower.lower() in ['cpp', 'c++']:
+                prompt = f"Generate C++ code from the following documentation:\n{input_text}\nC++ code:"
+            else:
+                # Default to Python if unknown
+                prompt = f"Generate Python code from the following documentation:\n{input_text}\nPython code:"
+
+        # Tokenize and generate
+        inputs = self._tokenizer(prompt, return_tensors="pt").to(self.device)
+        input_ids = inputs["input_ids"]
+        attention_mask = inputs["attention_mask"]
+
+        # Bounds checking for input tensors
+        batch_size, seq_len = input_ids.shape
+        max_model_length = getattr(self._model.config, 'max_position_embeddings', 2048)
+
+        if seq_len >= max_model_length:
+            # Truncate input if too long
+            input_ids = input_ids[:, -max_model_length // 2:]
+            attention_mask = attention_mask[:, -max_model_length // 2:]
+            print(f"Warning: Qwen code generation Input truncated from {seq_len} to {input_ids.shape[1]} tokens")
+
+        # Calculate available tokens for generation (leave some headroom)
+        available_tokens = max_model_length - input_ids.shape[1] - 50  # 50 token safety margin
+        max_new_tokens = min(available_tokens, max_model_length // 2)  # Cap at half model length
+        print(f"Warning: Qwen code generation max new tokens: {max_new_tokens}")
+        output_ids = self._model.generate(
+            input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=max_new_tokens,
+            num_return_sequences=1,
+            temperature=0.2,
+            do_sample=True,
+            pad_token_id=self._tokenizer.eos_token_id
+        )
+
+        generated_code = self._tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+        # Extract only the generated code (after the prompt)
+        if target_lang_lower == 'python':
+            code_prefix = "Python code:"
+        else:
+            code_prefix = "C++ code:"
+
+        if code_prefix in generated_code:
+            generated_code = generated_code.split(code_prefix, 1)[1].strip()
+
+        return generated_code
+
+
+# Singleton for AST Generation and Comparison
+"""
 The `AST` class leverages `tree-sitter` to generate Abstract Syntax Trees (ASTs) from code snippets and provides a method to compare two ASTs. It is implemented as a singleton to ensure a single instance manages the language parsers and potentially future comparison models.
 
 For generating the AST the input code can be a string or bytes. If string then convert to bytes before processing with tree sitter.
-
 """
 
 import io
@@ -1002,7 +1124,6 @@ def _enrich_single_record(
 
     return example
 
-
 def materialize_and_enrich_dataset(
     filtered_dataset_instance: FilteredDataset,
     output_cache_path: str = "./enriched_full_dataset",
@@ -1169,6 +1290,7 @@ class BaselineData(metaclass=SingletonMeta):
 
         # Initialize dependencies internally as per user request to decouple FilteredDataset
         self._documentation_generator = CodeDocumentationGenerator()
+        self._qwen_code_generator = QwenCodeGenerator()
         self._ast_processor = AST()
         self._graphcodebert_scorer = GraphCodeBERTScorer()
         self._filtered_dataset = FilteredDataset()
@@ -1622,7 +1744,8 @@ class BaselineData(metaclass=SingletonMeta):
 
             print(f"  Generating code from documentation for {language}...")
             # Generate code from the generated documentation using the base model
-            generated_code_phase1 = self._generate_code_from_model(generated_doc_phase1, language)
+            #generated_code_phase1 = self.__generate_code_from_model(generated_doc_phase1, language)
+            generated_code_phase1 = self._qwen_code_generator._generate_code_from_model(generated_doc_phase1, language)
             print(f"*************\nDocumentation:\n{generated_doc_phase1}")
             print(f"*************\nCode:\n{generated_code_phase1}")
 
@@ -1680,7 +1803,8 @@ class BaselineData(metaclass=SingletonMeta):
                     for _ in range(num_tries):
                         import re
                         documentation_for_pl2 = re.sub(r'cpp|c\+\+', 'Python', best_documentation, flags=re.IGNORECASE)
-                        generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
+                        #generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
+                        generated_python_candidate = self._qwen_code_generator._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
                         if generated_python_candidate.strip():
                             print(f"----------\nInput to LLM Judge documentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
                             llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
@@ -1696,7 +1820,8 @@ class BaselineData(metaclass=SingletonMeta):
                     #for _ in range(num_tries): This we do not have to do thrice
                     if True:
                         # Step 2: Generate C++ code from the best generated Python code
-                        final_generated_cpp_code = self._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
+                        #final_generated_cpp_code = self._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
+                        final_generated_cpp_code = self._qwen_code_generator._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
 
                         if not final_generated_cpp_code.strip():
                             continue

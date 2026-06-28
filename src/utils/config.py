@@ -12,6 +12,11 @@ from dotenv import load_dotenv
 from src.utils.paths import get_checkpoint_path, get_project_root
 
 DEFAULT_TEND_DATASET_ID = "care2achieve/tend"
+DEFAULT_LLM_PROVIDER = "ollama"
+DEFAULT_HF_JUDGE_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
+DEFAULT_HF_CODEGEN_MODEL = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
+
+LLM_PROVIDERS = frozenset({"ollama", "huggingface"})
 
 TRAINING_TASKS = frozenset({"text2sql", "sql2nosql", "nosql2doc"})
 
@@ -72,9 +77,13 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
 
     eval_cfg = _ensure_dict(config, "evaluation")
     eval_cfg["bertscore_model"] = os.environ.get("BERTSCORE_MODEL_NAME")
+    eval_cfg["llm_provider"] = os.environ.get("LLM_PROVIDER")
     eval_cfg["ollama_base_url"] = os.environ.get("OLLAMA_BASE_URL")
     eval_cfg["ollama_judge_model"] = os.environ.get("OLLAMA_JUDGE_MODEL")
+    eval_cfg["ollama_codegen_model"] = os.environ.get("OLLAMA_CODEGEN_MODEL")
     eval_cfg["ollama_timeout"] = os.environ.get("OLLAMA_TIMEOUT")
+    eval_cfg["hf_judge_model"] = os.environ.get("HF_JUDGE_MODEL")
+    eval_cfg["hf_codegen_model"] = os.environ.get("HF_CODEGEN_MODEL")
 
     # Apply model.max_length as default training max_length when not set in YAML.
     if training_cfg.get("max_length") is None:
@@ -106,6 +115,25 @@ def get_ollama_base_url(config: dict[str, Any] | None = None) -> str:
     )
 
 
+def get_llm_provider(config: dict[str, Any] | None = None) -> str:
+    """Return the configured LLM backend: ``ollama`` (default) or ``huggingface``."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    provider = (
+        os.environ.get("LLM_PROVIDER")
+        or config.get("evaluation", {}).get("llm_provider")
+        or DEFAULT_LLM_PROVIDER
+    )
+    normalized = provider.strip().lower()
+    if normalized not in LLM_PROVIDERS:
+        allowed = ", ".join(sorted(LLM_PROVIDERS))
+        raise ValueError(
+            f"Invalid LLM_PROVIDER {provider!r}. Expected one of: {allowed}"
+        )
+    return normalized
+
+
 def get_ollama_judge_model(config: dict[str, Any] | None = None) -> str:
     """Return the configured Ollama judge model from env/config."""
     _load_env()
@@ -116,6 +144,56 @@ def get_ollama_judge_model(config: dict[str, Any] | None = None) -> str:
         or config.get("evaluation", {}).get("ollama_judge_model")
         or "qwen3:4b"
     )
+
+
+def get_ollama_codegen_model(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Ollama code-generation model from env/config."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return (
+        os.environ.get("OLLAMA_CODEGEN_MODEL")
+        or config.get("evaluation", {}).get("ollama_codegen_model")
+        or "qwen2.5-coder:3b"
+    )
+
+
+def get_hf_judge_model(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Hugging Face judge model from env/config."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return (
+        os.environ.get("HF_JUDGE_MODEL")
+        or config.get("evaluation", {}).get("hf_judge_model")
+        or DEFAULT_HF_JUDGE_MODEL
+    )
+
+
+def get_hf_codegen_model(config: dict[str, Any] | None = None) -> str:
+    """Return the configured Hugging Face code-generation model from env/config."""
+    _load_env()
+    if config is None:
+        config = load_config()
+    return (
+        os.environ.get("HF_CODEGEN_MODEL")
+        or config.get("evaluation", {}).get("hf_codegen_model")
+        or DEFAULT_HF_CODEGEN_MODEL
+    )
+
+
+def get_judge_model(config: dict[str, Any] | None = None) -> str:
+    """Return the semantic judge model for the active LLM provider."""
+    if get_llm_provider(config) == "huggingface":
+        return get_hf_judge_model(config)
+    return get_ollama_judge_model(config)
+
+
+def get_llm_codegen_model(config: dict[str, Any] | None = None) -> str:
+    """Return the chat/codegen model for the active LLM provider."""
+    if get_llm_provider(config) == "huggingface":
+        return get_hf_codegen_model(config)
+    return get_ollama_codegen_model(config)
 
 
 def get_bertscore_model_name(config: dict[str, Any] | None = None) -> str:

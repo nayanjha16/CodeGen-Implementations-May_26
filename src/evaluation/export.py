@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from src.evaluation.ollama_judge import OllamaJudge
+from src.llm.factory import create_judge
 from src.models.model_loader import count_input_tokens
 from src.utils.config import get_model_name, load_config
 from src.utils.logging import log_batch_progress, log_step
@@ -157,7 +158,7 @@ def save_text2sql_details_csv(
     db_paths = db_paths or [None] * len(predictions)
     evaluator = judge
     if use_judge and evaluator is None:
-        evaluator = OllamaJudge()
+        evaluator = create_judge(cfg)
 
     fieldnames = TEXT2SQL_DETAIL_FIELDS
     cfg = config or load_config()
@@ -243,7 +244,7 @@ def save_sql2nosql_details_csv(
 
     evaluator = judge
     if use_judge and evaluator is None:
-        evaluator = OllamaJudge()
+        evaluator = create_judge(cfg)
 
     fieldnames = SQL2NOSQL_DETAIL_FIELDS
     cfg = config or load_config()
@@ -322,7 +323,7 @@ def save_documentation_details_csv(
 
     evaluator = judge
     if use_judge and evaluator is None:
-        evaluator = OllamaJudge()
+        evaluator = create_judge(cfg)
 
     fieldnames = DOCUMENTATION_DETAIL_FIELDS
     cfg = config or load_config()

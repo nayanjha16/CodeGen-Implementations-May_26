@@ -7,8 +7,8 @@ import logging
 import re
 from typing import Any
 
-from src.llm.ollama_client import OllamaClient
-from src.utils.config import get_ollama_judge_model
+from src.llm.factory import create_chat_client
+from src.utils.config import get_judge_model, get_llm_provider
 
 logger = logging.getLogger("codegen")
 
@@ -184,15 +184,18 @@ def _strip_thinking(text: str) -> str:
 
 
 class OllamaJudge:
-    """Use a local Ollama model to judge semantic equivalence."""
+    """Semantic equivalence judge using Ollama or Hugging Face (via ``LLM_PROVIDER``)."""
 
     def __init__(
         self,
         model_name: str | None = None,
-        client: OllamaClient | None = None,
+        client: Any | None = None,
+        config: dict[str, Any] | None = None,
     ):
-        self.model_name = model_name or get_ollama_judge_model()
-        self._client = client or OllamaClient()
+        self.config = config
+        self.provider = get_llm_provider(config)
+        self.model_name = model_name or get_judge_model(config)
+        self._client = client or create_chat_client(config)
 
     def _generate(self, prompt: str) -> str:
         messages = [{"role": "user", "content": prompt}]

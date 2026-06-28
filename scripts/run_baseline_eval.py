@@ -44,14 +44,15 @@ from src.evaluation.export import (
     save_sql2nosql_details_csv,
     save_text2sql_details_csv,
 )
-from src.evaluation.ollama_judge import OllamaJudge
+from src.llm.factory import create_judge
 from src.models.model_loader import is_model_cached
 from src.text2sql.sql_executor import build_text2sql_prompt
 from src.utils.config import (
     get_adapter_path,
     get_bertscore_model_name,
+    get_judge_model,
+    get_llm_provider,
     get_model_name,
-    get_ollama_judge_model,
     load_config,
 )
 from src.utils.paths import (
@@ -243,7 +244,8 @@ def main() -> None:
 
     config = load_config()
     model_name = get_model_name(config)
-    judge_model_name = get_ollama_judge_model(config)
+    judge_model_name = get_judge_model(config)
+    llm_provider = get_llm_provider(config)
     use_gold_validation = args.tend_config == "spider" and not args.full_split
     if use_gold_validation:
         gold_count = len(load_gold_validation())
@@ -267,7 +269,7 @@ def main() -> None:
         print(f"Adapter run: {args.adapter_run}")
         for task in ("text2sql", "sql2nosql", "nosql2doc"):
             print(f"  {task}: {get_adapter_path(task, config, run=args.adapter_run)}")
-    print(f"Ollama Judge: {judge_model_name}")
+    print(f"Semantic judge ({llm_provider}): {judge_model_name}")
     if use_gold_validation:
         print(
             f"Dataset: {GOLD_VALIDATION_DATASET_NAME} "
@@ -335,7 +337,7 @@ def main() -> None:
     use_judge = not args.no_judge
     judge = None
     if use_judge:
-        judge = OllamaJudge(model_name=judge_model_name)
+        judge = create_judge(config)
 
     _, _, judge_text2sql_metrics = save_text2sql_details_csv(
         text2sql_details_path,

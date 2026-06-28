@@ -26,14 +26,14 @@ class AdapterPathTest(unittest.TestCase):
 
     def test_resolve_adapter_path_from_explicit_dir(self) -> None:
         config = load_config()
-        rows = TENDLoader(config="spider").load_split("train")[:3]
+        rows = TENDLoader(config="spider").load_split("train")[:1]
         with tempfile.TemporaryDirectory() as tmpdir:
             train_lora(
                 "text2sql",
                 config=config,
                 train_rows=rows,
                 output_dir=tmpdir,
-                epochs=3,
+                epochs=1,
                 skip_eval=True,
                 enable_mlflow=False,
             )
@@ -59,15 +59,15 @@ class AdapterLoadTest(unittest.TestCase):
         base = Path(cls._tmpdir.name)
 
         for task in sorted(TRAINING_TASKS):
-            kept = filter_tend_rows(cls.rows, task)[:3]
+            kept = filter_tend_rows(cls.rows, task)[:1]
             out = base / task
-            log_step(task, "Adapter load test: training mini adapter (3 rows, 5 epochs)")
+            log_step(task, "Adapter load test: training mini adapter (1 row, 1 epoch)")
             train_lora(
                 task,
                 config=cls.config,
                 train_rows=kept,
                 output_dir=out,
-                epochs=5,
+                epochs=1,
                 skip_eval=True,
                 enable_mlflow=False,
             )

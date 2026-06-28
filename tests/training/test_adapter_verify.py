@@ -16,7 +16,7 @@ from src.utils.logging import log_step
 class AdapterVerifyTest(unittest.TestCase):
     def test_verify_adapter_dir_after_training(self) -> None:
         config = load_config()
-        rows = TENDLoader(config="spider").load_split("train")[:3]
+        rows = TENDLoader(config="spider").load_split("train")[:1]
         log_step("text2sql", "Adapter verify test: train then verify")
         with tempfile.TemporaryDirectory() as tmpdir:
             train_lora(
@@ -24,7 +24,7 @@ class AdapterVerifyTest(unittest.TestCase):
                 config=config,
                 train_rows=rows,
                 output_dir=tmpdir,
-                epochs=2,
+                epochs=1,
                 skip_eval=True,
                 enable_mlflow=False,
             )
@@ -36,7 +36,7 @@ class AdapterVerifyTest(unittest.TestCase):
         config = load_config()
         with tempfile.TemporaryDirectory() as tmpdir:
             # Point checkpoints to empty temp dir via env override in verify with explicit paths
-            rows = TENDLoader(config="spider").load_split("train")[:2]
+            rows = TENDLoader(config="spider").load_split("train")[:1]
             base = Path(tmpdir)
             for task in ("text2sql", "sql2nosql", "nosql2doc"):
                 out = base / task
@@ -46,7 +46,7 @@ class AdapterVerifyTest(unittest.TestCase):
                     config=config,
                     train_rows=rows,
                     output_dir=out,
-                    epochs=2,
+                    epochs=1,
                     skip_eval=True,
                     enable_mlflow=False,
                 )

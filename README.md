@@ -180,7 +180,7 @@ All training tests live under `tests/training/`:
 | Test file | What it checks |
 | --------- | -------------- |
 | `test_prompt_parity.py` | Training prompts match runtime `PromptBuilder`s; dataset filters; token budget ≤ 2048 |
-| `test_overfit_smoke.py` | LoRA trainer overfits 5 rows, writes `adapter_config.json` + weights |
+| `test_overfit_smoke.py` | LoRA trainer smoke: 1 row, 1 epoch, writes `adapter_config.json` + weights |
 | `test_adapter_load.py` | Trains tiny adapters per task; `load_model(adapter_path=...)` generates non-empty output |
 | `test_adapter_verify.py` | Adapter verification helper reports missing files correctly |
 
@@ -195,7 +195,7 @@ python -m unittest tests.training.test_prompt_parity tests.training.test_overfit
 python -m unittest tests.training.test_overfit_smoke.OverfitSmokeTest -v
 ```
 
-The overfit smoke test trains 5 Spider rows for 10 epochs and expects `train_loss < 1.5`. Adapter load tests train 3 rows per task and verify generation works.
+The overfit smoke test trains 1 Spider row for 1 epoch and verifies adapter files are written. Adapter load tests train 1 row per task for 1 epoch and verify generation works.
 
 ### Dataset integration smoke test
 
@@ -555,6 +555,12 @@ lora:
 To use a different HuggingFace base model, change `MODEL_NAME` in `.env`, run `inspect_lora_modules.py` to verify LoRA target modules, and update `lora.target_modules` in the YAML if needed.
 
 ---
+
+## Capstone Documentation
+
+Full presentation package with architecture diagrams, methodology, results analysis, and defense guide:
+
+**[docs/capstone/](docs/capstone/README.md)**
 
 ## Datasets
 

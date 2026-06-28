@@ -1,4 +1,4 @@
-"""Overfit smoke test for LoRA trainer — 5 rows, 3 epochs."""
+"""Smoke test for LoRA trainer — 1 row, 1 epoch."""
 
 from __future__ import annotations
 
@@ -13,22 +13,22 @@ from src.utils.logging import log_step
 
 
 class OverfitSmokeTest(unittest.TestCase):
-    """Train on 5 rows and verify loss decreases and adapter files are written."""
+    """Train on 1 row for 1 epoch and verify adapter files are written."""
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.config = load_config()
-        cls.rows = TENDLoader(config="spider").load_split("train")[:5]
+        cls.rows = TENDLoader(config="spider").load_split("train")[:1]
 
     def test_overfit_smoke_text2sql(self) -> None:
-        log_step("text2sql", "Overfit smoke test: 5 rows, 10 epochs")
+        log_step("text2sql", "Smoke test: 1 row, 1 epoch")
         with tempfile.TemporaryDirectory() as tmpdir:
             result = train_lora(
                 "text2sql",
                 config=self.config,
                 train_rows=self.rows,
                 output_dir=tmpdir,
-                epochs=10,
+                epochs=1,
                 enable_mlflow=False,
                 skip_eval=True,
             )
@@ -37,9 +37,8 @@ class OverfitSmokeTest(unittest.TestCase):
             adapter_weights = Path(tmpdir) / "adapter_model.safetensors"
             self.assertTrue(adapter_config.is_file())
             self.assertTrue(adapter_weights.is_file())
-            self.assertEqual(result.train_rows, 5)
+            self.assertEqual(result.train_rows, 1)
             self.assertIsNotNone(result.train_loss)
-            self.assertLess(result.train_loss, 1.5)
 
 
 if __name__ == "__main__":

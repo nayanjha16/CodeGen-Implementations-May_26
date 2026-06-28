@@ -16,7 +16,7 @@ from src.training.filters import filter_tend_rows
 from src.training.lora_trainer import train_lora
 from src.training.prompt_factory import build_training_prompt
 from src.training.tasks import TRAINING_TASKS
-from src.utils.config import load_config
+from tests.training._support import load_training_test_config
 from src.utils.logging import log_step
 
 
@@ -25,7 +25,7 @@ class AdapterPathTest(unittest.TestCase):
         self.assertFalse(is_adapter_dir(Path("/tmp/nonexistent_adapter_dir")))
 
     def test_resolve_adapter_path_from_explicit_dir(self) -> None:
-        config = load_config()
+        config = load_training_test_config()
         rows = TENDLoader(config="spider").load_split("train")[:1]
         with tempfile.TemporaryDirectory() as tmpdir:
             train_lora(
@@ -52,7 +52,7 @@ class AdapterLoadTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.config = load_config()
+        cls.config = load_training_test_config()
         cls.rows = TENDLoader(config="spider").load_split("train")
         cls._tmpdir = tempfile.TemporaryDirectory()
         cls.adapter_dirs = {}

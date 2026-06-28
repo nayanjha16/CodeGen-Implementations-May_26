@@ -15,12 +15,13 @@ from src.training.prompt_factory import build_training_prompt, build_training_ta
 from src.training.tasks import TRAINING_TASKS
 from src.training.tend_dataset import build_sft_examples, load_tend_training_rows
 from src.utils.config import load_config
+from tests.training._support import load_training_test_config
 
 
 class PromptParityTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.config = load_config()
+        cls.config = load_training_test_config()
         cls.rows = TENDLoader(config="spider").load_split("train")[:3]
 
     def test_text2sql_prompt_matches_runtime_builder(self) -> None:
@@ -85,7 +86,7 @@ class DatasetFilterTest(unittest.TestCase):
         from src.models.model_loader import load_tokenizer
         from src.utils.config import get_training_config
 
-        config = load_config()
+        config = load_training_test_config()
         training_cfg = get_training_config(config)
         max_length = int(training_cfg["max_length"])
         tokenizer = load_tokenizer(config=config)

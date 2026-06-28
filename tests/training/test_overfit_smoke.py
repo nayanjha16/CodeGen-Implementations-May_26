@@ -8,7 +8,7 @@ from pathlib import Path
 
 from src.datasets.tend_loader import TENDLoader
 from src.training.lora_trainer import train_lora
-from src.utils.config import load_config
+from tests.training._support import load_training_test_config
 from src.utils.logging import log_step
 
 
@@ -17,7 +17,7 @@ class OverfitSmokeTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.config = load_config()
+        cls.config = load_training_test_config()
         cls.rows = TENDLoader(config="spider").load_split("train")[:1]
 
     def test_overfit_smoke_text2sql(self) -> None:

@@ -9,13 +9,13 @@ from pathlib import Path
 from src.datasets.tend_loader import TENDLoader
 from src.training.adapter_verify import verify_adapter_dir, verify_all_adapters
 from src.training.lora_trainer import train_lora
-from src.utils.config import load_config
+from tests.training._support import load_training_test_config
 from src.utils.logging import log_step
 
 
 class AdapterVerifyTest(unittest.TestCase):
     def test_verify_adapter_dir_after_training(self) -> None:
-        config = load_config()
+        config = load_training_test_config()
         rows = TENDLoader(config="spider").load_split("train")[:1]
         log_step("text2sql", "Adapter verify test: train then verify")
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -33,7 +33,7 @@ class AdapterVerifyTest(unittest.TestCase):
             self.assertIsNotNone(result.metadata)
 
     def test_verify_all_adapters_missing_dirs(self) -> None:
-        config = load_config()
+        config = load_training_test_config()
         with tempfile.TemporaryDirectory() as tmpdir:
             # Point checkpoints to empty temp dir via env override in verify with explicit paths
             rows = TENDLoader(config="spider").load_split("train")[:1]

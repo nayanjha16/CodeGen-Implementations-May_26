@@ -625,6 +625,7 @@ Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All 
 | DirectML training fails | Expected on some builds; use `--device cpu` for training or train on CUDA/MPS |
 | Training very slow on Mac | Expected on MPS/CPU; use smoke runs (`--max-samples 50 --epochs 1`) to validate first |
 | Training very slow on Windows Intel GPU | Use `--device dml` for eval; keep training on CPU or offload to CUDA/MPS |
+| PowerShell shows red `NativeCommandError` lines when running tests | Harmless stderr from Transformers/tqdm; run without `2>&1`, or use `python -m unittest discover -s tests/training -v 2>&1 | Out-String` |
 
 ---
 

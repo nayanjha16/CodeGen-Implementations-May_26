@@ -44,6 +44,16 @@ Pass@10 for text to python
 
 max_new_tokens=300, do_sample=True, temperature=0.7
 
+--------------------------------------------Text to Java----------------------------------------------------------------------
+Pass@1: 49.70%
+Mean AST Similarity Score (Text-to-Java): 0.7384
+Mean BLEU Score (Text-to-Java): 0.6961
+Mean ROUGE-1 Score (Text-to-Java): 0.8026
+Mean ROUGE-2 Score (Text-to-Java): 0.7116
+Mean ROUGE-L Score (Text-to-Java): 0.7813
+Mean CodeBERT Similarity Score (Text-to-Java): 0.9485
+
+Mean Text to Java Translation Score: 0.8192
 --------------------------------------------Java to Python-----------------------------------------------------------------
 
 After finetuning

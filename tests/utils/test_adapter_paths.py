@@ -25,7 +25,7 @@ class AdapterPathTest(unittest.TestCase):
         path = get_adapter_checkpoint_path("nosql2doc", run="v1")
         self.assertTrue(str(path).endswith("models/checkpoints/v1/nosql2doc"))
 
-        default_path = get_adapter_checkpoint_path("text2sql", run=None)
+        default_path = get_adapter_checkpoint_path("text2sql", run=None, when=when)
         expected_run = default_adapter_run_name(when)
         self.assertIn(f"models/checkpoints/{expected_run}/text2sql", str(default_path))
 

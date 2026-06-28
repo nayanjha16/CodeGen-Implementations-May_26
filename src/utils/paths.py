@@ -100,10 +100,12 @@ def resolve_adapter_run_name(run: str | None = None, when: datetime | None = Non
     return _safe_run_name_segment(str(run), fallback=fallback)
 
 
-def get_adapter_checkpoint_path(task: str, run: str | None = None) -> Path:
+def get_adapter_checkpoint_path(
+    task: str, run: str | None = None, when: datetime | None = None
+) -> Path:
     """Resolve ``models/checkpoints/<run>/<task>/`` for LoRA adapter output."""
     normalized = task.strip().lower()
-    run_name = resolve_adapter_run_name(run)
+    run_name = resolve_adapter_run_name(run, when=when)
     return get_models_checkpoints_dir() / run_name / normalized
 
 

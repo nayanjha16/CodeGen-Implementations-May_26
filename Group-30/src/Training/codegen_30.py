@@ -848,7 +848,7 @@ class LLMJudge(QwenModelBase):
 
             # Conditional printing of the full JSON response
             if True: #not self._print_once:
-                print("\n--- LLM Judge Response (printed once) ---")
+                print("\n--- LLM Judge Response ---")
                 print(json.dumps(response_json, indent=2))
                 print("-------------------------------------------")
                 self._print_once = True # Set flag to true after printing
@@ -856,6 +856,7 @@ class LLMJudge(QwenModelBase):
             return score
         except json.JSONDecodeError:
             print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}")
+            print(f"\n*****************\n\Documentation:\n{documentation}\n*******************\nCode:\n{generated_code}\n")
             return 0.0 # Return 0.0 if JSON is invalid
         except ValueError:
             print(f"Warning: 'score' field not a valid number in JSON response:\n{response_str}")
@@ -1473,12 +1474,17 @@ class BaselineData(metaclass=SingletonMeta):
         Load only the models needed for LORA training.
         This is more memory efficient than loading all models.
         """
-        print("Loading models for LORA training...")
+        print("Loading support models for LORA training...")
         if self._documentation_generator is None:
+            print ("\tLoaded CodeDocumentationGenerator...")
             self._documentation_generator = CodeDocumentationGenerator()
         if self._llm_judge is None:
+            print ("\tLoaded LLM Judge...")
             self._llm_judge = LLMJudge(self.device)
-        print("LORA training models loaded.")
+        if self._qwen_code_generator is None:
+            print ("\tLoaded QwenCodeGenerator...")
+            self._qwen_code_generator = QwenCodeGenerator()
+        print("Support models for LORA training loaded.")
 
     def unload_model(self, model_name: str):
         """
@@ -2282,10 +2288,13 @@ if tokenizer_codegen.pad_token_id is None:
 
 model_codegen = AutoModelForCausalLM.from_pretrained(
     model_name_codegen,
-    torch_dtype=torch.float32,
+    torch_dtype=torch.float16,
     device_map="auto",
     trust_remote_code=False
 )
+# Enable gradient checkpointing to reduce memory usage
+model_codegen.gradient_checkpointing_enable()
+
 tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
 model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
 
@@ -2374,7 +2383,7 @@ documentation_generator = baseline_evaluator._documentation_generator
 lora_nl_cpp_examples = []
 MAX_RECORDS_FOR_LORA_NL_CPP = 2 # Define a limit for the LORA dataset, adjust as needed
 if MAX_RECORDS_FOR_LORA_NL_CPP >= MAX_DATASET_SIZE:
-    raise ValueException(f"Training Records for LORA {MAX_RECORDS_FOR_LORA_NL_CPP} > Datasize size {MAX_DATASET_SIZE}")
+    raise ValueError(f"Training Records for LORA {MAX_RECORDS_FOR_LORA_NL_CPP} > Datasize size {MAX_DATASET_SIZE}")
 
 print(f"Collecting {MAX_RECORDS_FOR_LORA_NL_CPP} C++ records for LORA NL->C++ training...")
 
@@ -2430,6 +2439,7 @@ def tokenize_function(examples):
     for doc, code in zip(examples['document'], examples['code']):
         prompt = f"Generate C++ code based on the following documentation:\n{doc}\nC++ code:\n"
         full_texts.append(prompt + code)
+    #return tokenizer_codegen(full_texts, truncation=True, max_length=256)
     return tokenizer_codegen(full_texts, truncation=True, max_length=512)
 
 # Map the training_dataset with the updated tokenize_function
@@ -2449,6 +2459,7 @@ training_args = TrainingArguments(
     logging_steps=10,
     save_strategy="epoch", # Save checkpoint every epoch
     save_total_limit=1, # Only keep the best model
+    fp16=True, # Enable mixed precision training to save memory
     # evaluation_strategy="epoch", # Uncomment if you have a validation set
     # load_best_model_at_end=True, # Uncomment if you have a validation set
     # metric_for_best_model="eval_loss", # Uncomment if you have a validation set
@@ -2464,16 +2475,19 @@ trainer = Trainer(
     # eval_dataset=tokenized_validation_dataset, # Uncomment if you have a validation set
     data_collator=data_collator,
 )
+print("\n"+"="*30+"\n")
 print("Created Trainer for LORA")
 # Start training
 print("Starting LORA training for Phase 1 NL->PL1...")
 trainer.train()
 print("LORA training for Phase 1 NL->PL1 complete.")
+print("\n"+"="*30+"\n")
 
 # Save the final LORA model (or the best model if validation is used)
 nl_pl_save_directory = "qwen_nl_pl1_lora_adapter"
 model_codegen_lora.save_pretrained(nl_pl_save_directory)
 print(f"LORA adapter model saved to '{nl_pl_save_directory}'.")
+print("\n"+"="*30+"\n")
 
 """### LORA Training Phase 2 (PL1->PL2): Python to C++  Code Generation
 This phase aims to train the LORA-adapted model to translate Python to C++ . The process involves:
@@ -2494,7 +2508,7 @@ import os
 print("Generating LORA training dataset for C++ to Python translation...")
 
 # Helper function to generate code using the LORA-tuned model (User Requirement 2)
-def generate_code_from_lora_model(model, tokenizer, documentation: str, target_lang: str, device: str) -> str:
+def generate_code_from_documentation(model, tokenizer, documentation: str, target_lang: str, device: str) -> str:
     prompt = f"Convert the following documentation to {target_lang} code:\n{documentation}\n{target_lang} code:"
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
     input_ids = inputs["input_ids"]
@@ -2541,31 +2555,29 @@ for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to 
         print(f"Reached max records for C++ to Python LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
         break
 
-    if not record['is_processable_code'] or record['language'].lower() != 'python':
+    if not record['is_processable_code'] or record['language'].lower() not in ['c++', 'cpp']:
         continue
 
     original_pl2_code = record['content']
 
-    # Step 1: Use the python documentation from the dataset itself (User Requirement 1)
+    # Step 1: Use the C++ documentation from the dataset itself (User Requirement 1)
     pl2_documentation = record.get('documentation', '')
     if not pl2_documentation.strip():
-        print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")
         print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
-        # Fallback: Generate documentation if not present in the record (against 'not recreate' instruction, but necessary if empty)
+        # Fallback: Generate documentation if not present in the record
         pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
-        #pl2_documentation= baseline_evaluator._ast_processor.generate_ast_documentation(original_pl2_code, "cpp")
 
         if not pl2_documentation.strip(): # If still no documentation, skip
-            print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find Python documentation.")
+            print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
             continue
 
     best_llm_judge_score_for_intermediate_pl1 = -1.0
     best_generated_pl1_code_for_phase2 = ""
     num_tries_llm_judge = 3 # Generate PL2 code three times as requested
 
-    # Step 2: Use the fine-tuned LORA model to generate C++ code and use LLM Judge to pick the best
+    # Step 2: Use the base Qwen model to generate Python code and use LLM Judge to pick the best
     for _ in range(num_tries_llm_judge):
-        generated_pl1_candidate = generate_code_from_lora_model(model_codegen_lora, tokenizer_codegen, pl2_documentation, target_lang='python', device=baseline_evaluator.device)
+        generated_pl1_candidate = baseline_evaluator._qwen_code_generator._generate_code_from_model(pl2_documentation, target_lang='python')
         if generated_pl1_candidate.strip():
             # Call the LLM Judge
             llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(pl2_documentation, generated_pl1_candidate)
@@ -2592,6 +2604,9 @@ if pl1_to_pl2_training_examples:
 else:
     pl1_to_pl2_training_dataset = Dataset.from_list([])
     print("No suitable training examples were generated for Python to C++.")
+    # Skip Phase 2 training if no examples
+    raise ValueError("No suitable training examples were generated for Python to C++.")
+
 
 """#### PL1 -> PL2 fine tuning"""
 
@@ -2599,15 +2614,15 @@ from transformers import Trainer, TrainingArguments, DataCollatorForLanguageMode
 
 # Tokenize the new training dataset for C++ to Python
 def tokenize_function_cpp_to_py(examples):
-    # Combine generated C++ code (prompt) and original Python code (target) into a single text string
+    # Combine generated Python code (prompt) and original C++ code (target) into a single text string
     full_texts = []
     for pl1_code, pl2_code in zip(examples['pl1_code_prompt'], examples['pl2_code_target']):
-        prompt = f"Convert the following Python code to C++:\n{pl1_code}\nPython code:\n"
+        prompt = f"Convert the following Python code to C++:\n{pl1_code}\nC++ code:\n"
         full_texts.append(prompt + pl2_code)
-    return tokenizer_codegen(full_texts, truncation=True, max_length=512)
+    return tokenizer_codegen(full_texts, truncation=True, max_length=256, padding='max_length')
 
 # Map the new training_dataset with the updated tokenize_function
-tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize_function_cpp_to_py, batched=True)
+tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize_function_cpp_to_py, batched=True, remove_columns=['pl1_code_prompt', 'pl2_code_target'])
 
 # Data collator for language modeling (will handle padding and labels for CausalLM)
 # Use the same data_collator as before
@@ -2616,14 +2631,16 @@ tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize
 # It's good practice to have separate output directories for different training phases
 training_args_py_to_cpp = TrainingArguments(
     output_dir="./codegen_lora_results_py_to_cpp",
-    per_device_train_batch_size=2, # Adjust based on GPU memory
-    gradient_accumulation_steps=4, # Increase if batch size is small
+    per_device_train_batch_size=1, # Adjust based on GPU memory
+    gradient_accumulation_steps=8, # Increase if batch size is small
     num_train_epochs=3, # Number of training epochs
     learning_rate=2e-4,
     logging_dir="./codegen_lora_logs_py_to_cpp",
     logging_steps=10,
     save_strategy="epoch", # Save checkpoint every epoch
     save_total_limit=1, # Only keep the best model
+    fp16=True, # Enable mixed precision training to save memory
+    remove_unused_columns=False, # Keep all columns to avoid dataset/model mismatch
 )
 
 # Initialize Trainer for the new training phase
@@ -2635,14 +2652,17 @@ trainer_py_to_cpp = Trainer(
 )
 
 # Start training
+print("\n"+"="*30+"\n")
 print("Starting LORA training for Python to C++ translation...")
 trainer_py_to_cpp.train()
 print("LORA training for Python to C++ complete.")
+print("\n"+"="*30+"\n")
 
 # Save the final LORA model (or the best model if validation is used)
 pl1_pl2_save_directory = "qwen_pl1_pl2_lora_adapter"
 model_codegen_lora.save_pretrained(pl1_pl2_save_directory)
 print(f"LORA adapter model saved to '{pl1_pl2_save_directory}'.")
+print("\n"+"="*30+"\n")
 
 """# Validation of the LORA fine tuned model
 

@@ -847,16 +847,16 @@ class LLMJudge(QwenModelBase):
             score = float(response_json.get("score", 0.0)) # Extract the score
 
             # Conditional printing of the full JSON response
-            if True: #not self._print_once:
-                print("\n--- LLM Judge Response ---")
-                print(json.dumps(response_json, indent=2))
-                print("-------------------------------------------")
-                self._print_once = True # Set flag to true after printing
+            # if True: #not self._print_once:
+            #     print("\n--- LLM Judge Response ---")
+            #     print(json.dumps(response_json, indent=2))
+            #     print("-------------------------------------------")
+            #     self._print_once = True # Set flag to true after printing
 
             return score
         except json.JSONDecodeError:
             print(f"Warning: Could not decode JSON response from LLM Judge:\n{response_str}")
-            print(f"\n*****************\n\Documentation:\n{documentation}\n*******************\nCode:\n{generated_code}\n")
+            print(f"\n*****************\nDocumentation:\n{documentation}\n*******************\nCode:\n{generated_code}\n")
             return 0.0 # Return 0.0 if JSON is invalid
         except ValueError:
             print(f"Warning: 'score' field not a valid number in JSON response:\n{response_str}")
@@ -1900,17 +1900,18 @@ class BaselineData(metaclass=SingletonMeta):
 
         return generated_code
 
-    def compute_baseline(self, num_records: Optional[int] = 100, num_tries: int = 3) -> list:
+    def compute_baseline(self, num_records: Optional[int] = 100, num_tries: int = 3,
+                        start_index: int = 0, update_cache: bool = True) -> list:
         """
         Computes a baseline score for a subset of the dataset in two phases.
-        Phase 1 (NL->PL) : Finds the best documetnation for the code, from a run of three times. Where the documentation
+        Phase 1 (NL->PL) : Finds the best documentation for the code, from a run of three times. Where the documentation
                 generated from code, the generated code is then compared against the ground truth code using the
                 AST similarity and the GraphCodeBERTScore (both averaged). The documentation that generates the highest
                 score is saved.
-       Phase 2 (PL1 -> PL2) : The second phase threre are three steps.
+       Phase 2 (PL1 -> PL2) : The second phase there are three steps.
             Step 1 For the C++ code the saved best documentation from phase 1 is taken and given to the model
                    to generate Python Code.
-            Step 2 is where the genereated Python code is given to the model to generate C++ code.
+            Step 2 is where the generated Python code is given to the model to generate C++ code.
             Step 3 is where the generated python code is AST and GraphBertScore compared (both values averaged)
                    with the ground truth C++ code.
 
@@ -1921,16 +1922,19 @@ class BaselineData(metaclass=SingletonMeta):
 
         Args:
             num_records (Optional[int]): The number of records to process from the dataset.
-                                        If None, processes all records.
+                                        If None, processes all records from start_index.
             num_tries (int): The number of times to attempt code generation and scoring
                              for each record to find the best documentation/code pair.
+            start_index (int): The starting index in the cached dataset. Default 0 for baseline.
+            update_cache (bool): Whether to update the internal caches with results.
+                                 Set to False for validation runs to avoid overwriting.
 
         Returns:
             list: A list of dictionaries, each containing the hexsha, best AST score (NL->PL),
                   best GraphCodeBERT score (NL->PL), average score (NL->PL), and for Python records,
                   the best AST, GCB, and average scores for the NL->C++->Python translation.
         """
-        print(f"\nStarting baseline computation for {num_records if num_records is not None else 'all'} records (each with {num_tries} tries per phase)...")
+        print(f"\nStarting computation for {num_records if num_records is not None else 'all'} records (starting from index {start_index}, each with {num_tries} tries per phase)...")
         # Reset GPU state before starting
         if torch.cuda.is_available():
             print(f"\nSynchronizing CUDA and empty cache")
@@ -1941,9 +1945,13 @@ class BaselineData(metaclass=SingletonMeta):
         processed_count = 0
 
         # Use the cached dataset instead of streaming
-        print(f"Using cached dataset with {len(self._cached_dataset)} samples...")
+        total_cached = len(self._cached_dataset)
+        print(f"Using cached dataset with {total_cached} samples...")
 
-        for i in range(len(self._cached_dataset)):
+        # Calculate end index
+        end_index = total_cached if num_records is None else min(start_index + num_records, total_cached)
+
+        for i in range(start_index, end_index):
             if num_records is not None and processed_count >= num_records:
                 break
 
@@ -2035,11 +2043,13 @@ class BaselineData(metaclass=SingletonMeta):
                         #generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
                         generated_python_candidate = self._qwen_code_generator._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
                         if generated_python_candidate.strip():
-                            print(f"----------\nInput to LLM Judge documentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
                             llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
+                            print(f"LLM Judge Score: {llm_judge_current_score}")
                             if llm_judge_current_score > best_llm_judge_score_for_intermediate_python:
                                 best_llm_judge_score_for_intermediate_python = llm_judge_current_score
                                 best_generated_python_code_for_phase2 = generated_python_candidate
+                            if llm_judge_current_score <= 0.3:
+                                print(f"----------\nInput to LLM Judge\nDocumentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
 
                     generated_python_code_from_doc = best_generated_python_code_for_phase2
 
@@ -2086,7 +2096,8 @@ class BaselineData(metaclass=SingletonMeta):
                         best_avg_score_nl_pl1_pl2 = current_best_avg_phase2
 
             # Update the FilteredDataset's internal caches with the best results from both phases
-            if best_average_score_nl_pl > -1.0: # Only update if Phase 1 was successful
+            # Only update if update_cache is True (skip for validation runs to avoid overwriting)
+            if best_average_score_nl_pl > -1.0 and update_cache: # Only update if Phase 1 was successful and caching enabled
                 self._filtered_dataset.update_documentation(original_hexsha, best_documentation)
                 self._filtered_dataset.update_scores(
                     record_identifier=original_hexsha,
@@ -2112,6 +2123,7 @@ class BaselineData(metaclass=SingletonMeta):
 
                 record_result = {
                     'hexsha': original_hexsha,
+                    'language': language,
                     'nl_pl_best_ast_score': best_ast_score_nl_pl,
                     'nl_pl_best_graphcodebert_score': best_graphcodebert_score_nl_pl,
                     'nl_pl_best_average_score': best_average_score_nl_pl
@@ -2131,6 +2143,102 @@ class BaselineData(metaclass=SingletonMeta):
                       (f", NL->C++->Py Avg Score: {best_avg_score_nl_pl1_pl2:.4f}" if best_avg_score_nl_pl1_pl2 is not None else ""))
 
         return results
+
+    def compute_validation(self, num_records: Optional[int] = 100, num_tries: int = 3,
+                          start_index: int = 0) -> list:
+        """
+        Computes validation scores using the same logic as compute_baseline but without updating caches.
+
+        Args:
+            num_records (Optional[int]): The number of records to process from the dataset.
+            num_tries (int): The number of tries for code generation per record.
+            start_index (int): The starting index in the cached dataset.
+
+        Returns:
+            list: A list of dictionaries containing scores for each processed record.
+        """
+        return self.compute_baseline(
+            num_records=num_records,
+            num_tries=num_tries,
+            start_index=start_index,
+            update_cache=False
+        )
+
+    def compute_summary(self, results: list) -> dict:
+        """
+        Computes summary statistics from baseline/validation results.
+
+        Args:
+            results (list): List of result dictionaries from compute_baseline or compute_validation.
+
+        Returns:
+            dict: Summary statistics including average scores, separated by language.
+        """
+        if not results:
+            return {"error": "No results to summarize"}
+
+        # Separate Python and C++ results
+        python_results = [r for r in results if r.get('language', '').lower() == 'python']
+        cpp_results = [r for r in results if r.get('language', '').lower() in ['c++', 'cpp']]
+
+        # Overall scores
+        nl_pl_scores = [r['nl_pl_best_average_score'] for r in results if r.get('nl_pl_best_average_score') is not None]
+        nl_pl_ast_scores = [r['nl_pl_best_ast_score'] for r in results if r.get('nl_pl_best_ast_score') is not None]
+        nl_pl_gcb_scores = [r['nl_pl_best_graphcodebert_score'] for r in results if r.get('nl_pl_best_graphcodebert_score') is not None]
+
+        # NL->PL1->PL2 scores (C++ records only)
+        nl_pl1_pl2_scores = [r.get('nl_pl1_pl2_best_average_score') for r in cpp_results
+                            if r.get('nl_pl1_pl2_best_average_score') is not None]
+        nl_pl1_pl2_ast_scores = [r.get('nl_pl1_pl2_best_ast_score') for r in cpp_results
+                                  if r.get('nl_pl1_pl2_best_ast_score') is not None]
+        nl_pl1_pl2_gcb_scores = [r.get('nl_pl1_pl2_best_graphcodebert_score') for r in cpp_results
+                                 if r.get('nl_pl1_pl2_best_graphcodebert_score') is not None]
+
+        summary = {
+            "total_records": len(results),
+            "python_records": len(python_results),
+            "cpp_records": len(cpp_results),
+            "nl_pl_phase": {
+                "average_score": sum(nl_pl_scores) / len(nl_pl_scores) if nl_pl_scores else 0,
+                "average_ast_score": sum(nl_pl_ast_scores) / len(nl_pl_ast_scores) if nl_pl_ast_scores else 0,
+                "average_gcb_score": sum(nl_pl_gcb_scores) / len(nl_pl_gcb_scores) if nl_pl_gcb_scores else 0
+            }
+        }
+
+        # Python-specific summary
+        if python_results:
+            python_pl_scores = [r['nl_pl_best_average_score'] for r in python_results if r.get('nl_pl_best_average_score') is not None]
+            python_pl_ast_scores = [r['nl_pl_best_ast_score'] for r in python_results if r.get('nl_pl_best_ast_score') is not None]
+            python_pl_gcb_scores = [r['nl_pl_best_graphcodebert_score'] for r in python_results if r.get('nl_pl_best_graphcodebert_score') is not None]
+            summary["python_nl_pl_phase"] = {
+                "count": len(python_results),
+                "average_score": sum(python_pl_scores) / len(python_pl_scores) if python_pl_scores else 0,
+                "average_ast_score": sum(python_pl_ast_scores) / len(python_pl_ast_scores) if python_pl_ast_scores else 0,
+                "average_gcb_score": sum(python_pl_gcb_scores) / len(python_pl_gcb_scores) if python_pl_gcb_scores else 0
+            }
+
+        # C++-specific summary
+        if cpp_results:
+            cpp_pl_scores = [r['nl_pl_best_average_score'] for r in cpp_results if r.get('nl_pl_best_average_score') is not None]
+            cpp_pl_ast_scores = [r['nl_pl_best_ast_score'] for r in cpp_results if r.get('nl_pl_best_ast_score') is not None]
+            cpp_pl_gcb_scores = [r['nl_pl_best_graphcodebert_score'] for r in cpp_results if r.get('nl_pl_best_graphcodebert_score') is not None]
+            summary["cpp_nl_pl_phase"] = {
+                "count": len(cpp_results),
+                "average_score": sum(cpp_pl_scores) / len(cpp_pl_scores) if cpp_pl_scores else 0,
+                "average_ast_score": sum(cpp_pl_ast_scores) / len(cpp_pl_ast_scores) if cpp_pl_ast_scores else 0,
+                "average_gcb_score": sum(cpp_pl_gcb_scores) / len(cpp_pl_gcb_scores) if cpp_pl_gcb_scores else 0
+            }
+
+        # NL->PL1->PL2 summary (C++ records only)
+        if nl_pl1_pl2_scores:
+            summary["nl_pl1_pl2_phase"] = {
+                "count": len(nl_pl1_pl2_scores),
+                "average_score": sum(nl_pl1_pl2_scores) / len(nl_pl1_pl2_scores),
+                "average_ast_score": sum(nl_pl1_pl2_ast_scores) / len(nl_pl1_pl2_ast_scores),
+                "average_gcb_score": sum(nl_pl1_pl2_gcb_scores) / len(nl_pl1_pl2_gcb_scores)
+            }
+
+        return summary
 
 from typing import Optional # Added import
 import os
@@ -2182,10 +2290,17 @@ baseline_evaluator = BaselineData(num_samples = MAX_DATASET_SIZE, load_all_model
 # Load all models needed for baseline computation
 baseline_evaluator._load_all_models()
 
-# Set num_records_for_full_eval to None to process all records, or specify a number.
-num_records_for_full_eval: Optional[int] = None # Process all records
-# If you want to process a specific number of records for testing, uncomment and set the value:
-num_records_for_full_eval = 10
+# Dataset split configuration:
+# - Records 0 to MAX_DATASET_SIZE/3-1: Baseline computation
+# - Records MAX_DATASET_SIZE/3 to MAX_DATASET_SIZE*2/3-1: LORA training
+# - Records MAX_DATASET_SIZE*2/3 to MAX_DATASET_SIZE-1: LORA validation
+MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 3
+MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 3
+MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 3
+
+num_records_for_full_eval: Optional[int] = MAX_RECORDS_BASELINE
+# For testing with smaller dataset, uncomment:
+# num_records_for_full_eval = 10
 
 num_generation_tries_eval = 3 # Number of tries for code generation per record
 
@@ -2194,84 +2309,46 @@ full_baseline_results = baseline_evaluator.compute_baseline(
     num_tries=num_generation_tries_eval
 )
 
-# Calculate and display accuracy metrics
-overall_scores_nl_pl = []
-python_scores_nl_pl = []
-cpp_scores_nl_pl = []
+# Compute baseline summary
+baseline_summary = baseline_evaluator.compute_summary(full_baseline_results)
+baseline_summary_desription = "\n\n"+"*"*30+"\n\n"
+baseline_summary_desription += f"\nBaseline Summary:"
+baseline_summary_desription += f"  Total records processed: {baseline_summary.get('total_records', 0)}"
+baseline_summary_desription += f"    - Python records: {baseline_summary.get('python_records', 0)}"
+baseline_summary_desription += f"    - C++ records: {baseline_summary.get('cpp_records', 0)}"
+baseline_summary_desription += f"  NL->PL Average Score: {baseline_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+baseline_summary_desription += f"  NL->PL AST Score: {baseline_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+baseline_summary_desription += f"  NL->PL GCB Score: {baseline_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
 
-overall_scores_nl_pl1_pl2 = [] # New list for Phase 2 scores
-python_scores_nl_pl1_pl2 = [] # New list for Phase 2 scores (only for Python)
+if 'python_nl_pl_phase' in baseline_summary:
+    py = baseline_summary['python_nl_pl_phase']
+    baseline_summary_desription += f"  Python NL->PL Average Score: {py.get('average_score', 0):.4f} (n={py.get('count', 0)})"
 
-# Assuming `FilteredDataset` holds the up-to-date information after `compute_baseline`.
-# We'll use the filtered_dataset_instance managed by BaselineData to retrieve language info.
-# Make sure to reset its iterator to start fresh, and then iterate through it
-# to get the language for each hexsha that was processed and has scores in `full_baseline_results`.
-filtered_dataset_instance_for_metrics = baseline_evaluator._filtered_dataset
-filtered_dataset_instance_for_metrics.reset_iterator()
+if 'cpp_nl_pl_phase' in baseline_summary:
+    cpp = baseline_summary['cpp_nl_pl_phase']
+    baseline_summary_desription += f"  C++ NL->PL Average Score: {cpp.get('average_score', 0):.4f} (n={cpp.get('count', 0)})"
 
-# Create a dictionary to quickly look up scores by hexsha
-results_by_hexsha = {res['hexsha']: res for res in full_baseline_results}
+if 'nl_pl1_pl2_phase' in baseline_summary:
+    pl1_pl2 = baseline_summary['nl_pl1_pl2_phase']
+    baseline_summary_desription += f"  NL->PL1->PL2 Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
 
-# Iterate through the filtered_dataset and collect scores for processed records
-processed_for_metrics_count = 0
-for record in filtered_dataset_instance_for_metrics:
-    # We only care about records that were actually processed and have results
-    hexsha = record.get('hexsha')
-    if hexsha in results_by_hexsha:
-      score_data = results_by_hexsha[hexsha]
+print(baseline_summary_desription)
+# ============================================================================
+# LORA Training Phase
+# ============================================================================
 
-      # Collect scores for Phase 1 (NL->PL)
-      avg_score_nl_pl = score_data['nl_pl_best_average_score']
-      overall_scores_nl_pl.append(avg_score_nl_pl)
-
-      language = record.get('language')
-      if language.lower() in ['c++', 'cpp']:
-        python_scores_nl_pl.append(avg_score_nl_pl)
-        # Collect scores for Phase 2 (NL->PL1->PL2) for C++ records
-        if score_data['nl_pl1_pl2_best_average_score'] is not None:
-          avg_score_nl_pl1_pl2 = score_data['nl_pl1_pl2_best_average_score']
-          overall_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
-          python_scores_nl_pl1_pl2.append(avg_score_nl_pl1_pl2)
-      elif language.lower() == 'python':
-        cpp_scores_nl_pl.append(avg_score_nl_pl)
-
-      processed_for_metrics_count += 1
-      # If a specific number of records was processed, we stop once we have enough scores for metrics
-      if num_records_for_full_eval is not None and processed_for_metrics_count >= num_records_for_full_eval:
-        break
-
-# Calculate averages for Phase 1 (NL->PL)
-overall_average_accuracy_nl_pl = sum(overall_scores_nl_pl) / len(overall_scores_nl_pl) if overall_scores_nl_pl else 0.0
-python_average_accuracy_nl_pl = sum(python_scores_nl_pl) / len(python_scores_nl_pl) if python_scores_nl_pl else 0.0
-cpp_average_accuracy_nl_pl = sum(cpp_scores_nl_pl) / len(cpp_scores_nl_pl) if cpp_scores_nl_pl else 0.0
-
-# Calculate averages for Phase 2 (NL->PL1->PL2)
-overall_average_accuracy_nl_pl1_pl2 = sum(overall_scores_nl_pl1_pl2) / len(overall_scores_nl_pl1_pl2) if overall_scores_nl_pl1_pl2 else 0.0
-python_average_accuracy_nl_pl1_pl2 = sum(python_scores_nl_pl1_pl2) / len(python_scores_nl_pl1_pl2) if python_scores_nl_pl1_pl2 else 0.0
-
-print("\n--- Final Accuracy Baselines ---")
-print(f"\nPhase 1 (NL->PL) Evaluation:")
-print(f"Overall Average Code Generation Accuracy (NL->PL): {overall_average_accuracy_nl_pl:.4f} (based on {len(overall_scores_nl_pl)} records)")
-print(f"Python Average Code Generation Accuracy (NL->PL):    {python_average_accuracy_nl_pl:.4f} (based on {len(python_scores_nl_pl)} records)")
-print(f"C++ Average Code Generation Accuracy (NL->PL):       {cpp_average_accuracy_nl_pl:.4f} (based on {len(cpp_scores_nl_pl)} records)")
-
-print(f"\nPhase 2 (NL->Python->C++) Evaluation for Python:")
-print(f"Redundant: Overall Average Code Generation Accuracy (NL->Python->C++): {overall_average_accuracy_nl_pl1_pl2:.4f} (based on {len(overall_scores_nl_pl1_pl2)} records)")
-print(f"Python Average Code Generation Accuracy (NL->Python->C++):    {python_average_accuracy_nl_pl1_pl2:.4f} (based on {len(python_scores_nl_pl1_pl2)} records)")
-
-"""# Create LORA of codegen-multi-350B for code generation where the input is code documentation and output is the code.
-
+"""
 ### Load the Codegen-350M-multi model
 #### Lora Adapt
 #### For the C++ and python code, get one, get the documentation, give model the documentation and let it generate the code.
 #### The generated code must be same as the code for which the documetation was generated.
 
 #### The second set of train is where we give documentation of a python code and have the model generate C++ Code:
- 1. Take C++ code.
- 2. generate documentation,
- 3. Generated documentation input to model to genreate Python Code
- 4. Python Code as input to model to generate C++ Code
- 5. C++ code comparison gives the loss.
+# 1. Take C++ code.
+# 2. generate documentation,
+# 3. Generated documentation input to model to genreate Python Code
+# 4. Python Code as input to model to generate C++ Code
+# 5. C++ code comparison gives the loss.
 """
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -2302,9 +2379,8 @@ print("Printing modules in Qwen2.5-Coder-7B-Instruct model")
 for name, module in model_codegen.named_modules():
     print(f"\t{name}")
 
-#"""### LORA Adaptation for `codegen-350M-multi`
-"""### LORA Adaptation for `Qwen/Qwen2.5-Coder-7B-Instruct`
-
+"""
+### LORA Adaptation for `Qwen/Qwen2.5-Coder-7B-Instruct`
 Set up Low-Rank Adaptation (LORA) for the `Qwen/Qwen2.5-Coder-7B-Instruct. This allows us to fine-tune the model efficiently without modifying all its parameters. We'll specify the LORA configuration, including the rank (`r`), alpha (`lora_alpha`), dropout (`lora_dropout`), and target modules (the layers to apply LORA to).
 
 """
@@ -2380,17 +2456,31 @@ filtered_dataset_instance = baseline_evaluator._filtered_dataset
 documentation_generator = baseline_evaluator._documentation_generator
 
 # Collect C++ examples for LORA training (NL->C++)
+# Dataset split: records from MAX_RECORDS_BASELINE to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
 lora_nl_cpp_examples = []
-MAX_RECORDS_FOR_LORA_NL_CPP = 2 # Define a limit for the LORA dataset, adjust as needed
-if MAX_RECORDS_FOR_LORA_NL_CPP >= MAX_DATASET_SIZE:
-    raise ValueError(f"Training Records for LORA {MAX_RECORDS_FOR_LORA_NL_CPP} > Datasize size {MAX_DATASET_SIZE}")
+MAX_RECORDS_FOR_LORA_NL_CPP = MAX_RECORDS_LORA_TRAINING
 
-print(f"Collecting {MAX_RECORDS_FOR_LORA_NL_CPP} C++ records for LORA NL->C++ training...")
+print(f"Collecting {MAX_RECORDS_FOR_LORA_NL_CPP} C++ records for LORA NL->C++ training (records {MAX_RECORDS_BASELINE} to {MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING - 1})...")
 
 # Reset iterators to start from begining
 filtered_dataset_instance.reset_iterator()
 # Get a fresh iterator for the C++ stream only
 cpp_stream_iterator = filtered_dataset_instance.get_cpp_stream_iterator()
+
+# Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
+skip_count = MAX_RECORDS_BASELINE
+skipped_records = 0
+while skipped_records < skip_count:
+    try:
+        next(cpp_stream_iterator)
+        skipped_records += 1
+        if skipped_records % 100 == 0:
+            print(f"Skipped {skipped_records} records for baseline...")
+    except StopIteration:
+        print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
+        break
+
+print(f"Skipped {skipped_records} records. Starting LORA training data collection from record {skip_count + 1}...")
 
 processed_cpp_records = 0
 for record in tqdm(cpp_stream_iterator, desc=f"Processing C++ records for LORA NL->C++ data {processed_cpp_records}/{MAX_RECORDS_FOR_LORA_NL_CPP}"):
@@ -2537,7 +2627,7 @@ def generate_code_from_documentation(model, tokenizer, documentation: str, targe
 
 pl1_to_pl2_training_examples = []
 processed_python_records = 0
-MAX_RECORDS_FOR_LORA_CPP_TO_PY = 10 # Limit for demonstration, adjust as needed
+MAX_RECORDS_FOR_LORA_CPP_TO_PY = MAX_RECORDS_LORA_TRAINING
 
 # Unload models not needed for LORA training to free memory
 baseline_evaluator.unload_model("qwen_generator")
@@ -2547,8 +2637,26 @@ baseline_evaluator.unload_model("ast")
 # Load only models needed for LORA training (memory efficient)
 baseline_evaluator.load_models_for_lora_training()
 
-# Get a fresh iterator for the C++ stream only
+# Reset iterator and get fresh C++ stream
+baseline_evaluator._filtered_dataset.reset_iterator()
 pl2_stream_iterator = baseline_evaluator._filtered_dataset.get_cpp_stream_iterator()
+
+# Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
+# Then process MAX_RECORDS_LORA_TRAINING records for training
+# Note: We need a new iterator since Phase 1 consumed the first MAX_RECORDS_LORA_TRAINING records after baseline
+skip_count = MAX_RECORDS_BASELINE
+skipped_records = 0
+while skipped_records < skip_count:
+    try:
+        next(pl2_stream_iterator)
+        skipped_records += 1
+        if skipped_records % 100 == 0:
+            print(f"Skipped {skipped_records} records for baseline...")
+    except StopIteration:
+        print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
+        break
+
+print(f"Skipped {skipped_records} records. Starting Phase 2 LORA training data collection from record {skip_count + 1}...")
 
 for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to Python data"):
     if processed_python_records >= MAX_RECORDS_FOR_LORA_CPP_TO_PY:
@@ -2581,9 +2689,12 @@ for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to 
         if generated_pl1_candidate.strip():
             # Call the LLM Judge
             llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(pl2_documentation, generated_pl1_candidate)
+            print(f"LLM Judge Score: {llm_judge_current_score}")
             if llm_judge_current_score > best_llm_judge_score_for_intermediate_pl1:
                 best_llm_judge_score_for_intermediate_pl1 = llm_judge_current_score
                 best_generated_pl1_code_for_phase2 = generated_pl1_candidate
+            if llm_judge_current_score <= 0.3:
+                print(f"----------\nInput to LLM Judge\nDocumentation{pl2_documentation}\n------------\nCode:{generated_pl1_candidate}")
 
     generated_pl1_code = best_generated_pl1_code_for_phase2
 
@@ -2658,139 +2769,113 @@ trainer_py_to_cpp.train()
 print("LORA training for Python to C++ complete.")
 print("\n"+"="*30+"\n")
 
+import sys
+sys.exit(0)
+
 # Save the final LORA model (or the best model if validation is used)
 pl1_pl2_save_directory = "qwen_pl1_pl2_lora_adapter"
 model_codegen_lora.save_pretrained(pl1_pl2_save_directory)
 print(f"LORA adapter model saved to '{pl1_pl2_save_directory}'.")
 print("\n"+"="*30+"\n")
 
-"""# Validation of the LORA fine tuned model
+# ============================================================================
+# LORA Validation Phase
+# Dataset split: records from MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+# to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING + MAX_RECORDS_LORA_VALIDATION
+# ============================================================================
+print("\n"+"="*30+"\n")
+print("Starting LORA model validation phase...")
 
-## Dataset used:
-## Step 1: Generate documenation of the python code, unless it is already availabel in the dataset.
-## Step 2: Generate C++ code from the documentation
-## Step 3: Use the LORA fine tuned codegen-350 multi to generate python code for the C++ Code.
-## Step 4: for the genreated python code and the ground truch python code, use AST compare and the GraphCodeBERTScore to compare the two. Avreage the two scores for the record.
-## Run Steps 1 to 4 for each record which is for python code. Then over all the records take acreage of the accruacy of the C++ to python. This is the accuracy of the LROA fine tuned model.
-"""
+# Load the fine-tuned LORA model for validation
+print("Loading fine-tuned LORA model for validation...")
+from peft import PeftModel
 
-import io
-import sys
+# Load the base model and apply the LORA adapter
+base_model = AutoModelForCausalLM.from_pretrained(
+    "Qwen/Qwen2.5-Coder-7B-Instruct",
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
+base_model = base_model.to(baseline_evaluator._preferred_device)
 
-def execute_and_verify_python_code(code_string: str, expected_output: str = None, test_cases: list = None) -> int:
-    """
-    Executes a given Python code string and verifies its execution success and, optionally, its intent.
+# Load the LORA adapter
+lora_adapter_path = "qwen_pl1_pl2_lora_adapter"
+finetuned_model = PeftModel.from_pretrained(base_model, lora_adapter_path)
+finetuned_model.eval()
+print(f"Fine-tuned LORA model loaded from '{lora_adapter_path}'")
 
-    Args:
-        code_string (str): The Python code to execute.
-        expected_output (str, optional): The expected standard output from the code.
-        test_cases (list, optional): A list of dictionaries, where each dict has 'input' and 'expected_output'
-                                     for function-level testing. This requires parsing the function from code_string.
+# Create a custom generator for the fine-tuned model
+class FineTunedGenerator:
+    def __init__(self, model, tokenizer, device):
+        self._model = model
+        self._tokenizer = tokenizer
+        self._device = device
 
-    Returns:
-        int: 1 if the code executes successfully and (optionally) meets intent, 0 otherwise.
-    """
-    print("\n--- Executing Generated Python Code ---")
-    # Prepare to capture stdout and stderr
-    old_stdout = sys.stdout
-    old_stderr = sys.stderr
-    redirected_output = io.StringIO()
-    redirected_error = io.StringIO()
-    sys.stdout = redirected_output
-    sys.stderr = redirected_error
+    def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
+        """Generate code using the fine-tuned model"""
+        prompt = f"Generate {target_lang} code:\n{documentation}\n\n{target_lang} code:"
+        inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).to(self._device)
 
-    success = 0
-    try:
-        # Execute the code. Use a local dictionary for execution context.
-        # This prevents the executed code from polluting the global namespace.
-        exec_globals = {}
-        exec_locals = {}
-        exec(code_string, exec_globals, exec_locals)
+        with torch.no_grad():
+            outputs = self._model.generate(
+                **inputs,
+                max_new_tokens=256,
+                do_sample=True,
+                temperature=0.7,
+                top_p=0.9,
+                pad_token_id=self._tokenizer.eos_token_id
+            )
 
-        captured_stdout = redirected_output.getvalue()
-        captured_stderr = redirected_error.getvalue()
-
-        if captured_stderr:
-            print(f"Code execution produced errors: {captured_stderr}")
-            return 0 # Execution failed due to stderr
-
-        # --- Intent Verification (User-defined) ---
-        # This is a placeholder. You'll need to customize this part
-        # based on the specific functionality the generated code is expected to achieve.
-        # For example, if the code defines a function, you might call it here and check its return value.
-
-        if test_cases:
-            # Example: If the code defines a function 'my_function', you can test it
-            if 'my_function' in exec_locals: # Replace 'my_function' with the actual function name
-                for test in test_cases:
-                    test_input = test['input']
-                    test_expected_output = test['expected_output']
-                    try:
-                        # Assuming 'my_function' takes one argument and returns a value
-                        actual_output = exec_locals['my_function'](test_input) # Replace 'my_function' and args
-                        if actual_output == test_expected_output:
-                            print(f"Test case passed for input {test_input}: Expected {test_expected_output}, Got {actual_output}")
-                        else:
-                            print(f"Test case FAILED for input {test_input}: Expected {test_expected_output}, Got {actual_output}")
-                            return 0 # Test case failed
-                    except Exception as e:
-                        print(f"Error during test case execution for input {test_input}: {e}")
-                        return 0 # Test case execution failed
-            else:
-                print("Warning: 'my_function' (or your target function) not found in generated code.")
-                return 0
-
-        if expected_output and captured_stdout != expected_output:
-            print(f"Output mismatch. Expected: '{expected_output}', Got: '{captured_stdout}'")
-            # return 0 # Uncomment if strict output matching is required
-        elif expected_output and captured_stdout == expected_output:
-            print(f"Output matched expected output: {captured_stdout}")
-
-        print("Code executed successfully.")
-        success = 1
-
-    except Exception as e:
-        captured_stderr = redirected_error.getvalue()
-        if captured_stderr:
-            print(f"Runtime Error: {captured_stderr}")
+        generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
+        # Extract just the code part
+        if target_lang.lower() in generated_text.lower():
+            code_start = generated_text.lower().find(target_lang.lower())
+            generated_code = generated_text[code_start:]
         else:
-            print(f"Runtime Error: {e}")
-        success = 0
-    finally:
-        # Restore stdout and stderr
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
-        if success == 1:
-            print("Code verification: SUCCESS")
-        else:
-            print("Code verification: FAILURE")
-    return success
+            generated_code = generated_text
 
-# --- Example Usage (Uncomment to test) ---
-# sample_generated_python_code = """
-# def add_numbers(a, b):
-#     return a + b
-# print(add_numbers(5, 3))
-# """
-# # Test case where the code runs successfully and output matches
-# result_success = execute_and_verify_python_code(
-#     sample_generated_python_code,
-#     expected_output="8\n", # Expected output from print(add_numbers(5, 3))
-#     test_cases=[{'input': (2, 3), 'expected_output': 5}] # Example for testing defined functions
-# )
-# print(f"Verification result (success): {result_success}")
+        return generated_code
 
-# sample_generated_python_code_error = """
-# print(1 / 0) # This will cause a ZeroDivisionError
-# """
-# # Test case where the code produces an error
-# result_failure = execute_and_verify_python_code(sample_generated_python_code_error)
-# print(f"Verification result (failure): {result_failure}")
+finetuned_generator = FineTunedGenerator(finetuned_model, tokenizer_codegen, baseline_evaluator._preferred_device)
 
-# sample_generated_python_code_no_output = """
-# x = 10
-# y = 20
-# """
-# # Test case where there is no explicit output
-# result_no_output = execute_and_verify_python_code(sample_generated_python_code_no_output)
-# print(f"Verification result (no output expected): {result_no_output}")
+# Temporarily replace the model in baseline_evaluator for validation
+original_generator = baseline_evaluator._qwen_code_generator
+baseline_evaluator._qwen_code_generator = finetuned_generator
+
+# Compute validation scores using the fine-tuned model
+validation_start_index = MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+validation_results = baseline_evaluator.compute_validation(
+    num_records=MAX_RECORDS_LORA_VALIDATION,
+    num_tries=3,
+    start_index=validation_start_index
+)
+
+# Restore original generator
+baseline_evaluator._qwen_code_generator = original_generator
+
+# Compute summary statistics
+validation_summary = baseline_evaluator.compute_summary(validation_results)
+validation_summary_description = "\n\n"+"*"*30+"\n\n"
+validation_summary_description += f"\nValidation Summary (using fine-tuned LORA model):"
+validation_summary_description += f"  Total records processed: {validation_summary.get('total_records', 0)}"
+validation_summary_description += f"    - Python records: {validation_summary.get('python_records', 0)}"
+validation_summary_description += f"    - C++ records: {validation_summary.get('cpp_records', 0)}"
+validation_summary_description += f"  NL->PL Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+validation_summary_description += f"  NL->PL AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+validation_summary_description += f"  NL->PL GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
+
+if 'python_nl_pl_phase' in validation_summary:
+    py = validation_summary['python_nl_pl_phase']
+    validation_summary_description += f"  Python NL->PL Average Score: {py.get('average_score', 0):.4f} (n={py.get('count', 0)})"
+
+if 'cpp_nl_pl_phase' in validation_summary:
+    cpp = validation_summary['cpp_nl_pl_phase']
+    validation_summary_description += f"  C++ NL->PL Average Score: {cpp.get('average_score', 0):.4f} (n={cpp.get('count', 0)})"
+
+if 'nl_pl1_pl2_phase' in validation_summary:
+    pl1_pl2 = validation_summary['nl_pl1_pl2_phase']
+    validation_summary_description += f"  NL->PL1->PL2 Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+
+print("\n"+"="*30+"\n")
+print(baseline_summary_desription)
+print(validation_summary_description)

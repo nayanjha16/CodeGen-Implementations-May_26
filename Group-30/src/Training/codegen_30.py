@@ -32,9 +32,9 @@ Install all the necessary packages
 #from google.colab import userdata
 import os
 # Force CPU to wait for GPU
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+#os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 # Described debug output from GPU
-os.environ["TORCH_USE_CUDA_DSA"] = "1"
+#os.environ["TORCH_USE_CUDA_DSA"] = "1"
 # Force on single GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -224,70 +224,33 @@ class CodeDocumentationGenerator(QwenModelBase):
     #   model_inputs = self._tokenizer([text], return_tensors="pt").to(self.device)
 
       if prompt is None:
-        #prompt = f"generate good detailed documentation for what this software code does, do not include a pseudo code or example usage, just the intent of what the program should do, if it follows a design pattern, what actions to take under what conditions. The first line of the documentation should start with 'A software program in ProgLang, where ProgLan is the programming language of the program: {code}"
-        prompt = f"""
-                Convert the following source code into a compact semantic specification.
-                The specification must be concise but complete enough that another instance of Qwen2.5-Coder-7B-Instruct can regenerate equivalent source code.
-                Prefer structured pseudocode over English.
-                Do not generate source code.
-                Source Code
-            """
+        prompt = f"""Generate comprehensive natural language documentation for the following source code.
+                The documentation should describe what the program does in clear English paragraphs.
+                Include all classes, their fields, methods, and the purpose of each component.
+                Describe the algorithms, control flow, and any important logic in plain language.
+                This documentation will be used by another instance of Qwen2.5-Coder-7B-Instruct to regenerate equivalent source code.
+
+                Source Code:
+                {code}"""
       else:
         prompt = f"{prompt}"
 
-      system_prompt=f"""
-            You are an expert software reverse engineering assistant.
-            Your task is to convert source code into a compact semantic specification.
-            The specification will later be used by another instance of Qwen2.5-Coder-7B-Instruct to regenerate equivalent source code.
-            Your goal is to minimize the number of tokens while preserving enough information for faithful code reconstruction.
+      system_prompt = f"""You are an expert software reverse engineering assistant.
+            Your task is to convert source code into comprehensive natural language documentation.
+            The documentation should be detailed enough that another instance of Qwen2.5-Coder-7B-Instruct can regenerate equivalent source code.
 
             Requirements
 
                 1. Automatically detect the programming language as either Python or C++
-                2. Preserve namespaces, classes, structs, enums and global variables.
-                3. Preserve every function and constructor.
-                4. Preserve function names, parameter names, parameter order and return types.
-                5. Preserve fields and member variables.
-                6. Preserve the complete algorithm.
-                7. Preserve all control flow (if, switch, loops, recursion, exceptions).
-                8. Preserve important library and API calls.
-                9. Preserve object relationships.
-                10. Do not explain syntax.
-                11. Do not add commentary.
-                12. Do not describe obvious operations.
-                13. Do not repeat information.
-                14. Compress repetitive code patterns into a single template when safe.
-                15. Merge identical overloads by describing the varying parameter types only.
-                16. Use concise pseudocode instead of English sentences.
-                17. Produce deterministic output.
-
-                Output format
-
-                PROGRAM
-                Language
-
-                GLOBALS
-
-                CLASS
-
-                Fields
-
-                Constructors
-
-                Methods
-
-                FREE FUNCTIONS
-
-                For each method use:
-
-                METHOD
-                Name
-                Parameters
-                Returns
-
-                Algorithm
-
-                Dependencies
+                2. Describe all classes, structs, and their purposes
+                3. Document all fields and member variables with their types and purposes
+                4. Describe every function and method, including parameter names, types, and return values
+                5. Explain the algorithms and control flow in plain English
+                6. Describe any global variables and standalone functions
+                7. Include important library and API calls
+                8. Use clear, descriptive paragraphs - not pseudocode or structured formats
+                9. Start with a high-level overview of the program's purpose
+                10. Be specific about parameter names, types, and method signatures
             """
 
       messages = [
@@ -433,28 +396,57 @@ class QwenCodeGenerator(QwenModelBase):
             target_lang_lower = 'cpp'
             prompt = f"Convert the following Python code to C++ code:\n{input_text}\nC++ code:"
         else:
-            # Build prompt based on target language
+            # Build prompt based on target language - optimized for natural language documentation
             if target_lang_lower in ['python']:
-                prompt = f"Generate Python code from the Semantic Specification:\n{input_text}\nPython code:"
+                prompt = f"""Based on the following natural language documentation, generate complete Python code:
+
+{input_text}
+
+Requirements:
+- Include all described classes, functions, and variables
+- Infer appropriate types and parameter names from context
+- Implement all described behavior
+- Use idiomatic Python conventions
+
+Generated Python code:"""
             elif target_lang_lower.lower() in ['cpp', 'c++']:
-                prompt = f"Generate C++ code from the Semantic Specification:\n{input_text}\nC++ code:"
+                prompt = f"""Based on the following natural language documentation, generate complete C++ code:
+
+{input_text}
+
+Requirements:
+- Include all described classes, functions, and variables
+- Infer appropriate types and parameter names from context
+- Implement all described behavior
+- Use idiomatic C++ conventions
+
+Generated C++ code:"""
             else:
                 # Default to Python if unknown
-                prompt = f"Generate Python code from the following documentation:\n{input_text}\nPython code:"
+                prompt = f"""Based on the following natural language documentation, generate complete source code:
 
-        system_prompt = f"""You are an expert software engineer.
+{input_text}
 
-                            Generate complete, correct, and idiomatic source code from a compact semantic specification.
+Requirements:
+- Include all described classes, functions, and variables
+- Infer appropriate types and parameter names from context
+- Implement all described behavior
+
+Generated code:"""
+
+        system_prompt = f"""You are an expert {target_lang_lower} software engineer.
+
+                            Generate complete, correct, and idiomatic source code from natural language documentation.
 
                             Requirements
 
-                            1. Preserve all algorithms.
-                            2. Preserve all classes, methods and constructors.
-                            3. Preserve all API calls.
-                            4. Preserve parameter names and order.
-                            5. Infer standard implementation details when omitted.
-                            6. Generate clean, compilable code.
-                            7. Output only source code.
+                            1. Extract all class names, field names, method names, and their purposes from the description.
+                            2. Infer appropriate parameter names and types from the described functionality.
+                            3. Implement all described algorithms in full detail.
+                            4. Generate clean, compilable, idiomatic code.
+                            5. Use standard naming conventions for {target_lang_lower}.
+                            6. Include all described fields, methods, and their relationships.
+                            7. Output only source code without any markdown formatting.
                         """
         messages = [{
                         "role": "system",
@@ -495,7 +487,7 @@ class QwenCodeGenerator(QwenModelBase):
             attention_mask=attention_mask,
             max_new_tokens=max_new_tokens,
             num_return_sequences=1,
-            temperature=0.2,
+            temperature=0.3,
             do_sample=True,
             pad_token_id=self._tokenizer.eos_token_id
         )
@@ -503,13 +495,19 @@ class QwenCodeGenerator(QwenModelBase):
         generated_code = self._tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
         # Extract only the generated code (after the prompt)
-        if target_lang_lower == 'python':
-            code_prefix = "Python code:"
-        else:
-            code_prefix = "C++ code:"
+        # Handle multiple possible prefixes for flexibility
+        code_prefixes = [
+            "Generated Python code:",
+            "Generated C++ code:",
+            "Generated code:",
+            "Python code:",
+            "C++ code:"
+        ]
 
-        if code_prefix in generated_code:
-            generated_code = generated_code.split(code_prefix, 1)[1].strip()
+        for prefix in code_prefixes:
+            if prefix in generated_code:
+                generated_code = generated_code.split(prefix, 1)[1].strip()
+                break
 
         return generated_code
 
@@ -842,6 +840,19 @@ class LLMJudge(QwenModelBase):
             print("Warning: LLM Judge returned empty response")
             return 0.0
         response_str = decoded[0]
+
+        # Try to extract JSON from the response (handle markdown code fences and extra text)
+        import re
+        # Try to find JSON code block first
+        json_match = re.search(r'```json\s*([\s\S]*?)\s*```', response_str)
+        if json_match:
+            response_str = json_match.group(1).strip()
+        else:
+            # Try to find raw JSON object (from first { to last })
+            start = response_str.find('{')
+            end = response_str.rfind('}')
+            if start != -1 and end != -1 and end > start:
+                response_str = response_str[start:end+1]
 
         try:
             response_json = json.loads(response_str)
@@ -1381,6 +1392,11 @@ def materialize_and_enrich_dataset(
             enriched_example = enrich_func(example)
             yield enriched_example
             processed_count += 1
+
+            # Clear unused CUDA memory after processing each record
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                gc.collect()
 
     print("Creating enriched dataset from generator (this may take a long time for full dataset)...")
     materialized_dataset = Dataset.from_generator(generator_function)
@@ -1980,6 +1996,11 @@ class BaselineData(metaclass=SingletonMeta):
                     language_filter_norm = 'cpp'
                 if record_lang != language_filter_norm and not (language_filter_norm == 'cpp' and record_lang in ['cpp', 'c++']):
                     continue
+
+            # Clear unused CUDA memory before processing each record
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                gc.collect()
 
             if not record.get('is_processable_code', True):
                 print(f"compute baseline, record no processable")
@@ -2584,6 +2605,11 @@ for record in tqdm(cpp_stream_iterator, desc=f"Processing C++ records for LORA N
     processed_cpp_records += 1
     print(f"Processed {processed_cpp_records} C++ records for LORA NL->C++")
 
+    # Clear unused CUDA memory after processing each record
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        gc.collect()
+
 if lora_nl_cpp_examples:
     training_dataset = Dataset.from_list(lora_nl_cpp_examples)
     print(f"Successfully created training_dataset with {len(training_dataset)} examples for NL->C++.")
@@ -2779,6 +2805,11 @@ for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to 
         })
         processed_python_records += 1
 
+    # Clear unused CUDA memory after processing each record
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        gc.collect()
+
 # Convert the list of dictionaries to a Hugging Face Dataset
 if pl1_to_pl2_training_examples:
     pl1_to_pl2_training_dataset = Dataset.from_list(pl1_to_pl2_training_examples)
@@ -2882,21 +2913,24 @@ if baseline_evaluator._graphcodebert_scorer is None:
 print("Loading fine-tuned LORA model for validation...")
 from peft import PeftModel
 
-# Load the base model and apply the LORA adapter
-base_model = AutoModelForCausalLM.from_pretrained(
+# Load separate base models for each LORA adapter to avoid conflicts
+# Python->C++ translation model
+base_model_py_to_cpp = AutoModelForCausalLM.from_pretrained(
     "Qwen/Qwen2.5-Coder-7B-Instruct",
     torch_dtype=torch.float16,
     device_map="auto"
 )
-# Note: Don't call .to(device) when using device_map="auto" as the model is already placed
-
-# Load the LORA adapter for Python->C++ translation
-pl1_to_pl2_fine_tuned_model = PeftModel.from_pretrained(base_model, LORA_ADAPTER_PY_TO_CPP)
+pl1_to_pl2_fine_tuned_model = PeftModel.from_pretrained(base_model_py_to_cpp, LORA_ADAPTER_PY_TO_CPP)
 pl1_to_pl2_fine_tuned_model.eval()
 print(f"Fine-tuned LORA model loaded from '{LORA_ADAPTER_PY_TO_CPP}'")
 
-# Load the NL->C++ LORA adapter for documentation->code generation
-nl_pl_fine_tuned_model = PeftModel.from_pretrained(base_model, LORA_ADAPTER_NL_TO_PL)
+# NL->C++ documentation model (separate base model to avoid peft_config conflict)
+base_model_nl_to_pl = AutoModelForCausalLM.from_pretrained(
+    "Qwen/Qwen2.5-Coder-7B-Instruct",
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
+nl_pl_fine_tuned_model = PeftModel.from_pretrained(base_model_nl_to_pl, LORA_ADAPTER_NL_TO_PL)
 nl_pl_fine_tuned_model.eval()
 print(f"NL->PL LORA model loaded from '{LORA_ADAPTER_NL_TO_PL}'")
 
@@ -2908,8 +2942,17 @@ class FineTunedGenerator:
         self._tokenizer = tokenizer
         self._base_generator = base_generator  # Keep reference to base model for other tasks
         # Use the model's actual device (important for device_map="auto")
-        self._device = next(self._py_to_cpp_model.parameters()).device
+        # Handle meta device parameters that may be offloaded to CPU
+        self._device = self._get_model_device(py_to_cpp_model)
         print(f"FineTunedGenerator using device: {self._device}")
+
+    def _get_model_device(self, model):
+        """Get the actual device from model parameters, handling meta device."""
+        for param in model.parameters():
+            if param.device.type != 'meta':
+                return param.device
+        # Fallback to CPU if all parameters are on meta device
+        return torch.device('cpu')
 
     def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
         """Generate code using the appropriate model.
@@ -2921,7 +2964,9 @@ class FineTunedGenerator:
         if is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
             # Use fine-tuned model: Python code -> C++ code
             prompt = f"Translate the following Python code to C++:\n{documentation}\nC++ code:"
-            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).to(self._device)
+            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+            # Move inputs to the same device as model parameters
+            inputs = {k: v.to(self._device) for k, v in inputs.items()}
 
             with torch.no_grad():
                 outputs = self._py_to_cpp_model.generate(
@@ -2957,7 +3002,9 @@ class FineTunedGenerator:
         elif not is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
             # Use NL->C++ fine-tuned model for documentation->code
             prompt = f"Generate C++ code based on the following documentation:\n{documentation}\nC++ code:"
-            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).to(self._device)
+            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+            # Move inputs to the same device as model parameters
+            inputs = {k: v.to(self._device) for k, v in inputs.items()}
 
             with torch.no_grad():
                 outputs = self._nl_to_cpp_model.generate(
@@ -3040,13 +3087,13 @@ validation_summary = baseline_evaluator.compute_summary(validation_results)
 validation_summary_description = "\n\n"+"*"*30+"\n\n"
 validation_summary_description += f"\nValidation Summary (using fine-tuned LORA model - C++ records only):"
 validation_summary_description += f"\n\tTotal C++ records processed: {validation_summary.get('total_records', 0)}"
-validation_summary_description += f"\n\tNL->PL1->PL2 Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
-validation_summary_description += f"\n\tNL->PL1->PL2 AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
-validation_summary_description += f"\n\tNL->PL1->PL2 GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
+validation_summary_description += f"\n\tNL->PL Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+validation_summary_description += f"\n\tNL->PL AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+validation_summary_description += f"\n\tNL->PL GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
 
 if 'nl_pl1_pl2_phase' in validation_summary:
     pl1_pl2 = validation_summary['nl_pl1_pl2_phase']
-    validation_summary_description += f"\n\tNL->PL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+    validation_summary_description += f"\n\tPL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
 
 print("\n"+"="*30+"\n")
 print(baseline_summary_desription)

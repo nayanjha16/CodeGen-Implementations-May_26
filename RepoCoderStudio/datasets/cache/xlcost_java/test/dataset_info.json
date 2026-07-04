@@ -1,0 +1,62 @@
+{
+  "builder_name": "parquet",
+  "citation": "@misc{zhu2022xlcost,\n     title = {XLCoST: A Benchmark Dataset for Cross-lingual Code Intelligence},\n     url = {https://arxiv.org/abs/2206.08474},\n     author = {Zhu, Ming and Jain, Aneesh and Suresh, Karthik and Ravindran, Roshan and Tipirneni, Sindhu and Reddy, Chandan K.},\n     year = {2022},\n     eprint={2206.08474},\n     archivePrefix={arXiv}\n}\n",
+  "config_name": "Java-program-level",
+  "dataset_name": "xlcost-text-to-code",
+  "dataset_size": 13449518,
+  "description": " XLCoST is a machine learning benchmark dataset that contains fine-grained parallel data in 7 commonly used programming languages (C++, Java, Python, C#, Javascript, PHP, C), and natural language (English).",
+  "download_checksums": {
+    "hf://datasets/codeparrot/xlcost-text-to-code@eb31eff5d97dc9547da7db0cd7862bba026cbd52/Java-program-level/train/0000.parquet": {
+      "num_bytes": 4441304,
+      "checksum": null
+    },
+    "hf://datasets/codeparrot/xlcost-text-to-code@eb31eff5d97dc9547da7db0cd7862bba026cbd52/Java-program-level/test/0000.parquet": {
+      "num_bytes": 394998,
+      "checksum": null
+    },
+    "hf://datasets/codeparrot/xlcost-text-to-code@eb31eff5d97dc9547da7db0cd7862bba026cbd52/Java-program-level/validation/0000.parquet": {
+      "num_bytes": 217300,
+      "checksum": null
+    }
+  },
+  "download_size": 5053602,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "code": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "https://github.com/reddy-lab-code-research/XLCoST",
+  "license": "",
+  "size_in_bytes": 18503120,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 11830769,
+      "num_examples": 9623,
+      "dataset_name": "xlcost-text-to-code"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 1041621,
+      "num_examples": 911,
+      "dataset_name": "xlcost-text-to-code"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 577128,
+      "num_examples": 494,
+      "dataset_name": "xlcost-text-to-code"
+    }
+  },
+  "version": {
+    "version_str": "2.1.0",
+    "major": 2,
+    "minor": 1,
+    "patch": 0
+  }
+}

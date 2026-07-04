@@ -1,0 +1,108 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "java",
+  "dataset_name": "code_x_glue_ct_code_to_text",
+  "dataset_size": 495023566,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/google/code_x_glue_ct_code_to_text@2678080e78a4b20ad79d1f0a514f04d815912564/java/train-00000-of-00001.parquet": {
+      "num_bytes": 141076943,
+      "checksum": null
+    },
+    "hf://datasets/google/code_x_glue_ct_code_to_text@2678080e78a4b20ad79d1f0a514f04d815912564/java/validation-00000-of-00001.parquet": {
+      "num_bytes": 4245863,
+      "checksum": null
+    },
+    "hf://datasets/google/code_x_glue_ct_code_to_text@2678080e78a4b20ad79d1f0a514f04d815912564/java/test-00000-of-00001.parquet": {
+      "num_bytes": 9378593,
+      "checksum": null
+    }
+  },
+  "download_size": 154701399,
+  "features": {
+    "id": {
+      "dtype": "int32",
+      "_type": "Value"
+    },
+    "repo": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "path": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "func_name": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "original_string": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "language": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "code": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "code_tokens": {
+      "feature": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "docstring": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "docstring_tokens": {
+      "feature": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "sha": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "url": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 649724965,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 452574451,
+      "num_examples": 164923,
+      "dataset_name": "code_x_glue_ct_code_to_text"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 13366992,
+      "num_examples": 5183,
+      "dataset_name": "code_x_glue_ct_code_to_text"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 29082123,
+      "num_examples": 10955,
+      "dataset_name": "code_x_glue_ct_code_to_text"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

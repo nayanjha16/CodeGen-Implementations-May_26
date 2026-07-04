@@ -18,7 +18,7 @@ Original Dataset java, python translation pairs: Mean AST Similarity Score: 0.54
 
 original java compilation rate: 100%
 
----------------------------------------------Text to Python----------------------------------------------------------------------
+-----------------------------------------------Text to Python--------------------------------------------------------------------
 
 Pass@k evaluation metrics for Python Generation on MBPP data set
 
@@ -45,16 +45,28 @@ Pass@10 for text to python
 max_new_tokens=300, do_sample=True, temperature=0.7
 
 --------------------------------------------Text to Java----------------------------------------------------------------------
+
+evaluated on custom dataset
+
 Pass@1: 49.70%
+
 Mean AST Similarity Score (Text-to-Java): 0.7384
+
 Mean BLEU Score (Text-to-Java): 0.6961
+
 Mean ROUGE-1 Score (Text-to-Java): 0.8026
+
 Mean ROUGE-2 Score (Text-to-Java): 0.7116
+
 Mean ROUGE-L Score (Text-to-Java): 0.7813
+
 Mean CodeBERT Similarity Score (Text-to-Java): 0.9485
 
 Mean Text to Java Translation Score: 0.8192
+
 --------------------------------------------Java to Python-----------------------------------------------------------------
+
+evaluated on custom dataset
 
 After finetuning
 
@@ -88,6 +100,8 @@ translation_score = (
 ```
 
 --------------------------------------------Python to Java-----------------------------------------------------------------------
+
+evaluated on custom dataset
 
 Java Compilation Rate: 91.87%
 

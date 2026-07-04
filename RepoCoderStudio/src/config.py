@@ -66,6 +66,48 @@ SPEC_VERSION = "2.0"
 DEFAULT_RANDOM_SEED = 42
 
 
+
+
+# ============================================================
+# 1b. Project metadata configuration
+# ============================================================
+
+@dataclass(frozen=True)
+class ProjectConfig:
+    """
+    Project identity metadata.
+
+    This section exists so downstream manifests, reports, and evaluation
+    artifacts do not rely on hard-coded project strings or notebook-local
+    constants.
+    """
+
+    name: str = PROJECT_NAME
+    stage: str = PROJECT_STAGE
+    specification_version: str = SPEC_VERSION
+
+
+# ============================================================
+# 1c. Experiment metadata configuration
+# ============================================================
+
+@dataclass(frozen=True)
+class ExperimentConfig:
+    """
+    Version identifiers used in manifests and reproducibility reports.
+
+    These values centralize prompt, task, metric, and manifest versions so
+    notebooks and modules do not scatter version strings across the codebase.
+    """
+
+    experiment_version: str = "experiment_v2.6"
+    prompt_version: str = "prompt_contract_v2.6"
+    task_contract_version: str = "task_contract_v2.6"
+    task_builder_version: str = "task_builder_v2.3"
+    task_registry_version: str = "task_registry_v2.0"
+    metric_registry_version: str = "metric_registry_v2.0"
+    training_manifest_version: str = "training_manifest_v2.6"
+
 # ============================================================
 # 2. Runtime mode configuration
 # ============================================================
@@ -517,6 +559,8 @@ class AppConfig:
     configs instead of defining its own constants.
     """
 
+    project: ProjectConfig = ProjectConfig()
+    experiment: ExperimentConfig = ExperimentConfig()
     runtime: RuntimeConfig = RuntimeConfig()
     storage: StorageConfig = StorageConfig()
     dataset: DatasetConfig = DatasetConfig()
@@ -539,6 +583,12 @@ class AppConfig:
         """
 
         self.runtime.validate()
+
+        assert self.project.name, "Project name must not be empty"
+        assert self.project.stage, "Project stage must not be empty"
+        assert self.project.specification_version, "Specification version must not be empty"
+        assert self.experiment.prompt_version, "Prompt version must not be empty"
+        assert self.experiment.task_contract_version, "Task contract version must not be empty"
 
         assert self.dataset.use_xlcost is True, (
             "XLCoST must remain enabled because it is the mandatory primary corpus."
@@ -646,9 +696,9 @@ def print_config_summary(config: AppConfig = CONFIG):
     print("=" * 72)
     print("RepoCoder Studio — Combined Stage Configuration")
     print("=" * 72)
-    print(f"Project                 : {PROJECT_NAME}")
-    print(f"Stage                   : {PROJECT_STAGE}")
-    print(f"Specification Version   : {SPEC_VERSION}")
+    print(f"Project                 : {config.project.name}")
+    print(f"Stage                   : {config.project.stage}")
+    print(f"Specification Version   : {config.project.specification_version}")
     print(f"Run Mode                : {config.runtime.run_mode}")
     print(f"Google Drive Enabled    : {config.runtime.use_google_drive}")
     print(f"Auto Resume             : {config.runtime.auto_resume}")
@@ -671,6 +721,7 @@ def print_config_summary(config: AppConfig = CONFIG):
     print(f"Training Enabled        : {config.training.enable_training}")
     print(f"Auto Checkpoint Resume  : {config.training.auto_resume_from_checkpoint}")
     print(f"Final Adapter Name      : {config.training.final_adapter_name}")
+    print(f"Prompt Version          : {config.experiment.prompt_version}")
     print("=" * 72)
 
 

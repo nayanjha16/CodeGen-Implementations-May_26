@@ -1,7 +1,7 @@
 """
 ============================================================
 RepoCoder Studio
-tokenizer_builder.py  —  v2.5
+tokenizer_builder.py  —  v2.6
 ============================================================
 
 Hugging Face Dataset preparation with task-aware curriculum ordering.
@@ -46,12 +46,15 @@ class TokenizerDatasetBuilder:
                 "text": metadata.get("training_text", ""),
                 "prompt_version": metadata.get("prompt_version"),
                 "task_contract_version": metadata.get("task_contract_version"),
+                "prompt_hash": metadata.get("prompt_hash"),
+                "response_header": metadata.get("response_header"),
                 "task_family": metadata.get("task_family"),
                 "curriculum_stage": metadata.get("curriculum_stage"),
                 "difficulty": metadata.get("difficulty"),
                 "expected_output_kind": metadata.get("expected_output_kind"),
                 "prompt_task_token": metadata.get("prompt_task_token"),
                 "output_contract": metadata.get("output_contract"),
+                "prompt_success_criteria": metadata.get("prompt_success_criteria"),
                 "csr_score": metadata.get("csr_score"),
                 "alignment_strategy": metadata.get("alignment_strategy"),
                 "teacher_generated_or_repaired": metadata.get("teacher_generated_or_repaired"),
@@ -76,7 +79,7 @@ class TokenizerDatasetBuilder:
         return Dataset.from_list(rows) if rows else Dataset.from_list([])
 
     def build(self, task_examples: List[TaskExample]):
-        SectionPrinter.header("Tokenizer Dataset Builder  [v2.5]")
+        SectionPrinter.header("Tokenizer Dataset Builder  [v2.6]")
         rows = self.task_examples_to_rows(task_examples)
         train_rows, validation_rows, test_rows = self.split_rows(rows)
 
@@ -89,7 +92,7 @@ class TokenizerDatasetBuilder:
         test_ds = self._dataset_from_rows(test_rows)
 
         SummaryPrinter.print_summary(
-            "HF Dataset Summary  [v2.5]",
+            "HF Dataset Summary  [v2.6]",
             {
                 "Train Rows": len(train_ds),
                 "Validation Rows": len(validation_ds),

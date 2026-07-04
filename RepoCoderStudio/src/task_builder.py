@@ -1,7 +1,7 @@
 """
 ============================================================
 RepoCoder Studio
-task_builder.py  —  v2.2
+task_builder.py  —  v2.3
 ============================================================
 
 Task Dataset Builder.
@@ -46,9 +46,9 @@ from src.storage import ProjectStorageManager
 # Constants
 # ============================================================
 
-TASK_BUILDER_VERSION = "task_builder_v2.2"
-TASK_CONTRACT_VERSION = "task_contract_v2.5"
-PROMPT_VERSION = "prompt_contract_v2.5"
+TASK_BUILDER_VERSION = "task_builder_v2.3"
+TASK_CONTRACT_VERSION = "task_contract_v2.6"
+PROMPT_VERSION = "prompt_contract_v2.6"
 
 
 _TASK_FAMILY = {
@@ -266,6 +266,9 @@ class TaskDatasetBuilder:
             output_text,
             task_id=task_id,
         )
+        prompt_hash = self.prompt_builder.prompt_hash(training_text)
+        response_header = prompt_profile.get("response_header", "### Response")
+        success_criteria = prompt_profile.get("success_criteria", [])
 
         teacher_meta = self._teacher_metadata(row)
 
@@ -275,8 +278,10 @@ class TaskDatasetBuilder:
             "csr_similarity": csr_score,
             "csr_score": csr_score,
             "training_text": training_text,
+            "prompt_hash": prompt_hash,
+            "response_header": response_header,
 
-            # v2.1 task contract metadata
+            # v2.3 task contract metadata
             "task_builder_version": TASK_BUILDER_VERSION,
             "task_contract_version": TASK_CONTRACT_VERSION,
             "prompt_version": PROMPT_VERSION,
@@ -292,6 +297,7 @@ class TaskDatasetBuilder:
             "output_contract": prompt_profile.get("output_contract") or prompt_profile.get("contract"),
             "prompt_constraints": prompt_profile.get("constraints", []),
             "prompt_quality_checks": prompt_profile.get("quality_checks", []),
+            "prompt_success_criteria": success_criteria,
             "prompt_forbidden_outputs": prompt_profile.get("forbidden_outputs", []),
             "prompt_stop_sequences": prompt_profile.get("stop_sequences", []),
 
@@ -324,7 +330,7 @@ class TaskDatasetBuilder:
     def build(self, approved_rows: List[ApprovedRow]) -> List[TaskExample]:
         """Builds the task-expanded dataset and persists it to JSONL."""
 
-        SectionPrinter.header("Task Dataset Builder  [v2.2]")
+        SectionPrinter.header("Task Dataset Builder  [v2.3]")
 
         task_examples: List[TaskExample] = []
         skipped = 0
@@ -369,7 +375,7 @@ class TaskDatasetBuilder:
         self._write_task_reports(task_examples, skipped=skipped, approved_count=len(approved_rows))
 
         SummaryPrinter.print_summary(
-            "Task Dataset Summary  [v2.2]",
+            "Task Dataset Summary  [v2.3]",
             {
                 "Approved Rows": len(approved_rows),
                 "Task Examples": len(task_examples),
@@ -421,6 +427,8 @@ class TaskDatasetBuilder:
                     "difficulty": metadata.get("difficulty"),
                     "curriculum_stage": metadata.get("curriculum_stage"),
                     "prompt_version": metadata.get("prompt_version"),
+                    "prompt_hash": metadata.get("prompt_hash"),
+                    "response_header": metadata.get("response_header"),
                     "teacher_generated_or_repaired": metadata.get("teacher_generated_or_repaired"),
                     "alignment_strategy": metadata.get("alignment_strategy"),
                 }
@@ -435,7 +443,7 @@ class TaskDatasetBuilder:
                 .reset_index(name="count")
                 .sort_values(["task_id", "split"])
             )
-            self.storage.save_csv(task_dist, "outputs/reports/task_distribution_v2_2.csv")
+            self.storage.save_csv(task_dist, "outputs/reports/task_distribution_v2_3.csv")
 
             family_dist = (
                 df.groupby(["task_family", "task_id", "difficulty"])
@@ -443,7 +451,7 @@ class TaskDatasetBuilder:
                 .reset_index(name="count")
                 .sort_values(["task_family", "task_id", "difficulty"])
             )
-            self.storage.save_csv(family_dist, "outputs/reports/task_family_difficulty_v2_2.csv")
+            self.storage.save_csv(family_dist, "outputs/reports/task_family_difficulty_v2_3.csv")
 
             dataset_dist = (
                 df.groupby(["dataset", "task_id"])
@@ -451,7 +459,7 @@ class TaskDatasetBuilder:
                 .reset_index(name="count")
                 .sort_values(["dataset", "task_id"])
             )
-            self.storage.save_csv(dataset_dist, "outputs/reports/task_dataset_contribution_v2_2.csv")
+            self.storage.save_csv(dataset_dist, "outputs/reports/task_dataset_contribution_v2_3.csv")
 
             summary = {
                 "task_builder_version": TASK_BUILDER_VERSION,
@@ -465,7 +473,7 @@ class TaskDatasetBuilder:
                 "by_split": self.split_summary(task_examples),
                 "by_task_split": self.task_split_summary(task_examples),
             }
-            self.storage.save_json(summary, "outputs/reports/task_dataset_summary_v2_2.json")
+            self.storage.save_json(summary, "outputs/reports/task_dataset_summary_v2_3.json")
 
         except Exception as exc:
             LOG.warning(f"Could not write task reports: {exc}")

@@ -129,22 +129,22 @@ xychart-beta
 
 | Limitation | Impact | Mitigation |
 |------------|--------|------------|
-| Smoke-scale training (50 samples) | Underfits full dataset | Run full ~10k training |
-| Small base model (350M) | Ceiling on complex queries | Try larger models (Qwen2.5-Coder-0.5B tested) |
-| No execution databases | Execution accuracy always 0 | Bundle Spider SQLite DBs |
-| Single decoding strategy | May miss better outputs | Try beam search |
-| Judge calibration | Judge may not reflect metric gains | Tune judge prompts, human eval sample |
+| Smoke-scale training (50 samples) | Underfits full dataset | Full ~10k LoRA training (next step) |
+| Small base model (350M) | Ceiling on complex queries | Acceptable for capstone scope; LoRA still shows gains |
+| No local execution databases | Execution accuracy always 0% | Use TEND execution pipeline for gold data |
+| Judge calibration | Judge may not reflect metric gains | Replace with execution-based validation (TEND approach) |
 
 ---
 
 ## 9. Future Work
 
-1. **Full-scale LoRA training** on all ~10,697 TEND train rows
-2. **Execution accuracy** with bundled Spider SQLite databases
-3. **Beam search decoding** for text2sql
-4. **Human evaluation** on a stratified sample of 20 examples
-5. **Model comparison** — Qwen2.5-Coder-0.5B baseline already evaluated (see `results/spider_gold_validation_Qwen2.5-Coder-0.5B_2506_2029/`)
-6. **Chained pipeline eval** — feed text2sql output into sql2nosql (end-to-end error propagation)
+1. **Execution-verified gold datasets** — continue TEND pipeline (`/Volumes/Work/TEND`): execute generated SQL and MongoDB queries, filter to silver, sample gold for validation
+2. **Replace LLM judge with query execution** — swap Ollama semantic judging for execution-based validation: run predicted SQL/MongoDB queries against live databases and compare result sets to gold (same pattern as TEND's `accuracy_runner`)
+3. **Full-scale LoRA training** — train all three adapters on complete TEND train split (~10,697 rows)
+4. **Full validation** — evaluate on TEND test split (~1,625 rows) and refreshed gold validation sets
+5. **Execution accuracy metrics** — report result-set match rates once execution validation replaces the LLM judge
+
+See also: [LoRA v1 vs Baseline comparison](../lora-v1-vs-baseline-comparison.md)
 
 ---
 
@@ -154,5 +154,5 @@ xychart-beta
 |----------|----------|
 | Baseline metrics | `results/spider_gold_validation_codegen-350M-multi_2506_2029/metrics.json` |
 | LoRA v1 metrics | `results/spider_gold_validation_codegen-350M-multi_lora-v1_2506_2343/metrics.json` |
-| Comparison write-up | `results/.../lora-v1-vs-baseline-comparison.md` |
+| Comparison write-up | `docs/lora-v1-vs-baseline-comparison.md` |
 | Per-sample details | `results/.../text2sql_details.csv`, `sql2nosql_details.csv`, `documentation_details.csv` |

@@ -1,5 +1,6 @@
 # LoRA v1 vs Baseline — Spider Gold Validation
 
+> **Project:** CodeGen Fine-Tuning with PEFT & LoRA  
 > **Date:** 2026-06-25  
 > **Model:** `Salesforce/codegen-350M-multi`  
 > **LoRA adapter:** `v1`  

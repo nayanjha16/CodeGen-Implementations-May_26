@@ -100,7 +100,33 @@ flowchart TB
 
 ---
 
-## 4. Per-Task Data Requirements
+## 4. Execution-Verified Gold Data (TEND Project)
+
+The HuggingFace TEND corpus used for LoRA training is **silver-tier** supervision. A companion project at `/Volumes/Work/TEND` builds **execution-verified gold datasets** for higher-quality training and validation:
+
+```mermaid
+flowchart LR
+    SRC["Spider / BIRD source rows"] --> BRONZE["Bronze CSV<br/>Generate SQL, MongoDB, docs"]
+    BRONZE --> EXEC["Execute SQL + MongoDB<br/>against live databases"]
+    EXEC --> SILVER["Silver CSV<br/>evaluation_result=true only"]
+    SILVER --> GOLD["Gold CSV<br/>sampled validation set"]
+    SILVER --> HF["HuggingFace TEND<br/>training corpus"]
+    GOLD --> BENCH["Benchmark eval<br/>this project"]
+```
+
+| Tier | How produced | Used for |
+|------|--------------|----------|
+| Bronze | LLM + rule-based translation; queries executed and compared | Raw generation output |
+| Silver | Rows where SQL and MongoDB execution results match | LoRA training (current TEND HF dataset) |
+| Gold | Random sample from silver (default 50 rows) | Frozen benchmark / validation |
+
+This project's `spider_gold_validation.jsonl` is a frozen 50-example subset. The next phase uses TEND's full silver train split for LoRA training and refreshed gold sets for validation.
+
+**Evaluation direction:** Generated query validation currently uses an Ollama LLM judge (`judge_correct_rate`). This will be replaced by **query execution** — run predicted SQL and MongoDB queries against live databases and compare result sets, matching the TEND execution pipeline.
+
+---
+
+## 5. Per-Task Data Requirements
 
 Rows missing required fields are **filtered out** during training and evaluation.
 
@@ -112,7 +138,7 @@ Rows missing required fields are **filtered out** during training and evaluation
 
 ---
 
-## 5. Token Budget & Truncation
+## 6. Token Budget & Truncation
 
 | Setting | Value | Source |
 |---------|-------|--------|
@@ -126,7 +152,7 @@ Only ~0.02% of training rows exceed the budget at 2048 tokens.
 
 ---
 
-## 6. Local Caching
+## 7. Local Caching
 
 ```
 data/cache/tend/care2achieve__tend/
@@ -144,7 +170,7 @@ data/cache/tend/care2achieve__tend/
 
 ---
 
-## 7. Loading Data (Code Examples)
+## 8. Loading Data (Code Examples)
 
 ```python
 from src.datasets.tend_loader import TENDLoader, load_gold_validation
@@ -161,7 +187,7 @@ gold_examples = load_gold_validation()  # 50 frozen examples
 
 ---
 
-## 8. Data Provenance for Capstone
+## 9. Data Provenance for Capstone
 
 | Claim | Evidence |
 |-------|----------|

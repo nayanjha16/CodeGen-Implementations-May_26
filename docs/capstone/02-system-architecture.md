@@ -1,6 +1,6 @@
 # System Architecture
 
-High-level architecture diagrams for the CodeGen Studio capstone project: system overview, training, evaluation, validation, and testing.
+High-level architecture diagrams for the CodeGen Fine-Tuning with PEFT & LoRA capstone project: system overview, training, evaluation, validation, and testing.
 
 ---
 
@@ -15,7 +15,7 @@ flowchart TB
         Ollama["Ollama API<br/>Semantic judge (qwen3:4b)"]
     end
 
-    subgraph CodeGenStudio["CodeGen Studio"]
+    subgraph CodeGenPEFT["CodeGen PEFT / LoRA Pipeline"]
         CLI["CLI Scripts"]
         SRC["src/ Python packages"]
         CFG["configs/default.yaml + .env"]

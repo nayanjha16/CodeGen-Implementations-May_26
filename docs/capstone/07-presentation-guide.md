@@ -1,171 +1,166 @@
 # Presentation Guide
 
-Slide outline, demo script, and talking points for the capstone defense.
+Slide outline and talking points for the capstone defense.
 
 ---
 
-## 1. Recommended Slide Deck (15–20 minutes)
+## 1. Recommended Slide Deck (~15 minutes)
 
 ### Slide 1: Title
-- **CodeGen Studio: Interactive Database Querying Using Small Code Language Models**
+
+- **CodeGen Fine-Tuning with PEFT & LoRA**
 - Your name, program, date
-- Base model: codegen-350M-multi | Method: LoRA fine-tuning
+- Base model: `codegen-350M-multi` | Method: LoRA (PEFT) — one adapter per task
 
 ### Slide 2: Problem Statement
+
 - Developers work across SQL and NoSQL databases
 - Three sequential tasks: NL→SQL, SQL→MongoDB, Query→Documentation
-- Large models are expensive; small models need fine-tuning
+- Full fine-tuning of large models is expensive; small models need PEFT
 
 ### Slide 3: Objectives
-- Build reproducible 3-task pipeline
+
+- Build reproducible 3-task LoRA pipeline
 - Baseline evaluation on fixed benchmark
-- LoRA fine-tuning per task
-- Compare automated + semantic metrics
+- LoRA fine-tuning per task with PEFT
+- Compare baseline vs fine-tuned with automated + semantic metrics
 
 ### Slide 4: System Architecture (use diagram)
-Copy from [02-system-architecture.md](02-system-architecture.md) — **Section 2 (Component Architecture)** or **Section 3 (Three-Task Pipeline)**
+
+Copy from [02-system-architecture.md](02-system-architecture.md) —  **Section 3 (Three-Task Pipeline)**
 
 ### Slide 5: Three Tasks
-| Task | Input | Output |
-|------|-------|--------|
-| Text2SQL | Question + schema | SQL |
+
+
+| Task      | Input              | Output        |
+| --------- | ------------------ | ------------- |
+| Text2SQL  | Question + schema  | SQL           |
 | SQL2NoSQL | Gold SQL + schemas | MongoDB query |
 | NoSQL2Doc | Gold MongoDB query | Documentation |
+
 
 Emphasize: **independent evaluation** — gold inputs, not chained predictions
 
 ### Slide 6: Dataset
+
 - TEND (Spider + BIRD): ~10,697 train, ~1,625 test
-- Frozen 50-example gold validation for benchmark
+- Frozen 50-example gold validation for smoke-run benchmark
 - Diagram from [04-data-and-datasets.md](04-data-and-datasets.md) Section 3
 
 ### Slide 7: Training Methodology
+
 - LoRA (PEFT): r=16, frozen base, ~few MB per adapter
 - TRL SFTTrainer, completion-only loss
 - Prompt parity: same prompts at train and inference
 - Diagram from [02-system-architecture.md](02-system-architecture.md) Section 4
 
 ### Slide 8: Evaluation Methodology
+
 - 8 automated metrics + Ollama semantic judge
 - Dual metric layers: fast deterministic + semantic
 - Diagram from [02-system-architecture.md](02-system-architecture.md) Section 5
 
 ### Slide 9: Validation & Testing Strategy
+
 - Unit tests → training smoke → adapter verify → benchmark eval
 - Table from [03-methodology.md](03-methodology.md) Section 6
 
-### Slide 10: Results — Text2SQL
-- Judge: 4% → 14% (+250%)
-- Syntax validity: 98% → 100%
-- Chart from [05-results-and-analysis.md](05-results-and-analysis.md)
+### Slide 10: Baseline vs LoRA v1 Comparison
 
-### Slide 11: Results — SQL2NoSQL & Documentation
-- SQL2NoSQL syntax: 26% → 98%
-- Documentation CodeBLEU: 0.03 → 0.24 (+705%)
+Source: [docs/lora-v1-vs-baseline-comparison.md](../lora-v1-vs-baseline-comparison.md)
 
-### Slide 12: Key Findings & Limitations
+**Context:** Smoke run — 50 training samples, 10 epochs; evaluated on 50-example Spider gold validation set.
+
+
+| Task              | Key metric             | Baseline | LoRA v1   | Change    |
+| ----------------- | ---------------------- | -------- | --------- | --------- |
+| **Text2SQL**      | Judge correct rate     | 4%       | **14%**   | **+250%** |
+| **Text2SQL**      | Syntax validity        | 98%      | **100%**  | +2 pp     |
+| **SQL2NoSQL**     | Syntax validity        | 26%      | **98%**   | +72 pp    |
+| **SQL2NoSQL**     | Structural equivalence | 44%      | **76%**   | +32 pp    |
+| **Documentation** | CodeBLEU               | 0.030    | **0.244** | +705%     |
+| **Documentation** | Syntax validity        | 28%      | **76%**   | +48 pp    |
+
+
+**Talking points:**
+
+- LoRA v1 improves **every task** on similarity and validity metrics
+- Clearest win: **Text2SQL judge accuracy** (4% → 14%, 3.5×)
+- SQL2NoSQL and documentation: large output-quality gains; judge scores flat (8% / 0%)
+- Execution accuracy and exact match still 0% — expected at smoke scale without execution DBs
+- **Takeaway:** Even 50 samples × 10 epochs shows meaningful PEFT gains over unfine-tuned baseline
+
+### Slide 11: Key Findings & Limitations
+
 - LoRA helps even at smoke scale (50 samples)
-- Execution accuracy 0% (no bundled DBs)
-- Full-scale training expected to improve further
+- Syntax validity dramatically improved for sql2nosql and documentation
+- Execution accuracy 0% (no bundled DBs in this repo)
+- Judge scores lag automated metrics for documentation and sql2nosql
 
-### Slide 13: Demo (Live or Video)
-See Section 2 below
+### Slide 12: Future Work
 
-### Slide 14: Future Work
-- Full 10k training, execution accuracy, human eval, model comparison
+Source: [04-data-and-datasets.md](04-data-and-datasets.md) Section 4, TEND project (`/Volumes/Work/TEND`)
 
-### Slide 15: Q&A
+**1. Execution-verified gold datasets (TEND project)**
 
----
+- Generate bronze rows: SQL DDL → MongoDB schema → query candidates → LLM judge
+- **Execute** SQL and MongoDB queries against live databases; keep rows where results match
+- Filter bronze → **silver** (execution-verified) → **gold** (sampled validation set)
+- This gold data feeds training and validation for the next project phase
 
-## 2. Live Demo Script (5 minutes)
+**2. Replace LLM judge with query execution**
 
-### Prerequisites
-```bash
-conda activate ai
-export PYTHONPATH="$(pwd)"
-# Ensure .env is configured
-# Optional: start Ollama for judge
-```
+- Today: Ollama semantic judge scores predicted SQL/MongoDB/docs (`judge_correct_rate`)
+- Future: execute generated queries against live PostgreSQL/MongoDB and compare result sets — same approach as TEND (`in-progress`)
+- More objective than LLM judging; aligns eval with how gold data is verified
 
-### Demo Option A: Quick Evaluation (Recommended)
+**3. Next step: full-scale training and validation**
 
-```bash
-# Show baseline eval on 5 samples (fast)
-python scripts/run_baseline_eval.py --max-samples 5 --no-judge
+- Train all three LoRA adapters on complete TEND train split (~10,697 rows)
+- Validate on TEND test split (~1,625 rows) and refreshed gold validation sets
+- Re-run baseline vs LoRA comparison at full scale with execution-based metrics
 
-# Show results
-cat results/spider_gold_validation_*/metrics.json | python -m json.tool | head -40
-```
-
-**Talking points while running:**
-- "This evaluates all three tasks on our frozen 50-example benchmark"
-- "Each task uses gold inputs — we're measuring isolated task quality"
-- "Output includes metrics.json and per-sample CSVs for error analysis"
-
-### Demo Option B: Show LoRA vs Baseline
-
-```bash
-# If adapters exist
-python scripts/run_baseline_eval.py --adapter-run v1 --max-samples 5 --no-judge
-
-# Compare
-echo "=== Baseline ===" && cat results/spider_gold_validation_codegen-350M-multi_2506_2029/metrics.json | python -m json.tool | grep -A2 "judge_correct"
-echo "=== LoRA v1 ===" && cat results/spider_gold_validation_codegen-350M-multi_lora-v1_2506_2343/metrics.json | python -m json.tool | grep -A2 "judge_correct"
-```
-
-### Demo Option C: Show a Single Prediction
-
-Open a detail CSV and walk through one row:
-
-```bash
-head -3 results/spider_gold_validation_*/text2sql_details.csv
-```
-
-Point out: `question`, `predicted_sql`, `ground_truth`, `judge_sql_correct`
-
-### Demo Option D: Architecture Walkthrough (No GPU needed)
-
-```bash
-# Show project structure
-ls src/
-ls models/checkpoints/v1/ 2>/dev/null || echo "Adapters not trained yet"
-
-# Run unit tests (fast)
-python -m unittest tests.training.test_prompt_parity -v
-```
+### Slide 13: Q&A
 
 ---
 
-## 3. Anticipated Questions & Answers
+## 2. Anticipated Questions & Answers
 
 ### "Why LoRA instead of full fine-tuning?"
+
 LoRA trains only ~0.1–1% of parameters. Adapters are a few MB each, swappable per task, and the base model stays frozen — reducing overfitting risk and storage.
 
 ### "Why evaluate tasks independently instead of chaining?"
+
 Chaining would confound errors — a bad SQL prediction would ruin sql2nosql metrics. Independent evaluation with gold inputs isolates each task's capability.
 
 ### "Why only 50 benchmark examples?"
-Speed and reproducibility. The frozen set enables fair before/after comparison. Full TEND test (~1,625 rows) is available via `--full-split`.
+
+Speed and reproducibility for the smoke run. The frozen set enables fair before/after comparison. Full TEND test (~1,625 rows) is available via `--full-split`.
 
 ### "Why is execution accuracy 0%?"
-Spider SQLite database files are not bundled with the evaluation set. We validate SQL syntax but cannot execute against the original databases without additional setup.
+
+Spider SQLite database files are not bundled with the evaluation set. The TEND companion project executes queries against live PostgreSQL/MongoDB to build execution-verified silver and gold datasets.
 
 ### "Why is the documentation judge still 0%?"
-Despite large metric gains (CodeBLEU +705%), the Ollama judge applies strict semantic criteria. With only 50 training samples, outputs may be structurally improved but not semantically equivalent to gold docs.
+
+The Ollama LLM judge applies strict semantic criteria and often lags automated metrics. This is an interim approach — the plan is to replace LLM judging with query execution validation (same as TEND): run generated queries and compare result sets.
 
 ### "How do you ensure training prompts match inference?"
+
 Unit test `test_prompt_parity.py` verifies that `build_training_prompt()` produces identical strings to runtime `PromptBuilder.build()`.
 
 ### "Can this run on a Mac?"
+
 Yes. Device auto-resolution selects MPS (Apple GPU). Training takes ~10–15 hours per task on MPS; smoke runs with 50 samples finish in minutes.
 
 ### "What would you do with more time?"
-Full-scale training on all 10,697 rows, bundle Spider SQLite DBs for execution accuracy, human evaluation on 20 stratified samples, and compare against Qwen2.5-Coder-0.5B.
+
+Build execution-verified gold data via the TEND pipeline, replace the LLM judge with query execution for eval, then run full-scale LoRA training and validation on the complete ~10,697-row train split.
 
 ---
 
-## 4. Poster Layout (Alternative Format)
+## 3. Poster Layout (Alternative Format)
 
 If presenting as a poster instead of slides:
 
@@ -176,36 +171,41 @@ If presenting as a poster instead of slides:
 │  PROBLEM     │  ARCHITECTURE DIAGRAM                    │
 │  & OBJECTIVES│  (Section 3 from architecture doc)     │
 ├──────────────┼──────────────────────────────────────────┤
-│  METHODOLOGY │  RESULTS TABLE                           │
-│  LoRA, data, │  Baseline vs LoRA bar charts           │
+│  METHODOLOGY │  LoRA v1 vs BASELINE TABLE               │
+│  LoRA, data, │  (from lora-v1-vs-baseline-comparison)   │
 │  metrics     │                                          │
 ├──────────────┴──────────────────────────────────────────┤
-│  DEMO QR CODE / GITHUB LINK  │  FUTURE WORK & LIMITS    │
+│  GITHUB LINK                 │  FUTURE WORK (TEND gold) │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 5. Files to Have Open During Defense
+## 4. Files to Have Open During Defense
 
-| File | Why |
-|------|-----|
-| `docs/capstone/02-system-architecture.md` | Architecture diagrams |
-| `results/.../metrics.json` | Numbers for Q&A |
-| `results/.../text2sql_details.csv` | Example predictions |
-| `configs/default.yaml` | Hyperparameters |
-| `tests/training/test_prompt_parity.py` | Reproducibility evidence |
+
+| File                                      | Why                          |
+| ----------------------------------------- | ---------------------------- |
+| `docs/capstone/02-system-architecture.md` | Architecture diagrams        |
+| `docs/lora-v1-vs-baseline-comparison.md`  | Smoke-run comparison numbers |
+| `results/.../metrics.json`                | Numbers for Q&A              |
+| `results/.../text2sql_details.csv`        | Example predictions          |
+| `configs/default.yaml`                    | Hyperparameters              |
+| `tests/training/test_prompt_parity.py`    | Reproducibility evidence     |
+
 
 ---
 
-## 6. Timing Guide
+## 5. Timing Guide
 
-| Section | Duration |
-|---------|----------|
-| Introduction + problem | 2 min |
-| Architecture + methodology | 5 min |
-| Results | 4 min |
-| Live demo | 3 min |
-| Limitations + future work | 2 min |
-| Q&A | 5–10 min |
-| **Total** | **~20 min** |
+
+| Section                                 | Duration    |
+| --------------------------------------- | ----------- |
+| Introduction + problem                  | 2 min       |
+| Architecture + methodology              | 5 min       |
+| LoRA v1 vs baseline results             | 3 min       |
+| Future work (TEND gold + full training) | 2 min       |
+| Q&A                                     | 5–10 min    |
+| **Total**                               | **~17 min** |
+
+

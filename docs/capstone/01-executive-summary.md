@@ -2,7 +2,9 @@
 
 ## Project Title
 
-**CodeGen Studio: Interactive Database Querying Using Small Code Language Models**
+**CodeGen Fine-Tuning with PEFT & LoRA**
+
+Fine-tuning `Salesforce/codegen-350M-multi` with Parameter-Efficient Fine-Tuning (PEFT) via LoRA on three database query tasks: Text→SQL, SQL→MongoDB, and NoSQL→Documentation.
 
 ---
 
@@ -24,9 +26,10 @@ Large language models can perform these tasks, but full fine-tuning of multi-bil
 |---|-----------|--------|
 | 1 | Build a modular, reproducible pipeline for three database query tasks | ✅ Complete |
 | 2 | Evaluate baseline (zero-shot) performance on a fixed benchmark | ✅ Complete |
-| 3 | Fine-tune task-specific LoRA adapters on the TEND dataset | ✅ Complete |
+| 3 | Fine-tune task-specific LoRA adapters (smoke run on 50 samples) | ✅ Complete |
 | 4 | Compare baseline vs fine-tuned models with automated + semantic metrics | ✅ Complete |
 | 5 | Support multiple hardware backends (CUDA, MPS, DirectML, CPU) | ✅ Complete |
+| 6 | Full-scale LoRA training on complete TEND dataset | 🔜 Next step |
 
 ---
 
@@ -70,10 +73,18 @@ See [Results & Analysis](05-results-and-analysis.md) for full tables.
 
 ## Limitations & Future Work
 
-- Execution accuracy remains 0% — SQLite databases for Spider examples are not bundled
-- LoRA v1 trained on only 50 samples (smoke run); full ~10k training expected to improve further
-- Documentation task judge score still 0% despite large metric gains — judge calibration needed
-- No production API/UI — research-oriented CLI pipeline
+**Current limitations**
+
+- LoRA v1 is a smoke run — trained on only 50 samples for 10 epochs
+- Execution accuracy remains 0% in this repo — Spider SQLite DBs are not bundled locally
+- Documentation judge score still 0% despite large automated metric gains — LLM judge is an interim validation method
+
+**Next steps**
+
+1. **Execution-verified gold data (TEND project)** — companion repo at `/Volumes/Work/TEND` generates bronze rows by executing SQL and MongoDB queries against live databases, then filters to silver (execution-verified) and gold tiers for training and validation
+2. **Replace LLM judge with query execution** — validate generated SQL and MongoDB outputs by executing them against live databases and comparing result sets (same approach as TEND), instead of relying on Ollama semantic judging
+3. **Full-scale LoRA training** — train all three task adapters on the complete TEND corpus (~10,697 train rows)
+4. **Full validation** — benchmark on TEND test split (~1,625 rows) and refreshed gold validation sets from TEND silver/gold pipeline
 
 ---
 

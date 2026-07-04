@@ -2081,7 +2081,10 @@ class BaselineData(metaclass=SingletonMeta):
 
                 if not best_documentation.strip(): # Skip phase 2 if no good doc was found in phase 1
                     # print(f"Skipping Phase 2 for {original_hexsha} due to no valid documentation from Phase 1.")
-                    pass
+                    # Set Phase 2 scores to 0.0 when no valid documentation is available
+                    current_best_avg_phase2 = 0.0
+                    temp_best_ast_phase2 = 0.0
+                    temp_best_gcb_phase2 = 0.0
                 else:
                     best_llm_judge_score_for_intermediate_python = -1.0
                     best_generated_python_code_for_phase2 = ""
@@ -2105,7 +2108,10 @@ class BaselineData(metaclass=SingletonMeta):
 
                     if not generated_python_code_from_doc.strip():
                         # Skip Phase 2 but still record Phase 1 results
-                        pass
+                        # Set Phase 2 scores to 0.0 when no valid Python code is generated
+                        current_best_avg_phase2 = 0.0
+                        temp_best_ast_phase2 = 0.0
+                        temp_best_gcb_phase2 = 0.0
                     else:
                         #for _ in range(num_tries): This we do not have to do thrice
                         if True:
@@ -2115,7 +2121,10 @@ class BaselineData(metaclass=SingletonMeta):
 
                             if not final_generated_cpp_code.strip():
                                 # Still record Phase 1 results even if Phase 2 fails
-                                pass
+                                # Set Phase 2 scores to 0.0 when no valid C++ code is generated
+                                current_best_avg_phase2 = 0.0
+                                temp_best_ast_phase2 = 0.0
+                                temp_best_gcb_phase2 = 0.0
                             else:
                                 # Step 3: Compare final generated Python code with original Python code
                                 try:
@@ -2146,6 +2155,11 @@ class BaselineData(metaclass=SingletonMeta):
                             best_ast_score_nl_pl1_pl2 = temp_best_ast_phase2
                             best_gcb_score_nl_pl1_pl2 = temp_best_gcb_phase2
                             best_avg_score_nl_pl1_pl2 = current_best_avg_phase2
+                        else:
+                            # No valid Phase 2 results, set scores to 0.0
+                            best_ast_score_nl_pl1_pl2 = 0.0
+                            best_gcb_score_nl_pl1_pl2 = 0.0
+                            best_avg_score_nl_pl1_pl2 = 0.0
 
             # Update the FilteredDataset's internal caches with the best results from both phases
             # Only update if update_cache is True (skip for validation runs to avoid overwriting)
@@ -2187,7 +2201,10 @@ class BaselineData(metaclass=SingletonMeta):
                     'nl_pl1_pl2_best_graphcodebert_score': best_gcb_score_nl_pl1_pl2,
                     'nl_pl1_pl2_best_average_score': best_avg_score_nl_pl1_pl2
                 })
-                print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, 'nl_pl1_pl2_best_ast_score': {best_ast_score_nl_pl1_pl2:0.4f}, 'nl_pl1_pl2_best_average_score': {best_avg_score_nl_pl1_pl2:0.4f}")
+                if best_avg_score_nl_pl1_pl2 is not None:
+                    print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, 'nl_pl1_pl2_best_ast_score': {best_ast_score_nl_pl1_pl2:0.4f}, 'nl_pl1_pl2_best_average_score': {best_avg_score_nl_pl1_pl2:0.4f}")
+                else:
+                    print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, Phase 2 did not produce valid results")
             results.append(record_result)
             processed_count += 1
             print(f"\nProcessed {processed_count}/{num_records if num_records is not None else 'all'} records. Current record {original_hexsha[:10]}... " +

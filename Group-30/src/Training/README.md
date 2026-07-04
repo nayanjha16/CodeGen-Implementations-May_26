@@ -80,3 +80,27 @@ python codegen_30.py -n 300 -c
 - **Architecture**: `../../Architecture/Diagrams.md` - System diagrams
 
 ## Summary Metrics
+- **Limitation of available memory allows to process only 10 records**
+- 3 records for baseline
+- 3 records for training
+- and 1 record (only one C++ record in three records) for validation
+
+> **Baseline Summary:**
+> - Total records processed: 2
+>   - Python records: 1
+>   - C++ records: 1
+> - NL->PL Average Score: 0.8333
+> - NL->PL AST Score: 0.7152
+> - NL->PL GCB Score: 0.9514
+> - Python NL->PL Average Score: 0.8472 (n=1)
+> - C++ NL->PL Average Score: 0.8194 (n=1)
+> - NL->PL1->PL2 Average Score: 0.7706 (n=1)
+
+---
+
+> **Validation Summary** (using fine-tuned LORA model - C++ records only):
+> - Total C++ records processed: 1
+>   - NL->PL Average Score: 0.6646
+>   - NL->PL AST Score: 0.4000
+>   - NL->PL GCB Score: 0.9292
+>   - PL1->PL2 (Python->C++) Average Score: 0.5912 (n=1)

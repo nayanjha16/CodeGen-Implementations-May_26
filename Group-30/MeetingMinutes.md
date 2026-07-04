@@ -1,10 +1,36 @@
 The actions items and discussions between the group members and mentors are documented here.
 
+- [07/04/2026](#07042026)
+- [06/27/2026](#06272026)
 - [06/13/2026](#06122026)
 - [06/07/2026](#06072026)
 
+
 ***
 **Detailed Notes**
+
+> # 07/04/2026
+> 1. Team demonstrated the completed work along with details of fine tuning and User Interface that uses ASR for prompting for NL->PL
+> 1. Nayan Suggested to:
+>    - See how relative scoring and be improved
+>    - Incorporate design patterns
+>    - Decouple syntax and semantics training
+>    - What inputs we can borrow om Facebook paper or the first paper that was shared
+> ## Actions
+> 1. See how relative scoring and be improved
+> 2. Incorporate design patterns
+> 3. Decouple syntax and semantics training
+> 4. What inputs we can borrow om Facebook paper or the first paper that was 
+---
+---
+> # 06/27/2026
+> 1. The codgen-350m-multi is code completion model. It does not correctly generate the code from the Natural Language description. It is repeating the documentation as code.
+> 1. Pawan Suggested to:
+>    - change the prompt from Natural Language to more semantic, or AST type prompt.
+>    - Use a different model instead of using codegen-350m-multi
+> ## Actions
+> 1. Change prompt to be more AST type. <span style="color:green">[ Changed prompt to be more pseudo code,function names, param names, logic inside functions. codegen was still many a times repeating prompt. Abandoned since this was not working and also this kid of prompt is hard for humans to give. ]</span>: Closed
+> 1. Use different model. <span style="color:green">[ Changed model to use _Qwen/Qwen2.5-Coder-7B-Instruct_ instead of _codgen-350m-multi_]</span>: Closed
 ---
 ---
 > # 06/13/2026
@@ -35,33 +61,3 @@ The actions items and discussions between the group members and mentors are docu
 > ## Actions:
 > 1. Team to follow suggested approach of three iterations from generated > documentation for code generation. <span style="color:green">[ Closed on 06/12/2026 ]</span>
 > 2. Nayan(@nayanjha16) to provide AST comparator models. <span style="color:green">[ Obsolete by use of node similarity for AST comparison ]</span>: Closed
-
-## Document Generation Fidelity Diagram
-
-```mermaid
-flowchart TD
-    A[bigcode/the-stack-dedu] --> B[Filter by language = C++, Python]
-    B --> C[Qwen/Qwen2.5-Coder-3B-Instruct]
-
-    subgraph IterationLoop[Three Iterations Loop]
-        direction TB
-        C --> D[Pass each record to Qwen model]
-        D --> E[Qwen generates documentation]
-        E --> F[codegen-350m-multi model]
-        F --> G[Generate code from documentation]
-        G --> H[Compare ground truth vs generated code]
-        H --> I[AST compare + GraphCodeBERTScore]
-        I --> J[Average results]
-        J --> K{More iterations?}
-        K -->|Yes| D
-        K -->|No| L[Select highest score]
-    end
-
-    L --> M[Add documentation + score to dataset]
-
-    style A fill:#e1f5fe
-    style C fill:#f3e5f5
-    style F fill:#fff3e0
-    style M fill:#e8f5e8
-```
-

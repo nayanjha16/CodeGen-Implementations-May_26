@@ -40,18 +40,18 @@ The dataset is split into three equal parts:
 | Qwen 7B model: Needs large number of records to fine tune, we could do only max 33 records and then hit GPU out of memory| No Solution|
 | Dataset streaming slow on HuggingFace | Cache dataset locally to avoid repeated downloads and enable faster iteration |
 | Baseline computation, Fine-Tuning and Validation Set| Updated design to create a cached record of N records (command line param) and use N/3 for baseline, N/3 for fine-tuning and N/3 for validation. Added command line option to purge the N record cache|
-| Phase 2 evaluation only for Python records | Python→C++→Python transformation requires more compute; limit to subset |
-| LoRA adapter loading conflicts | Use `PeftModel` with multiple adapters and `set_adapter()` for switching |
-| CUDA out of memory during training | Reduce batch size, use gradient accumulation, or switch to CPU for small datasets |
+| Design Issue. Using the Qwen/Qwen2.5-Coder-7B-Instruct to<br>- Generated documentation<br> - Generate Code from documentation to PL<br> -Act as LLM Judge| No solution for using a different model. Constrained by Memory|
+| Score threshold tuning | Use 0.3 as threshold for LLM judge to identify poor generations |
+| Correctness of code generated from NL. Reading suggested using LLM Judge, _Didn't want to venture into compilation and testing_ | Used Qwen as LLM Judge to measure code against ducumentation on these metrics: <br> -compiles: true/false<br> -logic_correct: true/false<br> -handles_edge_cases true/false<br> -issues: list of issues<br> -Judge verdict correct/incorrect/partially_correct<br> -explanation of code<br> - a final score [0,1]
 | Whisper ASR model large download | Load whisper-base instead of larger models for faster startup |
 | Code extraction from markdown blocks | Parse with ``` delimiters and detect language tags |
 | Dataset record distribution | Ensure consistent split across baseline, LORA, and validation phases |
 | DataSet Cache management complexity | Implement automatic cache directory structure with num_records in path |
+| LoRA adapter loading conflicts | Use `PeftModel` with multiple adapters and `set_adapter()` for switching |
+| CUDA out of memory during training | Reduce batch size, use gradient accumulation|
 | Tokenizer padding issues | Set `pad_token_id = eos_token_id` for decoder-only models |
-| Score threshold tuning | Use 0.3 as threshold for LLM judge to identify poor generations |
 | Multi-GPU device mapping | Use `device_map="auto"` for automatic tensor distribution |
-| Design Issue. Using the Qwen/Qwen2.5-Coder-7B-Instruct to<br>- Generated documentation<br> - Generate Code from documentation to PL<br> -Act as LLM Judge| No solution for using a different model. Constrained by both Memory|
-| Correctness of code generated from NL. Reading suggested using LLM Judge, _Didn't want to venture into compilation and testing_ | Used Qwen as LLM Judge to measure code against ducumentation on these metrics: <br> -compiles: true/false<br> -logic_correct: true/false<br> -handles_edge_cases true/false<br> -issues: list of issues<br> -Judge verdict correct/incorrect/partially_correct<br> -explanation of code<br> - a final score [0,1]
+
 
 
 ## Usage

@@ -1,3 +1,16 @@
+> **⚠️ DRAFT**
+>
+> This diagram is under development and subject to change.
+
+# Table Of Contents
+
+-   [Dataset Generation Pipeline](#dataset-generation-pipeline)
+-   [Baseline Accuracy Computation](#baseline-accuracy-computation)
+-   [Phase 1: NL -\> Java (PL1)](#phase-1-nl---java-pl1)
+-   [Phase 2: Java (PL1) -\> C# (PL2)](#phase-2-java-pl1---c-pl2)
+
+------------------------------------------------------------------------
+
 # Architecture & Data Flow — NL → Java → C# Code Generation
 
 **Source notebook:** [nl-java-c-final-working.ipynb](nl-java-c-final-working.ipynb)

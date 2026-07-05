@@ -1,5 +1,5 @@
-W0705 11:25:18.943000 578509 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
-W0705 11:25:18.960000 578509 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0705 12:05:29.621000 580977 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0705 12:05:29.636000 580977 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
 [transformers] `torch_dtype` is deprecated! Use `dtype` instead!
 Hugging Face API key loaded successfully from secrets.
 ==================================================
@@ -20,22 +20,22 @@ FilteredDataset initialized successfully.
 BaselineData initialized successfully.
 Loading all models...
 QwenModelBase using device: cuda for model Qwen/Qwen2.5-Coder-7B-Instruct
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<00:50,  6.68it/s]Loading weights:   1%|          | 2/339 [00:00<00:54,  6.13it/s]Loading weights:   5%|▍         | 16/339 [00:00<00:06, 51.54it/s]Loading weights:   9%|▊         | 29/339 [00:00<00:04, 71.96it/s]Loading weights:  15%|█▌        | 52/339 [00:00<00:02, 110.26it/s]Loading weights:  19%|█▉        | 66/339 [00:00<00:02, 118.41it/s]Loading weights:  26%|██▌       | 88/339 [00:00<00:01, 147.21it/s]Loading weights:  31%|███       | 104/339 [00:00<00:01, 142.74it/s]Loading weights:  37%|███▋      | 125/339 [00:01<00:01, 153.21it/s]Loading weights:  42%|████▏     | 141/339 [00:01<00:01, 154.81it/s]Loading weights:  47%|████▋     | 161/339 [00:01<00:01, 158.25it/s]Loading weights:  52%|█████▏    | 177/339 [00:01<00:01, 156.57it/s]Loading weights:  58%|█████▊    | 196/339 [00:01<00:00, 147.85it/s]Loading weights:  65%|██████▌   | 221/339 [00:01<00:00, 169.67it/s]Loading weights:  71%|███████   | 241/339 [00:01<00:00, 177.76it/s]Loading weights:  77%|███████▋  | 260/339 [00:01<00:00, 164.44it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 172.15it/s]Loading weights:  88%|████████▊ | 298/339 [00:02<00:00, 121.89it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 143.06it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<00:51,  6.60it/s]Loading weights:   1%|          | 2/339 [00:00<00:53,  6.25it/s]Loading weights:   5%|▌         | 17/339 [00:00<00:06, 48.47it/s]Loading weights:   9%|▊         | 29/339 [00:00<00:05, 60.23it/s]Loading weights:  19%|█▉        | 65/339 [00:00<00:02, 135.30it/s]Loading weights:  24%|██▍       | 81/339 [00:00<00:01, 140.12it/s]Loading weights:  30%|██▉       | 101/339 [00:00<00:01, 151.01it/s]Loading weights:  35%|███▌      | 120/339 [00:01<00:01, 160.83it/s]Loading weights:  40%|████      | 137/339 [00:01<00:01, 152.27it/s]Loading weights:  47%|████▋     | 160/339 [00:01<00:01, 166.33it/s]Loading weights:  53%|█████▎    | 178/339 [00:01<00:01, 160.97it/s]Loading weights:  58%|█████▊    | 197/339 [00:01<00:00, 162.55it/s]Loading weights:  63%|██████▎   | 214/339 [00:01<00:00, 163.74it/s]Loading weights:  68%|██████▊   | 231/339 [00:01<00:00, 151.01it/s]Loading weights:  76%|███████▌  | 256/339 [00:01<00:00, 175.52it/s]Loading weights:  81%|████████  | 274/339 [00:01<00:00, 166.96it/s]Loading weights:  86%|████████▌ | 292/339 [00:02<00:00, 156.40it/s]Loading weights:  93%|█████████▎| 316/339 [00:02<00:00, 178.15it/s]Loading weights:  99%|█████████▉| 335/339 [00:02<00:00, 172.41it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 144.70it/s]
 CodeDocumentationGenerator using device: cuda
 QwenCodeGenerator using device: cuda
 Initializing GraphCodeBERTScorer...
 Using device: cuda
-Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 32708.33it/s]
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 50960.77it/s]
 [transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/graphcodebert-base
 Key                       | Status     | 
 --------------------------+------------+-
-lm_head.layer_norm.bias   | UNEXPECTED | 
-lm_head.dense.weight      | UNEXPECTED | 
-lm_head.decoder.bias      | UNEXPECTED | 
-lm_head.bias              | UNEXPECTED | 
-lm_head.dense.bias        | UNEXPECTED | 
 lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
 lm_head.decoder.weight    | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
 pooler.dense.bias         | MISSING    | 
 pooler.dense.weight       | MISSING    | 
 
@@ -52,23 +52,125 @@ Starting LORA model validation phase...
 Processing 33 records for validation
 Reloading models needed for validation...
 Loading fine-tuned LORA model for validation...
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:38,  3.43it/s]Loading weights:   1%|          | 2/339 [00:00<01:07,  4.98it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 66.64it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 88.84it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 111.98it/s]Loading weights:  23%|██▎       | 77/339 [00:00<00:02, 116.12it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 126.76it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 134.55it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 138.29it/s]Loading weights:  51%|█████     | 172/339 [00:01<00:01, 152.16it/s]Loading weights:  55%|█████▌    | 188/339 [00:01<00:01, 148.19it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 141.49it/s]Loading weights:  68%|██████▊   | 232/339 [00:01<00:00, 143.61it/s]Loading weights:  76%|███████▌  | 256/339 [00:02<00:00, 157.58it/s]Loading weights:  81%|████████  | 273/339 [00:02<00:00, 154.20it/s]Loading weights:  86%|████████▌ | 292/339 [00:02<00:00, 141.98it/s]Loading weights:  93%|█████████▎| 316/339 [00:02<00:00, 142.01it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.00it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:25,  3.97it/s]Loading weights:   1%|          | 2/339 [00:00<01:02,  5.36it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 69.08it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 95.44it/s]Loading weights:  15%|█▌        | 52/339 [00:00<00:02, 100.86it/s]Loading weights:  20%|██        | 68/339 [00:00<00:02, 118.23it/s]Loading weights:  26%|██▌       | 88/339 [00:00<00:02, 119.94it/s]Loading weights:  33%|███▎      | 112/339 [00:01<00:01, 136.68it/s]Loading weights:  37%|███▋      | 127/339 [00:01<00:01, 139.99it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 142.04it/s]Loading weights:  51%|█████     | 172/339 [00:01<00:01, 152.20it/s]Loading weights:  55%|█████▌    | 188/339 [00:01<00:01, 147.45it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 149.42it/s]Loading weights:  66%|██████▌   | 223/339 [00:01<00:00, 144.36it/s]Loading weights:  72%|███████▏  | 244/339 [00:01<00:00, 150.94it/s]Loading weights:  77%|███████▋  | 260/339 [00:02<00:00, 145.68it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 135.86it/s]Loading weights:  90%|████████▉ | 304/339 [00:02<00:00, 151.94it/s]Loading weights:  94%|█████████▍| 320/339 [00:02<00:00, 148.06it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.37it/s]
 Fine-tuned LORA model loaded from '../model/Qwen_Python_to_CPP_LORA_Adapter'
-Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:36,  3.50it/s]Loading weights:   1%|          | 2/339 [00:00<01:06,  5.04it/s]Loading weights:   6%|▋         | 22/339 [00:00<00:05, 61.80it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 90.55it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 119.44it/s]Loading weights:  23%|██▎       | 78/339 [00:00<00:02, 120.12it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 124.49it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 145.53it/s]Loading weights:  41%|████▏     | 140/339 [00:01<00:01, 143.30it/s]Loading weights:  47%|████▋     | 160/339 [00:01<00:01, 136.78it/s]Loading weights:  54%|█████▍    | 184/339 [00:01<00:01, 141.90it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 150.79it/s]Loading weights:  68%|██████▊   | 229/339 [00:01<00:00, 164.54it/s]Loading weights:  73%|███████▎  | 246/339 [00:02<00:00, 146.78it/s]Loading weights:  79%|███████▉  | 268/339 [00:02<00:00, 153.34it/s]Loading weights:  84%|████████▍ | 284/339 [00:02<00:00, 147.56it/s]Loading weights:  90%|████████▉ | 304/339 [00:02<00:00, 146.22it/s]Loading weights:  97%|█████████▋| 328/339 [00:02<00:00, 142.35it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.94it/s]
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:45,  3.19it/s]Loading weights:   1%|          | 2/339 [00:00<01:12,  4.65it/s]Loading weights:   8%|▊         | 27/339 [00:00<00:04, 73.61it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 78.67it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 108.37it/s]Loading weights:  26%|██▌       | 88/339 [00:00<00:01, 128.33it/s]Loading weights:  30%|███       | 103/339 [00:01<00:01, 126.95it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 128.72it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 136.08it/s]Loading weights:  51%|█████     | 172/339 [00:01<00:01, 139.87it/s]Loading weights:  58%|█████▊    | 196/339 [00:01<00:00, 143.95it/s]Loading weights:  65%|██████▍   | 220/339 [00:01<00:00, 145.64it/s]Loading weights:  72%|███████▏  | 244/339 [00:02<00:00, 159.31it/s]Loading weights:  77%|███████▋  | 261/339 [00:02<00:00, 155.43it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 154.56it/s]Loading weights:  87%|████████▋ | 296/339 [00:02<00:00, 150.75it/s]Loading weights:  93%|█████████▎| 316/339 [00:02<00:00, 148.58it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 128.99it/s]
 NL->PL LORA model loaded from '../model/Qwen_NL_to_PL_LORA_Adapter'
-FineTunedGenerator using device: cuda:0
 
-Debug: Checking dataset languages from index 66...
-Found 16 C++ records in validation range
-Other languages: {'python': 17}
-Unprocessable records in range: 0
+=== Phase 1: NL->PL (Documentation to Code) Validation ===
+NL->PL model forced into eval mode
+FineTunedGeneratorNLPL using device: cuda:0
 
 Starting computation for 33 records (starting from index 66, each with 3 tries per phase)...
 
 Synchronizing CUDA and empty cache
 Using cached dataset with 100 samples...
-DEBUG: First record language: 'C++', is_processable: True
-Processing record 1/33 (language: C++)...
+DEBUG: First record language: 'Python', is_processable: True
+Processing record 1/33 (language: Python)...
+  Generating documentation for d9b76c6f...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+This code defines two PyTorch models, `MMBTModel` and `MMBTForClassification`, which are part of a multimodal bitransformer architecture designed for classifying images and text. The model combines information from multiple modalities using transformers and achieves state-of-the-art performance on various multimodal classification benchmarks.
+
+### Classes
+
+#### ModalEmbeddings
+
+**Purpose:**  
+`ModalEmbeddings` is a generic module that projects modal embeddings into the main transformer's embedding space. It handles adding start and end tokens, positional embeddings, and token type embeddings.
+
+**Fields:**
+- `config`: Configuration object containing model settings.
+- `encoder`: Encoder for the second modality.
+- `proj_embeddings`: Linear layer to project modal embeddings into the main transformer's embedding space.
+- `position_embeddings`: Positional embeddings for the main transformer.
+- `token_type_embeddings`: Token type embeddings for the main transformer.
+- `word_embeddings`: Word embeddings for the main transformer.
+- `LayerNorm`: Layer normalization layer.
+- `dropout`: Dropout layer.
+
+**Methods:**
+- `forward`: Projects modal embeddings, adds start/end tokens, positional embeddings, and token type embeddings, then applies layer normalization and dropout.
+
+#### MMBTModel
+
+**Purpose:**
+*************
+Code:
+assistant
+```python
+import torch
+from torch import nn
+from transformers import BertConfig, BertTokenizer, BertModel
+
+class ModalEmbeddings(nn.Module):
+    def __init__(self, config, encoder):
+        super(ModalEmbeddings, self).__init__()
+        self.config = config
+        self.encoder = encoder
+        self.proj_embeddings = nn.Linear(config.hidden_size, config.embedding_dim)
+        self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.embedding_dim)
+        self.token_type_embeddings = nn.Embedding(2, config.embedding_dim)
+        self.word_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim)
+        self.LayerNorm = nn.LayerNorm(config.embedding_dim, eps=config.layer_norm_eps)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+
+    def forward(self, input_ids=None, position_ids=None, token_type_ids=None):
+        if input_ids is None:
+            input_ids = torch.zeros((input_ids.size(0), input_ids.size(1)), dtype=torch.long).to(input_ids.device)
+        
+        if position_ids is None:
+            position_ids = torch.arange(input_ids.size(1), dtype=torch.long).unsqueeze(0).repeat(input_ids.size(0), 1).to(input_ids.device)
+        
+        if token_type_ids is None:
+            token_type_ids = torch.zeros_like(input_ids).to(input_ids.device)
+        
+        embedded_input = self.word_embeddings(input_ids) + self.position_embeddings(position_ids) + self.token_type_embeddings(token_type_ids)
+        projected_input = self.proj_embeddings(embedded_input)
+        normalized_input = self.LayerNorm(projected_input)
+        output = self.dropout(normalized_input)
+        return output
+
+class MMBTModel(nn.Module):
+    def __init__(self, config):
+        super(MMBTModel, self).__init__()
+        self.config = config
+        self.image_encoder = BertModel.from_pretrained('bert-base-uncased')
+        self.text_encoder = BertModel.from_pretrained('bert-base-uncased')
+        self.modal_embeddings = ModalEmbeddings(config, self.text_encoder)
+        self.classifier = nn.Linear(config.embedding_dim * 2, config.num_labels)
+
+    def forward(self, image_features, text_ids, text_mask):
+        image_output = self.image_encoder(image_features)
+        text_output = self.modal_embeddings(text_ids, text_mask)
+        combined_output = torch.cat([image_output[0], text_output], dim=-1)
+        logits = self.classifier(combined_output)
+        return logits
+
+# Example usage
+config = BertConfig()
+model = MMBTModel(config)
+image_features = torch.randn(1, 197, 768)  # Example image features (batch_size, num_patches, hidden_size)
+text_ids = torch.randint(0, config.vocab_size, (1, 128))  # Example text IDs (batch_size, max_seq_length)
+text_mask = torch.ones_like(text_ids)  # Example text mask (batch_size, max_seq_length)
+
+logits = model(image_features, text_ids, text_mask)
+print(logits.shape)  # Should be (1, num_labels)
+```
+
+This code defines the `ModalEmbeddings` and `MMBTModel` classes as described in the natural language documentation. The `ModalEmbeddings` class handles projecting modal embeddings into the main transformer's embedding space, while the `MMBTModel` class combines information from both image and text using transformers and outputs logits for classification.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5952, GraphCodeBERTScore: 0.9258, Average: 0.7605
+	Recording result: 'hexsha': d9b76c6f6b, 'nl_pl_best_ast_score': 0.5952, 'nl_pl_best_graphcodebert_score': 0.9258, 'nl_pl_best_average_score': 0.7605
+
+Processed 2/33 records. Current record d9b76c6f6b... NL->PL Avg Score: 0.7605
+Processing record 3/33 (language: C++)...
   Generating documentation for 4f396e14...
   Generating code from documentation for C++...
 *************
@@ -96,62 +198,147 @@ The `ServerTest` class encapsulates the setup and teardown of the testing enviro
 
 *************
 Code:
-```
+/*
+ * Copyright 2018-present HiveMQ GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#include "mds/metadata_server.h"
-#include "mds/metadata_db.h"
+#include "../src/server/mds.h"
+#include "../src/server/mdb.h"
 
-using namespace mds;
+#include "../../common/test_utils.hpp"
 
-namespace {
+using namespace ::testing;
 
-class ServerTest : public ::testing::Test {
-public:
-    ServerTest() : dbname_("test_mds") {}
-
-    virtual void SetUp() {
-        ASSERT_TRUE(mds_env_.CreateIfMissing(dbname_, true).ok());
-        ASSERT_OK(mds_env_.NewWritableFile(dbname_ + "/MANIFEST-000001", &file_));
-        ASSERT_OK(file_->Append("dummy"));
-
-        ASSERT_OK(mdb_->Open(&mds_));
-        ASSERT_OK(mds_->LoadMetadata());
-        mdb_ = nullptr;
-    }
-
-    virtual void TearDown() {
-        if (file_) delete file_;
-        mds_env_.DeleteDir(dbname_);
-    }
-
-protected:
-    std::string dbname_;
-    MDSEnv mds_env_;
-    MDS* mds_ = nullptr;
-    MDB* mdb_ = nullptr;
-    SequentialFile* file_ = nullptr;
-};
-
-TEST_F(ServerTest, fstat) {
-    Stat stat;
-    Status s = mds_->FStat("/a/b/c/d/e", &stat);
-    EXPECT_FALSE(s.ok()) <<
+class ServerTest : public Test {
+ protected:
+  void SetUp() override {
+    dbname_ = std::string("test_mds_db_") + std::to_string(rand());
+    mds_env_.set_cachesize(0);
+    ASSERT_OK(mds_env_.Open(dbname_));
+    ASSERT_OK(MDBEnv::Create(&mdb_));
+    ASSERT_OK(mdb_->Open(mds
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.5652, GraphCodeBERTScore: 0.9614, Average: 0.7633
+	 AST Similarity Score: 0.3182, GraphCodeBERTScore: 0.9463, Average: 0.6322
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.5
-	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f396e14fe, 'nl_pl_best_ast_score': 0.5652, 'nl_pl_best_graphcodebert_score': 0.9614, 'nl_pl_best_average_score': 0.7633
-	Recording NL->PL1->PL2 result: 'hexsha': 4f396e14fe, 'nl_pl1_pl2_best_ast_score': 0.0714, 'nl_pl1_pl2_best_average_score': 0.3936
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Recording result: 'hexsha': 4f396e14fe, 'nl_pl_best_ast_score': 0.3182, 'nl_pl_best_graphcodebert_score': 0.9463, 'nl_pl_best_average_score': 0.6322
+	Recording NL->PL1->PL2 result: 'hexsha': 4f396e14fe, 'nl_pl1_pl2_best_ast_score': 0.3043, 'nl_pl1_pl2_best_average_score': 0.6119
 
-Processed 2/33 records. Current record 4f396e14fe... NL->PL Avg Score: 0.7633, NL->C++->Py Avg Score: 0.3936
-Processing record 3/33 (language: C++)...
+Processed 4/33 records. Current record 4f396e14fe... NL->PL Avg Score: 0.6322, NL->C++->Py Avg Score: 0.6119
+Processing record 5/33 (language: Python)...
+  Generating documentation for d9b79f86...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+# Comprehensive Natural Language Documentation for the Provided Source Code
+
+## Overview
+This source code defines two main classes, `BaseBeaconChain` and `BeaconChain`, which form the core components of a blockchain system specifically designed for Ethereum 2.0 (Eth2). The `BaseBeaconChain` class serves as an abstract base class defining the interface for interacting with the blockchain, while the `BeaconChain` class provides concrete implementations of this interface.
+
+## Classes
+
+### Class: `BaseBeaconChain`
+**Purpose:**  
+The `BaseBeaconChain` class is an abstract base class that outlines the essential functionalities required for managing a beacon chain. It includes methods for accessing the blockchain database (`chaindb`), retrieving state machines (`get_state_machine`), handling blocks (`get_block_by_root`, `create_block_from_parent`), and ensuring the integrity of the blockchain data.
+
+#### Fields/Member Variables:
+- **chaindb**: An instance of `BaseBeaconChainDB`, representing the database backend for storing blockchain data.
+- **chaindb_class**: A class variable specifying the type of database class to use.
+- **sm_configuration**: A tuple of tuples, where each inner tuple contains a slot number and the corresponding state machine class.
+- **chain
+*************
+Code:
+assistant
+```python
+from abc import ABC, abstractmethod
+from typing import Any, Dict, Tuple, Type
+
+class BaseBeaconChainDB(ABC):
+    @abstractmethod
+    def get_block(self, block_root: bytes) -> Any:
+        pass
+
+    @abstractmethod
+    def save_block(self, block: Any) -> None:
+        pass
+
+class StateMachine(ABC):
+    @abstractmethod
+    def process_block(self, block: Any) -> None:
+        pass
+
+class BeaconChain(ABC):
+    chaindb_class = BaseBeaconChainDB
+
+    def __init__(self, chaindb: BaseBeaconChainDB, sm_configuration: Tuple[Tuple[int, Type[StateMachine]]]):
+        self.chaindb = chaindb
+        self.sm_configuration = sm_configuration
+
+    @abstractmethod
+    def get_state_machine(self, slot: int) -> StateMachine:
+        pass
+
+    @abstractmethod
+    def get_block_by_root(self, block_root: bytes) -> Any:
+        pass
+
+    @abstractmethod
+    def create_block_from_parent(self, parent_block: Any) -> Any:
+        pass
+
+class ConcreteState(StateMachine):
+    def process_block(self, block: Any) -> None:
+        # Implementation of processing a block
+        pass
+
+class ConcreteBeaconChain(BeaconChain):
+    def __init__(self, chaindb: BaseBeaconChainDB, sm_configuration: Tuple[Tuple[int, Type[ConcreteState]]]):
+        super().__init__(chaindb, sm_configuration)
+
+    def get_state_machine(self, slot: int) -> ConcreteState:
+        for s, sm_class in self.sm_configuration:
+            if s == slot:
+                return sm_class()
+        raise ValueError(f"No state machine found for slot {slot}")
+
+    def get_block_by_root(self, block_root: bytes) -> Any:
+        return self.chaindb.get_block(block_root)
+
+    def create_block_from_parent(self, parent_block: Any) -> Any:
+        # Implementation of creating a new block from a parent block
+        pass
+```
+
+This code defines the `BaseBeaconChain`, `BaseBeaconChainDB`, `StateMachine`, and `BeaconChain` classes as per the provided documentation. The `ConcreteBeaconChain` class inherits from `BeaconChain` and implements the abstract methods. The `ConcreteState` class inherits from `StateMachine` and provides an implementation for the `process_block` method.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6279, GraphCodeBERTScore: 0.9458, Average: 0.7869
+	Recording result: 'hexsha': d9b79f86fa, 'nl_pl_best_ast_score': 0.6279, 'nl_pl_best_graphcodebert_score': 0.9458, 'nl_pl_best_average_score': 0.7869
+
+Processed 6/33 records. Current record d9b79f86fa... NL->PL Avg Score: 0.7869
+Processing record 7/33 (language: C++)...
   Generating documentation for 4f39c862...
   Generating code from documentation for C++...
 *************
@@ -180,61 +367,164 @@ This class represents a single node in an AABB tree. Each node contains informat
 
 *************
 Code:
-// Copyright (C) 2017-2018 European Centre for Medium-Range Weather Forecasts (ECMWF).
-//
-// This software is licensed under the terms of the Apache Licence Version 2.0
-// which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-//
-// In applying this licence, ECMWF does not waive the privileges and immunities
-// granted to it by virtue of its status as an intergovernmental organisation nor
-// does it submit to any jurisdiction.
-//
+/**
+ * Copyright (C) 2005   <NAME> 
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ */
 
-#include "eckit/config/Resource.h"
-#include "eckit/filesystem/PathName.h"
+#include "CCollisionAABB.h"
 
-#include "oops/util/Logger.h"
+using namespace std;
+using namespace chai3d;
 
-namespace oops {
+//==============================================================================
+/*!
+    Constructor of cCollisionAABBNode.
 
-static Log& log = util::logger("oops::File");
-
-// -----------------------------------------------------------------------------
-
-File::File(const Parameters & parameters)
-  : filename_(parameters.filename().value()),
-    mode_(parameters.mode().value())
-{
-  if (!eckit::filesystem::exists(filename_)) {
-    log.info() << "Creating file: " << filename_;
-  }
-
-  handle_.open(filename_, mode_);
-}
-
-// -----------------------------------------------------------------------------
-// Destructor
-
-File::~File() {
-  try {
-    handle_.close();
-  } catch (...) {
-    // ignore exceptions on
+    \param      a_bbox       Bounding box associated with this node.
+    \param      a_depth      Depth level of this
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.6129, GraphCodeBERTScore: 0.8281, Average: 0.7205
+	 AST Similarity Score: 0.1429, GraphCodeBERTScore: 0.9111, Average: 0.5270
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f39c862d9, 'nl_pl_best_ast_score': 0.6129, 'nl_pl_best_graphcodebert_score': 0.8281, 'nl_pl_best_average_score': 0.7205
-	Recording NL->PL1->PL2 result: 'hexsha': 4f39c862d9, 'nl_pl1_pl2_best_ast_score': 0.2703, 'nl_pl1_pl2_best_average_score': 0.5326
+	Recording result: 'hexsha': 4f39c862d9, 'nl_pl_best_ast_score': 0.1429, 'nl_pl_best_graphcodebert_score': 0.9111, 'nl_pl_best_average_score': 0.5270
+	Recording NL->PL1->PL2 result: 'hexsha': 4f39c862d9, 'nl_pl1_pl2_best_ast_score': 0.5714, 'nl_pl1_pl2_best_average_score': 0.6842
 
-Processed 4/33 records. Current record 4f39c862d9... NL->PL Avg Score: 0.7205, NL->C++->Py Avg Score: 0.5326
-Processing record 5/33 (language: C++)...
+Processed 8/33 records. Current record 4f39c862d9... NL->PL Avg Score: 0.5270, NL->C++->Py Avg Score: 0.6842
+Processing record 9/33 (language: Python)...
+  Generating documentation for d9b83476...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This Python script uses the `paramiko` library to establish an SSH connection to multiple Cisco IOS devices listed in a file (`devices.txt`). It then sends commands from another file (`commands.txt`) to each device and captures the output, which is written to separate text files named after the device IP addresses.
+
+### Classes and Structs
+
+#### No Classes or Structs Defined
+
+The provided code does not define any custom classes or structs. All functionality is encapsulated within the main script.
+
+### Fields and Member Variables
+
+#### Global Variables
+
+- **client**: An instance of `paramiko.SSHClient`, used to manage SSH connections.
+- **f1**: File object opened in read mode for reading device information from `devices.txt`.
+- **f2**: File object opened in read mode for reading commands from `commands.txt`.
+
+#### Local Variables (within loops and functions)
+
+- **data**: A list containing split lines from `devices.txt`.
+- **addr**: The IP address of the device.
+- **user**: The username for the SSH connection.
+- **pwd**: The password for the SSH connection.
+- **device_access**: An instance of `paramiko.Channel`, representing the shell session on the remote device.
+- **output**: The captured output
+*************
+Code:
+assistant
+```python
+import paramiko
+
+# Global variables
+client = paramiko.SSHClient()
+f1 = open('devices.txt', 'r')
+f2 = open('commands.txt', 'r')
+
+def setup_ssh_client():
+    """Set up the SSH client with automatic host key policy."""
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+def connect_to_device(addr, user, pwd):
+    """Establish an SSH connection to the specified device."""
+    client.connect(addr, username=user, password=pwd)
+    return client.invoke_shell()
+
+def send_commands(device_access, commands):
+    """Send a list of commands to the device and capture the output."""
+    for command in commands:
+        device_access.send(command + '\n')
+        time.sleep(1)  # Wait for the command to execute
+        output = device_access.recv(65535).decode('utf-8')
+        yield output
+
+def save_output(output, addr):
+    """Save the captured output to a file named after the device IP address."""
+    with open(f'{addr}.txt', 'w') as f:
+        f.write(output)
+
+def main():
+    """Main function to orchestrate the SSH connection and command execution."""
+    setup_ssh_client()
+    
+    data = f1.readlines()
+    commands = f2.readlines()
+    
+    for line in data:
+        addr, user, pwd = line.strip().split(',')
+        device_access = connect_to_device(addr, user, pwd)
+        
+        print(f'Connected to {addr}')
+        
+        for output in send_commands(device_access, commands):
+            save_output(output, addr)
+        
+        device_access.close()
+        client.close()
+        print(f'Disconnected from {addr}')
+
+if __name__ == '__main__':
+    main()
+```
+
+### Explanation
+
+1. **Global Variables**:
+   - `client`: An instance of `paramiko.SSHClient` to manage SSH connections.
+   - `f1`: File object opened in read mode for reading device information from `devices.txt`.
+   - `f2`: File object opened in read mode for reading commands from `commands.txt`.
+
+2. **Functions**:
+   - `setup_ssh_client()`: Sets up the SSH client with an automatic host key policy.
+   - `connect_to_device(addr, user, pwd)`: Establishes an SSH connection to the specified device and returns a channel for sending commands.
+   - `send_commands(device_access, commands)`: Sends a list of commands to the device and yields the captured output.
+   - `save_output(output, addr)`: Saves the captured output to a file named after the device IP address.
+   - `main()`: Orchestrates the SSH connection and command execution by iterating over the devices and executing the commands.
+
+3. **Main Execution**:
+   - The `main()` function reads the device and command information, establishes connections, sends commands, captures outputs, and saves them to files.
+
+This code follows idiomatic Python conventions and implements the described functionality using the `paramiko` library for SSH connections.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4516, GraphCodeBERTScore: 0.9590, Average: 0.7053
+	Recording result: 'hexsha': d9b8347698, 'nl_pl_best_ast_score': 0.4516, 'nl_pl_best_graphcodebert_score': 0.9590, 'nl_pl_best_average_score': 0.7053
+
+Processed 10/33 records. Current record d9b8347698... NL->PL Avg Score: 0.7053
+Processing record 11/33 (language: C++)...
   Generating documentation for 4f3bc97f...
   Generating code from documentation for C++...
 *************
@@ -264,43 +554,109 @@ The program does not define any classes or structs.
 
 *************
 Code:
-// Problem: http://codeforces.com/contest/764/problem/D
-// Author: github.com/lzl124631x
-// Time: O(NlogN)
-// Space: O(N)
-class Solution {
-public:
-    typedef long long LL;
-    int findSmallestNumber(int n, int b, int a) {
-        if (b == 1) return a; // Special case when b is 1
-        vector<LL> q = { 1 }; // Initialize queue with starting number 1
-        while (q.size() < n) {
-            vector<LL> tmp;
-            LL sz = q.size();
-            FOR(i, 0, sz) {
-                LL num = q[i];
-                LL d = num % 10; // Get the last digit of the current number
-                ROF(j, 0, d + 1) {
-                    LL next = num * 10 + j; // Form the next number by appending digit j
-                    if (next >= a && next % b == 0) return next; // Check if the new number meets the criteria
-                    tmp.eb(next); // Add the new number to temporary list
-                }
-            }
+#include <bits/stdc++.h>
+using namespace std;
+#define _USE_MATH_DEFINES
+#define FOR(i,a,b) for(int i=(a);i<(int)(b);i++)
+#define ROF(i,a,b) for(int i=(b)-1;i>=(a);i--)
+#define FORE(a,x) FOREIT(a,(x).begin(),(x).end())
+#define FOREIT(a,i,end) for(auto i = (start);i != end;++i)
+#define eb emplace_back
+#define mp make_pair
+typedef long double ld;
+typedef unsigned long long ull;
+typedef unsigned int uint;
+typedef long long ll;
+const int MOD = 998244353;
+const ll INF = 1E18;
+const ld EPS = 1E-10;
+
+ll n, a, b;
+
+// Function to calculate the modular multiplicative inverse using Fermat's Little Theorem
+ll inv(ll a) {
+    return pow(a, MOD - 2);
+}
+
+// Main function
+int main() {
+    cin >> n >> a >> b;
+    ll ans = -1;
+    if (a % b == 0) ans = a; // If 'a' is already divisible
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.4231, GraphCodeBERTScore: 0.8530, Average: 0.6381
+	 AST Similarity Score: 0.4898, GraphCodeBERTScore: 0.9766, Average: 0.7332
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.9
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.9
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f3bc97ffe, 'nl_pl_best_ast_score': 0.4231, 'nl_pl_best_graphcodebert_score': 0.8530, 'nl_pl_best_average_score': 0.6381
-	Recording NL->PL1->PL2 result: 'hexsha': 4f3bc97ffe, 'nl_pl1_pl2_best_ast_score': 0.3529, 'nl_pl1_pl2_best_average_score': 0.6311
+	Recording result: 'hexsha': 4f3bc97ffe, 'nl_pl_best_ast_score': 0.4898, 'nl_pl_best_graphcodebert_score': 0.9766, 'nl_pl_best_average_score': 0.7332
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3bc97ffe, 'nl_pl1_pl2_best_ast_score': 0.4340, 'nl_pl1_pl2_best_average_score': 0.6830
 
-Processed 6/33 records. Current record 4f3bc97ffe... NL->PL Avg Score: 0.6381, NL->C++->Py Avg Score: 0.6311
-Processing record 7/33 (language: C++)...
+Processed 12/33 records. Current record 4f3bc97ffe... NL->PL Avg Score: 0.7332, NL->C++->Py Avg Score: 0.6830
+Processing record 13/33 (language: Python)...
+  Generating documentation for d9b86cc4...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This source code appears to consist of two separate programs written in Python. The first program checks for Armstrong numbers between 400 and 500, while the second program processes user input to find and print numbers that meet certain criteria based on their digits.
+
+### Program 1: Checking Armstrong Numbers
+
+#### Purpose
+The first part of the code checks for Armstrong numbers between 400 and 500. An Armstrong number is a number that is equal to the sum of its own digits each raised to the power of the number of digits.
+
+#### Algorithm
+1. Loop through numbers from 400 to 500.
+2. For each number `n`, calculate the hundreds digit (`i`), tens digit (`j`), and units digit (`k`) using integer division and modulo operations.
+3. Check if `n` is equal to `i^3 + j^3 + k^3`.
+4. If the condition is true, print the number `n`.
+
+#### Control Flow
+- The loop iterates over the range from 400 to 500.
+- Inside the loop, calculations are performed to extract the digits and check the Armstrong condition.
+- If the condition is met
+*************
+Code:
+assistant
+```python
+# Program 1: Checking Armstrong Numbers
+
+def is_armstrong_number(n):
+    """Check if a number is an Armstrong number."""
+    # Extract digits
+    i = n // 100  # Hundreds digit
+    j = (n // 10) % 10  # Tens digit
+    k = n % 10  # Units digit
+    
+    # Check if the number is equal to the sum of its own digits each raised to the power of the number of digits
+    return n == i**3 + j**3 + k**3
+
+def check_armstrong_numbers(start, end):
+    """Check for Armstrong numbers within a given range."""
+    for n in range(start, end + 1):
+        if is_armstrong_number(n):
+            print(n)
+
+# Example usage
+check_armstrong_numbers(400, 500)
+```
+
+This code defines a function `is_armstrong_number` to check if a given number is an Armstrong number and another function `check_armstrong_numbers` to iterate through a specified range and print Armstrong numbers found within that range. The example usage at the bottom demonstrates how to call the `check_armstrong_numbers` function to find Armstrong numbers between 400 and 500.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6522, GraphCodeBERTScore: 0.9180, Average: 0.7851
+	Recording result: 'hexsha': d9b86cc42a, 'nl_pl_best_ast_score': 0.6522, 'nl_pl_best_graphcodebert_score': 0.9180, 'nl_pl_best_average_score': 0.7851
+
+Processed 14/33 records. Current record d9b86cc42a... NL->PL Avg Score: 0.7851
+Processing record 15/33 (language: C++)...
   Generating documentation for 4f3be9cd...
   Generating code from documentation for C++...
 *************
@@ -325,68 +681,117 @@ The `v4l2Device` class manages the interaction with a V4L2 device, including ope
 - `m_fd`: An integer representing the file descriptor
 *************
 Code:
+```
+/*
+ * Copyright (c) 2019 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <cstring>
+#include <thread>
+#include <chrono>
 
-#include "v4l2device.h"
-#include "log.h"
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/videodev2.h>
+#include <poll.h>
 
-namespace {
+#include <tvgCommonDef.h>
+#include <tvgRenderEngine.h>
+#include <tvgSurfaceManager.h>
 
-enum {
-    NUM_BUFFERS = 10,
-};
+using namespace tvg;
 
-struct buffer {
-    void *start;
-    size_t length;
-};
-
-} // namespace
-
-void v4l2Device::init() {
-    if (open_device()) {
-        log_error("Failed to open %s\n", m_devname.c_str());
-        return;
-    }
-
-    if (find_format(m_v4l2Format)) {
-        log_error("Format not found\n");
-        close_device();
-        return;
-    }
-    log_info("Using pixelformat '%c%c%c%c'\n",
-             fourcc_code(m_fmt.fmt.pix.pixelformat)[0],
-             fourcc_code(m_fmt.fmt.pix.pixelformat)[1],
-             fourcc_code(m_fmt.fmt.pix.pixelformat)[2],
-             fourcc_code(m_fmt.fmt.pix.pixelformat)[3]);
-
-    if (requestbuffers(NUM_BUFFERS)) {
-        log_error("Requestbuffers failed\n");
-        close_device();
-        return;
-    }
-
-    if (querybuf()) {
-        log_error
+class v4l2Device {
+public:
+    enum MipiPort : uint32_t {
+        MIPICameraPort = 0,
+        MipiExternalCameraPort,
+        MipiReservedPortsCount,
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.3393, GraphCodeBERTScore: 0.9570, Average: 0.6482
-	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.9
+	 AST Similarity Score: 0.0377, GraphCodeBERTScore: 0.8906, Average: 0.4642
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.7
-	Recording result: 'hexsha': 4f3be9cdfd, 'nl_pl_best_ast_score': 0.3393, 'nl_pl_best_graphcodebert_score': 0.9570, 'nl_pl_best_average_score': 0.6482
-	Recording NL->PL1->PL2 result: 'hexsha': 4f3be9cdfd, 'nl_pl1_pl2_best_ast_score': 0.1818, 'nl_pl1_pl2_best_average_score': 0.5619
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f3be9cdfd, 'nl_pl_best_ast_score': 0.0377, 'nl_pl_best_graphcodebert_score': 0.8906, 'nl_pl_best_average_score': 0.4642
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3be9cdfd, 'nl_pl1_pl2_best_ast_score': 0.2000, 'nl_pl1_pl2_best_average_score': 0.5709
 
-Processed 8/33 records. Current record 4f3be9cdfd... NL->PL Avg Score: 0.6482, NL->C++->Py Avg Score: 0.5619
-Processing record 9/33 (language: C++)...
+Processed 16/33 records. Current record 4f3be9cdfd... NL->PL Avg Score: 0.4642, NL->C++->Py Avg Score: 0.5709
+Processing record 17/33 (language: Python)...
+  Generating documentation for d9b8d42e...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+This source code defines a system for transforming programs using a series of query transformers. Each transformer is associated with a priority level, and higher-priority transformers are applied first. The system includes functions to add transformers, apply them to a program, and create aliases for existing transformations.
+
+### Classes and Structs
+
+#### Class: `Transformer`
+
+**Purpose:** The `Transformer` class manages a list of transformation functions (`T`) and provides methods to add and apply these transformations.
+
+**Fields/Member Variables:**
+- `T`: A list of dictionaries where each dictionary contains a `priority` and a `fun` (transformation function).
+
+**Methods:**
+- `__init__()`: Initializes the `T` list as an empty list.
+- `transform(program)`: Applies all registered transformation functions to the input `program`. It iterates through the list of transformers in order of priority and applies each transformation sequentially.
+
+### Global Variables and Standalone Functions
+
+- **Global Variable:** `Dagoba.T`
+  - **Purpose:** Stores a list of transformation functions along with their priorities. This list is used to manage and apply the transformations.
+
+- **Function:** `Dagoba.addTransformer(fun, priority)`
+  - **Purpose:** Adds a new transformation function
+*************
+Code:
+assistant
+```python
+class Transformer:
+    def __init__(self):
+        self.transformations = []
+
+    def transform(self, program):
+        for _, fun in sorted(self.transformations, key=lambda x: x['priority']):
+            program = fun(program)
+        return program
+
+def add_transformer(fun, priority):
+    Dagoba.T.append({'priority': priority, 'fun': fun})
+
+# Global variable to store transformations
+Dagoba = type('Dagoba', (), {'T': []})
+```
+
+This code defines the `Transformer` class with methods to initialize and apply transformations. It also includes a global variable `Dagoba.T` to store the list of transformations and a function `add_transformer` to add new transformations to this list.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4400, GraphCodeBERTScore: 0.9463, Average: 0.6931
+	Recording result: 'hexsha': d9b8d42e90, 'nl_pl_best_ast_score': 0.4400, 'nl_pl_best_graphcodebert_score': 0.9463, 'nl_pl_best_average_score': 0.6931
+
+Processed 18/33 records. Current record d9b8d42e90... NL->PL Avg Score: 0.6931
+Processing record 19/33 (language: C++)...
   Generating documentation for 4f3c5ca1...
   Generating code from documentation for C++...
 *************
@@ -422,53 +827,118 @@ This C++ code defines a class `StartupOptions` that manages various startup opti
 
 *************
 Code:
-Copyright (c) 2014 The Chromium Authors. All rights reserved.
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file. #include "tools/build/blaze/config/startup_options.h"
+// Copyright 2014 The Bazel Authors. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include "src/main/cpp/startup_options.h"
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
-#include "base/command_line.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/values.h"
-#include "tools/build/blaze/config/configuration.h"
-#include "tools/build/blaze/util/build_config.h"
-#include "tools/build/libsyzygy/base/file_version_info.h"
-#include "third_party/syzygy/core/address_space.h"
+#include "src/main/cpp/blaze_util.h"
+#include "src/main/cpp/util/file.h"
+#include "src/main/cpp/util/logging.h"
 
 namespace blaze {
 
-using base::CommandLine;
-using base::StringPiece;
+using std::set;
+using std::sort;
+using std::string;
+using std::vector;
 
-// static
-const StartupFlag* StartupOptions::flags[] = {
-    new NullaryStartupFlag("--allow_undefined_symbols"),
-    new UnaryStartupFlag("--build_python_files_with_pywrap2"),
-    new NullaryStartupFlag("--clean"),
-    new NullaryStartupFlag("--compile_all_proto_files"),
-    new NullaryStartupFlag("--compile_headers_in_binary"),
-    new NullaryStartupFlag("--disable_caching"),
-    new NullaryStartupFlag
+void StartupOptions::AddFlag(StartupFlag* flag) {
+  flags.push_back(flag);
+}
+
+bool StartupOptions::ProcessArgv(int argc, char** argv, int* i) {
+  string arg =
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.2037, GraphCodeBERTScore: 0.9585, Average: 0.5811
+	 AST Similarity Score: 0.3019, GraphCodeBERTScore: 0.9805, Average: 0.6412
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f3c5ca142, 'nl_pl_best_ast_score': 0.2037, 'nl_pl_best_graphcodebert_score': 0.9585, 'nl_pl_best_average_score': 0.5811
-	Recording NL->PL1->PL2 result: 'hexsha': 4f3c5ca142, 'nl_pl1_pl2_best_ast_score': 0.3390, 'nl_pl1_pl2_best_average_score': 0.6129
+	Recording result: 'hexsha': 4f3c5ca142, 'nl_pl_best_ast_score': 0.3019, 'nl_pl_best_graphcodebert_score': 0.9805, 'nl_pl_best_average_score': 0.6412
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3c5ca142, 'nl_pl1_pl2_best_ast_score': 0.2000, 'nl_pl1_pl2_best_average_score': 0.5480
 
-Processed 10/33 records. Current record 4f3c5ca142... NL->PL Avg Score: 0.5811, NL->C++->Py Avg Score: 0.6129
-Processing record 11/33 (language: C++)...
+Processed 20/33 records. Current record 4f3c5ca142... NL->PL Avg Score: 0.6412, NL->C++->Py Avg Score: 0.5480
+Processing record 21/33 (language: Python)...
+  Generating documentation for d9b92da1...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+The provided source code defines a simple enumeration class `JobStatus` in Python. This class represents different states that a job can be in during its lifecycle. Each state is represented by a unique integer value, which can be used to track the progress and outcome of a job.
+
+### Class Documentation
+
+#### Class: `JobStatus`
+
+**Purpose:**  
+The `JobStatus` class serves as an enumeration to represent various states that a job can be in during its execution. These states include pending, started, processing, polling, callback, success, retry, failure, and revoked.
+
+**Fields:**
+
+- **PENDING (int):**  
+  Represents the initial state of a job before it starts executing. Value: 0
+
+- **STARTED (int):**  
+  Indicates that the job has begun execution. Value: 100
+
+- **PROCESS (int):**  
+  Signifies that the job is currently being processed. Value: 110
+
+- **POLLING (int):**  
+  Denotes that the system is waiting for a response from the job. Value: 120
+
+- **CALLBACK (int):**  
+  Indicates that the job has completed and a callback needs to
+*************
+Code:
+assistant
+```python
+from enum import Enum
+
+class JobStatus(Enum):
+    PENDING = 0
+    STARTED = 100
+    PROCESS = 110
+    POLLING = 120
+    CALLBACK = 130
+    SUCCESS = 200
+    RETRY = 210
+    FAILURE = 220
+    REVOKED = 230
+```
+
+This code defines the `JobStatus` enumeration with each state represented by a unique integer value, as specified in the documentation. The use of the `Enum` class from Python's `enum` module ensures that these values are constants and provides a clear and readable way to represent the different states of a job.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4375, GraphCodeBERTScore: 0.9131, Average: 0.6753
+	Recording result: 'hexsha': d9b92da152, 'nl_pl_best_ast_score': 0.4375, 'nl_pl_best_graphcodebert_score': 0.9131, 'nl_pl_best_average_score': 0.6753
+
+Processed 22/33 records. Current record d9b92da152... NL->PL Avg Score: 0.6753
+Processing record 23/33 (language: C++)...
   Generating documentation for 4f3f451a...
   Generating code from documentation for C++...
 *************
@@ -491,59 +961,125 @@ This C++ code snippet is part of a World of Warcraft server script designed to m
 - `IsDraining`, `DrainingCrystal`:
 *************
 Code:
-//selin fireheart
+#pragma once
+/*
+ * Copyright (C) 2008-2013 TrinityCore <http://www.trinitycore.org/>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
 
-enum eSpells
+enum Spells
 {
-    SPELL_FEL_EXPLOSION = 94865,
-    SPELL_DRAIN_LIFE = 94707,
-    SPELL_DRAIN_MANA = 94721,
-    SPELL_EMPROWER = 94833,
-
-    SPELL_CREATE_FEL_CRYSTAL = 95698,
-    SPELL_DESTROY_FEL_CRYSTAL = 95697,
-};
-
-enum eCreatures
-{
-    NPC_FEL_CRYSTAL = 56694,
-};
-
-enum eEvents
-{
-    EVENT_FEL_EXPLOSION = 1,
-    EVENT_DRAIN_LIFE,
-    EVENT_DRAIN_MANA,
-    EVENT_EMPOWER,
-};
-
-class boss_selin_fireheart : public CreatureScript
-{
-public:
-    boss_selin_fireheart() : CreatureScript("boss_selin_fireheart") {}
-
-    struct boss_selin_fireheartAI : public ScriptedAI
-    {
-        boss_selin_fireheartAI(Creature* creature) : ScriptedAI(creature)
-        {
-            m_pInstance = creature->GetInstanceScript();
+    SPELL_FEL_EXPLOSION = 75944,
+    SPELL_DRAIN_LIFE = 76187,
+    SPELL_DRAIN_MANA = 76190,
+    SPELL_EMPOWER = 76228,
+    SPELL_EMPOWER
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.3617, GraphCodeBERTScore: 0.8926, Average: 0.6271
+	 AST Similarity Score: 0.0909, GraphCodeBERTScore: 0.9360, Average: 0.5135
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f3f451ae5, 'nl_pl_best_ast_score': 0.3617, 'nl_pl_best_graphcodebert_score': 0.8926, 'nl_pl_best_average_score': 0.6271
-	Recording NL->PL1->PL2 result: 'hexsha': 4f3f451ae5, 'nl_pl1_pl2_best_ast_score': 0.2045, 'nl_pl1_pl2_best_average_score': 0.5486
+	Recording result: 'hexsha': 4f3f451ae5, 'nl_pl_best_ast_score': 0.0909, 'nl_pl_best_graphcodebert_score': 0.9360, 'nl_pl_best_average_score': 0.5135
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3f451ae5, 'nl_pl1_pl2_best_ast_score': 0.2727, 'nl_pl1_pl2_best_average_score': 0.5831
 
-Processed 12/33 records. Current record 4f3f451ae5... NL->PL Avg Score: 0.6271, NL->C++->Py Avg Score: 0.5486
-Processing record 13/33 (language: C++)...
+Processed 24/33 records. Current record 4f3f451ae5... NL->PL Avg Score: 0.5135, NL->C++->Py Avg Score: 0.5831
+Processing record 25/33 (language: Python)...
+  Generating documentation for d9b95364...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+# pyboleto.html
+
+## Overview
+
+The `pyboleto.html` module contains a class named `BoletoHTML`, which is responsible for generating bank slips in HTML format. This class allows for printing boletos in both full-page and double-page carnée formats. It also supports loading templates and images dynamically, making it flexible for future extensions such as LaTeX output.
+
+## Classes
+
+### BoletoHTML
+
+#### Purpose
+
+The `BoletoHTML` class is designed to generate HTML content for bank slips. It provides methods to draw different sections of the boleto, such as the header, body, and footer. Additionally, it includes functionality to handle multiple pages and save the generated HTML to a file.
+
+#### Fields
+
+- **width**: Width of the page in pixels (default: 750).
+- **widthCanhoto**: Width of the canhoto section (default: 0).
+- **fontSizeTitle**: Font size for titles (default: 9).
+- **heightLine**: Height of lines in pixels (default: 27).
+- **fontSizeValue**: Font size for values (default: 12).
+- **title**: Title of the document (default: "Boleto bancário").
+-
+*************
+Code:
+assistant
+```python
+class BoletoHTML:
+    def __init__(self, width=750, widthCanhoto=0, fontSizeTitle=9, heightLine=27, fontSizeValue=12, title="Boleto bancário"):
+        self.width = width
+        self.widthCanhoto = widthCanhoto
+        self.fontSizeTitle = fontSizeTitle
+        self.heightLine = heightLine
+        self.fontSizeValue = fontSizeValue
+        self.title = title
+        self.content = []
+
+    def add_header(self, text):
+        # Add header content to the boleto
+        self.content.append(f'<div style="font-size: {self.fontSizeTitle}px;">{text}</div>')
+
+    def add_body(self, key, value):
+        # Add body content to the boleto
+        self.content.append(f'<div style="font-size: {self.fontSizeValue}px;">{key}: {value}</div>')
+
+    def add_footer(self, text):
+        # Add footer content to the boleto
+        self.content.append(f'<div style="font-size: {self.fontSizeTitle}px;">{text}</div>')
+
+    def add_page_break(self):
+        # Add a page break to the boleto
+        self.content.append('<div style="page-break-after: always;"></div>')
+
+    def save_to_file(self, filename):
+        # Save the generated HTML content to a file
+        with open(filename, 'w') as file:
+            file.write('<html><head><title>{}</title></head><body>'.format(self.title))
+            file.write('\n'.join(self.content))
+            file.write('</body></html>')
+```
+
+This code defines a `BoletoHTML` class with the specified fields and methods. The class allows you to build an HTML representation of a bank slip by adding headers, body sections, footers, and page breaks. Finally, you can save the generated HTML content to a file using the `save_to_file` method.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4091, GraphCodeBERTScore: 0.8955, Average: 0.6523
+	Recording result: 'hexsha': d9b9536446, 'nl_pl_best_ast_score': 0.4091, 'nl_pl_best_graphcodebert_score': 0.8955, 'nl_pl_best_average_score': 0.6523
+
+Processed 26/33 records. Current record d9b9536446... NL->PL Avg Score: 0.6523
+Processing record 27/33 (language: C++)...
   Generating documentation for 4f4043f2...
   Generating code from documentation for C++...
 *************
@@ -576,60 +1112,111 @@ This source code is part of a larger system designed to optimize neural network 
 - `construct_concat_patterns(const std::shared_ptr<pattern::Matcher>&
 *************
 Code:
-/*
- * Copyright (C) 2018-2023 Intel Corporation
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+// Copyright 2017 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-#include "concat_optimization.hpp"
+#include "concat_fusion.hpp"
 
-#include <ngraph/pattern/op/wrap_type.hpp>
-#include <ngraph/pattern/matcher.hpp>
+#include <memory>
+#include <vector>
 
+#include "itt.hpp"
+#include "ngraph/op/add.hpp"
+#include "ngraph/op/concat.hpp"
+#include "ngraph/op/parameter.hpp"
+#include "ngraph/pattern/op/wrap_type.hpp"
+#include "ngraph/runtime/plaidml/plaidml_types.hpp"
+#include "plaidml/ngraph/pass/fuse_add_into_concat.hpp"
+
+using namespace std;
 using namespace ngraph;
-using namespace ngraph::pattern;
 
+namespace plaidml {
 namespace ngraph {
-    namespace pass {
 
-        ConcatElimination::ConcatElimination() : GraphRewrite(), m_ops() {
-            construct_concat_elimination();
-        }
-
-        void ConcatElimination::construct_concat_elimination() {
-            auto concat = wrap_type<opset1::Concat>(InputVector{any_input(), any_input()}, true);
-
-            auto callback = [](pattern::Matcher &m) {
-                NGRAPH_CHECK(m.get_match_root(),
-                            "Expected Concat as root node",
-                            "but got ",
-                            m.get_match_root()->get_type_info());
-                return false;
-            };
-
-            auto concat_callback = make_shared<Matcher>(concat, "ConcatElimination");
-            this->add_matcher(concat_callback, callback);
-        }
-
-        bool SelfConcatFusion::run_on_function(std::shared_ptr<Function> function) {
-            bool result = false;
-            auto param_to_nodes = build
+static shared_ptr<Node> add_to_concat(shared_ptr<Node> concat, shared_ptr<Node> add)
+{
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.5490, GraphCodeBERTScore: 0.8877, Average: 0.7184
-	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.5
+	 AST Similarity Score: 0.2000, GraphCodeBERTScore: 0.9814, Average: 0.5907
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f4043f254, 'nl_pl_best_ast_score': 0.5490, 'nl_pl_best_graphcodebert_score': 0.8877, 'nl_pl_best_average_score': 0.7184
-	Recording NL->PL1->PL2 result: 'hexsha': 4f4043f254, 'nl_pl1_pl2_best_ast_score': 0.2830, 'nl_pl1_pl2_best_average_score': 0.6049
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f4043f254, 'nl_pl_best_ast_score': 0.2000, 'nl_pl_best_graphcodebert_score': 0.9814, 'nl_pl_best_average_score': 0.5907
+	Recording NL->PL1->PL2 result: 'hexsha': 4f4043f254, 'nl_pl1_pl2_best_ast_score': 0.3265, 'nl_pl1_pl2_best_average_score': 0.6406
 
-Processed 14/33 records. Current record 4f4043f254... NL->PL Avg Score: 0.7184, NL->C++->Py Avg Score: 0.6049
-Processing record 15/33 (language: C++)...
+Processed 28/33 records. Current record 4f4043f254... NL->PL Avg Score: 0.5907, NL->C++->Py Avg Score: 0.6406
+Processing record 29/33 (language: Python)...
+  Generating documentation for d9b9563b...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+This simple program calculates the sum of the first five non-negative integers (0 through 4) and prints the cumulative sum at each step. It uses a `while` loop to iterate through the numbers, updating the `summary` variable with the running total and printing it out after each iteration.
+
+### Global Variables
+- **summary**: An integer variable initialized to 0. It accumulates the sum of the numbers from 0 to 4.
+- **i**: An integer variable initialized to 0. It serves as the counter for the loop, iterating from 0 to 4.
+
+### Control Flow
+The program follows these steps:
+1. Initialize `summary` to 0 and `i` to 0.
+2. Enter a `while` loop that continues as long as `i` is less than 5.
+3. Inside the loop:
+   - Add the current value of `i` to `summary`.
+   - Print the updated value of `summary`.
+   - Increment `i` by 1.
+4. Once the loop completes (when `i` reaches 5), the program ends.
+
+### Algorithms and Logic
+The algorithm used here is straightforward:
+- Initialize a variable to store the sum.
+- Iterate over
+*************
+Code:
+assistant
+```python
+# Initialize global variables
+summary = 0
+i = 0
+
+# Control flow using while loop
+while i < 5:
+    # Update summary with the current value of i
+    summary += i
+    
+    # Print the updated summary
+    print(f"Current sum: {summary}")
+    
+    # Increment i by 1
+    i += 1
+```
+
+This code initializes two global variables, `summary` and `i`, and then uses a `while` loop to calculate the sum of the first five non-negative integers (0 through 4). The loop updates the `summary` variable with the running total and prints the updated value after each iteration.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6000, GraphCodeBERTScore: 0.8687, Average: 0.7343
+	Recording result: 'hexsha': d9b9563b7a, 'nl_pl_best_ast_score': 0.6000, 'nl_pl_best_graphcodebert_score': 0.8687, 'nl_pl_best_average_score': 0.7343
+
+Processed 30/33 records. Current record d9b9563b7a... NL->PL Avg Score: 0.7343
+Processing record 31/33 (language: C++)...
   Generating documentation for 4f40fb04...
   Generating code from documentation for C++...
 *************
@@ -662,57 +1249,1643 @@ Calculates the grid dimensions and thread work size for a CUDA kernel based on t
 **Algorithm:**
 1. Determine the number of dimensions (`nd`) in the tensor region.
 
-[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (35082 > 32768). Running this sequence through the model will result in indexing errors
 *************
 Code:
 ```
-static void get_grid_dims(const Shape &region,
-                         dim3 &grid_dims,
-                         int &thread_work_size)
-{
-  const unsigned nd = region.dims.size();
-  // Fixed block size
-  const unsigned bs = 16;
+static void get_grid_dims(const Shape &region, dim3 &grid_dims,
+                          int &thread_work_size) {
+  const int nd = region.dims().size();
 
-  if (nd == 0) {
-    grid_dims.x = 1;
-    grid_dims.y = 1;
-    grid_dims.z = 1;
-    thread_work_size = 1;
-    return;
-  }
+  // Fixed block size
+  const dim3 threads_per_block(16, 8);
 
   if (nd == 1) {
-    thread_work_size = std::min<int>(bs, region.dims[0]);
-    grid_dims.x = (region.dims[0] + thread_work_size - 1) / thread_work_size;
-    grid_dims.y = 1;
-    grid_dims.z = 1;
-    return;
+    grid_dims.x = ceil_div(region.size(), threads_per_block.x * threads_per_block.y);
+    grid_dims.y = threads_per_block.y;
+    thread_work_size = threads_per_block.x * threads_per_block.y;
+  } else if (nd == 2) {
+    grid_dims.x = ceil_div(region.dim(0), threads_per_block.x);
+    grid_dims.y = ceil_div(region.dim(1), threads_per_block.y);
+    thread_work_size = threads_per_block.x * threads_per_block.y;
+  } else if (nd == 3) {
+    grid_dims.x = ceil_div(region.dim(0), threads_per_block.x);
+    grid_dims.y = ceil_div(region.dim(1), threads_per_block.y);
+    grid_dims.z = ceil_div(region.dim(2), threads_per_block.z);
+    thread_work_size = threads_per_block.x * threads_per_block.y * threads_per_block.z;
   }
-  if (nd == 2) {
-    thread_work_size =
-        std::min<int>(bs * bs, region.dims[0] * region.dims[1]);
-    grid_dims.x = (region.dims[0] + bs - 1) / bs;
-    grid_dims.y = (region.dims[1] + bs - 1) / bs;
-    grid_dims.z =
 ***************
   Comparing ASTs...
   Computing semantic similarity GraphCodeBERTScore...
-	 AST Similarity Score: 0.5610, GraphCodeBERTScore: 0.9653, Average: 0.7632
+	 AST Similarity Score: 0.4737, GraphCodeBERTScore: 0.9517, Average: 0.7127
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
 	Info: Qwen code generation max new tokens: 16384
-LLM Judge Score: 0.8
+LLM Judge Score: 0.9
 	Info: Qwen code generation max new tokens: 16384
 LLM Judge Score: 0.8
-	Recording result: 'hexsha': 4f40fb04ac, 'nl_pl_best_ast_score': 0.5610, 'nl_pl_best_graphcodebert_score': 0.9653, 'nl_pl_best_average_score': 0.7632
-	Recording NL->PL1->PL2 result: 'hexsha': 4f40fb04ac, 'nl_pl1_pl2_best_ast_score': 0.0541, 'nl_pl1_pl2_best_average_score': 0.3771
+	Recording result: 'hexsha': 4f40fb04ac, 'nl_pl_best_ast_score': 0.4737, 'nl_pl_best_graphcodebert_score': 0.9517, 'nl_pl_best_average_score': 0.7127
+	Recording NL->PL1->PL2 result: 'hexsha': 4f40fb04ac, 'nl_pl1_pl2_best_ast_score': 0.0270, 'nl_pl1_pl2_best_average_score': 0.3538
 
-Processed 16/33 records. Current record 4f40fb04ac... NL->PL Avg Score: 0.7632, NL->C++->Py Avg Score: 0.3771
-Processing record 17/33 (language: C++)...
-  Generating documentation for 4f40fe19...
-Warning: Input length 35082 >= model max 32768. Truncating.
-Exceptinon: CUDA out of memory. Tried to allocate 1.16 GiB. GPU 0 has a total capacity of 47.36 GiB of which 958.12 MiB is free. Including non-PyTorch memory, this process has 45.89 GiB memory in use. Of the allocated memory 45.02 GiB is allocated by PyTorch, and 376.45 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
-48334685184
-48729423872
-48334685184
+Processed 32/33 records. Current record 4f40fb04ac... NL->PL Avg Score: 0.7127, NL->C++->Py Avg Score: 0.3538
+Processing record 33/33 (language: Python)...
+  Generating documentation for d9b9af3b...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This Python script uses the `imtreat` library to open an image, enhance its detail, and then save it to a specified location. The script demonstrates basic image processing operations using a custom class structure provided by the `imtreat` library.
+
+### Classes and Their Purposes
+
+#### `imageManagerClass`
+This class is responsible for managing image operations such as opening and saving images.
+
+##### Methods
+- **openImageFunction(path: str, mode: int) -> Image**: Opens an image from the specified path using the given mode.
+- **saveImageFunction(directory: str, filename: str, extension: str, image: Image)**: Saves the given image to the specified directory with the given filename and extension.
+
+#### `definedModesClass`
+This class contains various image enhancement modes, one of which is detail enhancement.
+
+##### Methods
+- **detailEnhanceFunction(image: Image) -> Image**: Enhances the detail of the input image.
+
+### Global Variables and Standalone Functions
+
+No global variables or standalone functions are defined in this script.
+
+### Important Library and API Calls
+
+The script uses the `imtreat` library, which provides the necessary functionality for image management and enhancement. Specifically, it uses the following functions:
+
+-
+*************
+Code:
+assistant
+```python
+from imtreat import Image
+
+class imageManagerClass:
+    def openImageFunction(self, path: str, mode: int) -> Image:
+        """
+        Opens an image from the specified path using the given mode.
+
+        Parameters:
+        - path (str): The path to the image file.
+        - mode (int): The mode in which to open the image.
+
+        Returns:
+        - Image: The opened image object.
+        """
+        return Image.open(path, mode)
+
+    def saveImageFunction(self, directory: str, filename: str, extension: str, image: Image):
+        """
+        Saves the given image to the specified directory with the given filename and extension.
+
+        Parameters:
+        - directory (str): The directory where the image will be saved.
+        - filename (str): The base name of the image file.
+        - extension (str): The file extension of the image.
+        - image (Image): The image object to save.
+        """
+        image.save(f"{directory}/{filename}.{extension}")
+
+class definedModesClass:
+    @staticmethod
+    def detailEnhanceFunction(image: Image) -> Image:
+        """
+        Enhances the detail of the input image.
+
+        Parameters:
+        - image (Image): The input image to enhance.
+
+        Returns:
+        - Image: The enhanced image.
+        """
+        # Placeholder for actual detail enhancement logic
+        # For demonstration, we'll just return the original image
+        return image
+
+# Example usage
+if __name__ == "__main__":
+    manager = imageManagerClass()
+    enhancer = definedModesClass()
+
+    # Open an image
+    img = manager.openImageFunction("path/to/image.jpg", "r")
+
+    # Enhance the image
+    enhanced_img = enhancer.detailEnhanceFunction(img)
+
+    # Save the enhanced image
+    manager.saveImageFunction("output_directory", "enhanced_image", "jpg", enhanced_img)
+```
+
+This code defines two classes, `imageManagerClass` and `definedModesClass`, along with their respective methods. It also includes example usage demonstrating how to open, enhance, and save an image using these classes. Note that the actual detail enhancement logic in `detailEnhanceFunction` is a placeholder and should be replaced with the appropriate implementation based on the requirements.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.3333, GraphCodeBERTScore: 0.7114, Average: 0.5224
+	Recording result: 'hexsha': d9b9af3bd2, 'nl_pl_best_ast_score': 0.3333, 'nl_pl_best_graphcodebert_score': 0.7114, 'nl_pl_best_average_score': 0.5224
+
+Processed 34/33 records. Current record d9b9af3bd2... NL->PL Avg Score: 0.5224
+
+=== Phase 2: PL1->PL2 (Python to C++) Validation ===
+PL1->PL2 model forced into eval mode
+FineTunedGeneratorPL1PL2 using device: cuda:0
+
+Starting computation for 33 records (starting from index 66, each with 3 tries per phase)...
+
+Synchronizing CUDA and empty cache
+Using cached dataset with 100 samples...
+DEBUG: First record language: 'Python', is_processable: True
+Processing record 1/33 (language: Python)...
+  Generating documentation for d9b76c6f...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+This code defines two PyTorch models, `MMBTModel` and `MMBTForClassification`, which are part of a multimodal bitransformer architecture designed for classifying images and text. The model combines information from multiple modalities using transformers and achieves state-of-the-art performance on various multimodal classification benchmarks.
+
+### Classes
+
+#### ModalEmbeddings
+
+**Purpose:**  
+`ModalEmbeddings` is a generic module that projects modal embeddings into the main transformer's embedding space. It handles adding start and end tokens, positional embeddings, and token type embeddings.
+
+**Fields:**
+- `config`: Configuration object containing model settings.
+- `encoder`: Encoder for the second modality.
+- `proj_embeddings`: Linear layer to project modal embeddings into the main transformer's embedding space.
+- `position_embeddings`: Positional embeddings for the main transformer.
+- `token_type_embeddings`: Token type embeddings for the main transformer.
+- `word_embeddings`: Word embeddings for the main transformer.
+- `LayerNorm`: Layer normalization layer.
+- `dropout`: Dropout layer.
+
+**Methods:**
+- `forward`: Projects modal embeddings, adds start/end tokens, positional embeddings, and token type embeddings, then applies layer normalization and dropout.
+
+#### MMBTModel
+
+**Purpose:**
+*************
+Code:
+assistant
+```python
+import torch
+from torch import nn
+from transformers import BertConfig, BertTokenizer, BertModel
+
+class ModalEmbeddings(nn.Module):
+    def __init__(self, config):
+        super(ModalEmbeddings, self).__init__()
+        self.config = config
+        self.encoder = BertModel.from_pretrained('bert-base-uncased')
+        self.proj_embeddings = nn.Linear(config.hidden_size, config.embedding_dim)
+        self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.embedding_dim)
+        self.token_type_embeddings = nn.Embedding(2, config.embedding_dim)
+        self.word_embeddings = nn.Embedding(config.vocab_size, config.embedding_dim)
+        self.LayerNorm = nn.LayerNorm(config.embedding_dim, eps=config.layer_norm_eps)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+
+    def forward(self, input_ids=None, position_ids=None, token_type_ids=None, inputs_embeds=None):
+        if input_ids is not None:
+            seq_length = input_ids.size(1)
+        else:
+            seq_length = inputs_embeds.size(1)
+
+        if position_ids is None:
+            position_ids = torch.arange(seq_length, dtype=torch.long, device=input_ids.device).unsqueeze(0).expand_as(input_ids)
+
+        if token_type_ids is None:
+            token_type_ids = torch.zeros_like(input_ids)
+
+        if inputs_embeds is None:
+            inputs_embeds = self.word_embeddings(input_ids)
+
+        projected_embeddings = self.proj_embeddings(inputs_embeds)
+        position_embeddings = self.position_embeddings(position_ids)
+        token_type_embeddings = self.token_type_embeddings(token_type_ids)
+
+        embeddings = projected_embeddings + position_embeddings + token_type_embeddings
+        embeddings = self.LayerNorm(embeddings)
+        embeddings = self.dropout(embeddings)
+
+        return embeddings
+
+class MMBTForClassification(nn.Module):
+    def __init__(self, config):
+        super(MMBTForClassification, self).__init__()
+        self.modal_embeddings = ModalEmbeddings(config)
+        self.classifier = nn.Linear(config.embedding_dim, config.num_labels)
+
+    def forward(self, image_input_ids=None, image_token_type_ids=None, image_attention_mask=None,
+                text_input_ids=None, text_token_type_ids=None, text_attention_mask=None):
+        image_embeddings = self.modal_embeddings(image_input_ids, token_type_ids=image_token_type_ids, attention_mask=image_attention_mask)
+        text_embeddings = self.modal_embeddings(text_input_ids, token_type_ids=text_token_type_ids, attention_mask=text_attention_mask)
+
+        # Concatenate image and text embeddings
+        combined_embeddings = torch.cat((image_embeddings, text_embeddings), dim=1)
+
+        # Pass through classifier
+        logits = self.classifier(combined_embeddings)
+
+        return logits
+
+# Example usage
+config = BertConfig()
+model = MMBTForClassification(config)
+
+# Dummy data
+image_input_ids = torch.randint(0, config.vocab_size, (1, 10))
+image_token_type_ids = torch.zeros_like(image_input_ids)
+image_attention_mask = torch.ones_like(image_input_ids)
+
+text_input_ids = torch.randint(0, config.vocab_size, (1, 10))
+text_token_type_ids = torch.zeros_like(text_input_ids)
+text_attention_mask = torch.ones_like(text_input_ids)
+
+output = model(image_input_ids, image_token_type_ids, image_attention_mask, 
+               text_input_ids, text_token_type_ids, text_attention_mask)
+print(output)
+```
+
+This code defines the `ModalEmbeddings` and `MMBTForClassification` classes as specified in the documentation. The `ModalEmbeddings` class handles the projection and combination of modal embeddings, while the `MMBTForClassification` class uses these embeddings to classify images and text. The example usage demonstrates how to create an instance of the model and pass dummy data through it.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5714, GraphCodeBERTScore: 0.9297, Average: 0.7506
+	Recording result: 'hexsha': d9b76c6f6b, 'nl_pl_best_ast_score': 0.5714, 'nl_pl_best_graphcodebert_score': 0.9297, 'nl_pl_best_average_score': 0.7506
+
+Processed 2/33 records. Current record d9b76c6f6b... NL->PL Avg Score: 0.7506
+Processing record 3/33 (language: Python)...
+  Generating documentation for d9b79f86...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+# Comprehensive Natural Language Documentation for the Provided Source Code
+
+## Overview
+This source code defines two main classes, `BaseBeaconChain` and `BeaconChain`, which form the core components of a blockchain system specifically designed for Ethereum 2.0 (Eth2). The `BaseBeaconChain` class serves as an abstract base class defining the interface for interacting with the blockchain, while the `BeaconChain` class provides concrete implementations of this interface.
+
+## Classes
+
+### Class: `BaseBeaconChain`
+**Purpose:**  
+The `BaseBeaconChain` class is an abstract base class that outlines the essential functionalities required for managing a beacon chain. It includes methods for accessing the blockchain database (`chaindb`), retrieving state machines (`get_state_machine`), handling blocks (`get_block_by_root`, `create_block_from_parent`), and ensuring the integrity of the blockchain data.
+
+#### Fields/Member Variables:
+- **chaindb**: An instance of `BaseBeaconChainDB`, representing the database backend for storing blockchain data.
+- **chaindb_class**: A class variable specifying the type of database class to use.
+- **sm_configuration**: A tuple of tuples, where each inner tuple contains a slot number and the corresponding state machine class.
+- **chain
+*************
+Code:
+assistant
+```python
+from abc import ABC, abstractmethod
+from typing import Dict, Tuple, Type, Any
+
+class BaseBeaconChainDB(ABC):
+    @abstractmethod
+    def get_block(self, block_root: bytes) -> Any:
+        pass
+
+    @abstractmethod
+    def save_block(self, block: Any) -> None:
+        pass
+
+class StateMachine:
+    pass
+
+class BeaconChain(ABC):
+    def __init__(self, chaindb_class: Type[BaseBeaconChainDB], sm_configuration: Tuple[Tuple[int, Type[StateMachine]]]):
+        self.chaindb = chaindb_class()
+        self.chaindb_class = chaindb_class
+        self.sm_configuration = sm_configuration
+
+    @abstractmethod
+    def get_state_machine(self, slot: int) -> StateMachine:
+        pass
+
+    @abstractmethod
+    def get_block_by_root(self, block_root: bytes) -> Any:
+        pass
+
+    @abstractmethod
+    def create_block_from_parent(self, parent_block: Any) -> Any:
+        pass
+
+class BaseBeaconChain(BeaconChain):
+    def __init__(self, chaindb_class: Type[BaseBeaconChainDB], sm_configuration: Tuple[Tuple[int, Type[StateMachine]]]):
+        super().__init__(chaindb_class, sm_configuration)
+
+    def get_state_machine(self, slot: int) -> StateMachine:
+        for s, sm_class in self.sm_configuration:
+            if s == slot:
+                return sm_class()
+        raise ValueError(f"State machine not found for slot {slot}")
+
+    def get_block_by_root(self, block_root: bytes) -> Any:
+        return self.chaindb.get_block(block_root)
+
+    def create_block_from_parent(self, parent_block: Any) -> Any:
+        # Implement logic to create a new block from the parent block
+        pass
+```
+
+This code defines the `BaseBeaconChain` and `BeaconChain` classes as per the provided documentation. The `BaseBeaconChainDB` class is also included as an abstract base class for the database backend. The `StateMachine` class is defined as a placeholder for the actual state machine implementation. The `BeaconChain` class inherits from `BaseBeaconChain` and implements the abstract methods.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6279, GraphCodeBERTScore: 0.9438, Average: 0.7859
+	Recording result: 'hexsha': d9b79f86fa, 'nl_pl_best_ast_score': 0.6279, 'nl_pl_best_graphcodebert_score': 0.9438, 'nl_pl_best_average_score': 0.7859
+
+Processed 4/33 records. Current record d9b79f86fa... NL->PL Avg Score: 0.7859
+Processing record 5/33 (language: Python)...
+  Generating documentation for d9b83476...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This Python script uses the `paramiko` library to establish an SSH connection to multiple Cisco IOS devices listed in a file (`devices.txt`). It then sends commands from another file (`commands.txt`) to each device and captures the output, which is written to separate text files named after the device IP addresses.
+
+### Classes and Structs
+
+#### No Classes or Structs Defined
+
+The provided code does not define any custom classes or structs. All functionality is encapsulated within the main script.
+
+### Fields and Member Variables
+
+#### Global Variables
+
+- **client**: An instance of `paramiko.SSHClient`, used to manage SSH connections.
+- **f1**: File object opened in read mode for reading device information from `devices.txt`.
+- **f2**: File object opened in read mode for reading commands from `commands.txt`.
+
+#### Local Variables (within loops and functions)
+
+- **data**: A list containing split lines from `devices.txt`.
+- **addr**: The IP address of the device.
+- **user**: The username for the SSH connection.
+- **pwd**: The password for the SSH connection.
+- **device_access**: An instance of `paramiko.Channel`, representing the shell session on the remote device.
+- **output**: The captured output
+*************
+Code:
+assistant
+```python
+import paramiko
+
+def read_devices_file(file_path):
+    with open(file_path, 'r') as f:
+        data = [line.strip().split() for line in f.readlines()]
+    return data
+
+def read_commands_file(file_path):
+    with open(file_path, 'r') as f:
+        commands = [line.strip() for line in f.readlines()]
+    return commands
+
+def connect_to_device(addr, user, pwd):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(addr, username=user, password=pwd)
+    return client.invoke_shell()
+
+def send_commands(device_access, commands):
+    output = []
+    for command in commands:
+        device_access.send(command + '\n')
+        while True:
+            if device_access.recv_ready():
+                output.append(device_access.recv(1024).decode('utf-8'))
+            else:
+                break
+    return ''.join(output)
+
+def write_output_to_file(ip_address, output):
+    with open(f'{ip_address}.txt', 'w') as f:
+        f.write(output)
+
+def main():
+    devices_data = read_devices_file('devices.txt')
+    commands = read_commands_file('commands.txt')
+
+    for device in devices_data:
+        addr, user, pwd = device
+        try:
+            device_access = connect_to_device(addr, user, pwd)
+            output = send_commands(device_access, commands)
+            write_output_to_file(addr, output)
+            print(f'Successfully executed commands on {addr}')
+        except Exception as e:
+            print(f'Failed to execute commands on {addr}: {e}')
+
+if __name__ == '__main__':
+    main()
+```
+
+### Explanation:
+
+1. **read_devices_file**: Reads the `devices.txt` file and returns a list of lists, where each sublist contains the IP address, username, and password of a device.
+2. **read_commands_file**: Reads the `commands.txt` file and returns a list of commands to be sent to the devices.
+3. **connect_to_device**: Establishes an SSH connection to a device using the provided credentials and returns a channel object for sending commands.
+4. **send_commands**: Sends a list of commands to the device via the provided channel and captures the output.
+5. **write_output_to_file**: Writes the captured output to a file named after the device's IP address.
+6. **main**: Orchestrates the process by reading the device and command files, connecting to each device, sending commands, capturing output, and writing it to files.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.3784, GraphCodeBERTScore: 0.9434, Average: 0.6609
+	Recording result: 'hexsha': d9b8347698, 'nl_pl_best_ast_score': 0.3784, 'nl_pl_best_graphcodebert_score': 0.9434, 'nl_pl_best_average_score': 0.6609
+
+Processed 6/33 records. Current record d9b8347698... NL->PL Avg Score: 0.6609
+Processing record 7/33 (language: Python)...
+  Generating documentation for d9b86cc4...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This source code appears to consist of two separate programs written in Python. The first program checks for Armstrong numbers between 400 and 500, while the second program processes user input to find and print numbers that meet certain criteria based on their digits.
+
+### Program 1: Checking Armstrong Numbers
+
+#### Purpose
+The first part of the code checks for Armstrong numbers between 400 and 500. An Armstrong number is a number that is equal to the sum of its own digits each raised to the power of the number of digits.
+
+#### Algorithm
+1. Loop through numbers from 400 to 500.
+2. For each number `n`, calculate the hundreds digit (`i`), tens digit (`j`), and units digit (`k`) using integer division and modulo operations.
+3. Check if `n` is equal to `i^3 + j^3 + k^3`.
+4. If the condition is true, print the number `n`.
+
+#### Control Flow
+- The loop iterates over the range from 400 to 500.
+- Inside the loop, calculations are performed to extract the digits and check the Armstrong condition.
+- If the condition is met
+*************
+Code:
+assistant
+```python
+# Program 1: Checking Armstrong Numbers
+
+def is_armstrong_number(n):
+    # Calculate the digits
+    i = n // 100
+    j = (n // 10) % 10
+    k = n % 10
+    
+    # Check if the number is an Armstrong number
+    return n == i**3 + j**3 + k**3
+
+def check_armstrong_numbers():
+    # Loop through numbers from 400 to 500
+    for n in range(400, 501):
+        if is_armstrong_number(n):
+            print(n)
+
+# Run the function to check Armstrong numbers
+check_armstrong_numbers()
+```
+
+This code defines a function `is_armstrong_number` to check if a given number is an Armstrong number and another function `check_armstrong_numbers` to iterate through the range 400 to 500 and print the Armstrong numbers found.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6087, GraphCodeBERTScore: 0.9258, Average: 0.7672
+	Recording result: 'hexsha': d9b86cc42a, 'nl_pl_best_ast_score': 0.6087, 'nl_pl_best_graphcodebert_score': 0.9258, 'nl_pl_best_average_score': 0.7672
+
+Processed 8/33 records. Current record d9b86cc42a... NL->PL Avg Score: 0.7672
+Processing record 9/33 (language: Python)...
+  Generating documentation for d9b8d42e...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+This source code defines a system for transforming programs using a series of query transformers. Each transformer is associated with a priority level, and higher-priority transformers are applied first. The system includes functions to add transformers, apply them to a program, and create aliases for existing transformations.
+
+### Classes and Structs
+
+#### Class: `Transformer`
+
+**Purpose:** The `Transformer` class manages a list of transformation functions (`T`) and provides methods to add and apply these transformations.
+
+**Fields/Member Variables:**
+- `T`: A list of dictionaries where each dictionary contains a `priority` and a `fun` (transformation function).
+
+**Methods:**
+- `__init__()`: Initializes the `T` list as an empty list.
+- `transform(program)`: Applies all registered transformation functions to the input `program`. It iterates through the list of transformers in order of priority and applies each transformation sequentially.
+
+### Global Variables and Standalone Functions
+
+- **Global Variable:** `Dagoba.T`
+  - **Purpose:** Stores a list of transformation functions along with their priorities. This list is used to manage and apply the transformations.
+
+- **Function:** `Dagoba.addTransformer(fun, priority)`
+  - **Purpose:** Adds a new transformation function
+*************
+Code:
+assistant
+```python
+class Transformer:
+    def __init__(self):
+        self.transformations = []
+
+    def transform(self, program):
+        for _, fun in sorted(self.transformations, key=lambda x: x['priority']):
+            program = fun(program)
+        return program
+
+def add_transformer(fun, priority):
+    Dagoba.T.append({'priority': priority, 'fun': fun})
+
+# Global variable to store transformations
+Dagoba = type('Dagoba', (), {'T': []})
+```
+
+This code defines the `Transformer` class with methods to initialize and apply transformations. It also includes the global variable `Dagoba.T` and the function `add_transformer` to manage the list of transformations.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4400, GraphCodeBERTScore: 0.9443, Average: 0.6922
+	Recording result: 'hexsha': d9b8d42e90, 'nl_pl_best_ast_score': 0.4400, 'nl_pl_best_graphcodebert_score': 0.9443, 'nl_pl_best_average_score': 0.6922
+
+Processed 10/33 records. Current record d9b8d42e90... NL->PL Avg Score: 0.6922
+Processing record 11/33 (language: Python)...
+  Generating documentation for d9b92da1...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+The provided source code defines a simple enumeration class `JobStatus` in Python. This class represents different states that a job can be in during its lifecycle. Each state is represented by a unique integer value, which can be used to track the progress and outcome of a job.
+
+### Class Documentation
+
+#### Class: `JobStatus`
+
+**Purpose:**  
+The `JobStatus` class serves as an enumeration to represent various states that a job can be in during its execution. These states include pending, started, processing, polling, callback, success, retry, failure, and revoked.
+
+**Fields:**
+
+- **PENDING (int):**  
+  Represents the initial state of a job before it starts executing. Value: 0
+
+- **STARTED (int):**  
+  Indicates that the job has begun execution. Value: 100
+
+- **PROCESS (int):**  
+  Signifies that the job is currently being processed. Value: 110
+
+- **POLLING (int):**  
+  Denotes that the system is waiting for a response from the job. Value: 120
+
+- **CALLBACK (int):**  
+  Indicates that the job has completed and a callback needs to
+*************
+Code:
+assistant
+```python
+from enum import Enum
+
+class JobStatus(Enum):
+    PENDING = 0
+    STARTED = 100
+    PROCESS = 110
+    POLLING = 120
+    CALLBACK = 130
+    SUCCESS = 200
+    RETRY = 210
+    FAILURE = 220
+    REVOKED = 230
+```
+
+This code defines the `JobStatus` enumeration with each state represented by a unique integer value, as specified in the documentation.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5833, GraphCodeBERTScore: 0.9224, Average: 0.7528
+	Recording result: 'hexsha': d9b92da152, 'nl_pl_best_ast_score': 0.5833, 'nl_pl_best_graphcodebert_score': 0.9224, 'nl_pl_best_average_score': 0.7528
+
+Processed 12/33 records. Current record d9b92da152... NL->PL Avg Score: 0.7528
+Processing record 13/33 (language: Python)...
+  Generating documentation for d9b95364...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+# pyboleto.html
+
+## Overview
+
+The `pyboleto.html` module contains a class named `BoletoHTML`, which is responsible for generating bank slips in HTML format. This class allows for printing boletos in both full-page and double-page carnée formats. It also supports loading templates and images dynamically, making it flexible for future extensions such as LaTeX output.
+
+## Classes
+
+### BoletoHTML
+
+#### Purpose
+
+The `BoletoHTML` class is designed to generate HTML content for bank slips. It provides methods to draw different sections of the boleto, such as the header, body, and footer. Additionally, it includes functionality to handle multiple pages and save the generated HTML to a file.
+
+#### Fields
+
+- **width**: Width of the page in pixels (default: 750).
+- **widthCanhoto**: Width of the canhoto section (default: 0).
+- **fontSizeTitle**: Font size for titles (default: 9).
+- **heightLine**: Height of lines in pixels (default: 27).
+- **fontSizeValue**: Font size for values (default: 12).
+- **title**: Title of the document (default: "Boleto bancário").
+-
+*************
+Code:
+assistant
+```python
+class BoletoHTML:
+    def __init__(self, width=750, width_canhoto=0, font_size_title=9, height_line=27, font_size_value=12, title="Boleto bancário"):
+        self.width = width
+        self.width_canhoto = width_canhoto
+        self.font_size_title = font_size_title
+        self.height_line = height_line
+        self.font_size_value = font_size_value
+        self.title = title
+        self.content = []
+
+    def add_header(self, text):
+        # Add header content to the boleto
+        self.content.append(f'<div style="font-size: {self.font_size_title}px;">{text}</div>')
+
+    def add_body(self, key, value):
+        # Add body content to the boleto
+        self.content.append(f'<div style="font-size: {self.font_size_value}px;">{key}: {value}</div>')
+
+    def add_footer(self, text):
+        # Add footer content to the boleto
+        self.content.append(f'<div style="font-size: {self.font_size_title}px;">{text}</div>')
+
+    def add_page_break(self):
+        # Add a page break to the boleto
+        self.content.append('<div style="page-break-after: always;"></div>')
+
+    def save_to_file(self, filename):
+        # Save the generated HTML content to a file
+        with open(filename, 'w') as file:
+            file.write('<html><head><title>{}</title></head><body>'.format(self.title))
+            file.write('\n'.join(self.content))
+            file.write('</body></html>')
+```
+
+This code defines a `BoletoHTML` class with methods to add headers, bodies, footers, and page breaks to a bank slip in HTML format. The `save_to_file` method writes the generated HTML content to a specified file. The class uses inline CSS styles to control the appearance of the elements.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4186, GraphCodeBERTScore: 0.8931, Average: 0.6558
+	Recording result: 'hexsha': d9b9536446, 'nl_pl_best_ast_score': 0.4186, 'nl_pl_best_graphcodebert_score': 0.8931, 'nl_pl_best_average_score': 0.6558
+
+Processed 14/33 records. Current record d9b9536446... NL->PL Avg Score: 0.6558
+Processing record 15/33 (language: Python)...
+  Generating documentation for d9b9563b...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+This simple program calculates the sum of the first five non-negative integers (0 through 4) and prints the cumulative sum at each step. It uses a `while` loop to iterate through the numbers, updating the `summary` variable with the running total and printing it out after each iteration.
+
+### Global Variables
+- **summary**: An integer variable initialized to 0. It accumulates the sum of the numbers from 0 to 4.
+- **i**: An integer variable initialized to 0. It serves as the counter for the loop, iterating from 0 to 4.
+
+### Control Flow
+The program follows these steps:
+1. Initialize `summary` to 0 and `i` to 0.
+2. Enter a `while` loop that continues as long as `i` is less than 5.
+3. Inside the loop:
+   - Add the current value of `i` to `summary`.
+   - Print the updated value of `summary`.
+   - Increment `i` by 1.
+4. Once the loop completes (when `i` reaches 5), the program ends.
+
+### Algorithms and Logic
+The algorithm used here is straightforward:
+- Initialize a variable to store the sum.
+- Iterate over
+*************
+Code:
+assistant
+```python
+# Initialize global variables
+summary = 0
+i = 0
+
+# Control flow using while loop
+while i < 5:
+    # Update summary with the current value of i
+    summary += i
+    
+    # Print the updated summary
+    print(f"Current sum: {summary}")
+    
+    # Increment i by 1
+    i += 1
+```
+
+This code initializes two global variables, `summary` and `i`, and then uses a `while` loop to calculate the sum of the first five non-negative integers, printing the cumulative sum at each step.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6429, GraphCodeBERTScore: 0.8818, Average: 0.7623
+	Recording result: 'hexsha': d9b9563b7a, 'nl_pl_best_ast_score': 0.6429, 'nl_pl_best_graphcodebert_score': 0.8818, 'nl_pl_best_average_score': 0.7623
+
+Processed 16/33 records. Current record d9b9563b7a... NL->PL Avg Score: 0.7623
+Processing record 17/33 (language: Python)...
+  Generating documentation for d9b9af3b...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This Python script uses the `imtreat` library to open an image, enhance its detail, and then save it to a specified location. The script demonstrates basic image processing operations using a custom class structure provided by the `imtreat` library.
+
+### Classes and Their Purposes
+
+#### `imageManagerClass`
+This class is responsible for managing image operations such as opening and saving images.
+
+##### Methods
+- **openImageFunction(path: str, mode: int) -> Image**: Opens an image from the specified path using the given mode.
+- **saveImageFunction(directory: str, filename: str, extension: str, image: Image)**: Saves the given image to the specified directory with the given filename and extension.
+
+#### `definedModesClass`
+This class contains various image enhancement modes, one of which is detail enhancement.
+
+##### Methods
+- **detailEnhanceFunction(image: Image) -> Image**: Enhances the detail of the input image.
+
+### Global Variables and Standalone Functions
+
+No global variables or standalone functions are defined in this script.
+
+### Important Library and API Calls
+
+The script uses the `imtreat` library, which provides the necessary functionality for image management and enhancement. Specifically, it uses the following functions:
+
+-
+*************
+Code:
+assistant
+```python
+from imtreat import Image
+
+class imageManagerClass:
+    def openImageFunction(self, path: str, mode: int) -> Image:
+        """
+        Opens an image from the specified path using the given mode.
+
+        Parameters:
+        - path (str): The file path of the image to be opened.
+        - mode (int): The mode in which the image should be opened.
+
+        Returns:
+        - Image: The opened image object.
+        """
+        return Image.open(path, mode)
+
+    def saveImageFunction(self, directory: str, filename: str, extension: str, image: Image):
+        """
+        Saves the given image to the specified directory with the given filename and extension.
+
+        Parameters:
+        - directory (str): The directory where the image should be saved.
+        - filename (str): The base name of the file to save.
+        - extension (str): The file extension (e.g., 'jpg', 'png').
+        - image (Image): The image object to be saved.
+        """
+        image.save(f"{directory}/{filename}.{extension}")
+
+class definedModesClass:
+    @staticmethod
+    def detailEnhanceFunction(image: Image) -> Image:
+        """
+        Enhances the detail of the input image.
+
+        Parameters:
+        - image (Image): The input image to be enhanced.
+
+        Returns:
+        - Image: The enhanced image.
+        """
+        # Placeholder for actual detail enhancement logic
+        return image.filter(ImageFilter.DETAIL)
+```
+
+This code defines two classes, `imageManagerClass` and `definedModesClass`, along with their respective methods. The `imageManagerClass` handles opening and saving images, while the `definedModesClass` includes a method for enhancing image detail. The `detailEnhanceFunction` currently uses a placeholder for the actual detail enhancement logic, which can be replaced with the appropriate method from the `imtreat` library or another suitable image processing technique.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.3182, GraphCodeBERTScore: 0.7197, Average: 0.5190
+	Recording result: 'hexsha': d9b9af3bd2, 'nl_pl_best_ast_score': 0.3182, 'nl_pl_best_graphcodebert_score': 0.7197, 'nl_pl_best_average_score': 0.5190
+
+Processed 18/33 records. Current record d9b9af3bd2... NL->PL Avg Score: 0.5190
+Processing record 19/33 (language: Python)...
+  Generating documentation for d9ba3c5b...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Program Overview
+
+This Python script defines configuration options for integrating the Hyper-V hypervisor driver with an OpenStack deployment. The script uses the `oslo_config` library to define various settings that control how instances are managed, metrics are collected, and resources are provisioned on a Hyper-V host.
+
+### Classes and Structs
+
+#### Configuration Group (`hyperv_opt_group`)
+- **Purpose**: Represents a configuration group named "hyperv" that contains settings specific to the Hyper-V feature in an OpenStack environment.
+- **Fields**:
+  - `title`: A human-readable title for the group.
+  - `help`: A description of what the group is used for.
+
+#### Configuration Options (`hyperv_opts`)
+- **Purpose**: Contains individual configuration options that control various aspects of Hyper-V integration in OpenStack.
+- **Fields**:
+  - `dynamic_memory_ratio`: Controls whether dynamic memory allocation (ballooning) is enabled and sets the ratio of total RAM assigned to an instance compared to its startup RAM.
+  - `enable_instance_metrics_collection`: Determines whether to collect metrics for instances using Hyper-V's metric APIs.
+  - `instances_path_share`: Specifies a Windows share used by the resize feature to copy files to the target host.
+  - `limit_cpu
+*************
+Code:
+assistant
+```python
+from oslo_config import cfg
+
+# Define the configuration group
+hyperv_opt_group = cfg.OptGroup(name='hyperv',
+                                title='Hyper-V Configuration',
+                                help='Settings specific to the Hyper-V feature in an OpenStack environment.')
+
+# Define the configuration options
+hyperv_opts = [
+    cfg.FloatOpt('dynamic_memory_ratio',
+                 default=1.0,
+                 min=0.1,
+                 max=10.0,
+                 help='Controls whether dynamic memory allocation (ballooning) is enabled and sets the ratio of total RAM assigned to an instance compared to its startup RAM.'),
+    cfg.BoolOpt('enable_instance_metrics_collection',
+                default=True,
+                help='Determines whether to collect metrics for instances using Hyper-V''s metric APIs.'),
+    cfg.StrOpt('instances_path_share',
+               default='\\\\target_host\\share',
+               help='Specifies a Windows share used by the resize feature to copy files to the target host.'),
+    cfg.IntOpt('limit_cpu',
+               default=None,
+               min=1,
+               help='Limits the number of CPUs allocated to an instance. If None, no limit is applied.')
+]
+
+# Register the configuration group and options
+CONF = cfg.CONF
+CONF.register_group(hyperv_opt_group)
+CONF.register_opts(hyperv_opts, group=hyperv_opt_group)
+
+# Example usage
+if __name__ == "__main__":
+    CONF(sys.argv[1:])
+    print(f'Dynamic Memory Ratio: {CONF.hyperv.dynamic_memory_ratio}')
+    print(f'Enable Instance Metrics Collection: {CONF.hyperv.enable_instance_metrics_collection}')
+    print(f'Instances Path Share: {CONF.hyperv.instances_path_share}')
+    print(f'Limit CPU: {CONF.hyperv.limit_cpu}')
+```
+
+This code defines a configuration group and options using the `oslo_config` library as per the provided documentation. It includes example usage at the end to demonstrate how to parse and access these configuration settings.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5000, GraphCodeBERTScore: 0.8794, Average: 0.6897
+	Recording result: 'hexsha': d9ba3c5b12, 'nl_pl_best_ast_score': 0.5000, 'nl_pl_best_graphcodebert_score': 0.8794, 'nl_pl_best_average_score': 0.6897
+
+Processed 20/33 records. Current record d9ba3c5b12... NL->PL Avg Score: 0.6897
+Processing record 21/33 (language: Python)...
+  Generating documentation for d9ba3e40...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### High-Level Overview
+
+This Python script fetches a list of French words from a GitHub repository, filters out words shorter than five characters, and then allows the user to specify a file path where the filtered list will be saved. If no path is provided, it defaults to saving the file in the current directory as `words.txt`.
+
+### Detailed Documentation
+
+#### Global Variables
+
+- **`words_list`**: A list of strings representing French words fetched from a remote URL.
+
+#### Standalone Functions
+
+- **`requests.get(url)`**:
+  - **Purpose**: Sends a GET request to the specified URL and returns a response object containing the content of the page.
+  - **Parameters**:
+    - `url`: A string representing the URL to which the GET request is sent.
+  - **Return Value**: A `Response` object containing the server’s response to the HTTP request.
+
+- **`filter(function, iterable)`**:
+  - **Purpose**: Constructs an iterator from elements of `iterable` for which `function` returns true.
+  - **Parameters**:
+    - `function`: A function that takes one argument and returns a boolean value.
+    - `iterable`: An iterable object whose elements are passed to the `function`.
+  - **
+*************
+Code:
+assistant
+```python
+import requests
+
+# Global variable to store the list of French words
+words_list = []
+
+def fetch_words_from_github():
+    """
+    Fetches a list of French words from a GitHub repository.
+    
+    Returns:
+        list: A list of strings representing French words.
+    """
+    url = "https://raw.githubusercontent.com/dwyl/french-words/master/french-words.txt"
+    response = requests.get(url)
+    if response.status_code == 200:
+        words_list.extend(response.text.splitlines())
+    else:
+        raise Exception(f"Failed to fetch words. Status code: {response.status_code}")
+
+def filter_short_words(min_length=5):
+    """
+    Filters out words shorter than a specified length from the global words_list.
+    
+    Parameters:
+        min_length (int): The minimum length of words to include in the filtered list.
+        
+    Returns:
+        list: A list of strings representing French words longer than or equal to min_length.
+    """
+    return [word for word in words_list if len(word) >= min_length]
+
+def save_filtered_words(file_path=None):
+    """
+    Saves the filtered list of words to a specified file path.
+    
+    Parameters:
+        file_path (str, optional): The path where the filtered words will be saved.
+                                   If not provided, defaults to 'words.txt' in the current directory.
+    """
+    if file_path is None:
+        file_path = 'words.txt'
+    
+    with open(file_path, 'w') as file:
+        for word in filter_short_words():
+            file.write(word + '\n')
+
+# Example usage
+if __name__ == "__main__":
+    fetch_words_from_github()
+    save_filtered_words()
+```
+
+This code includes the necessary functions to fetch words from a GitHub repository, filter them based on length, and save the filtered list to a file. The example usage at the bottom demonstrates how to call these functions.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5143, GraphCodeBERTScore: 0.8662, Average: 0.6902
+	Recording result: 'hexsha': d9ba3e4000, 'nl_pl_best_ast_score': 0.5143, 'nl_pl_best_graphcodebert_score': 0.8662, 'nl_pl_best_average_score': 0.6902
+
+Processed 22/33 records. Current record d9ba3e4000... NL->PL Avg Score: 0.6902
+Processing record 23/33 (language: Python)...
+  Generating documentation for d9ba8bca...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+This Python script is a unit test suite designed to verify the functionality of an AWS S3 uploader within a gallery management system. It uses the `unittest` framework along with `unittest.mock` for mocking external dependencies and `testfixtures.TempDirectory` for creating temporary directories during tests.
+
+### Classes
+
+#### AWSUploaderTestCase (Class)
+**Purpose:**  
+This class extends `unittest.TestCase` and contains several test cases to validate the behavior of the AWS S3 uploader.
+
+**Fields:**
+- None
+
+**Methods:**
+
+##### test_no_location (Method)
+**Purpose:**  
+Tests the `check_location` method of the AWS uploader when no location is provided.
+
+**Parameters:**
+- None
+
+**Return Value:**
+- None
+
+**Algorithm/Control Flow:**  
+- Creates an instance of the AWS uploader using `get_uploader('aws')`.
+- Calls `check_location` with an empty string and asserts that it returns `False`.
+
+##### test_upload_gallery (Method)
+**Purpose:**  
+Tests the `upload_gallery` method of the AWS uploader to ensure it correctly uploads files to an S3 bucket.
+
+**Parameters:**
+- `subprocess_run`: A mock object representing the `subprocess.run` function.
+
+**Return Value:**
+- None
+
+**Algorithm/
+*************
+Code:
+assistant
+```python
+import unittest
+from unittest.mock import patch, MagicMock
+from testfixtures import TempDirectory
+from your_module import get_uploader  # Replace 'your_module' with the actual module name
+
+class AWSUploaderTestCase(unittest.TestCase):
+    def test_no_location(self):
+        """Tests the check_location method of the AWS uploader when no location is provided."""
+        uploader = get_uploader('aws')
+        self.assertFalse(uploader.check_location(''))
+
+    @patch('subprocess.run')
+    def test_upload_gallery(self, subprocess_run):
+        """Tests the upload_gallery method of the AWS uploader to ensure it correctly uploads files to an S3 bucket."""
+        temp_dir = TempDirectory()
+        try:
+            uploader = get_uploader('aws')
+            files_to_upload = [temp_dir.getpath(f'test_file_{i}.jpg') for i in range(3)]
+            for file_path in files_to_upload:
+                with open(file_path, 'w') as f:
+                    f.write('test content')
+
+            uploader.upload_gallery(files_to_upload)
+
+            # Assuming the upload_gallery method calls subprocess.run to interact with AWS CLI
+            subprocess_run.assert_called_once()
+
+        finally:
+            temp_dir.cleanup()
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+### Explanation:
+1. **Imports**: The necessary modules (`unittest`, `unittest.mock`, `testfixtures.TempDirectory`) are imported.
+2. **AWSUploaderTestCase Class**: This class extends `unittest.TestCase` and contains two test methods.
+   - **test_no_location Method**: Tests the `check_location` method by asserting that it returns `False` when an empty string is passed.
+   - **test_upload_gallery Method**: Uses `@patch` to mock the `subprocess.run` function. It creates a temporary directory, writes some test files, and then calls the `upload_gallery` method. It asserts that `subprocess.run` was called once.
+3. **TempDirectory Context Manager**: Used to create a temporary directory for testing purposes and ensures it gets cleaned up after the tests.
+4. **Main Block**: Runs the test suite if the script is executed directly.
+
+Make sure to replace `'your_module'` with the actual module where the `get_uploader` function is defined.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6216, GraphCodeBERTScore: 0.9854, Average: 0.8035
+	Recording result: 'hexsha': d9ba8bca5b, 'nl_pl_best_ast_score': 0.6216, 'nl_pl_best_graphcodebert_score': 0.9854, 'nl_pl_best_average_score': 0.8035
+
+Processed 24/33 records. Current record d9ba8bca5b... NL->PL Avg Score: 0.8035
+Processing record 25/33 (language: Python)...
+  Generating documentation for d9bd741c...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Program Overview
+
+This Python script generates a graphical user interface (GUI) using PyQt4 to allow users to add subjects to a syllabus. The GUI includes input fields for subject name, year, and semester, along with buttons to save and cancel the operation.
+
+### Classes and Their Purposes
+
+#### `Ui_Dialog_add_subject`
+
+**Purpose:** This class defines the structure and layout of the dialog window for adding a subject. It contains various widgets such as labels, line edits, combo boxes, and push buttons.
+
+### Fields and Member Variables
+
+- **`self.lbl_subject_name`:** A label widget displaying the text "SUBJECT NAME".
+- **`self.label_add_subject`:** A label widget displaying the text "ADD SUBJECT" in bold.
+- **`self.lineEdit_subject_name`:** A line edit widget where users can enter the subject name.
+- **`self.label_year`:** A label widget displaying the text "YEAR".
+- **`self.label_semester`:** A label widget displaying the text "SEMESTER".
+- **`self.pushButton_save`:** A push button labeled "SAVE" with an associated icon.
+- **`self.pushButton_cancel`:** A push button labeled "CANCEL" with an associated icon.
+- **`self.comboBox
+*************
+Code:
+assistant
+```python
+from PyQt4 import QtGui, QtCore
+
+class Ui_Dialog_add_subject(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(400, 200)
+        self.gridLayout = QtGui.QGridLayout(Dialog)
+        self.gridLayout.setObjectName("gridLayout")
+
+        # Subject Name Label
+        self.lbl_subject_name = QtGui.QLabel(Dialog)
+        self.lbl_subject_name.setObjectName("lbl_subject_name")
+        self.gridLayout.addWidget(self.lbl_subject_name, 0, 0, 1, 1)
+
+        # Line Edit for Subject Name
+        self.lineEdit_subject_name = QtGui.QLineEdit(Dialog)
+        self.lineEdit_subject_name.setObjectName("lineEdit_subject_name")
+        self.gridLayout.addWidget(self.lineEdit_subject_name, 0, 1, 1, 1)
+
+        # Year Label
+        self.label_year = QtGui.QLabel(Dialog)
+        self.label_year.setObjectName("label_year")
+        self.gridLayout.addWidget(self.label_year, 1, 0, 1, 1)
+
+        # Semester Label
+        self.label_semester = QtGui.QLabel(Dialog)
+        self.label_semester.setObjectName("label_semester")
+        self.gridLayout.addWidget(self.label_semester, 2, 0, 1, 1)
+
+        # Save Button
+        self.pushButton_save = QtGui.QPushButton(Dialog)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/save.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_save.setIcon(icon)
+        self.pushButton_save.setObjectName("pushButton_save")
+        self.gridLayout.addWidget(self.pushButton_save, 3, 0, 1, 1)
+
+        # Cancel Button
+        self.pushButton_cancel = QtGui.QPushButton(Dialog)
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/icons/cancel.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_cancel.setIcon(icon1)
+        self.pushButton_cancel.setObjectName("pushButton_cancel")
+        self.gridLayout.addWidget(self.pushButton_cancel, 3, 1, 1, 1)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Add Subject", None, QtGui.QApplication.UnicodeUTF8))
+        self.lbl_subject_name.setText(QtGui.QApplication.translate("Dialog", "SUBJECT NAME", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_add_subject.setText(QtGui.QApplication.translate("Dialog", "<b>ADD SUBJECT</b>", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_year.setText(QtGui.QApplication.translate("Dialog", "YEAR", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_semester.setText(QtGui.QApplication.translate("Dialog", "SEMESTER", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_save.setText(QtGui.QApplication.translate("Dialog", "SAVE", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_cancel.setText(QtGui.QApplication.translate("Dialog", "CANCEL", None, QtGui.QApplication.UnicodeUTF8))
+
+# Example usage
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    Dialog = QtGui.QDialog()
+    ui = Ui_Dialog_add_subject()
+    ui.setupUi(Dialog)
+    Dialog.show()
+    sys.exit(app.exec_())
+```
+
+This code defines a `Ui_Dialog_add_subject` class that sets up a GUI dialog for adding a subject. The dialog includes labels, line edits, and push buttons for saving and canceling the operation. The example usage at the bottom demonstrates how to create and display this dialog.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.7143, GraphCodeBERTScore: 0.9536, Average: 0.8339
+	Recording result: 'hexsha': d9bd741cd9, 'nl_pl_best_ast_score': 0.7143, 'nl_pl_best_graphcodebert_score': 0.9536, 'nl_pl_best_average_score': 0.8339
+
+Processed 26/33 records. Current record d9bd741cd9... NL->PL Avg Score: 0.8339
+Processing record 27/33 (language: Python)...
+  Generating documentation for d9be3b65...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Program Overview
+
+This Django application includes a test suite designed to verify the behavior of the `pre_syncdb` signal, which is triggered before Django synchronizes its database schema with the models defined in the project. The primary goal is to ensure that the `pre_syncdb` signal is called exactly once during the test execution process, regardless of how many databases are involved.
+
+### Global Variables and Standalone Functions
+
+#### Global Variables
+
+- `PRE_SYNCDB_ARGS`: A list containing the expected arguments passed to the `pre_syncdb` signal handler.
+- `SYNCDB_DATABASE`: The name of the database being synchronized, which is set to `'default'`.
+- `SYNCDB_VERBOSITY`: The verbosity level for the synchronization command, set to `1`.
+- `SYNCDB_INTERACTIVE`: A boolean indicating whether the synchronization should be interactive, set to `False`.
+
+#### Standalone Functions
+
+No standalone functions are present in this code snippet.
+
+### Classes
+
+#### Class: `PreSyncdbReceiver`
+
+**Purpose**: This class serves as a signal receiver for the `pre_syncdb` signal. It counts the number of times the signal is received and stores the arguments passed to it.
+
+**Fields/Member Variables**:
+
+- `call_counter`: An integer representing
+*************
+Code:
+assistant
+```python
+from django.db.models.signals import pre_syncdb
+from django.dispatch import receiver
+import logging
+
+# Global Variables
+PRE_SYNCDB_ARGS = []
+SYNCDB_DATABASE = 'default'
+SYNCDB_VERBOSITY = 1
+SYNCDB_INTERACTIVE = False
+
+# Logger configuration
+logger = logging.getLogger(__name__)
+
+class PreSyncdbReceiver:
+    """
+    This class serves as a signal receiver for the `pre_syncdb` signal.
+    It counts the number of times the signal is received and stores the arguments passed to it.
+    """
+
+    def __init__(self):
+        self.call_counter = 0
+
+    @receiver(pre_syncdb)
+    def handle_pre_syncdb(self, sender, **kwargs):
+        """
+        Signal handler for the `pre_syncdb` signal.
+        
+        Parameters:
+        - sender: The model class that triggered the signal.
+        - **kwargs: Additional keyword arguments passed to the signal.
+        """
+        self.call_counter += 1
+        PRE_SYNCDB_ARGS.append((sender, kwargs))
+        logger.info(f"pre_syncdb signal received {self.call_counter} time(s)")
+
+def run_tests():
+    """
+    Function to simulate running tests and ensuring the pre_syncdb signal is called exactly once.
+    """
+    # Simulate database synchronization
+    pre_syncdb.send(None, using=SYNCDB_DATABASE, verbosity=SYNCDB_VERBOSITY, interactive=SYNCDB_INTERACTIVE)
+
+    # Check if the pre_syncdb signal was called exactly once
+    assert len(PRE_SYNCDB_ARGS) == 1, "The pre_syncdb signal was not called exactly once"
+    print("All tests passed successfully.")
+
+if __name__ == "__main__":
+    run_tests()
+```
+
+This code defines a `PreSyncdbReceiver` class that listens for the `pre_syncdb` signal and counts the number of times it is received. It also includes a `run_tests` function to simulate running tests and ensure that the `pre_syncdb` signal is called exactly once. The global variables and standalone functions are included as per the requirements.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6000, GraphCodeBERTScore: 0.9795, Average: 0.7897
+	Recording result: 'hexsha': d9be3b65d4, 'nl_pl_best_ast_score': 0.6000, 'nl_pl_best_graphcodebert_score': 0.9795, 'nl_pl_best_average_score': 0.7897
+
+Processed 28/33 records. Current record d9be3b65d4... NL->PL Avg Score: 0.7897
+Processing record 29/33 (language: Python)...
+  Generating documentation for d9be5eda...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+The provided source code defines a class `SLURMEnvironment` that extends the `ClusterEnvironment` class from the PyTorch Lightning library. This class is designed to handle the environment setup for training on a cluster managed by SLURM. It provides methods to determine if the current process is running on a SLURM cluster, retrieve the main address and port for communication, and manage the world size, global rank, local rank, and node rank of processes within the cluster.
+
+### Classes
+
+#### SLURMEnvironment
+
+**Purpose**: This class represents the environment for training on a cluster managed by SLURM. It inherits from `ClusterEnvironment` and overrides several methods to provide specific functionality for SLURM environments.
+
+**Fields/Member Variables**:
+
+- **None**: This class does not have any fields or member variables.
+
+**Methods**:
+
+1. **creates_processes_externally**
+   - **Purpose**: Indicates whether the processes are created externally by the environment.
+   - **Return Value**: Returns `True`.
+
+2. **detect**
+   - **Purpose**: Detects if the current process was launched on a SLURM cluster.
+   - **Return Value**: Returns `True` if the environment variable `SLURM_NTASKS
+*************
+Code:
+assistant
+```python
+from pytorch_lightning.plugins.environments.cluster_environment import ClusterEnvironment
+
+class SLURMEnvironment(ClusterEnvironment):
+    def creates_processes_externally(self) -> bool:
+        """
+        Indicates whether the processes are created externally by the environment.
+        
+        Returns:
+            bool: True
+        """
+        return True
+
+    def detect(self) -> bool:
+        """
+        Detects if the current process was launched on a SLURM cluster.
+        
+        Returns:
+            bool: True if the environment variable 'SLURM_NTASKS' is set, False otherwise.
+        """
+        import os
+        return 'SLURM_NTASKS' in os.environ
+
+    def master_address(self) -> str:
+        """
+        Retrieves the main address for communication.
+        
+        Returns:
+            str: The value of the environment variable 'SLURM_NODEID'.
+        """
+        import os
+        return os.environ.get('SLURM_NODEID', '')
+
+    def master_port(self) -> int:
+        """
+        Retrieves the main port for communication.
+        
+        Returns:
+            int: The value of the environment variable 'SLURM_PORT', converted to an integer.
+        """
+        import os
+        return int(os.environ.get('SLURM_PORT', 0))
+
+    def world_size(self) -> int:
+        """
+        Retrieves the total number of processes across all nodes.
+        
+        Returns:
+            int: The value of the environment variable 'SLURM_NTASKS', converted to an integer.
+        """
+        import os
+        return int(os.environ.get('SLURM_NTASKS', 1))
+
+    def global_rank(self) -> int:
+        """
+        Retrieves the global rank of the current process.
+        
+        Returns:
+            int: The value of the environment variable 'SLURM_PROCID', converted to an integer.
+        """
+        import os
+        return int(os.environ.get('SLURM_PROCID', 0))
+
+    def local_rank(self) -> int:
+        """
+        Retrieves the local rank of the current process within its node.
+        
+        Returns:
+            int: The value of the environment variable 'SLURM_LOCALID', converted to an integer.
+        """
+        import os
+        return int(os.environ.get('SLURM_LOCALID', 0))
+
+    def node_rank(self) -> int:
+        """
+        Retrieves the rank of the current node within the cluster.
+        
+        Returns:
+            int: The value of the environment variable 'SLURM_NODEID', converted to an integer.
+        """
+        import os
+        return int(os.environ.get('SLURM_NODEID', 0))
+```
+
+This code defines the `SLURMEnvironment` class as specified, inheriting from `ClusterEnvironment` and implementing the required methods to handle SLURM-specific environment details.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4848, GraphCodeBERTScore: 0.9214, Average: 0.7031
+	Recording result: 'hexsha': d9be5eda54, 'nl_pl_best_ast_score': 0.4848, 'nl_pl_best_graphcodebert_score': 0.9214, 'nl_pl_best_average_score': 0.7031
+
+Processed 30/33 records. Current record d9be5eda54... NL->PL Avg Score: 0.7031
+Processing record 31/33 (language: Python)...
+  Generating documentation for d9be6394...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Program Overview
+
+This Python script uses a trackball sensor connected to a Raspberry Pi running Raspbian to simulate mouse movements and clicks on the computer. The trackball's movement and button presses are translated into corresponding mouse actions using the `xte` command-line tool. The script continuously reads input from the trackball and updates the mouse position accordingly.
+
+### Classes and Structs
+
+#### TrackBall Class
+
+The `TrackBall` class is imported from the `trackball` module and is responsible for interfacing with the trackball hardware. It provides methods to read the current state of the trackball and set its RGBW LED color.
+
+- **Fields/Member Variables:**
+  - None explicitly defined within the class; it likely has internal state to manage the connection to the trackball hardware.
+
+- **Methods:**
+  - `__init__(self, interrupt_pin)`: Initializes the trackball object with the specified GPIO pin for the interrupt signal.
+  - `set_rgbw(self, r, g, b, w)`: Sets the RGBW LED color of the trackball.
+  - `read(self)`: Reads the current state of the trackball, returning a tuple containing boolean values indicating whether the up, down, left, right buttons are pressed
+*************
+Code:
+assistant
+```python
+import time
+import subprocess
+from trackball import TrackBall
+
+class MouseSimulator:
+    def __init__(self, trackball: TrackBall):
+        self.trackball = trackball
+        self.current_x = 0
+        self.current_y = 0
+
+    def update_mouse_position(self):
+        button_state = self.trackball.read()
+        if button_state[0]:  # Up button pressed
+            self.current_y -= 1
+        if button_state[1]:  # Down button pressed
+            self.current_y += 1
+        if button_state[2]:  # Left button pressed
+            self.current_x -= 1
+        if button_state[3]:  # Right button pressed
+            self.current_x += 1
+
+        self.move_mouse_to(self.current_x, self.current_y)
+
+    def move_mouse_to(self, x: int, y: int):
+        subprocess.run(['xte', f'mousemove_relative {x} {y}'])
+
+    def run(self):
+        try:
+            while True:
+                self.update_mouse_position()
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            print("Exiting program.")
+
+if __name__ == "__main__":
+    interrupt_pin = 18  # Example GPIO pin number
+    trackball = TrackBall(interrupt_pin)
+    simulator = MouseSimulator(trackball)
+    simulator.run()
+```
+
+### Explanation:
+
+1. **TrackBall Class**: This class is assumed to be part of the `trackball` module and handles communication with the trackball hardware. It includes methods to initialize the trackball, set the RGBW LED color, and read the current state of the trackball buttons.
+
+2. **MouseSimulator Class**:
+   - **Initialization (`__init__`)**: Takes a `TrackBall` object as a parameter and initializes the current mouse position to (0, 0).
+   - **Update Mouse Position (`update_mouse_position`)**: Reads the state of the trackball buttons and updates the mouse position accordingly. It then calls `move_mouse_to` to move the mouse to the new position.
+   - **Move Mouse To (`move_mouse_to`)**: Uses the `subprocess` module to run the `xte` command to move the mouse relative to its current position.
+   - **Run Method**: Continuously updates the mouse position based on the trackball input until interrupted by the user.
+
+3. **Main Execution Block**: Creates an instance of `TrackBall`, `MouseSimulator`, and starts the simulation loop.
+
+This code assumes that the `trackball` module is correctly implemented and available for use. The `xte` command must also be installed and accessible on the system where this script runs.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4848, GraphCodeBERTScore: 0.9429, Average: 0.7139
+	Recording result: 'hexsha': d9be639438, 'nl_pl_best_ast_score': 0.4848, 'nl_pl_best_graphcodebert_score': 0.9429, 'nl_pl_best_average_score': 0.7139
+
+Processed 32/33 records. Current record d9be639438... NL->PL Avg Score: 0.7139
+Processing record 33/33 (language: Python)...
+  Generating documentation for d9be866c...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+# GaussianMLPRegressorModel Documentation
+
+## Overview
+The `GaussianMLPRegressorModel` class is a TensorFlow-based implementation of a Gaussian Mixture Model (GMM) regressor. It extends the `GaussianMLPModel` class from the `garage.tf.models` module and is designed to perform regression tasks by fitting a Gaussian distribution to the outputs. This model allows for flexible configuration of the neural network architecture and standard deviation handling, making it suitable for various regression problems.
+
+## Class Definition
+```python
+class GaussianMLPRegressorModel(GaussianMLPModel):
+```
+
+### Fields
+- **input_shape**: A tuple representing the shape of the input data.
+- **output_dim**: An integer indicating the number of output dimensions.
+- **name**: A string representing the name of the model, which is also used as the variable scope.
+- **hidden_sizes**: A list of integers specifying the number of hidden units in each hidden layer of the MLP.
+- **hidden_nonlinearity**: A callable function defining the non-linearity for the hidden layers. Defaults to `tf.nn.tanh`.
+- **hidden_w_init**: A callable function initializing the weights of the hidden layers. Defaults to `tf.initializers.glorot_uniform(seed=deterministic
+*************
+Code:
+assistant
+```python
+import tensorflow as tf
+from garage.tf.models import GaussianMLPModel
+
+class GaussianMLPRegressorModel(GaussianMLPModel):
+    def __init__(self,
+                 input_shape,
+                 output_dim,
+                 name='GaussianMLPRegressorModel',
+                 hidden_sizes=(32, 32),
+                 hidden_nonlinearity=tf.nn.tanh,
+                 hidden_w_init=tf.initializers.glorot_uniform(seed=None)):
+        super().__init__(
+            input_shape=input_shape,
+            output_dim=output_dim,
+            name=name,
+            hidden_sizes=hidden_sizes,
+            hidden_nonlinearity=hidden_nonlinearity,
+            hidden_w_init=hidden_w_init)
+
+    def build(self, state_input):
+        with tf.compat.v1.variable_scope(self.name):
+            # Build the MLP part of the model
+            x = state_input
+            for size in self.hidden_sizes:
+                x = tf.layers.dense(x, units=size, activation=self.hidden_nonlinearity, kernel_initializer=self.hidden_w_init)
+            
+            # Mean and log_std outputs
+            mean = tf.layers.dense(x, units=self.output_dim, kernel_initializer=self.hidden_w_init)
+            log_std = tf.layers.dense(x, units=self.output_dim, kernel_initializer=self.hidden_w_init)
+            
+            # Clamp log_std to prevent numerical instability
+            log_std = tf.clip_by_value(log_std, -20., 2.)
+        
+        return mean, log_std
+
+    def dist_info_sym(self, state_input, name=None):
+        with tf.compat.v1.variable_scope(self.name or 'dist_info_sym'):
+            mean, log_std = self.build(state_input)
+            std = tf.exp(0.5 * log_std)
+            dist = tf.distributions.Normal(loc=mean, scale=std)
+        return dict(mean=mean, log_std=log_std, std=std, dist=dist)
+```
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.7742, GraphCodeBERTScore: 0.9458, Average: 0.8600
+	Recording result: 'hexsha': d9be866c44, 'nl_pl_best_ast_score': 0.7742, 'nl_pl_best_graphcodebert_score': 0.9458, 'nl_pl_best_average_score': 0.8600
+
+Processed 34/33 records. Current record d9be866c44... NL->PL Avg Score: 0.8600
+
+==============================
+
+
+
+******************************
+
+
+NL->PL Validation Summary (Documentation to Code):
+	Total records processed: 17
+	NL->PL Average Score: 0.6547
+	NL->PL AST Score: 0.3883
+	NL->PL GCB Score: 0.9210
+	Python NL->PL Average Score: 0.7017 (n=9)
+	C++ NL->PL Average Score: 0.6018 (n=8)
+
+==============================
+
+
+
+******************************
+
+
+PL1->PL2 Validation Summary (Python to C++):
+	Total records processed: 17

@@ -1,0 +1,2237 @@
+W0705 09:11:03.107000 574823 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0705 09:11:03.124000 574823 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Hugging Face API key loaded successfully from secrets.
+==================================================
+Active Options:
+  - Baseline (-b)             : Disabled
+  - Training (-t)             : Enabled
+  - Validation (-v)           : Disabled
+  - Number of records to cache: 100
+  - Purge Cached Dataset      : False
+==================================================
+Resetting singleton states for BaselineData and its dependencies...
+Singleton states reset.
+Using dataset with 100 records
+Initializing BaselineData singleton using device: cuda...
+Initializing FilteredDataset singleton...
+Cached dataset loaded with 100 samples from ./cached_data/filtered_subset_100.
+FilteredDataset initialized successfully.
+BaselineData initialized successfully.
+Loading all models...
+QwenModelBase using device: cuda for model Qwen/Qwen2.5-Coder-7B-Instruct
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<00:49,  6.85it/s]Loading weights:   1%|          | 2/339 [00:00<00:53,  6.30it/s]Loading weights:   1%|          | 3/339 [00:00<00:48,  6.98it/s]Loading weights:  10%|█         | 34/339 [00:00<00:03, 101.38it/s]Loading weights:  14%|█▍        | 47/339 [00:00<00:02, 98.05it/s] Loading weights:  20%|█▉        | 67/339 [00:00<00:02, 126.34it/s]Loading weights:  27%|██▋       | 90/339 [00:00<00:01, 146.23it/s]Loading weights:  31%|███▏      | 106/339 [00:01<00:01, 137.21it/s]Loading weights:  40%|████      | 136/339 [00:01<00:01, 168.85it/s]Loading weights:  46%|████▌     | 156/339 [00:01<00:01, 175.11it/s]Loading weights:  51%|█████▏    | 174/339 [00:01<00:01, 160.86it/s]Loading weights:  58%|█████▊    | 197/339 [00:01<00:00, 160.19it/s]Loading weights:  65%|██████▌   | 221/339 [00:01<00:00, 173.47it/s]Loading weights:  71%|███████   | 239/339 [00:01<00:00, 173.61it/s]Loading weights:  76%|███████▌  | 257/339 [00:01<00:00, 156.79it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 175.30it/s]Loading weights:  88%|████████▊ | 299/339 [00:02<00:00, 171.63it/s]Loading weights:  94%|█████████▎| 317/339 [00:02<00:00, 165.36it/s]Loading weights:  99%|█████████▊| 334/339 [00:02<00:00, 166.54it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 144.01it/s]
+CodeDocumentationGenerator using device: cuda
+QwenCodeGenerator using device: cuda
+Initializing GraphCodeBERTScorer...
+Using device: cuda
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 41092.00it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/graphcodebert-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.weight       | MISSING    | 
+pooler.dense.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+GraphCodeBERTScorer initialized successfully.
+LLMJudge using device: cuda
+All models loaded.
+Processing 33 records for LORA training
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<02:25,  2.32it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:05, 57.24it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 79.44it/s]Loading weights:  16%|█▌        | 53/339 [00:00<00:03, 92.30it/s]Loading weights:  22%|██▏       | 76/339 [00:00<00:02, 116.45it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 124.18it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 131.34it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 148.49it/s]Loading weights:  48%|████▊     | 164/339 [00:01<00:01, 143.49it/s]Loading weights:  54%|█████▍    | 184/339 [00:01<00:01, 137.57it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 141.76it/s]Loading weights:  68%|██████▊   | 232/339 [00:01<00:00, 142.69it/s]Loading weights:  76%|███████▌  | 256/339 [00:02<00:00, 150.70it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 156.78it/s]Loading weights:  87%|████████▋ | 296/339 [00:02<00:00, 150.67it/s]Loading weights:  93%|█████████▎| 316/339 [00:02<00:00, 142.52it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 129.79it/s]
+Printing modules in Qwen2.5-Coder-7B-Instruct model
+	
+	model
+	model.embed_tokens
+	model.layers
+	model.layers.0
+	model.layers.0.self_attn
+	model.layers.0.self_attn.q_proj
+	model.layers.0.self_attn.k_proj
+	model.layers.0.self_attn.v_proj
+	model.layers.0.self_attn.o_proj
+	model.layers.0.mlp
+	model.layers.0.mlp.gate_proj
+	model.layers.0.mlp.up_proj
+	model.layers.0.mlp.down_proj
+	model.layers.0.mlp.act_fn
+	model.layers.0.input_layernorm
+	model.layers.0.post_attention_layernorm
+	model.layers.1
+	model.layers.1.self_attn
+	model.layers.1.self_attn.q_proj
+	model.layers.1.self_attn.k_proj
+	model.layers.1.self_attn.v_proj
+	model.layers.1.self_attn.o_proj
+	model.layers.1.mlp
+	model.layers.1.mlp.gate_proj
+	model.layers.1.mlp.up_proj
+	model.layers.1.mlp.down_proj
+	model.layers.1.mlp.act_fn
+	model.layers.1.input_layernorm
+	model.layers.1.post_attention_layernorm
+	model.layers.2
+	model.layers.2.self_attn
+	model.layers.2.self_attn.q_proj
+	model.layers.2.self_attn.k_proj
+	model.layers.2.self_attn.v_proj
+	model.layers.2.self_attn.o_proj
+	model.layers.2.mlp
+	model.layers.2.mlp.gate_proj
+	model.layers.2.mlp.up_proj
+	model.layers.2.mlp.down_proj
+	model.layers.2.mlp.act_fn
+	model.layers.2.input_layernorm
+	model.layers.2.post_attention_layernorm
+	model.layers.3
+	model.layers.3.self_attn
+	model.layers.3.self_attn.q_proj
+	model.layers.3.self_attn.k_proj
+	model.layers.3.self_attn.v_proj
+	model.layers.3.self_attn.o_proj
+	model.layers.3.mlp
+	model.layers.3.mlp.gate_proj
+	model.layers.3.mlp.up_proj
+	model.layers.3.mlp.down_proj
+	model.layers.3.mlp.act_fn
+	model.layers.3.input_layernorm
+	model.layers.3.post_attention_layernorm
+	model.layers.4
+	model.layers.4.self_attn
+	model.layers.4.self_attn.q_proj
+	model.layers.4.self_attn.k_proj
+	model.layers.4.self_attn.v_proj
+	model.layers.4.self_attn.o_proj
+	model.layers.4.mlp
+	model.layers.4.mlp.gate_proj
+	model.layers.4.mlp.up_proj
+	model.layers.4.mlp.down_proj
+	model.layers.4.mlp.act_fn
+	model.layers.4.input_layernorm
+	model.layers.4.post_attention_layernorm
+	model.layers.5
+	model.layers.5.self_attn
+	model.layers.5.self_attn.q_proj
+	model.layers.5.self_attn.k_proj
+	model.layers.5.self_attn.v_proj
+	model.layers.5.self_attn.o_proj
+	model.layers.5.mlp
+	model.layers.5.mlp.gate_proj
+	model.layers.5.mlp.up_proj
+	model.layers.5.mlp.down_proj
+	model.layers.5.mlp.act_fn
+	model.layers.5.input_layernorm
+	model.layers.5.post_attention_layernorm
+	model.layers.6
+	model.layers.6.self_attn
+	model.layers.6.self_attn.q_proj
+	model.layers.6.self_attn.k_proj
+	model.layers.6.self_attn.v_proj
+	model.layers.6.self_attn.o_proj
+	model.layers.6.mlp
+	model.layers.6.mlp.gate_proj
+	model.layers.6.mlp.up_proj
+	model.layers.6.mlp.down_proj
+	model.layers.6.mlp.act_fn
+	model.layers.6.input_layernorm
+	model.layers.6.post_attention_layernorm
+	model.layers.7
+	model.layers.7.self_attn
+	model.layers.7.self_attn.q_proj
+	model.layers.7.self_attn.k_proj
+	model.layers.7.self_attn.v_proj
+	model.layers.7.self_attn.o_proj
+	model.layers.7.mlp
+	model.layers.7.mlp.gate_proj
+	model.layers.7.mlp.up_proj
+	model.layers.7.mlp.down_proj
+	model.layers.7.mlp.act_fn
+	model.layers.7.input_layernorm
+	model.layers.7.post_attention_layernorm
+	model.layers.8
+	model.layers.8.self_attn
+	model.layers.8.self_attn.q_proj
+	model.layers.8.self_attn.k_proj
+	model.layers.8.self_attn.v_proj
+	model.layers.8.self_attn.o_proj
+	model.layers.8.mlp
+	model.layers.8.mlp.gate_proj
+	model.layers.8.mlp.up_proj
+	model.layers.8.mlp.down_proj
+	model.layers.8.mlp.act_fn
+	model.layers.8.input_layernorm
+	model.layers.8.post_attention_layernorm
+	model.layers.9
+	model.layers.9.self_attn
+	model.layers.9.self_attn.q_proj
+	model.layers.9.self_attn.k_proj
+	model.layers.9.self_attn.v_proj
+	model.layers.9.self_attn.o_proj
+	model.layers.9.mlp
+	model.layers.9.mlp.gate_proj
+	model.layers.9.mlp.up_proj
+	model.layers.9.mlp.down_proj
+	model.layers.9.mlp.act_fn
+	model.layers.9.input_layernorm
+	model.layers.9.post_attention_layernorm
+	model.layers.10
+	model.layers.10.self_attn
+	model.layers.10.self_attn.q_proj
+	model.layers.10.self_attn.k_proj
+	model.layers.10.self_attn.v_proj
+	model.layers.10.self_attn.o_proj
+	model.layers.10.mlp
+	model.layers.10.mlp.gate_proj
+	model.layers.10.mlp.up_proj
+	model.layers.10.mlp.down_proj
+	model.layers.10.mlp.act_fn
+	model.layers.10.input_layernorm
+	model.layers.10.post_attention_layernorm
+	model.layers.11
+	model.layers.11.self_attn
+	model.layers.11.self_attn.q_proj
+	model.layers.11.self_attn.k_proj
+	model.layers.11.self_attn.v_proj
+	model.layers.11.self_attn.o_proj
+	model.layers.11.mlp
+	model.layers.11.mlp.gate_proj
+	model.layers.11.mlp.up_proj
+	model.layers.11.mlp.down_proj
+	model.layers.11.mlp.act_fn
+	model.layers.11.input_layernorm
+	model.layers.11.post_attention_layernorm
+	model.layers.12
+	model.layers.12.self_attn
+	model.layers.12.self_attn.q_proj
+	model.layers.12.self_attn.k_proj
+	model.layers.12.self_attn.v_proj
+	model.layers.12.self_attn.o_proj
+	model.layers.12.mlp
+	model.layers.12.mlp.gate_proj
+	model.layers.12.mlp.up_proj
+	model.layers.12.mlp.down_proj
+	model.layers.12.mlp.act_fn
+	model.layers.12.input_layernorm
+	model.layers.12.post_attention_layernorm
+	model.layers.13
+	model.layers.13.self_attn
+	model.layers.13.self_attn.q_proj
+	model.layers.13.self_attn.k_proj
+	model.layers.13.self_attn.v_proj
+	model.layers.13.self_attn.o_proj
+	model.layers.13.mlp
+	model.layers.13.mlp.gate_proj
+	model.layers.13.mlp.up_proj
+	model.layers.13.mlp.down_proj
+	model.layers.13.mlp.act_fn
+	model.layers.13.input_layernorm
+	model.layers.13.post_attention_layernorm
+	model.layers.14
+	model.layers.14.self_attn
+	model.layers.14.self_attn.q_proj
+	model.layers.14.self_attn.k_proj
+	model.layers.14.self_attn.v_proj
+	model.layers.14.self_attn.o_proj
+	model.layers.14.mlp
+	model.layers.14.mlp.gate_proj
+	model.layers.14.mlp.up_proj
+	model.layers.14.mlp.down_proj
+	model.layers.14.mlp.act_fn
+	model.layers.14.input_layernorm
+	model.layers.14.post_attention_layernorm
+	model.layers.15
+	model.layers.15.self_attn
+	model.layers.15.self_attn.q_proj
+	model.layers.15.self_attn.k_proj
+	model.layers.15.self_attn.v_proj
+	model.layers.15.self_attn.o_proj
+	model.layers.15.mlp
+	model.layers.15.mlp.gate_proj
+	model.layers.15.mlp.up_proj
+	model.layers.15.mlp.down_proj
+	model.layers.15.mlp.act_fn
+	model.layers.15.input_layernorm
+	model.layers.15.post_attention_layernorm
+	model.layers.16
+	model.layers.16.self_attn
+	model.layers.16.self_attn.q_proj
+	model.layers.16.self_attn.k_proj
+	model.layers.16.self_attn.v_proj
+	model.layers.16.self_attn.o_proj
+	model.layers.16.mlp
+	model.layers.16.mlp.gate_proj
+	model.layers.16.mlp.up_proj
+	model.layers.16.mlp.down_proj
+	model.layers.16.mlp.act_fn
+	model.layers.16.input_layernorm
+	model.layers.16.post_attention_layernorm
+	model.layers.17
+	model.layers.17.self_attn
+	model.layers.17.self_attn.q_proj
+	model.layers.17.self_attn.k_proj
+	model.layers.17.self_attn.v_proj
+	model.layers.17.self_attn.o_proj
+	model.layers.17.mlp
+	model.layers.17.mlp.gate_proj
+	model.layers.17.mlp.up_proj
+	model.layers.17.mlp.down_proj
+	model.layers.17.mlp.act_fn
+	model.layers.17.input_layernorm
+	model.layers.17.post_attention_layernorm
+	model.layers.18
+	model.layers.18.self_attn
+	model.layers.18.self_attn.q_proj
+	model.layers.18.self_attn.k_proj
+	model.layers.18.self_attn.v_proj
+	model.layers.18.self_attn.o_proj
+	model.layers.18.mlp
+	model.layers.18.mlp.gate_proj
+	model.layers.18.mlp.up_proj
+	model.layers.18.mlp.down_proj
+	model.layers.18.mlp.act_fn
+	model.layers.18.input_layernorm
+	model.layers.18.post_attention_layernorm
+	model.layers.19
+	model.layers.19.self_attn
+	model.layers.19.self_attn.q_proj
+	model.layers.19.self_attn.k_proj
+	model.layers.19.self_attn.v_proj
+	model.layers.19.self_attn.o_proj
+	model.layers.19.mlp
+	model.layers.19.mlp.gate_proj
+	model.layers.19.mlp.up_proj
+	model.layers.19.mlp.down_proj
+	model.layers.19.mlp.act_fn
+	model.layers.19.input_layernorm
+	model.layers.19.post_attention_layernorm
+	model.layers.20
+	model.layers.20.self_attn
+	model.layers.20.self_attn.q_proj
+	model.layers.20.self_attn.k_proj
+	model.layers.20.self_attn.v_proj
+	model.layers.20.self_attn.o_proj
+	model.layers.20.mlp
+	model.layers.20.mlp.gate_proj
+	model.layers.20.mlp.up_proj
+	model.layers.20.mlp.down_proj
+	model.layers.20.mlp.act_fn
+Got disconnected from remote data host. Retrying in 5sec [1/20]
+Got disconnected from remote data host. Retrying in 5sec [2/20]
+	model.layers.20.input_layernorm
+	model.layers.20.post_attention_layernorm
+	model.layers.21
+	model.layers.21.self_attn
+	model.layers.21.self_attn.q_proj
+	model.layers.21.self_attn.k_proj
+	model.layers.21.self_attn.v_proj
+	model.layers.21.self_attn.o_proj
+	model.layers.21.mlp
+	model.layers.21.mlp.gate_proj
+	model.layers.21.mlp.up_proj
+	model.layers.21.mlp.down_proj
+	model.layers.21.mlp.act_fn
+	model.layers.21.input_layernorm
+	model.layers.21.post_attention_layernorm
+	model.layers.22
+	model.layers.22.self_attn
+	model.layers.22.self_attn.q_proj
+	model.layers.22.self_attn.k_proj
+	model.layers.22.self_attn.v_proj
+	model.layers.22.self_attn.o_proj
+	model.layers.22.mlp
+	model.layers.22.mlp.gate_proj
+	model.layers.22.mlp.up_proj
+	model.layers.22.mlp.down_proj
+	model.layers.22.mlp.act_fn
+	model.layers.22.input_layernorm
+	model.layers.22.post_attention_layernorm
+	model.layers.23
+	model.layers.23.self_attn
+	model.layers.23.self_attn.q_proj
+	model.layers.23.self_attn.k_proj
+	model.layers.23.self_attn.v_proj
+	model.layers.23.self_attn.o_proj
+	model.layers.23.mlp
+	model.layers.23.mlp.gate_proj
+	model.layers.23.mlp.up_proj
+	model.layers.23.mlp.down_proj
+	model.layers.23.mlp.act_fn
+	model.layers.23.input_layernorm
+	model.layers.23.post_attention_layernorm
+	model.layers.24
+	model.layers.24.self_attn
+	model.layers.24.self_attn.q_proj
+	model.layers.24.self_attn.k_proj
+	model.layers.24.self_attn.v_proj
+	model.layers.24.self_attn.o_proj
+	model.layers.24.mlp
+	model.layers.24.mlp.gate_proj
+	model.layers.24.mlp.up_proj
+	model.layers.24.mlp.down_proj
+	model.layers.24.mlp.act_fn
+	model.layers.24.input_layernorm
+	model.layers.24.post_attention_layernorm
+	model.layers.25
+	model.layers.25.self_attn
+	model.layers.25.self_attn.q_proj
+	model.layers.25.self_attn.k_proj
+	model.layers.25.self_attn.v_proj
+	model.layers.25.self_attn.o_proj
+	model.layers.25.mlp
+	model.layers.25.mlp.gate_proj
+	model.layers.25.mlp.up_proj
+	model.layers.25.mlp.down_proj
+	model.layers.25.mlp.act_fn
+	model.layers.25.input_layernorm
+	model.layers.25.post_attention_layernorm
+	model.layers.26
+	model.layers.26.self_attn
+	model.layers.26.self_attn.q_proj
+	model.layers.26.self_attn.k_proj
+	model.layers.26.self_attn.v_proj
+	model.layers.26.self_attn.o_proj
+	model.layers.26.mlp
+	model.layers.26.mlp.gate_proj
+	model.layers.26.mlp.up_proj
+	model.layers.26.mlp.down_proj
+	model.layers.26.mlp.act_fn
+	model.layers.26.input_layernorm
+	model.layers.26.post_attention_layernorm
+	model.layers.27
+	model.layers.27.self_attn
+	model.layers.27.self_attn.q_proj
+	model.layers.27.self_attn.k_proj
+	model.layers.27.self_attn.v_proj
+	model.layers.27.self_attn.o_proj
+	model.layers.27.mlp
+	model.layers.27.mlp.gate_proj
+	model.layers.27.mlp.up_proj
+	model.layers.27.mlp.down_proj
+	model.layers.27.mlp.act_fn
+	model.layers.27.input_layernorm
+	model.layers.27.post_attention_layernorm
+	model.norm
+	model.rotary_emb
+	lm_head
+
+******************************
+LORA adapted model summary:
+trainable params: 40,370,176 || all params: 7,655,986,688 || trainable%: 0.5273
+
+******************************
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  29468 MiB |  29468 MiB |  58725 MiB |  29256 MiB |
+|       from large pool |  29409 MiB |  29409 MiB |  58588 MiB |  29179 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| Active memory         |  29468 MiB |  29468 MiB |  58725 MiB |  29256 MiB |
+|       from large pool |  29409 MiB |  29409 MiB |  58588 MiB |  29179 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| Requested memory      |  29443 MiB |  29443 MiB |  58696 MiB |  29253 MiB |
+|       from large pool |  29383 MiB |  29383 MiB |  58559 MiB |  29176 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |  29512 MiB |  29512 MiB |  29514 MiB |   2048 KiB |
+|       from large pool |  29430 MiB |  29430 MiB |  29430 MiB |      0 KiB |
+|       from small pool |     82 MiB |     82 MiB |     84 MiB |   2048 KiB |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |  44876 KiB |  13484 MiB |  27467 MiB |  27423 MiB |
+|       from large pool |  21472 KiB |  13484 MiB |  27321 MiB |  27300 MiB |
+|       from small pool |  23404 KiB |     22 MiB |    146 MiB |    123 MiB |
+|---------------------------------------------------------------------------|
+| Allocations           |    1275    |    1276    |    1872    |     597    |
+|       from large pool |     554    |     554    |     631    |      77    |
+|       from small pool |     721    |     806    |    1241    |     520    |
+|---------------------------------------------------------------------------|
+| Active allocs         |    1275    |    1276    |    1872    |     597    |
+|       from large pool |     554    |     554    |     631    |      77    |
+|       from small pool |     721    |     806    |    1241    |     520    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      70    |      70    |      71    |       1    |
+|       from large pool |      29    |      29    |      29    |       0    |
+|       from small pool |      41    |      41    |      42    |       1    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      47    |      48    |     151    |     104    |
+|       from large pool |       3    |      19    |      50    |      47    |
+|       from small pool |      44    |      45    |     101    |      57    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+Collecting 33 C++ records for LORA NL->C++ training (records 33 to 65)...
+Resetting dataset streams and iterators...
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Skipped 33 records. Starting LORA training data collection from record 34...
+Processing C++ records for LORA NL->C++ data 0/33: 0it [00:00, ?it/s]Processing C++ records for LORA NL->C++ data 0/33: 1it [00:08,  8.78s/it]Processing C++ records for LORA NL->C++ data 0/33: 3it [00:16,  5.25s/it]Processing C++ records for LORA NL->C++ data 0/33: 5it [00:30,  5.95s/it]Processing C++ records for LORA NL->C++ data 0/33: 7it [00:38,  5.12s/it]Processing C++ records for LORA NL->C++ data 0/33: 9it [00:46,  4.72s/it]Processing C++ records for LORA NL->C++ data 0/33: 11it [00:55,  4.63s/it]Processing C++ records for LORA NL->C++ data 0/33: 13it [01:03,  4.41s/it]Processing C++ records for LORA NL->C++ data 0/33: 15it [01:11,  4.31s/it]Processing C++ records for LORA NL->C++ data 0/33: 17it [01:19,  4.22s/it]Processing C++ records for LORA NL->C++ data 0/33: 19it [01:27,  4.16s/it]Processing C++ records for LORA NL->C++ data 0/33: 21it [01:35,  4.14s/it]Processing C++ records for LORA NL->C++ data 0/33: 23it [01:43,  4.09s/it]Processing C++ records for LORA NL->C++ data 0/33: 25it [01:51,  4.10s/it]Processing C++ records for LORA NL->C++ data 0/33: 27it [02:00,  4.17s/it]Processing C++ records for LORA NL->C++ data 0/33: 29it [02:08,  4.11s/it]Processing C++ records for LORA NL->C++ data 0/33: 31it [02:16,  4.14s/it]Processing C++ records for LORA NL->C++ data 0/33: 33it [02:24,  4.10s/it]Processing C++ records for LORA NL->C++ data 0/33: 35it [02:32,  4.11s/it]Processing C++ records for LORA NL->C++ data 0/33: 37it [02:41,  4.10s/it]Processing C++ records for LORA NL->C++ data 0/33: 39it [02:49,  4.08s/it]Processing C++ records for LORA NL->C++ data 0/33: 41it [02:57,  4.13s/it]Processing C++ records for LORA NL->C++ data 0/33: 43it [03:06,  4.28s/it]Processing C++ records for LORA NL->C++ data 0/33: 45it [03:15,  4.29s/it]Processing C++ records for LORA NL->C++ data 0/33: 47it [03:23,  4.25s/it]Processing C++ records for LORA NL->C++ data 0/33: 49it [03:31,  4.18s/it][transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (35082 > 32768). Running this sequence through the model will result in indexing errors
+[transformers] This is a friendly reminder - the current text generation call has exceeded the model's predefined maximum length (32768). Depending on the model, you may observe exceptions, performance degradation, or nothing at all.
+Processing C++ records for LORA NL->C++ data 0/33: 51it [03:48,  5.37s/it]Processing C++ records for LORA NL->C++ data 0/33: 53it [03:56,  4.96s/it]Processing C++ records for LORA NL->C++ data 0/33: 55it [04:08,  5.27s/it]Processing C++ records for LORA NL->C++ data 0/33: 57it [04:16,  4.89s/it]Processing C++ records for LORA NL->C++ data 0/33: 59it [04:25,  4.85s/it]Processing C++ records for LORA NL->C++ data 0/33: 61it [04:33,  4.60s/it]Processing C++ records for LORA NL->C++ data 0/33: 63it [04:45,  5.02s/it]Processing C++ records for LORA NL->C++ data 0/33: 65it [04:53,  4.73s/it]Processing C++ records for LORA NL->C++ data 0/33: 65it [04:53,  4.52s/it]
+Marking code as processable for C++
+Processed 1 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 2 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 3 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 4 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 5 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 6 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 7 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 8 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 9 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 10 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 11 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 12 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 13 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 14 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 15 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 16 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 17 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 18 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 19 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 20 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 21 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 22 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 23 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 24 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 25 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Warning: Input length 35082 >= model max 32768. Truncating.
+Processed 26 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 27 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 28 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 29 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 30 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 31 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 32 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 33 C++ records for LORA NL->C++
+Marking code as processable for Python
+Reached max records for LORA NL->C++ training: 33
+Successfully created training_dataset with 33 examples for NL->C++.
+Map:   0%|          | 0/33 [00:00<?, ? examples/s]Map: 100%|██████████| 33/33 [00:00<00:00, 449.34 examples/s]
+[transformers] `logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Created Training arguments for LORA
+
+==============================
+
+Created Trainer for LORA
+Starting LORA training for Phase 1 NL->PL1...
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [00:03<00:49,  3.54s/it] 13%|█▎        | 2/15 [00:06<00:44,  3.41s/it] 20%|██        | 3/15 [00:10<00:40,  3.36s/it] 27%|██▋       | 4/15 [00:13<00:37,  3.41s/it] 33%|███▎      | 5/15 [00:14<00:23,  2.31s/it] 40%|████      | 6/15 [00:20<00:32,  3.58s/it] 47%|████▋     | 7/15 [00:23<00:27,  3.48s/it] 53%|█████▎    | 8/15 [00:26<00:24,  3.48s/it] 60%|██████    | 9/15 [00:30<00:20,  3.43s/it] 67%|██████▋   | 10/15 [00:30<00:12,  2.50s/it]                                                67%|██████▋   | 10/15 [00:30<00:12,  2.50s/it] 73%|███████▎  | 11/15 [00:36<00:14,  3.64s/it] 80%|████████  | 12/15 [00:40<00:10,  3.60s/it] 87%|████████▋ | 13/15 [00:43<00:07,  3.52s/it] 93%|█████████▎| 14/15 [00:46<00:03,  3.45s/it]100%|██████████| 15/15 [00:47<00:00,  2.54s/it]                                               100%|██████████| 15/15 [00:50<00:00,  2.54s/it]100%|██████████| 15/15 [00:50<00:00,  3.33s/it]
+Got disconnected from remote data host. Retrying in 5sec [1/20]
+{'loss': '0.8971', 'grad_norm': '0.5602', 'learning_rate': '8e-05', 'epoch': '2'}
+{'train_runtime': '50.01', 'train_samples_per_second': '1.98', 'train_steps_per_second': '0.3', 'train_loss': '0.8303', 'epoch': '3'}
+LORA training for Phase 1 NL->PL1 complete.
+
+==============================
+
+LORA adapter model saved to '../model/Qwen_NL_to_PL_LORA_Adapter'.
+
+==============================
+
+Generating LORA training dataset for C++ to Python translation...
+Unloading qwen_generator...
+qwen_generator unloaded and memory cleared.
+Unloading graphcodebert...
+graphcodebert unloaded and memory cleared.
+Unloading ast...
+ast unloaded and memory cleared.
+Loading support models for LORA training...
+	Loaded QwenCodeGenerator...
+Support models for LORA training loaded.
+Resetting dataset streams and iterators...
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Skipped 33 records. Starting Phase 2 LORA training data collection from record 34...
+Processing C++ records for C++ to Python data: 0it [00:00, ?it/s]Processing C++ records for C++ to Python data: 1it [00:59, 59.58s/it]Processing C++ records for C++ to Python data: 3it [02:02, 38.85s/it]Processing C++ records for C++ to Python data: 5it [02:58, 33.11s/it]Processing C++ records for C++ to Python data: 7it [03:47, 29.55s/it]Processing C++ records for C++ to Python data: 9it [04:40, 28.38s/it]Processing C++ records for C++ to Python data: 11it [05:50, 30.72s/it]Processing C++ records for C++ to Python data: 13it [06:27, 26.69s/it]Processing C++ records for C++ to Python data: 15it [07:54, 32.07s/it]Processing C++ records for C++ to Python data: 17it [09:26, 36.45s/it]Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2acf2ee7baf76ba9ec40965975179cc65cc4c0. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2c7c45a4c6a2a344655c2da31ef6e080d04499. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.95
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2cf1c2b88cb2b1ae264d74d15c2541dab15db5. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2d49c583b36f4b94fc624a8c5079ed09d03b47. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2d82d67cf10f5f0b88418db682eadac00dc65e. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f2ec7e8b4afeda72473ecf93ed7a7594185e807. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f303e8177e6e2c2ab36a9127a8c223d00524ef3. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.85
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f32cec6c164bf925e351ea56d5c1a7e66213368. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f334f91904e6278ac8a1dd9a6cdce874b11659c. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3391c9e7767dbe626123133097b4296537b3e0. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.85
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.0
+----------
+Input to LLM Judge
+Documentation### High-Level Overview
+
+This source code is part of a larger system designed to execute neural network operations using the Intel Math Kernel Library for Deep Neural Networks (MKL-DNN). Specifically, it focuses on implementing a Recurrent Neural Network (RNN) operation on the CPU. The code integrates with the NGraph framework, which is a flexible deep learning compiler infrastructure.
+
+The primary functionality of this code is to define how an RNN operation should be built and executed on the CPU using MKL-DNN. It handles buffer management, memory pointer setting, and invoking the MKL-DNN primitive for the RNN forward pass.
+
+### Classes and Structs
+
+#### `Builder`
+
+- **Purpose**: This class is responsible for building and registering custom operations within the NGraph framework. In this case, it specializes for the `Rnn` operation.
+
+#### `Rnn`
+
+- **Purpose**: This struct represents the RNN operation itself. However, its definition is not provided in the given code snippet.
+
+### Fields and Member Variables
+
+- **None explicitly defined in the provided code snippet**.
+
+### Functions and Methods
+
+#### `BUILDER_DECL(ngraph::op::Rnn)`
+
+- **Purpose**: This is a template specialization method within the `Builder` class that defines
+------------
+Code:assistant
+```python
+import ngraph as ng
+from ngraph.impl.opset import rnn_cell
+from ngraph.impl.opset import rnn_sequence
+from ngraph.impl.opset import rnn_backward_cell
+from ngraph.impl.opset import rnn_backward_sequence
+from ngraph.impl.opset import rnn_forward_cell
+from ngraph.impl.opset import rnn_forward_sequence
+from ngraph.impl.opset import rnn_cell_v5
+from ngraph.impl.opset import rnn_sequence_v5
+from ngraph.impl.opset import rnn_backward_cell_v5
+from ngraph.impl.opset import rnn_backward_sequence_v5
+from ngraph.impl.opset import rnn_forward_cell_v5
+from ngraph.impl.opset import rnn_forward_sequence_v5
+from ngraph.impl.opset import rnn_cell_v6
+from ngraph.impl.opset import rnn_sequence_v6
+from ngraph.impl.opset import rnn_backward_cell_v6
+from ngraph.impl.opset import rnn_backward_sequence_v6
+from ngraph.impl.opset import rnn_forward_cell_v6
+from ngraph.impl.opset import rnn_forward_sequence_v6
+from ngraph.impl.opset import rnn_cell_v7
+from ngraph.impl.opset import rnn_sequence_v7
+from ngraph.impl.opset import rnn_backward_cell_v7
+from ngraph.impl.opset import rnn_backward_sequence_v7
+from ngraph.impl.opset import rnn_forward_cell_v7
+from ngraph.impl.opset import rnn_forward_sequence_v7
+from ngraph.impl.opset import rnn_cell_v8
+from ngraph.impl.opset import rnn_sequence_v8
+from ngraph.impl.opset import rnn_backward_cell_v8
+from ngraph.impl.opset import rnn_backward_sequence_v8
+from ngraph.impl.opset import rnn_forward_cell_v8
+from ngraph.impl.opset import rnn_forward_sequence_v8
+from ngraph.impl.opset import rnn_cell_v9
+from ngraph.impl.opset import rnn_sequence_v9
+from ngraph.impl.opset import rnn_backward_cell_v9
+from ngraph.impl.opset import rnn_backward_sequence_v9
+from ngraph.impl.opset import rnn_forward_cell_v9
+from ngraph.impl.opset import rnn_forward_sequence_v9
+from ngraph.impl.opset import rnn_cell_v10
+from ngraph.impl.opset import rnn_sequence_v10
+from ngraph.impl.opset import rnn_backward_cell_v10
+from ngraph.impl.opset import rnn_backward_sequence_v10
+from ngraph.impl.opset import rnn_forward_cell_v10
+from ngraph.impl.opset import rnn_forward_sequence_v10
+from ngraph.impl.opset import rnn_cell_v11
+from ngraph.impl.opset import rnn_sequence_v11
+from ngraph.impl.opset import rnn_backward_cell_v11
+from ngraph.impl.opset import rnn_backward_sequence_v11
+from ngraph.impl.opset import rnn_forward_cell_v11
+from ngraph.impl.opset import rnn_forward_sequence_v11
+from ngraph.impl.opset import rnn_cell_v12
+from ngraph.impl.opset import rnn_sequence_v12
+from ngraph.impl.opset import rnn_backward_cell_v12
+from ngraph.impl.opset import rnn_backward_sequence_v12
+from ngraph.impl.opset import rnn_forward_cell_v12
+from ngraph.impl.opset import rnn_forward_sequence_v12
+from ngraph.impl.opset import rnn_cell_v13
+from ngraph.impl.opset import rnn_sequence_v13
+from ngraph.impl.opset import rnn_backward_cell_v13
+from ngraph.impl.opset import rnn_backward_sequence_v13
+from ngraph.impl.opset import rnn_forward_cell_v13
+from ngraph.impl.opset import rnn_forward_sequence_v13
+from ngraph.impl.opset import rnn_cell_v14
+from ngraph.impl.opset import rnn_sequence_v14
+from ngraph.impl.opset import rnn_backward_cell_v14
+from ngraph.impl.opset import rnn_backward_sequence_v14
+from ngraph.impl.opset import rnn_forward_cell_v14
+from ngraph.impl.opset import rnn_forward_sequence_v14
+from ngraph.impl.opset import rnn_cell_v15
+from ngraph.impl.opset import rnn_sequence_v15
+from ngraph.impl.opset import rnn_backward_cell_v15
+from ngraph.impl.opset import rnn_backward_sequence_v15
+from ngraph.impl.opset import rnn_forward_cell_v15
+from ngraph.impl.opset import rnn_forward_sequence_v15
+from ngraph.impl.opset import rnn_cell_v16
+from ngraph.impl.opset import rnn_sequence_v16
+from ngraph.impl.opset import rnn_backward_cell_v16
+from ngraph.impl.opset import rnn_backward_sequence_v16
+from ngraph.impl.opset import rnn_forward_cell_v16
+from ngraph.impl.opset import rnn_forward_sequence_v16
+from ngraph.impl.opset import rnn_cell_v17
+from ngraph.impl.opset import rnn_sequence_v17
+from ngraph.impl.opset import rnn_backward_cell_v17
+from ngraph.impl.opset import rnn_backward_sequence_v17
+from ngraph.impl.opset import rnn_forward_cell_v17
+from ngraph.impl.opset import rnn_forward_sequence_v17
+from ngraph.impl.opset import rnn_cell_v18
+from ngraph.impl.opset import rnn_sequence_v18
+from ngraph.impl.opset import rnn_backward_cell_v18
+from ngraph.impl.opset import rnn_backward_sequence_v18
+from ngraph.impl.opset import rnn_forward_cell_v18
+from ngraph.impl.opset import rnn_forward_sequence_v18
+from ngraph.impl.opset import rnn_cell_v19
+from ngraph.impl.opset import rnn_sequence_v19
+from ngraph.impl.opset import rnn_backward_cell_v19
+from ngraph.impl.opset import rnn_backward_sequence_v19
+from ngraph.impl.opset import rnn_forward_cell_v19
+from ngraph.impl.opset import rnn_forward_sequence_v19
+from ngraph.impl.opset import rnn_cell_v20
+from ngraph.impl.opset import rnn_sequence_v20
+from ngraph.impl.opset import rnn_backward_cell_v20
+from ngraph.impl.opset import rnn_backward_sequence_v20
+from ngraph.impl.opset import rnn_forward_cell_v20
+from ngraph.impl.opset import rnn_forward_sequence_v20
+from ngraph.impl.opset import rnn_cell_v21
+from ngraph.impl.opset import rnn_sequence_v21
+from ngraph.impl.opset import rnn_backward_cell_v21
+from ngraph.impl.opset import rnn_backward_sequence_v21
+from ngraph.impl.opset import rnn_forward_cell_v21
+from ngraph.impl.opset import rnn_forward_sequence_v21
+from ngraph.impl.opset import rnn_cell_v22
+from ngraph.impl.opset import rnn_sequence_v22
+from ngraph.impl.opset import rnn_backward_cell_v22
+from ngraph.impl.opset import rnn_backward_sequence_v22
+from ngraph.impl.opset import rnn_forward_cell_v22
+from ngraph.impl.opset import rnn_forward_sequence_v22
+from ngraph.impl.opset import rnn_cell_v23
+from ngraph.impl.opset import rnn_sequence_v23
+from ngraph.impl.opset import rnn_backward_cell_v23
+from ngraph.impl.opset import rnn_backward_sequence_v23
+from ngraph.impl.opset import rnn_forward_cell_v23
+from ngraph.impl.opset import rnn_forward_sequence_v23
+from ngraph.impl.opset import rnn_cell_v24
+from ngraph.impl.opset import rnn_sequence_v24
+from ngraph.impl.opset import rnn_backward_cell_v24
+from ngraph.impl.opset import rnn_backward_sequence_v24
+from ngraph.impl.opset import rnn_forward_cell_v24
+from ngraph.impl.opset import rnn_forward_sequence_v24
+from ngraph.impl.opset import rnn_cell_v25
+from ngraph.impl.opset import rnn_sequence_v25
+from ngraph.impl.opset import rnn_backward_cell_v25
+from ngraph.impl.opset import rnn_backward_sequence_v25
+from ngraph.impl.opset import rnn_forward_cell_v25
+from ngraph.impl.opset import rnn_forward_sequence_v25
+from ngraph.impl.opset import rnn_cell_v26
+from ngraph.impl.opset import rnn_sequence_v26
+from ngraph.impl.opset import rnn_backward_cell_v26
+from ngraph.impl.opset import rnn_backward_sequence_v26
+from ngraph.impl.opset import rnn_forward_cell_v26
+from ngraph.impl.opset import rnn_forward_sequence_v26
+from ngraph.impl.opset import rnn_cell_v27
+from ngraph.impl.opset import rnn_sequence_v27
+from ngraph.impl.opset import rnn_backward_cell_v27
+from ngraph.impl.opset import rnn_backward_sequence_v27
+from ngraph.impl.opset import rnn_forward_cell_v27
+from ngraph.impl.opset import rnn_forward_sequence_v27
+from ngraph.impl.opset import rnn_cell_v28
+from ngraph.impl.opset import rnn_sequence_v28
+from ngraph.impl.opset import rnn_backward_cell_v28
+from ngraph.impl.opset import rnn_backward_sequence_v28
+from ngraph.impl.opset import rnn_forward_cell_v28
+from ngraph.impl.opset import rnn_forward_sequence_v28
+from ngraph.impl.opset import rnn_cell_v29
+from ngraph.impl.opset import rnn_sequence_v29
+from ngraph.impl.opset import rnn_backward_cell_v29
+from ngraph.impl.opset import rnn_backward_sequence_v29
+from ngraph.impl.opset import rnn_forward_cell_v29
+from ngraph.impl.opset import rnn_forward_sequence_v29
+from ngraph.impl.opset import rnn_cell_v30
+from ngraph.impl.opset import rnn_sequence_v30
+from ngraph.impl.opset import rnn_backward_cell_v30
+from ngraph.impl.opset import rnn_backward_sequence_v30
+from ngraph.impl.opset import rnn_forward_cell_v30
+from ngraph.impl.opset import rnn_forward_sequence_v30
+from ngraph.impl.opset import rnn_cell_v31
+from ngraph.impl.opset import rnn_sequence_v31
+from ngraph.impl.opset import rnn_backward_cell_v31
+from ngraph.impl.opset import rnn_backward_sequence_v31
+from ngraph.impl.opset import rnn_forward_cell_v31
+from ngraph.impl.opset import rnn_forward_sequence_v31
+from ngraph.impl.opset import rnn_cell_v32
+from ngraph.impl.opset import rnn_sequence_v32
+from ngraph.impl.opset import rnn_backward_cell_v32
+from ngraph.impl.opset import rnn_backward_sequence_v32
+from ngraph.impl.opset import rnn_forward_cell_v32
+from ngraph.impl.opset import rnn_forward_sequence_v32
+from ngraph.impl.opset import rnn_cell_v33
+from ngraph.impl.opset import rnn_sequence_v33
+from ngraph.impl.opset import rnn_backward_cell_v33
+from ngraph.impl.opset import rnn_backward_sequence_v33
+from ngraph.impl.opset import rnn_forward_cell_v33
+from ngraph.impl.opset import rnn_forward_sequence_v33
+from ngraph.impl.opset import rnn_cell_v34
+from ngraph.impl.opset import rnn_sequence_v34
+from ngraph.impl.opset import rnn_backward_cell_v34
+from ngraph.impl.opset import rnn_backward_sequence_v34
+from ngraph.impl.opset import rnn_forward_cell_v34
+from ngraph.impl.opset import rnn_forward_sequence_v34
+from ngraph.impl.opset import rnn_cell_v35
+from ngraph.impl.opset import rnn_sequence_v35
+from ngraph.impl.opset import rnn_backward_cell_v35
+from ngraph.impl.opset import rnn_backward_sequence_v35
+from ngraph.impl.opset import rnn_forward_cell_v35
+from ngraph.impl.opset import rnn_forward_sequence_v35
+from ngraph.impl.opset import rnn_cell_v36
+from ngraph.impl.opset import rnn_sequence_v36
+from ngraph.impl.opset import rnn_backward_cell_v36
+from ngraph.impl.opset import rnn_backward_sequence_v36
+from ngraph.impl.opset import rnn_forward_cell_v36
+from ngraph.impl.opset import rnn_forward_sequence_v36
+from ngraph.impl.opset import rnn_cell_v37
+from ngraph.impl.opset import rnn_sequence_v37
+from ngraph.impl.opset import rnn_backward_cell_v37
+from ngraph.impl.opset import rnn_backward_sequence_v37
+from ngraph.impl.opset import rnn_forward_cell_v37
+from ngraph.impl.opset import rnn_forward_sequence_v37
+from ngraph.impl.opset import rnn_cell_v38
+from ngraph.impl.opset import rnn_sequence_v38
+from ngraph.impl.opset import rnn_backward_cell_v38
+from ngraph.impl.opset import rnn_backward_sequence_v38
+from ngraph.impl.opset import rnn_forward_cell_v38
+from ngraph.impl.opset import rnn_forward_sequence_v38
+from ngraph.impl.opset import rnn_cell_v39
+from ngraph.impl.opset import rnn_sequence_v39
+from ngraph.impl.opset import rnn_backward_cell_v39
+from ngraph.impl.opset import rnn_backward_sequence_v39
+from ngraph.impl.opset import rnn_forward_cell_v39
+from ngraph.impl.opset import rnn_forward_sequence_v39
+from ngraph.impl.opset import rnn_cell_v40
+from ngraph.impl.opset import rnn_sequence_v40
+from ngraph.impl.opset import rnn_backward_cell_v40
+from ngraph.impl.opset import rnn_backward_sequence_v40
+from ngraph.impl.opset import rnn_forward_cell_v40
+from ngraph.impl.opset import rnn_forward_sequence_v40
+from ngraph.impl.opset import rnn_cell_v41
+from ngraph.impl.opset import rnn_sequence_v41
+from ngraph.impl.opset import rnn_backward_cell_v41
+from ngraph.impl.opset import rnn_backward_sequence_v41
+from ngraph.impl.opset import rnn_forward_cell_v41
+from ngraph.impl.opset import rnn_forward_sequence_v41
+from ngraph.impl.opset import rnn_cell_v42
+from ngraph.impl.opset import rnn_sequence_v42
+from ngraph.impl.opset import rnn_backward_cell_v42
+from ngraph.impl.opset import rnn_backward_sequence_v42
+from ngraph.impl.opset import rnn_forward_cell_v42
+from ngraph.impl.opset import rnn_forward_sequence_v42
+from ngraph.impl.opset import rnn_cell_v43
+from ngraph.impl.opset import rnn_sequence_v43
+from ngraph.impl.opset import rnn_backward_cell_v43
+from ngraph.impl.opset import rnn_backward_sequence_v43
+from ngraph.impl.opset import rnn_forward_cell_v43
+from ngraph.impl.opset import rnn_forward_sequence_v43
+from ngraph.impl.opset import rnn_cell_v44
+from ngraph.impl.opset import rnn_sequence_v44
+from ngraph.impl.opset import rnn_backward_cell_v44
+from ngraph.impl.opset import rnn_backward_sequence_v44
+from ngraph.impl.opset import rnn_forward_cell_v44
+from ngraph.impl.opset import rnn_forward_sequence_v44
+from ngraph.impl.opset import rnn_cell_v45
+from ngraph.impl.opset import rnn_sequence_v45
+from ngraph.impl.opset import rnn_backward_cell_v45
+from ngraph.impl.opset import rnn_backward_sequence_v45
+from ngraph.impl.opset import rnn_forward_cell_v45
+from ngraph.impl.opset import rnn_forward_sequence_v45
+from ngraph.impl.opset import rnn_cell_v46
+from ngraph.impl.opset import rnn_sequence_v46
+from ngraph.impl.opset import rnn_backward_cell_v46
+from ngraph.impl.opset import rnn_backward_sequence_v46
+from ngraph.impl.opset import rnn_forward_cell_v46
+from ngraph.impl.opset import rnn_forward_sequence_v46
+from ngraph.impl.opset import rnn_cell_v47
+from ngraph.impl.opset import rnn_sequence_v47
+from ngraph.impl.opset import rnn_backward_cell_v47
+from ngraph.impl.opset import rnn_backward_sequence_v47
+from ngraph.impl.opset import rnn_forward_cell_v47
+from ngraph.impl.opset import rnn_forward_sequence_v47
+from ngraph.impl.opset import rnn_cell_v48
+from ngraph.impl.opset import rnn_sequence_v48
+from ngraph.impl.opset import rnn_backward_cell_v48
+from ngraph.impl.opset import rnn_backward_sequence_v48
+from ngraph.impl.opset import rnn_forward_cell_v48
+from ngraph.impl.opset import rnn_forward_sequence_v48
+from ngraph.impl.opset import rnn_cell_v49
+from ngraph.impl.opset import rnn_sequence_v49
+from ngraph.impl.opset import rnn_backward_cell_v49
+from ngraph.impl.opset import rnn_backward_sequence_v49
+from ngraph.impl.opset import rnn_forward_cell_v49
+from ngraph.impl.opset import rnn_forward_sequence_v49
+from ngraph.impl.opset import rnn_cell_v50
+from ngraph.impl.opset import rnn_sequence_v50
+from ngraph.impl.opset import rnn_backward_cell_v50
+from ngraph.impl.opset import rnn_backward_sequence_v50
+from ngraph.impl.opset import rnn_forward_cell_v50
+from ngraph.impl.opset import rnn_forward_sequence_v50
+from ngraph.impl.opset import rnn_cell_v51
+from ngraph.impl.opset import rnn_sequence_v51
+from ngraph.impl.opset import rnn_backward_cell_v51
+from ngraph.impl.opset import rnn_backward_sequence_v51
+from ngraph.impl.opset import rnn_forward_cell_v51
+from ngraph.impl.opset import rnn_forward_sequence_v51
+from ngraph.impl.opset import rnn_cell_v52
+from ngraph.impl.opset import rnn_sequence_v52
+from ngraph.impl.opset import rnn_backward_cell_v52
+from ngraph.impl.opset import rnn_backward_sequence_v52
+from ngraph.impl.opset import rnn_forward_cell_v52
+from ngraph.impl.opset import rnn_forward_sequence_v52
+from ngraph.impl.opset import rnn_cell_v53
+from ngraph.impl.opset import rnn_sequence_v53
+from ngraph.impl.opset import rnn_backward_cell_v53
+from ngraph.impl.opset import rnn_backward_sequence_v53
+from ngraph.impl.opset import rnn_forward_cell_v53
+from ngraph.impl.opset import rnn_forward_sequence_v53
+from ngraph.impl.opset import rnn_cell_v54
+from ngraph.impl.opset import rnn_sequence_v54
+from ngraph.impl.opset import rnn_backward_cell_v54
+from ngraph.impl.opset import rnn_backward_sequence_v54
+from ngraph.impl.opset import rnn_forward_cell_v54
+from ngraph.impl.opset import rnn_forward_sequence_v54
+from ngraph.impl.opset import rnn_cell_v55
+from ngraph.impl.opset import rnn_sequence_v55
+from ngraph.impl.opset import rnn_backward_cell_v55
+from ngraph.impl.opset import rnn_backward_sequence_v55
+from ngraph.impl.opset import rnn_forward_cell_v55
+from ngraph.impl.opset import rnn_forward_sequence_v55
+from ngraph.impl.opset import rnn_cell_v56
+from ngraph.impl.opset import rnn_sequence_v56
+from ngraph.impl.opset import rnn_backward_cell_v56
+from ngraph.impl.opset import rnn_backward_sequence_v56
+from ngraph.impl.opset import rnn_forward_cell_v56
+from ngraph.impl.opset import rnn_forward_sequence_v56
+from ngraph.impl.opset import rnn_cell_v57
+from ngraph.impl.opset import rnn_sequence_v57
+from ngraph.impl.opset import rnn_backward_cell_v57
+from ngraph.impl.opset import rnn_backward_sequence_v57
+from ngraph.impl.opset import rnn_forward_cell_v57
+from ngraph.impl.opset import rnn_forward_sequence_v57
+from ngraph.impl.opset import rnn_cell_v58
+from ngraph.impl.opset import rnn_sequence_v58
+from ngraph.impl.opset import rnn_backward_cell_v58
+from ngraph.impl.opset import rnn_backward_sequence_v58
+from ngraph.impl.opset import rnn_forward_cell_v58
+from ngraph.impl.opset import rnn_forward_sequence_v58
+from ngraph.impl.opset import rnn_cell_v59
+from ngraph.impl.opset import rnn_sequence_v59
+from ngraph.impl.opset import rnn_backward_cell_v59
+from ngraph.impl.opset import rnn_backward_sequence_v59
+from ngraph.impl.opset import rnn_forward_cell_v59
+from ngraph.impl.opset import rnn_forward_sequence_v59
+from ngraph.impl.opset import rnn_cell_v60
+from ngraph.impl.opset import rnn_sequence_v60
+from ngraph.impl.opset import rnn_backward_cell_v60
+from ngraph.impl.opset import rnn_backward_sequence_v60
+from ngraph.impl.opset import rnn_forward_cell_v60
+from ngraph.impl.opset import rnn_forward_sequence_v60
+from ngraph.impl.opset import rnn_cell_v61
+from ngraph.impl.opset import rnn_sequence_v61
+from ngraph.impl.opset import rnn_backward_cell_v61
+from ngraph.impl.opset import rnn_backward_sequence_v61
+from ngraph.impl.opset import rnn_forward_cell_v61
+from ngraph.impl.opset import rnn_forward_sequence_v61
+from ngraph.impl.opset import rnn_cell_v62
+from ngraph.impl.opset import rnn_sequence_v62
+from ngraph.impl.opset import rnn_backward_cell_v62
+from ngraph.impl.opset import rnn_backward_sequence_v62
+from ngraph.impl.opset import rnn_forward_cell_v62
+from ngraph.impl.opset import rnn_forward_sequence_v62
+from ngraph.impl.opset import rnn_cell_v63
+from ngraph.impl.opset import rnn_sequence_v63
+from ngraph.impl.opset import rnn_backward_cell_v63
+from ngraph.impl.opset import rnn_backward_sequence_v63
+from ngraph.impl.opset import rnn_forward_cell_v63
+from ngraph.impl.opset import rnn_forward_sequence_v63
+from ngraph.impl.opset import rnn_cell_v64
+from ngraph.impl.opset import rnn_sequence_v64
+from ngraph.impl.opset import rnn_backward_cell_v64
+from ngraph.impl.opset import rnn_backward_sequence_v64
+from ngraph.impl.opset import rnn_forward_cell_v64
+from ngraph.impl.opset import rnn_forward_sequence_v64
+from ngraph.impl.opset import rnn_cell_v65
+from ngraph.impl.opset import rnn_sequence_v65
+from ngraph.impl.opset import rnn_backward_cell_v65
+from ngraph.impl.opset import rnn_backward_sequence_v65
+from ngraph.impl.opset import rnn_forward_cell_v65
+from ngraph.impl.opset import rnn_forward_sequence_v65
+from ngraph.impl.opset import rnn_cell_v66
+from ngraph.impl.opset import rnn_sequence_v66
+from ngraph.impl.opset import rnn_backward_cell_v66
+from ngraph.impl.opset import rnn_backward_sequence_v66
+from ngraph.impl.opset import rnn_forward_cell_v66
+from ngraph.impl.opset import rnn_forward_sequence_v66
+from ngraph.impl.opset import rnn_cell_v67
+from ngraph.impl.opset import rnn_sequence_v67
+from ngraph.impl.opset import rnn_backward_cell_v67
+from ngraph.impl.opset import rnn_backward_sequence_v67
+from ngraph.impl.opset import rnn_forward_cell_v67
+from ngraph.impl.opset import rnn_forward_sequence_v67
+from ngraph.impl.opset import rnn_cell_v68
+from ngraph.impl.opset import rnn_sequence_v68
+from ngraph.impl.opset import rnn_backward_cell_v68
+from ngraph.impl.opset import rnn_backward_sequence_v68
+from ngraph.impl.opset import rnn_forward_cell_v68
+from ngraph.impl.opset import rnn_forward_sequence_v68
+from ngraph.impl.opset import rnn_cell_v69
+from ngraph.impl.opset import rnn_sequence_v69
+from ngraph.impl.opset import rnn_backward_cell_v69
+from ngraph.impl.opset import rnn_backward_sequence_v69
+from ngraph.impl.opset import rnn_forward_cell_v69
+from ngraph.impl.opset import rnn_forward_sequence_v69
+from ngraph.impl.opset import rnn_cell_v70
+from ngraph.impl.opset import rnn_sequence_v70
+from ngraph.impl.opset import rnn_backward_cell_v70
+from ngraph.impl.opset import rnn_backward_sequence_v70
+from ngraph.impl.opset import rnn_forward_cell_v70
+from ngraph.impl.opset import rnn_forward_sequence_v70
+from ngraph.impl.opset import rnn_cell_v71
+from ngraph.impl.opset import rnn_sequence_v71
+from ngraph.impl.opset import rnn_backward_cell_v71
+from ngraph.impl.opset import rnn_backward_sequence_v71
+from ngraph.impl.opset import rnn_forward_cell_v71
+from ngraph.impl.opset import rnn_forward_sequence_v71
+from ngraph.impl.opset import rnn_cell_v72
+from ngraph.impl.opset import rnn_sequence_v72
+from ngraph.impl.opset import rnn_backward_cell_v72
+from ngraph.impl.opset import rnn_backward_sequence_v72
+from ngraph.impl.opset import rnn_forward_cell_v72
+from ngraph.impl.opset import rnn_forward_sequence_v72
+from ngraph.impl.opset import rnn_cell_v73
+from ngraph.impl.opset import rnn_sequence_v73
+from ngraph.impl.opset import rnn_backward_cell_v73
+from ngraph.impl.opset import rnn_backward_sequence_v73
+from ngraph.impl.opset import rnn_forward_cell_v73
+from ngraph.impl.opset import rnn_forward_sequence_v73
+from ngraph.impl.opset import rnn_cell_v74
+from ngraph.impl.opset import rnn_sequence_v74
+from ngraph.impl.opset import rnn_backward_cell_v74
+from ngraph.impl.opset import rnn_backward_sequence_v74
+from ngraph.impl.opset import rnn_forward_cell_v74
+from ngraph.impl.opset import rnn_forward_sequence_v74
+from ngraph.impl.opset import rnn_cell_v75
+from ngraph.impl.opset import rnn_sequence_v75
+from ngraph.impl.opset import rnn_backward_cell_v75
+from ngraph.impl.opset import rnn_backward_sequence_v75
+from ngraph.impl.opset import rnn_forward_cell_v75
+from ngraph.impl.opset import rnn_forward_sequence_v75
+from ngraph.impl.opset import rnn_cell_v76
+from ngraph.impl.opset import rnn_sequence_v76
+from ngraph.impl.opset import rnn_backward_cell_v76
+from ngraph.impl.opset import rnn_backward_sequence_v76
+from ngraph.impl.opset import rnn_forward_cell_v76
+from ngraph.impl.opset import rnn_forward_sequence_v76
+from ngraph.impl.opset import rnn_cell_v77
+from ngraph.impl.opset import rnn_sequence_v77
+from ngraph.impl.opset import rnn_backward_cell_v77
+from ngraph.impl.opset import rnn_backward_sequence_v77
+from ngraph.impl.opset import rnn_forward_cell_v77
+from ngraph.impl.opset import rnn_forward_sequence_v77
+from ngraph.impl.opset import rnn_cell_v78
+from ngraph.impl.opset import rnn_sequence_v78
+from ngraph.impl.opset import rnn_backward_cell_v78
+from ngraph.impl.opset import rnn_backward_sequence_v78
+from ngraph.impl.opset import rnn_forward_cell_v78
+from ngraph.impl.opset import rnn_forward_sequence_v78
+from ngraph.impl.opset import rnn_cell_v79
+from ngraph.impl.opset import rnn_sequence_v79
+from ngraph.impl.opset import rnn_backward_cell_v79
+from ngraph.impl.opset import rnn_backward_sequence_v79
+from ngraph.impl.opset import rnn_forward_cell_v79
+from ngraph.impl.opset import rnn_forward_sequence_v79
+from ngraph.impl.opset import rnn_cell_v80
+from ngraph.impl.opset import rnn_sequence_v80
+from ngraph.impl.opset import rnn_backward_cell_v80
+from ngraph.impl.opset import rnn_backward_sequence_v80
+from ngraph.impl.opset import rnn_forward_cell_v80
+from ngraph.impl.opset import rnn_forward_sequence_v80
+from ngraph.impl.opset import rnn_cell_v81
+from ngraph.impl.opset import rnn_sequence_v81
+from ngraph.impl.opset import rnn_backward_cell_v81
+from ngraph.impl.opset import rnn_backward_sequence_v81
+from ngraph.impl.opset import rnn_forward_cell_v81
+from ngraph.impl.opset import rnn_forward_sequence_v81
+from ngraph.impl.opset import rnn_cell_v82
+from ngraph.impl.opset import rnn_sequence_v82
+from ngraph.impl.opset import rnn_backward_cell_v82
+from ngraph.impl.opset import rnn_backward_sequence_v82
+from ngraph.impl.opset import rnn_forward_cell_v82
+from ngraph.impl.opset import rnn_forward_sequence_v82
+from ngraph.impl.opset import rnn_cell_v83
+from ngraph.impl.opset import rnn_sequence_v83
+from ngraph.impl.opset import rnn_backward_cell_v83
+from ngraph.impl.opset import rnn_backward_sequence_v83
+from ngraph.impl.opset import rnn_forward_cell_v83
+from ngraph.impl.opset import rnn_forward_sequence_v83
+from ngraph.impl.opset import rnn_cell_v84
+from ngraph.impl.opset import rnn_sequence_v84
+from ngraph.impl.opset import rnn_backward_cell_v84
+from ngraph.impl.opset import rnn_backward_sequence_v84
+from ngraph.impl.opset import rnn_forward_cell_v84
+from ngraph.impl.opset import rnn_forward_sequence_v84
+from ngraph.impl.opset import rnn_cell_v85
+from ngraph.impl.opset import rnn_sequence_v85
+from ngraph.impl.opset import rnn_backward_cell_v85
+from ngraph.impl.opset import rnn_backward_sequence_v85
+from ngraph.impl.opset import rnn_forward_cell_v85
+from ngraph.impl.opset import rnn_forward_sequence_v85
+from ngraph.impl.opset import rnn_cell_v86
+from ngraph.impl.opset import rnn_sequence_v86
+from ngraph.impl.opset import rnn_backward_cell_v86
+from ngraph.impl.opset import rnn_backward_sequence_v86
+from ngraph.impl.opset import rnn_forward_cell_v86
+from ngraph.impl.opset import rnn_forward_sequence_v86
+from ngraph.impl.opset import rnn_cell_v87
+from ngraph.impl.opset import rnn_sequence_v87
+from ngraph.impl.opset import rnn_backward_cell_v87
+from ngraph.impl.opset import rnn_backward_sequence_v87
+from ngraph.impl.opset import rnn_forward_cell_v87
+from ngraph.impl.opset import rnn_forward_sequence_v87
+from ngraph.impl.opset import rnn_cell_v88
+from ngraph.impl.opset import rnn_sequence_v88
+from ngraph.impl.opset import rnn_backward_cell_v88
+from ngraph.impl.opset import rnn_backward_sequence_v88
+from ngraph.impl.opset import rnn_forward_cell_v88
+from ngraph.impl.opset import rnn_forward_sequence_v88
+from ngraph.impl.opset import rnn_cell_v89
+from ngraph.impl.opset import rnn_sequence_v89
+from ngraph.impl.opset import rnn_backward_cell_v89
+from ngraph.impl.opset import rnn_backward_sequence_v89
+from ngraph.impl.opset import rnn_forward_cell_v89
+from ngraph.impl.opset import rnn_forward_sequence_v89
+from ngraph.impl.opset import rnn_cell_v90
+from ngraph.impl.opset import rnn_sequence_v90
+from ngraph.impl.opset import rnn_backward_cell_v90
+from ngraph.impl.opset import rnn_backward_sequence_v90
+from ngraph.impl.opset import rnn_forward_cell_v90
+from ngraph.impl.opset import rnn_forward_sequence_v90
+from ngraph.impl.opset import rnn_cell_v91
+from ngraph.impl.opset import rnn_sequence_v91
+from ngraph.impl.opset import rnn_backward_cell_v91
+from ngraph.impl.opset import rnn_backward_sequence_v91
+from ngraph.impl.opset import rnn_forward_cell_v91
+from ngraph.impl.opset import rnn_forward_sequence_v91
+from ngraph.impl.opset import rnn_cell_v92
+from ngraph.impl.opset import rnn_sequence_v92
+from ngraph.impl.opset import rnn_backward_cell_v92
+from ngraph.impl.opset import rnn_backward_sequence_v92
+from ngraph.impl.opset import rnn_forward_cell_v92
+from ngraph.impl.opset import rnn_forward_sequence_v92
+from ngraph.impl.opset import rnn_cell_v93
+from ngraph.impl.opset import rnn_sequence_v93
+from ngraph.impl.opset import rnn_backward_cell_v93
+from ngraph.impl.opset import rnn_backward_sequence_v93
+from ngraph.impl.opset import rnn_forward_cell_v93
+from ngraph.impl.opset import rnn_forward_sequence_v93
+from ngraph.impl.opset import rnn_cell_v94
+from ngraph.impl.opset import rnn_sequence_v94
+from ngraph.impl.opset import rnn_backward_cell_v94
+from ngraph.impl.opset import rnn_backward_sequence_v94
+from ngraph.impl.opset import rnn_forward_cell_v94
+from ngraph.impl.opset import rnn_forward_sequence_v94
+from ngraph.impl.opset import rnn_cell_v95
+from ngraph.impl.opset import rnn_sequence_v95
+from ngraph.impl.opset import rnn_backward_cell_v95
+from ngraph.impl.opset import rnn_backward_sequence_v95
+from ngraph.impl.opset import rnn_forward_cell_v95
+from ngraph.impl.opset import rnn_forward_sequence_v95
+from ngraph.impl.opset import rnn_cell_v96
+from ngraph.impl.opset import rnn_sequence_v96
+from ngraph.impl.opset import rnn_backward_cell_v96
+from ngraph.impl.opset import rnn_backward_sequence_v96
+from ngraph.impl.opset import rnn_forward_cell_v96
+from ngraph.impl.opset import rnn_forward_sequence_v96
+from ngraph.impl.opset import rnn_cell_v97
+from ngraph.impl.opset import rnn_sequence_v97
+from ngraph.impl.opset import rnn_backward_cell_v97
+from ngraph.impl.opset import rnn_backward_sequence_v97
+from ngraph.impl.opset import rnn_forward_cell_v97
+from ngraph.impl.opset import rnn_forward_sequence_v97
+from ngraph.impl.opset import rnn_cell_v98
+from ngraph.impl.opset import rnn_sequence_v98
+from ngraph.impl.opset import rnn_backward_cell_v98
+from ngraph.impl.opset import rnn_backward_sequence_v98
+from ngraph.impl.opset import rnn_forward_cell_v98
+from ngraph.impl.opset import rnn_forward_sequence_v98
+from ngraph.impl.opset import rnn_cell_v99
+from ngraph.impl.opset import rnn_sequence_v99
+from ngraph.impl.opset import rnn_backward_cell_v99
+from ngraph.impl.opset import rnn_backward_sequence_v99
+from ngraph.impl.opset import rnn_forward_cell_v99
+from ngraph.impl.opset import rnn_forward_sequence_v99
+from ngraph.impl.opset import rnn_cell_v100
+from ngraph.impl.opset import rnn_sequence_v100
+from ngraph.impl.opset import rnn_backward_cell_v100
+from ngraph.impl.opset import rnn_backward_sequence_v100
+from ngraph.impl.opset import rnn_forward_cell_v100
+from ngraph.impl.opset import rnn_forward_sequence_v100
+from ngraph.impl.opset import rnn_cell_v101
+from ngraph.impl.opset import rnn_sequence_v101
+from ngraph.impl.opset import rnn_backward_cell_v101
+from ngraph.impl.opset import rnn_backward_sequence_v101
+from ngraph.impl.opset import rnn_forward_cell_v101
+from ngraph.impl.opset import rnn_forward_sequence_v101
+from ngraph.impl.opset import rnn_cell_v102
+from ngraph.impl.opset import rnn_sequence_v102
+from ngraph.impl.opset import rnn_backward_cell_v102
+from ngraph.impl.opset import rnn_backward_sequence_v102
+from ngraph.impl.opset import rnn_forward_cell_v102
+from ngraph.impl.opset import rnn_forward_sequence_v102
+from ngraph.impl.opset import rnn_cell_v103
+from ngraph.impl.opset import rnn_sequence_v103
+from ngraph.impl.opset import rnn_backward_cell_v103
+from ngraph.impl.opset import rnn_backward_sequence_v103
+from ngraph.impl.opset import rnn_forward_cell_v103
+from ngraph.impl.opset import rnn_forward_sequence_v103
+from ngraph.impl.opset import rnn_cell_v104
+from ngraph.impl.opset import rnn_sequence_v104
+from ngraph.impl.opset import rnn_backward_cell_v104
+from ngraph.impl.opset import rnn_backward_sequence_v104
+from ngraph.impl.opset import rnn_forward_cell_v104
+from ngraph.impl.opset import rnn_forward_sequence_v104
+from ngraph.impl.opset import rnn_cell_v105
+from ngraph.impl.opset import rnn_sequence_v105
+from ngraph.impl.opset import rnn_backward_cell_v105
+from ngraph.impl.opset import rnn_backward_sequence_v105
+from ngraph.impl.opset import rnn_forward_cell_v105
+from ngraph.impl.opset import rnn_forward_sequence_v105
+from ngraph.impl.opset import rnn_cell_v106
+from ngraph.impl.opset import rnn_sequence_v106
+from ngraph.impl.opset import rnn_backward_cell_v106
+from ngraph.impl.opset import rnn_backward_sequence_v106
+from ngraph.impl.opset import rnn_forward_cell_v106
+from ngraph.impl.opset import rnn_forward_sequence_v106
+from ngraph.impl.opset import rnn_cell_v107
+from ngraph.impl.opset import rnn_sequence_v107
+from ngraph.impl.opset import rnn_backward_cell_v107
+from ngraph.impl.opset import rnn_backward_sequence_v107
+from ngraph.impl.opset import rnn_forward_cell_v107
+from ngraph.impl.opset import rnn_forward_sequence_v107
+from ngraph.impl.opset import rnn_cell_v108
+from ngraph.impl.opset import rnn_sequence_v108
+from ngraph.impl.opset import rnn_backward_cell_v108
+from ngraph.impl.opset import rnn_backward_sequence_v108
+from ngraph.impl.opset import rnn_forward_cell_v108
+from ngraph.impl.opset import rnn_forward_sequence_v108
+from ngraph.impl.opset import rnn_cell_v109
+from ngraph.impl.opset import rnn_sequence_v109
+from ngraph.impl.opset import rnn_backward_cell_v109
+from ngraph.impl.opset import rnn_backward_sequence_v109
+from ngraph.impl.opset import rnn_forward_cell_v109
+from ngraph.impl.opset import rnn_forward_sequence_v109
+from ngraph.impl.opset import rnn_cell_v110
+from ngraph.impl.opset import rnn_sequence_v110
+from ngraph.impl.opset import rnn_backward_cell_v110
+from ngraph.impl.opset import rnn_backward_sequence_v110
+from ngraph.impl.opset import rnn_forward_cell_v110
+from ngraph.impl.opset import rnn_forward_sequence_v110
+from ngraph.impl.opset import rnn_cell_v111
+from ngraph.impl.opset import rnn_sequence_v111
+from ngraph.impl.opset import rnn_backward_cell_v111
+from ngraph.impl.opset import rnn_backward_sequence_v111
+from ngraph.impl.opset import rnn_forward_cell_v111
+from ngraph.impl.opset import rnn_forward_sequence_v111
+from ngraph.impl.opset import rnn_cell_v112
+from ngraph.impl.opset import rnn_sequence_v112
+from ngraph.impl.opset import rnn_backward_cell_v112
+from ngraph.impl.opset import rnn_backward_sequence_v112
+from ngraph.impl.opset import rnn_forward_cell_v112
+from ngraph.impl.opset import rnn_forward_sequence_v112
+from ngraph.impl.opset import rnn_cell_v113
+from ngraph.impl.opset import rnn_sequence_v113
+from ngraph.impl.opset import rnn_backward_cell_v113
+from ngraph.impl.opset import rnn_backward_sequence_v113
+from ngraph.impl.opset import rnn_forward_cell_v113
+from ngraph.impl.opset import rnn_forward_sequence_v113
+from ngraph.impl.opset import rnn_cell_v114
+from ngraph.impl.opset import rnn_sequence_v114
+from ngraph.impl.opset import rnn_backward_cell_v114
+from ngraph.impl.opset import rnn_backward_sequence_v114
+from ngraph.impl.opset import rnn_forward_cell_v114
+from ngraph.impl.opset import rnn_forward_sequence_v114
+from ngraph.impl.opset import rnn_cell_v115
+from ngraph.impl.opset import rnn_sequence_v115
+from ngraph.impl.opset import rnn_backward_cell_v115
+from ngraph.impl.opset import rnn_backward_sequence_v115
+from ngraph.impl.opset import rnn_forward_cell_v115
+from ngraph.impl.opset import rnn_forward_sequence_v115
+from ngraph.impl.opset import rnn_cell_v116
+from ngraph.impl.opset import rnn_sequence_v116
+from ngraph.impl.opset import rnn_backward_cell_v116
+from ngraph.impl.opset import rnn_backward_sequence_v116
+from ngraph.impl.opset import rnn_forward_cell_v116
+from ngraph.impl.opset import rnn_forward_sequence_v116
+from ngraph.impl.opset import rnn_cell_v117
+from ngraph.impl.opset import rnn_sequence_v117
+from ngraph.impl.opset import rnn_backward_cell_v117
+from ngraph.impl.opset import rnn_backward_sequence_v117
+from ngraph.impl.opset import rnn_forward_cell_v117
+from ngraph.impl.opset import rnn_forward_sequence_v117
+from ngraph.impl.opset import rnn_cell_v118
+from ngraph.impl.opset import rnn_sequence_v118
+from ngraph.impl.opset import rnn_backward_cell_v118
+from ngraph.impl.opset import rnn_backward_sequence_v118
+from ngraph.impl.opset import rnn_forward_cell_v118
+from ngraph.impl.opset import rnn_forward_sequence_v118
+from ngraph.impl.opset import rnn_cell_v119
+from ngraph.impl.opset import rnn_sequence_v119
+from ngraph.impl.opset import rnn_backward_cell_v119
+from ngraph.impl.opset import rnn_backward_sequence_v119
+from ngraph.impl.opset import rnn_forward_cell_v119
+from ngraph.impl.opset import rnn_forward_sequence_v119
+from ngraph.impl.opset import rnn_cell_v120
+from ngraph.impl.opset import rnn_sequence_v120
+from ngraph.impl.opset import rnn_backward_cell_v120
+from ngraph.impl.opset import rnn_backward_sequence_v120
+from ngraph.impl.opset import rnn_forward_cell_v120
+from ngraph.impl.opset import rnn_forward_sequence_v120
+from ngraph.impl.opset import rnn_cell_v121
+from ngraph.impl.opset import rnn_sequence_v121
+from ngraph.impl.opset import rnn_backward_cell_v121
+from ngraph.impl.opset import rnn_backward_sequence_v121
+from ngraph.impl.opset import rnn_forward_cell_v121
+from ngraph.impl.opset import rnn_forward_sequence_v121
+from ngraph.impl.opset import rnn_cell_v122
+from ngraph.impl.opset import rnn_sequence_v122
+from ngraph.impl.opset import rnn_backward_cell_v122
+from ngraph.impl.opset import rnn_backward_sequence_v122
+from ngraph.impl.opset import rnn_forward_cell_v122
+from ngraph.impl.opset import rnn_forward_sequence_v122
+from ngraph.impl.opset import rnn_cell_v123
+from ngraph.impl.opset import rnn_sequence_v123
+from ngraph.impl.opset import rnn_backward_cell_v123
+from ngraph.impl.opset import rnn_backward_sequence_v123
+from ngraph.impl.opset import rnn_forward_cell_v123
+from ngraph.impl.opset import rnn_forward_sequence_v123
+from ngraph.impl.opset import rnn_cell_v124
+from ngraph.impl.opset import rnn_sequence_v124
+from ngraph.impl.opset import rnn_backward_cell_v124
+from ngraph.impl.opset import rnn_backward_sequence_v124
+from ngraph.impl.opset import rnn_forward_cell_v124
+from ngraph.impl.opset import rnn_forward_sequence_v124
+from ngraph.impl.opset import rnn_cell_v125
+from ngraph.impl.opset import rnn_sequence_v125
+from ngraph.impl.opset import rnn_backward_cell_v125
+from ngraph.impl.opset import rnn_backward_sequence_v125
+from ngraph.impl.opset import rnn_forward_cell_v125
+from ngraph.impl.opset import rnn_forward_sequence_v125
+from ngraph.impl.opset import rnn_cell_v126
+from ngraph.impl.opset import rnn_sequence_v126
+from ngraph.impl.opset import rnn_backward_cell_v126
+from ngraph.impl.opset import rnn_backward_sequence_v126
+from ngraph.impl.opset import rnn_forward_cell_v126
+from ngraph.impl.opset import rnn_forward_sequence_v126
+from ngraph.impl.opset import rnn_cell_v127
+from ngraph.impl.opset import rnn_sequence_v127
+from ngraph.impl.opset import rnn_backward_cell_v127
+from ngraph.impl.opset import rnn_backward_sequence_v127
+from ngraph.impl.opset import rnn_forward_cell_v127
+from ngraph.impl.opset import rnn_forward_sequence_v127
+from ngraph.impl.opset import rnn_cell_v128
+from ngraph.impl.opset import rnn_sequence_v128
+from ngraph.impl.opset import rnn_backward_cell_v128
+from ngraph.impl.opset import rnn_backward_sequence_v128
+from ngraph.impl.opset import rnn_forward_cell_v128
+from ngraph.impl.opset import rnn_forward_sequence_v128
+from ngraph.impl.opset import rnn_cell_v129
+from ngraph.impl.opset import rnn_sequence_v129
+from ngraph.impl.opset import rnn_backward_cell_v129
+from ngraph.impl.opset import rnn_backward_sequence_v129
+from ngraph.impl.opset import rnn_forward_cell_v129
+from ngraph.impl.opset import rnn_forward_sequence_v129
+from ngraph.impl.opset import rnn_cell_v130
+from ngraph.impl.opset import rnn_sequence_v130
+from ngraph.impl.opset import rnn_backward_cell_v130
+from ngraph.impl.opset import rnn_backward_sequence_v130
+from ngraph.impl.opset import rnn_forward_cell_v130
+from ngraph.impl.opset import rnn_forward_sequence_v130
+from ngraph.impl.opset import rnn_cell_v131
+from ngraph.impl.opset import rnn_sequence_v131
+from ngraph.impl.opset import rnn_backward_cell_v131
+from ngraph.impl.opset import rnn_backward_sequence_v131
+from ngraph.impl.opset import rnn_forward_cell_v131
+from ngraph.impl.opset import rnn_forward_sequence_v131
+from ngraph.impl.opset import rnn_cell_v132
+from ngraph.impl.opset import rnn_sequence_v132
+from ngraph.impl.opset import rnn_backward_cell_v132
+from ngraph.impl.opset import rnn_backward_sequence_v132
+from ngraph.impl.opset import rnn_forward_cell_v132
+from ngraph.impl.opset import rnn_forward_sequence_v132
+from ngraph.impl.opset import rnn_cell_v133
+from ngraph.impl.opset import rnn_sequence_v133
+from ngraph.impl.opset import rnn_backward_cell_v133
+from ngraph.impl.opset import rnn_backward_sequence_v133
+from ngraph.impl.opset import rnn_forward_cell_v133
+from ngraph.impl.opset import rnn_forward_sequence_v133
+from ngraph.impl.opset import rnn_cell_v134
+from ngraph.impl.opset import rnn_sequence_v134
+from ngraph.impl.opset import rnn_backward_cell_v134
+from ngraph.impl.opset import rnn_backward_sequence_v134
+from ngraph.impl.opset import rnn_forward_cell_v134
+from ngraph.impl.opset import rnn_forward_sequence_v134
+from ngraph.impl.opset import rnn_cell_v135
+from ngraph.impl.opset import rnn_sequence_v135
+from ngraph.impl.opset import rnn_backward_cell_v135
+from ngraph.impl.opset import rnn_backward_sequence_v135
+from ngraph.impl.opset import rnn_forward_cell_v135
+from ngraph.impl.opset import rnn_forward_sequence_v135
+from ngraph.impl.opset import rnn_cell_v136
+from ngraph.impl.opset import rnn_sequence_v136
+from ngraph.impl.opset import rnn_backward_cell_v136
+from ngraph.impl.opset import rnn_backward_sequence_v136
+from ngraph.impl.opset import rnn_forward_cell_v136
+from ngraph.impl.opset import rnn_forward_sequence_v136
+from ngraph.impl.opset import rnn_cell_v137
+from ngraph.impl.opset import rnn_sequence_v137
+from ngraph.impl.opset import rnn_backward_cell_v137
+from ngraph.impl.opset import rnn_backward_sequence_v137
+from ngraph.impl.opset import rnn_forward_cell_v137
+from ngraph.impl.opset import rnn_forward_sequence_v137
+from ngraph.impl.opset import rnn_cell_v138
+from ngraph.impl.opset import rnn_sequence_v138
+from ngraph.impl.opset import rnn_backward_cell_v138
+from ngraph.impl.opset import rnn_backward_sequence_v138
+from ngraph.impl.opset import rnn_forward_cell_v138
+from ngraph.impl.opset import rnn_forward_sequence_v138
+from ngraph.impl.opset import rnn_cell_v139
+from ngraph.impl.opset import rnn_sequence_v139
+from ngraph.impl.opset import rnn_backward_cell_v139
+from ngraph.impl.opset import rnn_backward_sequence_v139
+from ngraph.impl.opset import rnn_forward_cell_v139
+from ngraph.impl.opset import rnn_forward_sequence_v139
+from ngraph.impl.opset import rnn_cell_v140
+from ngraph.impl.opset import rnn_sequence_v140
+from ngraph.impl.opset import rnn_backward_cell_v140
+from ngraph.impl.opset import rnn_backward_sequence_v140
+from ngraph.impl.opset import rnn_forward_cell_v140
+from ngraph.impl.opset import rnn_forward_sequence_v140
+from ngraph.impl.opset import rnn_cell_v141
+from ngraph.impl.opset import rnn_sequence_v141
+from ngraph.impl.opset import rnn_backward_cell_v141
+from ngraph.impl.opset import rnn_backward_sequence_v141
+from ngraph.impl.opset import rnn_forward_cell_v141
+from ngraph.impl.opset import rnn_forward_sequence_v141
+from ngraph.impl.opset import rnn_cell_v142
+from ngraph.impl.opset import rnn_sequence_v142
+from ngraph.impl.opset import rnn_backward_cell_v142
+from ngraph.impl.opset import rnn_backward_sequence_v142
+from ngraph.impl.opset import rnn_forward_cell_v142
+from ngraph.impl.opset import rnn_forward_sequence_v142
+from ngraph.impl.opset import rnn_cell_v143
+from ngraph.impl.opset import rnn_sequence_v143
+from ngraph.impl.opset import rnn_backward_cell_v143
+from ngraph.impl.opset import rnn_backward_sequence_v143
+from ngraph.impl.opset import rnn_forward_cell_v143
+from ngraph.impl.opset import rnn_forward_sequence_v143
+from ngraph.impl.opset import rnn_cell_v144
+from ngraph.impl.opset import rnn_sequence_v144
+from ngraph.impl.opset import rnn_backward_cell_v144
+from ngraph.impl.opset import rnn_backward_sequence_v144
+from ngraph.impl.opset import rnn_forward_cell_v144
+from ngraph.impl.opset import rnn_forward_sequence_v144
+from ngraph.impl.opset import rnn_cell_v145
+from ngraph.impl.opset import rnn_sequence_v145
+from ngraph.impl.opset import rnn_backward_cell_v145
+from ngraph.impl.opset import rnn_backward_sequence_v145
+from ngraph.impl.opset import rnn_forward_cell_v145
+from ngraph.impl.opset import rnn_forward_sequence_v145
+from ngraph.impl.opset import rnn_cell_v146
+from ngraph.impl.opset import rnn_sequence_v146
+from ngraph.impl.opset import rnn_backward_cell_v146
+from ngraph.impl.opset import rnn_backward_sequence_v146
+from ngraph.impl.opset import rnn_forward_cell_v146
+from ngraph.impl.opset import rnn_forward_sequence_v146
+from ngraph.impl.opset import rnn_cell_v147
+from ngraph.impl.opset import rnn_sequence_v147
+from ngraph.impl.opset import rnn_backward_cell_v147
+from ngraph.impl.opset import rnn_backward_sequence_v147
+from ngraph.impl.opset import rnn_forward_cell_v147
+from ngraph.impl.opset import rnn_forward_sequence_v147
+from ngraph.impl.opset import rnn_cell_v148
+from ngraph.impl.opset import rnn_sequence_v148
+from ngraph.impl.opset import rnn_backward_cell_v148
+from ngraph.impl.opset import rnn_backward_sequence_v148
+from ngraph.impl.opset import rnn_forward_cell_v148
+from ngraph.impl.opset import rnn_forward_sequence_v148
+from ngraph.impl.opset import rnn_cell_v149
+from ngraph.impl.opset import rnn_sequence_v149
+from ngraph.impl.opset import rnn_backward_cell_v149
+from ngraph.impl.opset import rnn_backward_sequence_v149
+from ngraph.impl.opset import rnn_forward_cell_v149
+from ngraph.impl.opset import rnn_forward_sequence_v149
+from ngraph.impl.opset import rnn_cell_v150
+from ngraph.impl.opset import rnn_sequence_v150
+from ngraph.impl.opset import rnn_backward_cell_v150
+from ngraph.impl.opset import rnn_backward_sequence_v150
+from ngraph.impl.opset import rnn_forward_cell_v150
+from ngraph.impl.opset import rnn_forward_sequence_v150
+from ngraph.impl.opset import rnn_cell_v151
+from ngraph.impl.opset import rnn_sequence_v151
+from ngraph.impl.opset import rnn_backward_cell_v151
+from ngraph.impl.opset import rnn_backward_sequence_v151
+from ngraph.impl.opset import rnn_forward_cell_v151
+from ngraph.impl.opset import rnn_forward_sequence_v151
+from ngraph.impl.opset import rnn_cell_v152
+from ngraph.impl.opset import rnn_sequence_v152
+from ngraph.impl.opset import rnn_backward_cell_v152
+from ngraph.impl.opset import rnn_backward_sequence_v152
+from ngraph.impl.opset import rnn_forward_cell_v152
+from ngraph.impl.opset import rnn_forward_sequence_v152
+from ngraph.impl.opset import rnn_cell_v153
+from ngraph.impl.opset import rnn_sequence_v153
+from ngraph.impl.opset import rnn_backward_cell_v153
+from ngraph.impl.opset import rnn_backward_sequence_v153
+from ngraph.impl.opset import rnn_forward_cell_v153
+from ngraph.impl.opset import rnn_forward_sequence_v153
+from ngraph.impl.opset import rnn_cell_v154
+from ngraph.impl.opset import rnn_sequence_v154
+from ngraph.impl.opset import rnn_backward_cell_v154
+from ngraph.impl.opset import rnn_backward_sequence_v154
+from ngraph.impl.opset import rnn_forward_cell_v154
+from ngraph.impl.opset import rnn_forward_sequence_v154
+from ngraph.impl.opset import rnn_cell_v155
+from ngraph.impl.opset import rnn_sequence_v155
+from ngraph.impl.opset import rnn_backward_cell_v155
+from ngraph.impl.opset import rnn_backward_sequence_v155
+from ngraph.impl.opset import rnn_forward_cell_v155
+from ngraph.impl.opset import rnn_forward_sequence_v155
+from ngraph.impl.opset import rnn_cell_v156
+from ngraph.impl.opset import rnn_sequence_v156
+from ngraph.impl.opset import rnn_backward_cell_v156
+from ngraph.impl.opset import rnn_backward_sequence_v156
+from ngraph.impl.opset import rnn_forward_cell_v156
+from ngraph.impl.opset import rnn_forward_sequence_v156
+from ngraph.impl.opset import rnn_cell_v157
+from ngraph.impl.opset import rnn_sequence_v157
+from ngraph.impl.opset import rnn_backward_cell_v157
+from ngraph.impl.opset import rnn_backward_sequence_v157
+from ngraph.impl.opset import rnn_forward_cell_v157
+from ngraph.impl.opset import rnn_forward_sequence_v157
+from ngraph.impl.opset import rnn_cell_v158
+from ngraph.impl.opset import rnn_sequence_v158
+from ngraph.impl.opset import rnn_backward_cell_v158
+from ngraph.impl.opset import rnn_backward_sequence_v158
+from ngraph.impl.opset import rnn_forward_cell_v158
+from ngraph.impl.opset import rnn_forward_sequence_v158
+from ngraph.impl.opset import rnn_cell_v159
+from ngraph.impl.opset import rnn_sequence_v159
+from ngraph.impl.opset import rnn_backward_cell_v159
+from ngraph.impl.opset import rnn_backward_sequence_v159
+from ngraph.impl.opset import rnn_forward_cell_v159
+from ngraph.impl.opset import rnn_forward_sequence_v159
+from ngraph.impl.opset import rnn_cell_v160
+from ngraph.impl.opset import rnn_sequence_v160
+from ngraph.impl.opset import rnn_backward_cell_v160
+from ngraph.impl.opset import rnn_backward_sequence_v160
+from ngraph.impl.opset import rnn_forward_cell_v160
+from ngraph.impl.opset import rnn_forward_sequence_v160
+from ngraph.impl.opset import rnn_cell_v161
+from ngraph.impl.opset import rnn_sequence_v161
+from ngraph.impl.opset import rnn_backward_cell_v161
+from ngraph.impl.opset import rnn_backward_sequence_v161
+from ngraph.impl.opset import rnn_forward_cell_v161
+from ngraph.impl.opset import rnn_forward_sequence_v161
+from ngraph.impl.opset import rnn_cell_v162
+from ngraph.impl.opset import rnn_sequence_v162
+from ngraph.impl.opset import rnn_backward_cell_v162
+from ngraph.impl.opset import rnn_backward_sequence_v162
+from ngraph.impl.opset import rnn_forward_cell_v162
+from ngraph.impl.opset import rnn_forward_sequence_v162
+from ngraph.impl.opset import rnn_cell_v163
+from ngraph.impl.opset import rnn_sequence_v163
+from ngraph.impl.opset import rnn_backward_cell_v163
+from ngraph.impl.opset import rnn_backward_sequence_v163
+from ngraph.impl.opset import rnn_forward_cell_v163
+from ngraph.impl.opset import rnn_forward_sequence_v163
+from ngraph.impl.opset import rnn_cell_v164
+from ngraph.impl.opset import rnn_sequence_v164
+from ngraph.impl.opset import rnn_backward_cell_v164
+from ngraph.impl.opset import rnn_backward_sequence_v164
+from ngraph.impl.opset import rnn_forward_cell_v164
+from ngraph.impl.opset import rnn_forward_sequence_v164
+from ngraph.impl.opset import rnn_cell_v165
+from ngraph.impl.opset import rnn_sequence_v165
+from ngraph.impl.opset import rnn_backward_cell_v165
+from ngraph.impl.opset import rnn_backward_sequence_v165
+from ngraph.impl.opset import rnn_forward_cell_v165
+from ngraph.impl.opset import rnn_forward_sequence_v165
+from ngraph.impl.opset import rnn_cell_v166
+from ngraph.impl.opset import rnn_sequence_v166
+from ngraph.impl.opset import rnn_backward_cell_v166
+from ngraph.impl.opset import rnn_backward_sequence_v166
+from ngraph.impl.opset import rnn_forward_cell_v166
+from ngraph.impl.opset import rnn_forward_sequence_v166
+from ngraph.impl.opset import rnn_cell_v167
+from ngraph.impl.opset import rnn_sequence_v167
+from ngraph.impl.opset import rnn_backward_cell_v167
+from ngraph.impl.opset import rnn_backward_sequence_v167
+from ngraph.impl.opset import rnn_forward_cell_v167
+from ngraph.impl.opset import rnn_forward_sequence_v167
+from ngraph.impl.opset import rnn_cell_v168
+from ngraph.impl.opset import rnn_sequence_v168
+from ngraph.impl.opset import rnn_backward_cell_v168
+from ngraph.impl.opset import rnn_backward_sequence_v168
+from ngraph.impl.opset import rnn_forward_cell_v168
+from ngraph.impl.opset import rnn_forward_sequence_v168
+from ngraph.impl.opset import rnn_cell_v169
+from ngraph.impl.opset import rnn_sequence_v169
+from ngraph.impl.opset import rnn_backward_cell_v169
+from ngraph.impl.opset import rnn_backward_sequence_v169
+from ngraph.impl.opset import rnn_forward_cell_v169
+from ngraph.impl.opset import rnn_forward_sequence_v169
+from ngraph.impl.opset import rnn_cell_v170
+from ngraph.impl.opset import rnn_sequence_v170
+from ngraph.impl.opset import rnn_backward_cell_v170
+from ngraph.impl.opset import rnn_backward_sequence_v170
+from ngraph.impl.opset import rnn_forward_cell_v170
+from ngraph.impl.opset import rnn_forward_sequence_v170
+from ngraph.impl.opset import rnn_cell_v171
+from ngraph.impl.opset import rnn_sequence_v171
+from ngraph.impl.opset import rnn_backward_cell_v171
+from ngraph.impl.opset import rnn_backward_sequence_v171
+from ngraph.impl.opset import rnn_forward_cell_v171
+from ngraph.impl.opset import rnn_forward_sequence_v171
+from ngraph.impl.opset import rnn_cell_v172
+from ngraph.impl.opset import rnn_sequence_v172
+from ngraph.impl.opset import rnn_backward_cell_v172
+from ngraph.impl.opset import rnn_backward_sequence_v172
+from ngraph.impl.opset import rnn_forward_cell_v172
+from ngraph.impl.opset import rnn_forward_sequence_v172
+from ngraph.impl.opset import rnn_cell_v173
+from ngraph.impl.opset import rnn_sequence_v173
+from ngraph.impl.opset import rnn_backward_cell_v173
+from ngraph.impl.opset import rnn_backward_sequence_v173
+from ngraph.impl.opset import rnn_forward_cell_v173
+from ngraph.impl.opset import rnn_forward_sequence_v173
+from ngraph.impl.opset import rnn_cell_v174
+from ngraph.impl.opset import rnn_sequence_v174
+from ngraph.impl.opset import rnn_backward_cell_v174
+from ngraph.impl.opset import rnn_backward_sequence_v174
+from ngraph.impl.opset import rnn_forward_cell_v174
+from ngraph.impl.opset import rnn_forward_sequence_v174
+from ngraph.impl.opset import rnn_cell_v175
+from ngraph.impl.opset import rnn_sequence_v175
+from ngraph.impl.opset import rnn_backward_cell_v175
+from ngraph.impl.opset import rnn_backward_sequence_v175
+from ngraph.impl.opset import rnn_forward_cell_v175
+from ngraph.impl.opset import rnn_forward_sequence_v175
+from ngraph.impl.opset import rnn_cell_v176
+from ngraph.impl.opset import rnn_sequence_v176
+from ngraph.impl.opset import rnn_backward_cell_v176
+from ngraph.impl.opset import rnn_backward_sequence_v176
+from ngraph.impl.opset import rnn_forward_cell_v176
+from ngraph.impl.opset import rnn_forward_sequence_v176
+from ngraph.impl.opset import rnn_cell_v177
+from ngraph.impl.opset import rnn_sequence_v177
+from ngraph.impl.opset import rnn_backward_cell_v177
+from ngraph.impl.opset import rnn_backward_sequence_v177
+from ngraph.impl.opset import rnn_forward_cell_v177
+from ngraph.impl.opset import rnn_forward_sequence_v177
+from ngraph.impl.opset import rnn_cell_v178
+from ngraph.impl.opset import rnn_sequence_v178
+from ngraph.impl.opset import rnn_backward_cell_v178
+from ngraph.impl.opset import rnn_backward_sequence_v178
+from ngraph.impl.opset import rnn_forward_cell_v178
+from ngraph.impl.opset import rnn_forward_sequence_v178
+from ngraph.impl.opset import rnn_cell_v179
+from ngraph.impl.opset import rnn_sequence_v179
+from ngraph.impl.opset import rnn_backward_cell_v179
+from ngraph.impl.opset import rnn_backward_sequence_v179
+from ngraph.impl.opset import rnn_forward_cell_v179
+from ngraph.impl.opset import rnn_forward_sequence_v179
+from ngraph.impl.opset import rnn_cell_v180
+from ngraph.impl.opset import rnn_sequence_v180
+from ngraph.impl.opset import rnn_backward_cell_v180
+from ngraph.impl.opset import rnn_backward_sequence_v180
+from ngraph.impl.opset import rnn_forward_cell_v180
+from ngraph.impl.opset import rnn_forward_sequence_v180
+from ngraph.impl.opset import rnn_cell_v181
+from ngraph.impl.opset import rnn_sequence_v181
+from ngraph.impl.opset import rnn_backward_cell_v181
+from ngraph.impl.opset import rnn_backward_sequence_v181
+from ngraph.impl.opset import rnn_forward_cell_v181
+from ngraph.impl.opset import rnn_forward_sequence_v181
+from ngraph.impl.opset import rnn_cell_v182
+from ngraph.impl.opset import rnn_sequence_v182
+from ngraph.impl.opset import rnn_backward_cell_v182
+from ngraph.impl.opset import rnn_backward_sequence_v182
+from ngraph.impl.opset import rnn_forward_cell_v182
+from ngraph.impl.opset import rnn_forward_sequence_v182
+from ngraph.impl.opset import rnn_cell_v183
+from ngraph.impl.opset import rnn_sequence_v183
+from ngraph.impl.opset import rnn_backward_cell_v183
+from ngraph.impl.opset import rnn_backward_sequence_v183
+from ngraph.impl.opset import rnn_forward_cell_v183
+from ngraph.impl.opset import rnn_forward_sequence_v183
+from ngraph.impl.opset import rnn_cell_v184
+from ngraph.impl.opset import rnn_sequence_v184
+from ngraph.impl.opset import rnn_backward_cell_v184
+from ngraph.impl.opset import rnn_backward_sequence_v184
+from ngraph.impl.opset import rnn_forward_cell_v184
+from ngraph.impl.opset import rnn_forward_sequence_v184
+from ngraph.impl.opset import rnn_cell_v185
+from ngraph.impl.opset import rnn_sequence_v185
+from ngraph.impl.opset import rnn_backward_cell_v185
+from ngraph.impl.opset import rnn_backward_sequence_v185
+from ngraph.impl.opset import rnn_forward_cell_v185
+from ngraph.impl.opset import rnn_forward_sequence_v185
+from ngraph.impl.opset import rnn_cell_v186
+from ngraph.impl.opset import rnn_sequence_v186
+from ngraph.impl.opset import rnn_backward_cell_v186
+from ngraph.impl.opset import rnn_backward_sequence_v186
+from ngraph.impl.opset import rnn_forward_cell_v186
+from ngraph.impl.opset import rnn_forward_sequence_v186
+from ngraph.impl.opset import rnn_cell_v187
+from ngraph.impl.opset import rnn_sequence_v187
+from ngraph.impl.opset import rnn_backward_cell_v187
+from ngraph.impl.opset import rnn_backward_sequence_v187
+from ngraph.impl.opset import rnn_forward_cell_v187
+from ngraph.impl.opset import rnn_forward_sequence_v187
+from ngraph.impl.opset import rnn_cell_v188
+from ngraph.impl.opset import rnn_sequence_v188
+from ngraph.impl.opset import rnn_backward_cell_v188
+from ngraph.impl.opset import rnn_backward_sequence_v188
+from ngraph.impl.opset import rnn_forward_cell_v188
+from ngraph.impl.opset import rnn_forward_sequence_v188
+from ngraph.impl.opset import rnn_cell_v189
+from ngraph.impl.opset import rnn_sequence_v189
+from ngraph.impl.opset import rnn_backward_cell_v189
+from ngraph.impl.opset import rnn_backward_sequence_v189
+from ngraph.impl.opset import rnn_forward_cell_v189
+from ngraph.impl.opset import rnn_forward_sequence_v189
+from ngraph.impl.opset import rnn_cell_v190
+from ngraph.impl.opset import rnn_sequence_v190
+from ngraph.impl.opset import rnn_backward_cell_v190
+from ngraph.impl.opset import rnn_backward_sequence_v190
+from ngraph.impl.opset import rnn_forward_cell_v190
+from ngraph.impl.opset import rnn_forward_sequence_v190
+from ngraph.impl.opset import rnn_cell_v191
+from ngraph.impl.opset import rnn_sequence_v191
+from ngraph.impl.opset import rnn_backward_cell_v191
+from ngraph.impl.opset import rnn_backward_sequence_v191
+from ngraph.impl.opset import rnn_forward_cell_v191
+from ngraph.impl.opset import rnn_forward_sequence_v191
+from ngraph.impl.opset import rnn_cell_v192
+from ngraph.impl.opset import rnn_sequence_v192
+from ngraph.impl.opset import rnn_backward_cell_v192
+from ngraph.impl.opset import rnn_backward_sequence_v192
+from ngraph.impl.opset import rnn_forward_cell_v192
+from ngraph.impl.opset import rnn_forward_sequence_v192
+from ngraph.impl.opset import rnn_cell_v193
+from ngraph.impl.opset import rnn_sequence_v193
+from ngraph.impl.opset import rnn_backward_cell_v193
+from ngraph.impl.opset import rnn_backward_sequence_v193
+from ngraph.impl.opset import rnn_forward_cell_v193
+from ngraph.impl.opset import rnn_forward_sequence_v193
+from ngraph.impl.opset import rnn_cell_v194
+from ngraph.impl.opset import rnn_sequence_v194
+from ngraph.impl.opset import rnn_backward_cell_v194
+from ngraph.impl.opset import rnn_backward_sequence_v194
+from ngraph.impl.opset import rnn_forward_cell_v194
+from ngraph.impl.opset import rnn_forward_sequence_v194
+from ngraph.impl.opset import rnn_cell_v195
+from ngraph.impl.opset import rnn_sequence_v195
+from ngraph.impl.opset import rnn_backward_cell_v195
+from ngraph.impl.opset import rnn_backward_sequence_v195
+from ngraph.impl.opset import rnn_forward_cell_v195
+from ngraph.impl.opset import rnn_forward_sequence_v195
+from ngraph.impl.opset import rnn_cell_v196
+from ngraph.impl.opset import rnn_sequence_v196
+from ngraph.impl.opset import rnn_backward_cell_v196
+from ngraph.impl.opset import rnn_backward_sequence_v196
+from ngraph.impl.opset import rnn_forward_cell_v196
+from ngraph.impl.opset import rnn_forward_sequence_v196
+from ngraph.impl.opset import rnn_cell_v197
+fromProcessing C++ records for C++ to Python data: 19it [19:18, 117.12s/it]Processing C++ records for C++ to Python data: 21it [20:27, 91.64s/it] Processing C++ records for C++ to Python data: 23it [21:10, 70.22s/it]Processing C++ records for C++ to Python data: 25it [22:31, 61.22s/it]Processing C++ records for C++ to Python data: 27it [23:40, 53.11s/it]Processing C++ records for C++ to Python data: 29it [24:14, 42.24s/it]Processing C++ records for C++ to Python data: 31it [25:06, 37.38s/it]Processing C++ records for C++ to Python data: 33it [26:03, 34.76s/it]Processing C++ records for C++ to Python data: 35it [27:00, 32.80s/it]Processing C++ records for C++ to Python data: 37it [27:37, 28.55s/it]Processing C++ records for C++ to Python data: 39it [28:32, 28.23s/it]Processing C++ records for C++ to Python data: 41it [30:54, 41.05s/it]Processing C++ records for C++ to Python data: 43it [31:30, 34.14s/it]Processing C++ records for C++ to Python data: 45it [33:08, 38.65s/it]Processing C++ records for C++ to Python data: 47it [33:46, 32.74s/it]Processing C++ records for C++ to Python data: 49it [34:46, 31.85s/it]Processing C++ records for C++ to Python data: 51it [36:07, 34.48s/it]Processing C++ records for C++ to Python data: 53it [36:39, 28.96s/it]Processing C++ records for C++ to Python data: 55it [37:56, 31.84s/it]Processing C++ records for C++ to Python data: 57it [39:00, 31.87s/it]
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3478b4fdaa44bc561c7d3648dc2ad4f6e3f4e4. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f34b190fc49b969608edc1c87f78451d9d24a15. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3538763c856e0fd6bf336958b1dab6d40b8dcd. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f366443bb91611e79ae8b90a612c2a569e8341b. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f375fb260c29c6a3182017ae64250da405d3dae. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 1.0
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 1.0
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f387b63cad2886f2805f3d81d50cd69ff85cde2. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3911284077eaa525ae693c116101bee6ac505a. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f396e14fec3b619ea47854dd842c7f67199e950. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.5
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f39c862d9220466ed1eefcac00838e198565067. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3bc97ffe92b766ca5fd223c1408671a5d9f37d. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3be9cdfd8841e1b1156a3c1b68731caf68a254. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3c5ca1426a95256ec2b17b7f34f1ed0a32587b. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f3f451ae508e57f46b41a5bc2e5998a517e9af4. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f4043f254089a663a5bb28a481138e3aee6ec0a. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.5
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f40fb04ace20a1405092d8ec816fa716d6d4dad. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f40fe19e8b8c54d4c1c2c589f96773c463f2b79. Re-generating for this record as a fallback.
+Warning: Input length 35082 >= model max 32768. Truncating.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f41e682eb49c0dfed37f086bc2498247cab8872. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f42eb9b1307d853bc9238a25990ad05ea937dc1. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f450e4aa328322bb4d00a8d0d61f8b7d33f6405. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Processing C++ records for C++ to Python data: 59it [41:02, 40.56s/it]Processing C++ records for C++ to Python data: 61it [41:59, 36.98s/it]Processing C++ records for C++ to Python data: 63it [43:11, 36.66s/it]Processing C++ records for C++ to Python data: 65it [44:10, 34.54s/it]Processing C++ records for C++ to Python data: 65it [44:10, 40.78s/it]
+Warning: C++ documentation not found in record 4f466eef0ecf08c25cce8d23e0725fcae85b11ae. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.95
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f477071ba616e4a8a36196ef8391367424bae0e. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.85
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f482d4179751351680ece9bcc3f10de2882292a. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f48a1510b2bfc30e11db64af0c28ab3fc1ddf1d. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Reached max records for C++ to Python LORA training: 33
+Successfully created pl1_to_pl2_training_dataset with 33 examples.
+First training example for Python to C++:
+{'pl1_code_prompt': "assistant\n```python\nclass InstructionWalker:\n    def __init__(self, basic_block, pos):\n        self.basic_block = basic_block\n        self.pos = pos\n\n    def get_basic_block(self):\n        return self.basic_block\n\n    def next_in_block(self):\n        if self.pos < len(self.basic_block) - 1:\n            self.pos += 1\n\n    def previous_in_block(self):\n        if self.pos > 0:\n            self.pos -= 1\n\n    def next_in_method(self):\n        if self.pos < len(self.basic_block) - 1:\n            self.pos += 1\n        else:\n            # Assuming there's a method to get the next block\n            next_block = self.get_next_block()\n            if next_block:\n                self.basic_block = next_block\n                self.pos = 0\n\n    def previous_in_method(self):\n        if self.pos > 0:\n            self.pos -= 1\n        else:\n            # Assuming there's a method to get the previous block\n            prev_block = self.get_previous_block()\n            if prev_block:\n                self.basic_block = prev_block\n                self.pos = len(prev_block) - 1\n\n    def copy(self):\n        return InstructionWalker(self.basic_block, self.pos)\n\n# Assuming these methods are defined elsewhere in your codebase\ndef get_next_block():\n    pass\n\ndef get_previous_block():\n    pass\n```\n\nThis code defines the `InstructionWalker` class with the specified fields and methods. The `copy` method creates a new instance of `InstructionWalker` with the same state as the original. The `next_in_method` and `previous_in_method` methods handle navigation across blocks, assuming the existence of `get_next_block` and `get_previous_block` methods which should be implemented elsewhere in your codebase.", 'pl2_code_target': '/*\n * Author: doe300\n *\n * See the file "LICENSE" for the full license governing this code.\n */\n\n#include "InstructionWalker.h"\n\n#include "BasicBlock.h"\n#include "CompilationError.h"\n#include "Method.h"\n#include "analysis/ControlFlowGraph.h"\n\nusing namespace vc4c;\n\nconst InstructionWalker tombstone_traits<InstructionWalker>::tombstone;\n\nbool InstructionVisitor::visit(const InstructionWalker& start) const\n{\n    InstructionWalker it(start);\n    while(true)\n    {\n        auto res = op(it);\n        switch(res)\n        {\n        case InstructionVisitResult::CONTINUE:\n        {\n            if(followJumps && it.get<intermediate::Branch>())\n            {\n                intermediate::Branch* jump = it.get<intermediate::Branch>();\n                auto jumpIt = it;\n                for(auto target : jump->getTargetLabels())\n                {\n                    if(auto nextBlock = it.getBasicBlock()->method.findBasicBlock(target))\n                    {\n                        bool cont = visit(nextBlock->walk());\n                        if(!cont)\n                            return false;\n                    }\n                }\n                if(jump->isUnconditional())\n                    // the control-flow always jumps, destination is already processed\n                    return true;\n                // handle either-or-jumps, check previous instruction\n                intermediate::Branch* prevJump = it.copy().previousInBlock().get<intermediate::Branch>();\n                auto prevJumpIt = it;\n                if(prevJump != nullptr && jump->branchCondition.isInversionOf(prevJump->branchCondition))\n                {\n                    auto lastBranchCond = it.getBasicBlock()->findLastSettingOfFlags(jumpIt);\n                    auto secondLastBranchCond = it.getBasicBlock()->findLastSettingOfFlags(prevJumpIt);\n                    if(lastBranchCond == secondLastBranchCond)\n                        // the branches are only guaranteed to cover all cases if they refer to the same branch\n                        // condition\n                        return true;\n                }\n            }\n            if(stopAtBlock)\n            {\n                it.nextInBlock();\n                if(it.isEndOfBlock())\n                    return true;\n                continue;\n            }\n            else\n            {\n                it.nextInMethod();\n                if(it.isEndOfMethod())\n                    return true;\n                continue;\n            }\n        }\n        case InstructionVisitResult::STOP_BRANCH:\n            // stop this branch, but continue with other branches\n            return true;\n        case InstructionVisitResult::STOP_ALL:\n            // stop all\n            return false;\n        }\n        throw CompilationError(CompilationStep::GENERAL, "Unhandled case of instruction visiting");\n    }\n}\n\nbool InstructionVisitor::visitReverse(const InstructionWalker& start, analysis::ControlFlowGraph* blockGraph) const\n{\n    // FIXME has problems with instructionwalkers freed in Method::cleanEmptyInstructions() (e.g. TestEmulator)\n    InstructionWalker it(start);\n    while(true)\n    {\n        auto res = op(it);\n        switch(res)\n        {\n        case InstructionVisitResult::CONTINUE:\n        {\n            if(!it.isStartOfBlock())\n            {\n                it.previousInBlock();\n                continue;\n            }\n            else if(stopAtBlock)\n            {\n                return true;\n            }\n            else if(!followJumps)\n            {\n                it.previousInMethod();\n                continue;\n            }\n            else // start of block and follow jumps -> follow jumps backwards\n            {\n                bool continueBranches = true;\n                if(blockGraph != nullptr)\n                {\n                    // use pre-calculated graph of basic blocks\n                    blockGraph->assertNode(it.getBasicBlock())\n                        .forAllIncomingEdges([&continueBranches, this, blockGraph](\n                                                 const analysis::CFGNode& node, const analysis::CFGEdge& edge) -> bool {\n                            // this makes sure, a STOP_ALL skips other predecessors\n                            if(continueBranches)\n                                continueBranches = visitReverse(edge.data.getPredecessor(node.key), blockGraph);\n                            return true;\n                        });\n                }\n                else\n                {\n                    // re-calculate predecessor blocks\n                    it.getBasicBlock()->forPredecessors([&continueBranches, this](InstructionWalker it) -> void {\n                        // this makes sure, a STOP_ALL skips other predecessors\n                        if(continueBranches)\n                            continueBranches = visitReverse(it);\n                    });\n                }\n                return continueBranches;\n            }\n        }\n        case InstructionVisitResult::STOP_BRANCH:\n            // stop this branch, but continue with other branches\n            return true;\n        case InstructionVisitResult::STOP_ALL:\n            // stop all\n            return false;\n        }\n        throw CompilationError(CompilationStep::GENERAL, "Unhandled case of instruction visiting");\n    }\n}\n\nInstructionWalker::InstructionWalker() : basicBlock(nullptr), pos(nullptr) {}\n\nInstructionWalker::InstructionWalker(BasicBlock* basicBlock, intermediate::InstructionsIterator pos) :\n    basicBlock(basicBlock), pos(pos)\n{\n}\n\nBasicBlock* InstructionWalker::getBasicBlock()\n{\n    return basicBlock;\n}\n\nconst BasicBlock* InstructionWalker::getBasicBlock() const\n{\n    return basicBlock;\n}\n\nInstructionWalker& InstructionWalker::nextInBlock()\n{\n    ++pos;\n    return *this;\n}\n\nInstructionWalker& InstructionWalker::previousInBlock()\n{\n    --pos;\n    return *this;\n}\n\nInstructionWalker& InstructionWalker::nextInMethod()\n{\n    if(!isEndOfBlock())\n        // we need this check since for a linked list it seems that last->next == first, which would jump back to the\n        // label of the block\n        nextInBlock();\n    if(isEndOfBlock())\n    {\n        if(auto tmp = basicBlock->method.getNextBlockAfter(basicBlock))\n        {\n            basicBlock = tmp;\n            pos = basicBlock->instructions.begin();\n        }\n    }\n    return *this;\n}\nInstructionWalker& InstructionWalker::previousInMethod()\n{\n    previousInBlock();\n    if(isStartOfBlock())\n    {\n        if(auto tmp = basicBlock->method.getPreviousBlock(basicBlock))\n        {\n            basicBlock = tmp;\n            pos = basicBlock->instructions.end();\n            --pos;\n        }\n    }\n    return *this;\n}\n\nInstructionWalker InstructionWalker::copy() const\n{\n    return InstructionWalker(basicBlock, pos);\n}\n\nbool InstructionWalker::operator==(const InstructionWalker& other) const\n{\n    return basicBlock == other.basicBlock && pos == other.pos;\n}\n\nbool InstructionWalker::isEndOfMethod() const\n{\n    if(basicBlock == nullptr)\n        return true;\n    if(!isEndOfBlock())\n        return false;\n    const auto& lastBlock = *(--basicBlock->method.end());\n    return &lastBlock == basicBlock;\n}\n\nbool InstructionWalker::isStartOfMethod() const\n{\n    return isStartOfBlock() && basicBlock->isStartOfMethod();\n}\n\nbool InstructionWalker::isEndOfBlock() const\n{\n    if(basicBlock == nullptr)\n        return true;\n    return pos == basicBlock->instructions.end();\n}\n\nbool InstructionWalker::isStartOfBlock() const\n{\n    if(basicBlock == nullptr)\n        return false;\n    return pos == basicBlock->instructions.begin();\n}\n\nstatic inline void throwOnEnd(bool isEnd)\n{\n    if(isEnd)\n        throw CompilationError(CompilationStep::GENERAL, "End of method or block reached!");\n}\n\nintermediate::IntermediateInstruction* InstructionWalker::get()\n{\n    throwOnEnd(isEndOfBlock());\n    return (*pos).get();\n}\n\nconst intermediate::IntermediateInstruction* InstructionWalker::get() const\n{\n    throwOnEnd(isEndOfBlock());\n    return (*pos).get();\n}\n\nintermediate::IntermediateInstruction* InstructionWalker::release()\n{\n    throwOnEnd(isEndOfBlock());\n    if(get<intermediate::BranchLabel>())\n        basicBlock->method.updateCFGOnBlockRemoval(basicBlock);\n    if(get<intermediate::Branch>())\n    {\n        // need to remove the branch from the block before triggering the CFG update\n        std::unique_ptr<intermediate::IntermediateInstruction> tmp(pos->release());\n        basicBlock->method.updateCFGOnBranchRemoval(\n            *basicBlock, dynamic_cast<intermediate::Branch*>(tmp.get())->getTargetLabels());\n        return tmp.release();\n    }\n    return (*pos).release();\n}\n\nInstructionWalker& InstructionWalker::reset(intermediate::IntermediateInstruction* instr)\n{\n    throwOnEnd(isEndOfBlock());\n    if(dynamic_cast<intermediate::BranchLabel*>(instr) != dynamic_cast<intermediate::BranchLabel*>((*pos).get()))\n        throw CompilationError(CompilationStep::GENERAL, "Can\'t add labels into a basic block", instr->to_string());\n    // if we reset the label with another label, the CFG dos not change\n    if(get<intermediate::Branch>())\n    {\n        // need to remove the branch from the block before triggering the CFG update\n        std::unique_ptr<intermediate::IntermediateInstruction> tmp(pos->release());\n        basicBlock->method.updateCFGOnBranchRemoval(\n            *basicBlock, dynamic_cast<intermediate::Branch*>(tmp.get())->getTargetLabels());\n    }\n    (*pos).reset(instr);\n    if(dynamic_cast<intermediate::Branch*>(instr))\n        basicBlock->method.updateCFGOnBranchInsertion(*this);\n    return *this;\n}\n\nInstructionWalker& InstructionWalker::erase()\n{\n    throwOnEnd(isEndOfBlock());\n    if(get<intermediate::BranchLabel>())\n        basicBlock->method.updateCFGOnBlockRemoval(basicBlock);\n    if(get<intermediate::Branch>())\n    {\n        // need to remove the branch from the block before triggering the CFG update\n        std::unique_ptr<intermediate::IntermediateInstruction> tmp(pos->release());\n        basicBlock->method.updateCFGOnBranchRemoval(\n            *basicBlock, dynamic_cast<intermediate::Branch*>(tmp.get())->getTargetLabels());\n    }\n    pos = basicBlock->instructions.erase(pos);\n    return *this;\n}\n\nInstructionWalker& InstructionWalker::safeErase()\n{\n    if(!isEndOfBlock() && get() && get()->hasDecoration(intermediate::InstructionDecorations::MANDATORY_DELAY))\n    {\n        reset((new intermediate::Nop(intermediate::DelayType::WAIT_REGISTER))\n                  ->addDecorations(intermediate::InstructionDecorations::MANDATORY_DELAY));\n        return nextInBlock();\n    }\n    return erase();\n}\n\nInstructionWalker& InstructionWalker::emplace(intermediate::IntermediateInstruction* instr)\n{\n    if(isStartOfBlock())\n        throw CompilationError(\n            CompilationStep::GENERAL, "Can\'t emplace at the start of a basic block", instr->to_string());\n    if(basicBlock == nullptr)\n        throw CompilationError(\n            CompilationStep::GENERAL, "Can\'t emplace into an iterator which is not associated with a basic block");\n    if(dynamic_cast<intermediate::BranchLabel*>(instr) != nullptr)\n        throw CompilationError(CompilationStep::GENERAL, "Can\'t add labels into a basic block", instr->to_string());\n    pos = basicBlock->instructions.emplace(pos, instr);\n    if(dynamic_cast<intermediate::Branch*>(instr))\n        basicBlock->method.updateCFGOnBranchInsertion(*this);\n    return *this;\n}\n\nConstInstructionWalker::ConstInstructionWalker() : basicBlock(nullptr), pos(nullptr) {}\n\nConstInstructionWalker::ConstInstructionWalker(InstructionWalker it) : basicBlock(it.basicBlock), pos(it.pos) {}\n\nConstInstructionWalker::ConstInstructionWalker(\n    const BasicBlock* basicBlock, intermediate::ConstInstructionsIterator pos) :\n    basicBlock(basicBlock),\n    pos(pos)\n{\n}\n\nconst BasicBlock* ConstInstructionWalker::getBasicBlock() const\n{\n    return basicBlock;\n}\n\nConstInstructionWalker& ConstInstructionWalker::nextInBlock()\n{\n    ++pos;\n    return *this;\n}\n\nConstInstructionWalker& ConstInstructionWalker::previousInBlock()\n{\n    --pos;\n    return *this;\n}\n\nConstInstructionWalker& ConstInstructionWalker::nextInMethod()\n{\n    if(!isEndOfBlock())\n        // we need this check since for a linked list it seems that last->next == first, which would jump back to the\n        // label of the block\n        nextInBlock();\n    if(isEndOfBlock())\n    {\n        if(auto tmp = basicBlock->method.getNextBlockAfter(basicBlock))\n        {\n            basicBlock = tmp;\n            pos = basicBlock->instructions.begin();\n        }\n    }\n\n    return *this;\n}\n\nbool InstructionWalker::replaceValueInBlock(\n    const Value& oldValue, const Value& newValue, LocalUse::Type type, bool forward, bool stopWhenWritten)\n{\n    bool replaced = false;\n    auto it = copy();\n    if(forward)\n    {\n        it.nextInBlock();\n        while(!it.isEndOfBlock())\n        {\n            replaced = it->replaceValue(oldValue, newValue, type);\n            if(it->getOutput().has_value() && it->getOutput().value() == oldValue && stopWhenWritten)\n                break;\n\n            it.nextInBlock();\n        }\n    }\n    else\n    {\n        it.previousInBlock();\n        while(!it.isStartOfBlock())\n        {\n            replaced = it->replaceValue(oldValue, newValue, type);\n            if(it->getOutput().has_value() && it->getOutput().value() == oldValue && stopWhenWritten)\n                break;\n\n            it.previousInBlock();\n        }\n    }\n\n    return replaced;\n}\n\nConstInstructionWalker& ConstInstructionWalker::previousInMethod()\n{\n    previousInBlock();\n    if(isStartOfBlock())\n    {\n        if(auto tmp = basicBlock->method.getPreviousBlock(basicBlock))\n        {\n            basicBlock = tmp;\n            pos = basicBlock->instructions.end();\n            --pos;\n        }\n    }\n    return *this;\n}\n\nConstInstructionWalker ConstInstructionWalker::copy() const\n{\n    return ConstInstructionWalker(basicBlock, pos);\n}\n\nbool ConstInstructionWalker::operator==(const ConstInstructionWalker& other) const\n{\n    return basicBlock == other.basicBlock && pos == other.pos;\n}\n\nbool ConstInstructionWalker::isEndOfMethod() const\n{\n    if(basicBlock == nullptr)\n        return true;\n    const auto& lastBlock = *(--basicBlock->method.end());\n    return isEndOfBlock() && &lastBlock == basicBlock;\n}\n\nbool ConstInstructionWalker::isStartOfMethod() const\n{\n    return isStartOfBlock() && basicBlock->isStartOfMethod();\n}\n\nbool ConstInstructionWalker::isEndOfBlock() const\n{\n    if(basicBlock == nullptr)\n        return true;\n    return pos == basicBlock->instructions.end();\n}\n\nbool ConstInstructionWalker::isStartOfBlock() const\n{\n    if(basicBlock == nullptr)\n        return false;\n    return pos == basicBlock->instructions.begin();\n}\n\nconst intermediate::IntermediateInstruction* ConstInstructionWalker::get() const\n{\n    throwOnEnd(isEndOfBlock());\n    return (*pos).get();\n}\n'}
+Map:   0%|          | 0/33 [00:00<?, ? examples/s]Map: 100%|██████████| 33/33 [00:00<00:00, 433.82 examples/s]
+[transformers] `logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Creating fresh LORA model for Phase 2 (Python to C++)...
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:19,  4.24it/s]Loading weights:   1%|          | 2/339 [00:00<00:59,  5.66it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 73.12it/s]Loading weights:  12%|█▏        | 41/339 [00:00<00:03, 99.19it/s]Loading weights:  18%|█▊        | 60/339 [00:00<00:02, 120.48it/s]Loading weights:  23%|██▎       | 77/339 [00:00<00:02, 128.42it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 129.35it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 139.31it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 142.80it/s]Loading weights:  51%|█████     | 172/339 [00:01<00:01, 151.08it/s]Loading weights:  58%|█████▊    | 196/339 [00:01<00:00, 162.35it/s]Loading weights:  63%|██████▎   | 213/339 [00:01<00:00, 153.70it/s]Loading weights:  68%|██████▊   | 232/339 [00:01<00:00, 141.59it/s]Loading weights:  76%|███████▌  | 256/339 [00:01<00:00, 158.18it/s]Loading weights:  81%|████████  | 273/339 [00:02<00:00, 156.26it/s]Loading weights:  86%|████████▌ | 292/339 [00:02<00:00, 153.25it/s]Loading weights:  91%|█████████ | 308/339 [00:02<00:00, 148.60it/s]Loading weights:  97%|█████████▋| 328/339 [00:02<00:00, 155.41it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 135.73it/s]
+trainable params: 40,370,176 || all params: 7,655,986,688 || trainable%: 0.5273
+
+==============================
+
+Starting LORA training for Python to C++ translation...
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [00:02<00:34,  2.43s/it] 13%|█▎        | 2/15 [00:04<00:31,  2.42s/it] 20%|██        | 3/15 [00:07<00:28,  2.41s/it] 27%|██▋       | 4/15 [00:09<00:27,  2.46s/it] 33%|███▎      | 5/15 [00:10<00:16,  1.68s/it] 40%|████      | 6/15 [00:15<00:25,  2.83s/it] 47%|████▋     | 7/15 [00:17<00:21,  2.69s/it] 53%|█████▎    | 8/15 [00:19<00:18,  2.59s/it] 60%|██████    | 9/15 [00:22<00:15,  2.60s/it] 67%|██████▋   | 10/15 [00:22<00:09,  1.89s/it]                                                67%|██████▋   | 10/15 [00:22<00:09,  1.89s/it] 73%|███████▎  | 11/15 [00:27<00:11,  2.88s/it] 80%|████████  | 12/15 [00:30<00:08,  2.73s/it] 87%|████████▋ | 13/15 [00:32<00:05,  2.69s/it] 93%|█████████▎| 14/15 [00:35<00:02,  2.60s/it]100%|██████████| 15/15 [00:35<00:00,  1.91s/it]                                               100%|██████████| 15/15 [00:38<00:00,  1.91s/it]100%|██████████| 15/15 [00:38<00:00,  2.55s/it]
+{'loss': '0.7202', 'grad_norm': '0.5971', 'learning_rate': '8e-05', 'epoch': '2'}
+{'train_runtime': '38.32', 'train_samples_per_second': '2.583', 'train_steps_per_second': '0.391', 'train_loss': '0.6713', 'epoch': '3'}
+LORA training for Python to C++ complete.
+
+==============================
+
+LORA adapter model saved to '../model/Qwen_Python_to_CPP_LORA_Adapter'.
+
+==============================
+

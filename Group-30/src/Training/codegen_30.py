@@ -2414,6 +2414,13 @@ MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 3
 MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 3
 MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 3
 
+# Define LORA adapter save directories (defined once, used for both saving and loading)
+LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
+LORA_ADAPTER_NL_TO_PL = "../model/Qwen_NL_to_PL_LORA_Adapter"
+
+# Define model name for tokenizer (used in both training and validation)
+model_name_codegen = "Qwen/Qwen2.5-Coder-7B-Instruct"
+
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized ---
 # This is crucial in interactive environments where class definitions might be re-run
 # or partial executions can leave singletons in an inconsistent state.
@@ -2505,9 +2512,6 @@ if run_training:
     from transformers import AutoTokenizer, AutoModelForCausalLM
     import torch
 
-    #model_name_codegen = "Salesforce/codegen-350M-multi"
-    model_name_codegen = "Qwen/Qwen2.5-Coder-7B-Instruct"
-
     # Load tokenizer and model for codegen
     tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
     # Ensure pad_token_id is explicitly set for the global tokenizer
@@ -2525,10 +2529,6 @@ if run_training:
 
     tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
     model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
-
-    # Define LORA adapter save directories (defined once, used for both saving and loading)
-    LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
-    LORA_ADAPTER_NL_TO_PL = "../model/Qwen_NL_to_PL_LORA_Adapter"
 
     print("Printing modules in Qwen2.5-Coder-7B-Instruct model")
     for name, module in model_codegen.named_modules():
@@ -2958,6 +2958,11 @@ if run_validation:
     print("Loading fine-tuned LORA model for validation...")
     from peft import PeftModel
 
+    # Load tokenizer for validation (needed for FineTunedGenerator)
+    tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
+    if tokenizer_codegen.pad_token_id is None:
+        tokenizer_codegen.pad_token_id = tokenizer_codegen.eos_token_id
+
     # Load separate base models for each LORA adapter to avoid conflicts
     # Python->C++ translation model
     base_model_py_to_cpp = AutoModelForCausalLM.from_pretrained(
@@ -2984,6 +2989,10 @@ if run_validation:
         def __init__(self, py_to_cpp_model, nl_to_cpp_model, tokenizer, base_generator, device):
             self._py_to_cpp_model = py_to_cpp_model  # For Python->C++ translation
             self._nl_to_cpp_model = nl_to_cpp_model  # For documentation->C++ code
+            # Force the models into evaluation mode
+            self._py_to_cpp_model.eval()
+            self._nl_to_cpp_model.eval()
+            print(f"Forcing models into eval mode")
             self._tokenizer = tokenizer
             self._base_generator = base_generator  # Keep reference to base model for other tasks
             # Use the model's actual device (important for device_map="auto")
@@ -3118,11 +3127,20 @@ if run_validation:
                             if not baseline_evaluator._cached_dataset[i].get('is_processable_code', True))
     print(f"Unprocessable records in range: {unprocessable_count}")
 
-    validation_results = baseline_evaluator.compute_validation(
-        num_records=MAX_RECORDS_LORA_VALIDATION,
-        num_tries=3,
-        start_index=validation_start_index
-    )
+    try:
+        validation_results = baseline_evaluator.compute_validation(
+            num_records=MAX_RECORDS_LORA_VALIDATION,
+            num_tries=3,
+            start_index=validation_start_index
+        )
+    except Exception as e:
+        print(f"Exceptinon: {e}")
+        print(torch.cuda.memory_allocated())
+        print(torch.cuda.memory_reserved())
+        print(torch.cuda.max_memory_allocated())
+        import sys
+        sys.exit(0)
+        
 
     # Restore original generator
     baseline_evaluator._qwen_code_generator = original_generator

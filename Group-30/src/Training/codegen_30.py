@@ -2218,15 +2218,15 @@ class BaselineData(metaclass=SingletonMeta):
         return results
 
     def compute_validation(self, num_records: Optional[int] = 100, num_tries: int = 3,
-                          start_index: int = 0) -> list:
+                          start_index: int = 0, language_filter: Optional[str] = None) -> list:
         """
         Computes validation scores using the same logic as compute_baseline but without updating caches.
-        Only processes C++ records for validation since fine-tuning was done on C++ records.
 
         Args:
             num_records (Optional[int]): The number of records to process from the dataset.
             num_tries (int): The number of tries for code generation per record.
             start_index (int): The starting index in the cached dataset.
+            language_filter (Optional[str]): Filter by language ('python', 'cpp', or None for all).
 
         Returns:
             list: A list of dictionaries containing scores for each processed record.
@@ -2236,7 +2236,7 @@ class BaselineData(metaclass=SingletonMeta):
             num_tries=num_tries,
             start_index=start_index,
             update_cache=False,
-            language_filter='cpp'  # Only process C++ records for validation
+            language_filter=language_filter  # Process records based on filter
         )
 
     def compute_summary(self, results: list) -> dict:
@@ -2985,81 +2985,30 @@ if run_validation:
     print(f"NL->PL LORA model loaded from '{LORA_ADAPTER_NL_TO_PL}'")
 
     # Create a custom generator that uses appropriate LORA model based on task
-    class FineTunedGenerator:
-        def __init__(self, py_to_cpp_model, nl_to_cpp_model, tokenizer, base_generator, device):
-            self._py_to_cpp_model = py_to_cpp_model  # For Python->C++ translation
-            self._nl_to_cpp_model = nl_to_cpp_model  # For documentation->C++ code
-            # Force the models into evaluation mode
-            self._py_to_cpp_model.eval()
+    class FineTunedGeneratorNLPL:
+        """Generator for NL->PL (documentation to code) validation - supports both Python and C++."""
+        def __init__(self, nl_to_cpp_model, tokenizer, base_generator, device):
+            self._nl_to_cpp_model = nl_to_cpp_model
             self._nl_to_cpp_model.eval()
-            print(f"Forcing models into eval mode")
+            print(f"NL->PL model forced into eval mode")
             self._tokenizer = tokenizer
-            self._base_generator = base_generator  # Keep reference to base model for other tasks
-            # Use the model's actual device (important for device_map="auto")
-            # Handle meta device parameters that may be offloaded to CPU
-            self._device = self._get_model_device(py_to_cpp_model)
-            print(f"FineTunedGenerator using device: {self._device}")
+            self._base_generator = base_generator
+            self._device = self._get_model_device(nl_to_cpp_model)
+            print(f"FineTunedGeneratorNLPL using device: {self._device}")
 
         def _get_model_device(self, model):
-            """Get the actual device from model parameters, handling meta device."""
             for param in model.parameters():
                 if param.device.type != 'meta':
                     return param.device
-            # Fallback to CPU if all parameters are on meta device
             return torch.device('cpu')
 
-        def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
-            """Generate code using the appropriate model.
-
-            - For Python->C++ conversion (is_py_to_cpp=True, target_lang='cpp'): use py_to_cpp_model
-            - For documentation->C++ (is_py_to_cpp=False, target_lang='cpp'): use nl_to_cpp_model
-            - For other tasks: use base model
-            """
-            if is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
-                # Use fine-tuned model: Python code -> C++ code
-                prompt = f"Translate the following Python code to C++:\n{documentation}\nC++ code:"
-                inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-                # Move inputs to the same device as model parameters
-                inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
-                with torch.no_grad():
-                    outputs = self._py_to_cpp_model.generate(
-                        **inputs,
-                        max_new_tokens=256,
-                        do_sample=True,
-                        temperature=0.7,
-                        top_p=0.9,
-                        pad_token_id=self._tokenizer.eos_token_id
-                    )
-
-                generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
-                # Extract just the code part - look for code block markers
-                generated_code = generated_text
-                # Try to extract content between ```cpp and ``` markers
-                cpp_block_start = generated_text.find("```cpp")
-                if cpp_block_start != -1:
-                    code_start = cpp_block_start + 6  # Skip past ```cpp
-                    code_end = generated_text.find("```", code_start)
-                    if code_end != -1:
-                        generated_code = generated_text[code_start:code_end].strip()
-                    else:
-                        generated_code = generated_text[code_start:].strip()
-                else:
-                    # Fallback: extract after "C++ code:" marker
-                    code_marker = "C++ code:"
-                    marker_pos = generated_text.lower().find(code_marker.lower())
-                    if marker_pos != -1:
-                        generated_code = generated_text[marker_pos + len(code_marker):].strip()
-                        # Remove any trailing explanation
-                        if "Explanation:" in generated_code:
-                            generated_code = generated_code.split("Explanation:")[0].strip()
-            elif not is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
-                # Use NL->C++ fine-tuned model for documentation->code
+        def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=False):
+            # For NL->PL phase, generate code from documentation for both Python and C++
+            if target_lang.lower() in ['cpp', 'c++']:
+                # Generate C++ code from documentation
                 prompt = f"Generate C++ code based on the following documentation:\n{documentation}\nC++ code:"
                 inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-                # Move inputs to the same device as model parameters
                 inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
                 with torch.no_grad():
                     outputs = self._nl_to_cpp_model.generate(
                         **inputs,
@@ -3069,94 +3018,171 @@ if run_validation:
                         top_p=0.9,
                         pad_token_id=self._tokenizer.eos_token_id
                     )
-
                 generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
-                # Extract just the code part - look for code block markers
-                generated_code = generated_text
-                # Try to extract content between ```cpp and ``` markers
-                cpp_block_start = generated_text.find("```cpp")
-                if cpp_block_start != -1:
-                    code_start = cpp_block_start + 6  # Skip past ```cpp
-                    code_end = generated_text.find("```", code_start)
-                    if code_end != -1:
-                        generated_code = generated_text[code_start:code_end].strip()
-                    else:
-                        generated_code = generated_text[code_start:].strip()
-                else:
-                    # Fallback: extract after "C++ code:" marker
-                    code_marker = "C++ code:"
-                    marker_pos = generated_text.lower().find(code_marker.lower())
-                    if marker_pos != -1:
-                        generated_code = generated_text[marker_pos + len(code_marker):].strip()
-                        # Remove any trailing explanation
-                        if "Explanation:" in generated_code:
-                            generated_code = generated_code.split("Explanation:")[0].strip()
-            else:
-                # Use base model for other tasks
+                generated_code = self._extract_code(generated_text, 'cpp')
+            elif target_lang.lower() in ['python', 'py']:
+                # Generate Python code from documentation using base generator
                 generated_code = self._base_generator._generate_code_from_model(documentation, target_lang, is_py_to_cpp=False)
-
+            else:
+                # Use base generator for other languages
+                generated_code = self._base_generator._generate_code_from_model(documentation, target_lang, is_py_to_cpp=False)
             return generated_code
 
-    # Save original generator first
+        def _extract_code(self, text, lang='cpp'):
+            if lang.lower() in ['cpp', 'c++']:
+                cpp_block_start = text.find("```cpp")
+                if cpp_block_start != -1:
+                    code_start = cpp_block_start + 6
+                    code_end = text.find("```", code_start)
+                    if code_end != -1:
+                        return text[code_start:code_end].strip()
+                    return text[code_start:].strip()
+                code_marker = "C++ code:"
+                marker_pos = text.lower().find(code_marker.lower())
+                if marker_pos != -1:
+                    return text[marker_pos + len(code_marker):].strip()
+            return text
+
+    class FineTunedGeneratorPL1PL2:
+        """Generator for PL1->PL2 (Python to C++) validation only."""
+        def __init__(self, py_to_cpp_model, tokenizer, base_generator, device):
+            self._py_to_cpp_model = py_to_cpp_model
+            self._py_to_cpp_model.eval()
+            print(f"PL1->PL2 model forced into eval mode")
+            self._tokenizer = tokenizer
+            self._base_generator = base_generator
+            self._device = self._get_model_device(py_to_cpp_model)
+            print(f"FineTunedGeneratorPL1PL2 using device: {self._device}")
+
+        def _get_model_device(self, model):
+            for param in model.parameters():
+                if param.device.type != 'meta':
+                    return param.device
+            return torch.device('cpu')
+
+        def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
+            if is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
+                prompt = f"Translate the following Python code to C++:\n{documentation}\nC++ code:"
+                inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+                inputs = {k: v.to(self._device) for k, v in inputs.items()}
+                with torch.no_grad():
+                    outputs = self._py_to_cpp_model.generate(
+                        **inputs,
+                        max_new_tokens=256,
+                        do_sample=True,
+                        temperature=0.7,
+                        top_p=0.9,
+                        pad_token_id=self._tokenizer.eos_token_id
+                    )
+                generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
+                generated_code = self._extract_code(generated_text)
+            else:
+                generated_code = self._base_generator._generate_code_from_model(documentation, target_lang, is_py_to_cpp=False)
+            return generated_code
+
+        def _extract_code(self, text):
+            cpp_block_start = text.find("```cpp")
+            if cpp_block_start != -1:
+                code_start = cpp_block_start + 6
+                code_end = text.find("```", code_start)
+                if code_end != -1:
+                    return text[code_start:code_end].strip()
+                return text[code_start:].strip()
+            code_marker = "C++ code:"
+            marker_pos = text.lower().find(code_marker.lower())
+            if marker_pos != -1:
+                return text[marker_pos + len(code_marker):].strip()
+            return text
+
+    # Two-phase validation approach to reduce GPU memory
+    # Phase 1: NL->PL (documentation to code) validation
+    # Phase 2: PL1->PL2 (Python to C++) validation
+
+    validation_start_index = MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
     original_generator = baseline_evaluator._qwen_code_generator
 
-    finetuned_generator = FineTunedGenerator(pl1_to_pl2_fine_tuned_model, nl_pl_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
-
-    # Temporarily replace the model in baseline_evaluator for validation
-    baseline_evaluator._qwen_code_generator = finetuned_generator
-
-    # Compute validation scores using the fine-tuned model
-    validation_start_index = MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
-
-    # Debug: Check what languages are in the validation range
-    print(f"\nDebug: Checking dataset languages from index {validation_start_index}...")
-    cpp_count_in_range = 0
-    other_langs = {}
-    for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset))):
-        record = baseline_evaluator._cached_dataset[i]
-        lang = record.get('language', 'unknown').lower()
-        is_proc = record.get('is_processable_code', True)
-        if lang in ['cpp', 'c++']:
-            cpp_count_in_range += 1
-        else:
-            other_langs[lang] = other_langs.get(lang, 0) + 1
-    print(f"Found {cpp_count_in_range} C++ records in validation range")
-    print(f"Other languages: {other_langs}")
-    # Check if any are unprocessable
-    unprocessable_count = sum(1 for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset)))
-                            if not baseline_evaluator._cached_dataset[i].get('is_processable_code', True))
-    print(f"Unprocessable records in range: {unprocessable_count}")
+    # Phase 1: NL->PL validation (only load nl_pl_fine_tuned_model)
+    # Process both Python and C++ records for NL->PL validation
+    print("\n=== Phase 1: NL->PL (Documentation to Code) Validation ===")
+    finetuned_generator_nlpl = FineTunedGeneratorNLPL(nl_pl_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
+    baseline_evaluator._qwen_code_generator = finetuned_generator_nlpl
 
     try:
-        validation_results = baseline_evaluator.compute_validation(
+        # No language filter - process both Python and C++ records
+        validation_results_nlpl = baseline_evaluator.compute_validation(
             num_records=MAX_RECORDS_LORA_VALIDATION,
             num_tries=3,
-            start_index=validation_start_index
+            start_index=validation_start_index,
+            language_filter=None  # Process both Python and C++
         )
     except Exception as e:
-        print(f"Exceptinon: {e}")
-        print(torch.cuda.memory_allocated())
-        print(torch.cuda.memory_reserved())
-        print(torch.cuda.max_memory_allocated())
+        print(f"Exception in NL->PL validation: {e}")
         import sys
-        sys.exit(0)
-        
+        sys.exit(1)
+
+    # Restore original generator and unload NL->PL model
+    baseline_evaluator._qwen_code_generator = original_generator
+    del finetuned_generator_nlpl
+    del nl_pl_fine_tuned_model
+    import gc
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    # Phase 2: PL1->PL2 validation (load pl1_to_pl2_fine_tuned_model)
+    # Only process Python records for PL1->PL2 (Python to C++) validation
+    print("\n=== Phase 2: PL1->PL2 (Python to C++) Validation ===")
+    finetuned_generator_pl1pl2 = FineTunedGeneratorPL1PL2(pl1_to_pl2_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
+    baseline_evaluator._qwen_code_generator = finetuned_generator_pl1pl2
+
+    try:
+        # Filter for Python records only - PL1->PL2 is Python to C++ translation
+        validation_results_pl1pl2 = baseline_evaluator.compute_validation(
+            num_records=MAX_RECORDS_LORA_VALIDATION,
+            num_tries=3,
+            start_index=validation_start_index,
+            language_filter='python'  # Only process Python records for PL1->PL2
+        )
+    except Exception as e:
+        print(f"Exception in PL1->PL2 validation: {e}")
+        import sys
+        sys.exit(1)
 
     # Restore original generator
     baseline_evaluator._qwen_code_generator = original_generator
 
-    # Compute summary statistics
-    validation_summary = baseline_evaluator.compute_summary(validation_results)
-    validation_summary_description = "\n\n"+"*"*30+"\n\n"
-    validation_summary_description += f"\nValidation Summary (using fine-tuned LORA model - C++ records only):"
-    validation_summary_description += f"\n\tTotal C++ records processed: {validation_summary.get('total_records', 0)}"
-    validation_summary_description += f"\n\tNL->PL Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
-    validation_summary_description += f"\n\tNL->PL AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
-    validation_summary_description += f"\n\tNL->PL GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
+    # Compute summaries for both phases
+    validation_summary_nlpl = baseline_evaluator.compute_summary(validation_results_nlpl)
+    validation_summary_pl1pl2 = baseline_evaluator.compute_summary(validation_results_pl1pl2)
 
-    if 'nl_pl1_pl2_phase' in validation_summary:
-        pl1_pl2 = validation_summary['nl_pl1_pl2_phase']
-        validation_summary_description += f"\n\tPL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+    # Print NL->PL results (both Python and C++)
+    nlpl_summary = "\n\n" + "*"*30 + "\n\n"
+    nlpl_summary += f"\nNL->PL Validation Summary (Documentation to Code):"
+    nlpl_summary += f"\n\tTotal records processed: {validation_summary_nlpl.get('total_records', 0)}"
+    nlpl_summary += f"\n\tNL->PL Average Score: {validation_summary_nlpl.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+    nlpl_summary += f"\n\tNL->PL AST Score: {validation_summary_nlpl.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+    nlpl_summary += f"\n\tNL->PL GCB Score: {validation_summary_nlpl.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
 
-    print("\n"+"="*30+"\n")
-    print(validation_summary_description)
+    # Show Python-specific metrics if available
+    if 'python_nl_pl_phase' in validation_summary_nlpl:
+        py = validation_summary_nlpl['python_nl_pl_phase']
+        nlpl_summary += f"\n\tPython NL->PL Average Score: {py.get('average_score', 0):.4f} (n={py.get('count', 0)})"
+
+    # Show C++-specific metrics if available
+    if 'cpp_nl_pl_phase' in validation_summary_nlpl:
+        cpp = validation_summary_nlpl['cpp_nl_pl_phase']
+        nlpl_summary += f"\n\tC++ NL->PL Average Score: {cpp.get('average_score', 0):.4f} (n={cpp.get('count', 0)})"
+
+    print("\n" + "="*30 + "\n")
+    print(nlpl_summary)
+
+    # Print PL1->PL2 results
+    pl1pl2_summary = "\n\n" + "*"*30 + "\n\n"
+    pl1pl2_summary += f"\nPL1->PL2 Validation Summary (Python to C++):"
+    pl1pl2_summary += f"\n\tTotal records processed: {validation_summary_pl1pl2.get('total_records', 0)}"
+    if 'nl_pl1_pl2_phase' in validation_summary_pl1pl2:
+        pl1_pl2 = validation_summary_pl1pl2['nl_pl1_pl2_phase']
+        pl1pl2_summary += f"\n\tPL1->PL2 Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+
+    print("\n" + "="*30 + "\n")
+    print(pl1pl2_summary)

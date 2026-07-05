@@ -1,0 +1,718 @@
+W0705 11:25:18.943000 578509 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0705 11:25:18.960000 578509 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Hugging Face API key loaded successfully from secrets.
+==================================================
+Active Options:
+  - Baseline (-b)             : Disabled
+  - Training (-t)             : Disabled
+  - Validation (-v)           : Enabled
+  - Number of records to cache: 100
+  - Purge Cached Dataset      : False
+==================================================
+Resetting singleton states for BaselineData and its dependencies...
+Singleton states reset.
+Using dataset with 100 records
+Initializing BaselineData singleton using device: cuda...
+Initializing FilteredDataset singleton...
+Cached dataset loaded with 100 samples from ./cached_data/filtered_subset_100.
+FilteredDataset initialized successfully.
+BaselineData initialized successfully.
+Loading all models...
+QwenModelBase using device: cuda for model Qwen/Qwen2.5-Coder-7B-Instruct
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<00:50,  6.68it/s]Loading weights:   1%|          | 2/339 [00:00<00:54,  6.13it/s]Loading weights:   5%|▍         | 16/339 [00:00<00:06, 51.54it/s]Loading weights:   9%|▊         | 29/339 [00:00<00:04, 71.96it/s]Loading weights:  15%|█▌        | 52/339 [00:00<00:02, 110.26it/s]Loading weights:  19%|█▉        | 66/339 [00:00<00:02, 118.41it/s]Loading weights:  26%|██▌       | 88/339 [00:00<00:01, 147.21it/s]Loading weights:  31%|███       | 104/339 [00:00<00:01, 142.74it/s]Loading weights:  37%|███▋      | 125/339 [00:01<00:01, 153.21it/s]Loading weights:  42%|████▏     | 141/339 [00:01<00:01, 154.81it/s]Loading weights:  47%|████▋     | 161/339 [00:01<00:01, 158.25it/s]Loading weights:  52%|█████▏    | 177/339 [00:01<00:01, 156.57it/s]Loading weights:  58%|█████▊    | 196/339 [00:01<00:00, 147.85it/s]Loading weights:  65%|██████▌   | 221/339 [00:01<00:00, 169.67it/s]Loading weights:  71%|███████   | 241/339 [00:01<00:00, 177.76it/s]Loading weights:  77%|███████▋  | 260/339 [00:01<00:00, 164.44it/s]Loading weights:  83%|████████▎ | 280/339 [00:02<00:00, 172.15it/s]Loading weights:  88%|████████▊ | 298/339 [00:02<00:00, 121.89it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 143.06it/s]
+CodeDocumentationGenerator using device: cuda
+QwenCodeGenerator using device: cuda
+Initializing GraphCodeBERTScorer...
+Using device: cuda
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 32708.33it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/graphcodebert-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+GraphCodeBERTScorer initialized successfully.
+LLMJudge using device: cuda
+All models loaded.
+
+==============================
+
+Starting LORA model validation phase...
+Processing 33 records for validation
+Reloading models needed for validation...
+Loading fine-tuned LORA model for validation...
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:38,  3.43it/s]Loading weights:   1%|          | 2/339 [00:00<01:07,  4.98it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 66.64it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 88.84it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 111.98it/s]Loading weights:  23%|██▎       | 77/339 [00:00<00:02, 116.12it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 126.76it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 134.55it/s]Loading weights:  44%|████▎     | 148/339 [00:01<00:01, 138.29it/s]Loading weights:  51%|█████     | 172/339 [00:01<00:01, 152.16it/s]Loading weights:  55%|█████▌    | 188/339 [00:01<00:01, 148.19it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 141.49it/s]Loading weights:  68%|██████▊   | 232/339 [00:01<00:00, 143.61it/s]Loading weights:  76%|███████▌  | 256/339 [00:02<00:00, 157.58it/s]Loading weights:  81%|████████  | 273/339 [00:02<00:00, 154.20it/s]Loading weights:  86%|████████▌ | 292/339 [00:02<00:00, 141.98it/s]Loading weights:  93%|█████████▎| 316/339 [00:02<00:00, 142.01it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.00it/s]
+Fine-tuned LORA model loaded from '../model/Qwen_Python_to_CPP_LORA_Adapter'
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:36,  3.50it/s]Loading weights:   1%|          | 2/339 [00:00<01:06,  5.04it/s]Loading weights:   6%|▋         | 22/339 [00:00<00:05, 61.80it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 90.55it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 119.44it/s]Loading weights:  23%|██▎       | 78/339 [00:00<00:02, 120.12it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 124.49it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 145.53it/s]Loading weights:  41%|████▏     | 140/339 [00:01<00:01, 143.30it/s]Loading weights:  47%|████▋     | 160/339 [00:01<00:01, 136.78it/s]Loading weights:  54%|█████▍    | 184/339 [00:01<00:01, 141.90it/s]Loading weights:  61%|██████▏   | 208/339 [00:01<00:00, 150.79it/s]Loading weights:  68%|██████▊   | 229/339 [00:01<00:00, 164.54it/s]Loading weights:  73%|███████▎  | 246/339 [00:02<00:00, 146.78it/s]Loading weights:  79%|███████▉  | 268/339 [00:02<00:00, 153.34it/s]Loading weights:  84%|████████▍ | 284/339 [00:02<00:00, 147.56it/s]Loading weights:  90%|████████▉ | 304/339 [00:02<00:00, 146.22it/s]Loading weights:  97%|█████████▋| 328/339 [00:02<00:00, 142.35it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.94it/s]
+NL->PL LORA model loaded from '../model/Qwen_NL_to_PL_LORA_Adapter'
+FineTunedGenerator using device: cuda:0
+
+Debug: Checking dataset languages from index 66...
+Found 16 C++ records in validation range
+Other languages: {'python': 17}
+Unprocessable records in range: 0
+
+Starting computation for 33 records (starting from index 66, each with 3 tries per phase)...
+
+Synchronizing CUDA and empty cache
+Using cached dataset with 100 samples...
+DEBUG: First record language: 'C++', is_processable: True
+Processing record 1/33 (language: C++)...
+  Generating documentation for 4f396e14...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+This C++ program is a unit test suite for a distributed file system metadata server (`MDS`). It uses Google Test framework to define various test cases that exercise different functionalities of the `MDS` server, such as file operations (`fstat`, `mknod`) and directory operations (`mkdir`, `listdir`). The tests ensure that the server handles these operations correctly, including error conditions like non-existent files or directories.
+
+### Classes and Structs
+
+#### Class: `ServerTest`
+
+**Purpose:**  
+The `ServerTest` class encapsulates the setup and teardown of the testing environment, as well as provides methods to perform various file and directory operations on the `MDS` server.
+
+**Fields:**
+- `dbname_`: A string representing the temporary database name used for testing.
+- `mds_env_`: An instance of `MDSEnv`, which represents the environment settings for the `MDS`.
+- `mds_`: A pointer to an `MDS` object, which is the core metadata server.
+- `mdb_`: A pointer to an `MDB` object, which manages the database operations.
+- `db_`: A pointer to a `DB` object, which represents the underlying database.
+
+**Methods:**
+
+
+*************
+Code:
+```
+#include <gtest/gtest.h>
+
+#include "mds/metadata_server.h"
+#include "mds/metadata_db.h"
+
+using namespace mds;
+
+namespace {
+
+class ServerTest : public ::testing::Test {
+public:
+    ServerTest() : dbname_("test_mds") {}
+
+    virtual void SetUp() {
+        ASSERT_TRUE(mds_env_.CreateIfMissing(dbname_, true).ok());
+        ASSERT_OK(mds_env_.NewWritableFile(dbname_ + "/MANIFEST-000001", &file_));
+        ASSERT_OK(file_->Append("dummy"));
+
+        ASSERT_OK(mdb_->Open(&mds_));
+        ASSERT_OK(mds_->LoadMetadata());
+        mdb_ = nullptr;
+    }
+
+    virtual void TearDown() {
+        if (file_) delete file_;
+        mds_env_.DeleteDir(dbname_);
+    }
+
+protected:
+    std::string dbname_;
+    MDSEnv mds_env_;
+    MDS* mds_ = nullptr;
+    MDB* mdb_ = nullptr;
+    SequentialFile* file_ = nullptr;
+};
+
+TEST_F(ServerTest, fstat) {
+    Stat stat;
+    Status s = mds_->FStat("/a/b/c/d/e", &stat);
+    EXPECT_FALSE(s.ok()) <<
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5652, GraphCodeBERTScore: 0.9614, Average: 0.7633
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.5
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f396e14fe, 'nl_pl_best_ast_score': 0.5652, 'nl_pl_best_graphcodebert_score': 0.9614, 'nl_pl_best_average_score': 0.7633
+	Recording NL->PL1->PL2 result: 'hexsha': 4f396e14fe, 'nl_pl1_pl2_best_ast_score': 0.0714, 'nl_pl1_pl2_best_average_score': 0.3936
+
+Processed 2/33 records. Current record 4f396e14fe... NL->PL Avg Score: 0.7633, NL->C++->Py Avg Score: 0.3936
+Processing record 3/33 (language: C++)...
+  Generating documentation for 4f39c862...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+The provided source code defines a class `cCollisionAABBNode` within the `chai3d` namespace. This class is part of a larger system designed for collision detection using Axis-Aligned Bounding Box (AABB) trees. The primary purpose of this class is to manage individual nodes in the AABB tree, which are responsible for storing bounding boxes and managing child nodes.
+
+### Classes and Structs
+
+#### Class: `cCollisionAABBNode`
+
+**Purpose:**  
+This class represents a single node in an AABB tree. Each node contains information about its bounding box, depth in the tree, type, and pointers to its left and right child nodes.
+
+**Fields:**
+- `m_bbox`: A `cBoundingBox` object representing the axis-aligned bounding box associated with the node.
+- `m_depth`: An integer indicating the depth of the node in the AABB tree.
+- `m_nodeType`: An enumeration (`C_AABB_NODE_TYPE`) indicating whether the node is a leaf or internal node.
+- `m_leftSubTree`: An integer index pointing to the left child node in the tree.
+- `m_rightSubTree`: An integer index pointing to the right child node in the tree.
+
+**Methods:**
+
+1. **Constructor:**
+
+*************
+Code:
+// Copyright (C) 2017-2018 European Centre for Medium-Range Weather Forecasts (ECMWF).
+//
+// This software is licensed under the terms of the Apache Licence Version 2.0
+// which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+//
+// In applying this licence, ECMWF does not waive the privileges and immunities
+// granted to it by virtue of its status as an intergovernmental organisation nor
+// does it submit to any jurisdiction.
+//
+
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
+
+#include "oops/util/Logger.h"
+
+namespace oops {
+
+static Log& log = util::logger("oops::File");
+
+// -----------------------------------------------------------------------------
+
+File::File(const Parameters & parameters)
+  : filename_(parameters.filename().value()),
+    mode_(parameters.mode().value())
+{
+  if (!eckit::filesystem::exists(filename_)) {
+    log.info() << "Creating file: " << filename_;
+  }
+
+  handle_.open(filename_, mode_);
+}
+
+// -----------------------------------------------------------------------------
+// Destructor
+
+File::~File() {
+  try {
+    handle_.close();
+  } catch (...) {
+    // ignore exceptions on
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6129, GraphCodeBERTScore: 0.8281, Average: 0.7205
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f39c862d9, 'nl_pl_best_ast_score': 0.6129, 'nl_pl_best_graphcodebert_score': 0.8281, 'nl_pl_best_average_score': 0.7205
+	Recording NL->PL1->PL2 result: 'hexsha': 4f39c862d9, 'nl_pl1_pl2_best_ast_score': 0.2703, 'nl_pl1_pl2_best_average_score': 0.5326
+
+Processed 4/33 records. Current record 4f39c862d9... NL->PL Avg Score: 0.7205, NL->C++->Py Avg Score: 0.5326
+Processing record 5/33 (language: C++)...
+  Generating documentation for 4f3bc97f...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Program Overview
+
+This C++ program is designed to find the smallest number greater than or equal to `a` that ends with exactly `n` digits and is divisible by `b`. If no such number exists, it outputs `-1`.
+
+### Classes and Structs
+
+The program does not define any classes or structs.
+
+### Global Variables and Standalone Functions
+
+#### Constants
+- `MOD`: Not used in this program.
+- `INF`: A large value representing infinity (`1E18`).
+- `EPS`: A small value representing a tolerance level for floating-point comparisons (`1E-10`).
+
+#### Macros
+- `_USE_MATH_DEFINES`: Enables the use of mathematical constants like `M_PI`.
+- `FOR(i, a, b)`: A macro for forward iteration from `a` to `b-1`.
+- `ROF(i, a, b)`: A macro for reverse iteration from `b-1` to `a`.
+- `FORE(a, x)`: A macro for iterating over elements in container `x`.
+- `eb`: A shorthand for `emplace_back`, which adds an element to the back of a container.
+- `mp`: A shorthand for `make_pair`, creating a pair of two values.
+
+*************
+Code:
+// Problem: http://codeforces.com/contest/764/problem/D
+// Author: github.com/lzl124631x
+// Time: O(NlogN)
+// Space: O(N)
+class Solution {
+public:
+    typedef long long LL;
+    int findSmallestNumber(int n, int b, int a) {
+        if (b == 1) return a; // Special case when b is 1
+        vector<LL> q = { 1 }; // Initialize queue with starting number 1
+        while (q.size() < n) {
+            vector<LL> tmp;
+            LL sz = q.size();
+            FOR(i, 0, sz) {
+                LL num = q[i];
+                LL d = num % 10; // Get the last digit of the current number
+                ROF(j, 0, d + 1) {
+                    LL next = num * 10 + j; // Form the next number by appending digit j
+                    if (next >= a && next % b == 0) return next; // Check if the new number meets the criteria
+                    tmp.eb(next); // Add the new number to temporary list
+                }
+            }
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4231, GraphCodeBERTScore: 0.8530, Average: 0.6381
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f3bc97ffe, 'nl_pl_best_ast_score': 0.4231, 'nl_pl_best_graphcodebert_score': 0.8530, 'nl_pl_best_average_score': 0.6381
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3bc97ffe, 'nl_pl1_pl2_best_ast_score': 0.3529, 'nl_pl1_pl2_best_average_score': 0.6311
+
+Processed 6/33 records. Current record 4f3bc97ffe... NL->PL Avg Score: 0.6381, NL->C++->Py Avg Score: 0.6311
+Processing record 7/33 (language: C++)...
+  Generating documentation for 4f3be9cd...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+This C++ code provides a class `v4l2Device` that encapsulates functionality for interacting with a Video4Linux2 (V4L2) device. The class handles opening and configuring the V4L2 device, managing video buffers, and capturing video frames. It also includes support for multi-threading through a polling thread that waits for new video frames and processes them.
+
+### Classes and Structs
+
+#### Class: `v4l2Device`
+
+**Purpose:**  
+The `v4l2Device` class manages the interaction with a V4L2 device, including opening the device, setting up video parameters, allocating buffers, and capturing video frames.
+
+**Fields:**
+- `m_devname`: A string representing the path to the V4L2 device file.
+- `m_height`, `m_width`: Integers representing the height and width of the video frames.
+- `m_num_buffers`: An integer representing the number of video buffers to allocate.
+- `m_MipiPort`, `m_MipiMode`: Enumerations representing the MIPI port and mode.
+- `m_v4l2Format`: An enumeration representing the V4L2 pixel format.
+- `m_fd`: An integer representing the file descriptor
+*************
+Code:
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <cstring>
+
+#include "v4l2device.h"
+#include "log.h"
+
+namespace {
+
+enum {
+    NUM_BUFFERS = 10,
+};
+
+struct buffer {
+    void *start;
+    size_t length;
+};
+
+} // namespace
+
+void v4l2Device::init() {
+    if (open_device()) {
+        log_error("Failed to open %s\n", m_devname.c_str());
+        return;
+    }
+
+    if (find_format(m_v4l2Format)) {
+        log_error("Format not found\n");
+        close_device();
+        return;
+    }
+    log_info("Using pixelformat '%c%c%c%c'\n",
+             fourcc_code(m_fmt.fmt.pix.pixelformat)[0],
+             fourcc_code(m_fmt.fmt.pix.pixelformat)[1],
+             fourcc_code(m_fmt.fmt.pix.pixelformat)[2],
+             fourcc_code(m_fmt.fmt.pix.pixelformat)[3]);
+
+    if (requestbuffers(NUM_BUFFERS)) {
+        log_error("Requestbuffers failed\n");
+        close_device();
+        return;
+    }
+
+    if (querybuf()) {
+        log_error
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.3393, GraphCodeBERTScore: 0.9570, Average: 0.6482
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.7
+	Recording result: 'hexsha': 4f3be9cdfd, 'nl_pl_best_ast_score': 0.3393, 'nl_pl_best_graphcodebert_score': 0.9570, 'nl_pl_best_average_score': 0.6482
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3be9cdfd, 'nl_pl1_pl2_best_ast_score': 0.1818, 'nl_pl1_pl2_best_average_score': 0.5619
+
+Processed 8/33 records. Current record 4f3be9cdfd... NL->PL Avg Score: 0.6482, NL->C++->Py Avg Score: 0.5619
+Processing record 9/33 (language: C++)...
+  Generating documentation for 4f3c5ca1...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Program Overview
+
+This C++ code defines a class `StartupOptions` that manages various startup options for a build tool called Blaze. These options include settings related to the build environment, such as paths, performance tuning, and debugging flags. The class also includes methods to process command-line arguments and validate them against predefined flags.
+
+### Classes and Structs
+
+#### `StartupFlag`
+
+- **Purpose**: Base class for different types of startup flags.
+- **Fields**:
+  - None explicitly listed, but likely contains virtual methods for validation and parameter handling.
+- **Methods**:
+  - `virtual ~StartupFlag()`: Destructor.
+  - `virtual bool NeedsParameter() const`: Determines if the flag requires a parameter.
+  - `virtual bool IsValid(const std::string &arg) const`: Checks if the given argument is a valid instance of this flag.
+
+#### `UnaryStartupFlag`
+
+- **Purpose**: Represents a startup flag that requires a parameter.
+- **Inheritance**: Inherits from `StartupFlag`.
+- **Methods**:
+  - Inherits all methods from `StartupFlag`.
+
+#### `NullaryStartupFlag`
+
+- **Purpose**: Represents a startup flag that does not require a parameter.
+- **Inheritance**: Inherits from `StartupFlag`.
+- **Methods**:
+
+*************
+Code:
+Copyright (c) 2014 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. #include "tools/build/blaze/config/startup_options.h"
+
+#include <algorithm>
+#include <memory>
+
+#include "base/command_line.h"
+#include "base/logging.h"
+#include "base/macros.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/values.h"
+#include "tools/build/blaze/config/configuration.h"
+#include "tools/build/blaze/util/build_config.h"
+#include "tools/build/libsyzygy/base/file_version_info.h"
+#include "third_party/syzygy/core/address_space.h"
+
+namespace blaze {
+
+using base::CommandLine;
+using base::StringPiece;
+
+// static
+const StartupFlag* StartupOptions::flags[] = {
+    new NullaryStartupFlag("--allow_undefined_symbols"),
+    new UnaryStartupFlag("--build_python_files_with_pywrap2"),
+    new NullaryStartupFlag("--clean"),
+    new NullaryStartupFlag("--compile_all_proto_files"),
+    new NullaryStartupFlag("--compile_headers_in_binary"),
+    new NullaryStartupFlag("--disable_caching"),
+    new NullaryStartupFlag
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.2037, GraphCodeBERTScore: 0.9585, Average: 0.5811
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f3c5ca142, 'nl_pl_best_ast_score': 0.2037, 'nl_pl_best_graphcodebert_score': 0.9585, 'nl_pl_best_average_score': 0.5811
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3c5ca142, 'nl_pl1_pl2_best_ast_score': 0.3390, 'nl_pl1_pl2_best_average_score': 0.6129
+
+Processed 10/33 records. Current record 4f3c5ca142... NL->PL Avg Score: 0.5811, NL->C++->Py Avg Score: 0.6129
+Processing record 11/33 (language: C++)...
+  Generating documentation for 4f3f451a...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+This C++ code snippet is part of a World of Warcraft server script designed to manage the behavior of a boss named Selin Fireheart in the Magister's Terrace zone. The script uses the Mangos engine, which is a popular open-source MMORPG server framework. The primary goal of this script is to define the AI behavior for both Selin Fireheart and the Fel Crystals he controls during combat.
+
+### Classes and Structs
+
+#### `boss_selin_fireheartAI`
+
+**Purpose:** This class represents the AI controller for Selin Fireheart. It inherits from `ScriptedAI` and handles all the logic related to Selin's actions during combat.
+
+**Fields:**
+- `m_pInstance`: Pointer to the current instance of the game world.
+- `m_bIsRegularMode`: Boolean indicating whether the game is in regular difficulty mode.
+- `Crystals`: List of GUIDs representing the Fel Crystals controlled by Selin.
+- `DrainLifeTimer`, `DrainManaTimer`, `FelExplosionTimer`, `DrainCrystalTimer`, `EmpowerTimer`: Timers controlling various actions like draining life, mana, casting Fel Explosion, and managing crystals.
+- `IsDraining`, `DrainingCrystal`:
+*************
+Code:
+//selin fireheart
+#include "ScriptMgr.h"
+#include "ScriptedCreature.h"
+
+enum eSpells
+{
+    SPELL_FEL_EXPLOSION = 94865,
+    SPELL_DRAIN_LIFE = 94707,
+    SPELL_DRAIN_MANA = 94721,
+    SPELL_EMPROWER = 94833,
+
+    SPELL_CREATE_FEL_CRYSTAL = 95698,
+    SPELL_DESTROY_FEL_CRYSTAL = 95697,
+};
+
+enum eCreatures
+{
+    NPC_FEL_CRYSTAL = 56694,
+};
+
+enum eEvents
+{
+    EVENT_FEL_EXPLOSION = 1,
+    EVENT_DRAIN_LIFE,
+    EVENT_DRAIN_MANA,
+    EVENT_EMPOWER,
+};
+
+class boss_selin_fireheart : public CreatureScript
+{
+public:
+    boss_selin_fireheart() : CreatureScript("boss_selin_fireheart") {}
+
+    struct boss_selin_fireheartAI : public ScriptedAI
+    {
+        boss_selin_fireheartAI(Creature* creature) : ScriptedAI(creature)
+        {
+            m_pInstance = creature->GetInstanceScript();
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.3617, GraphCodeBERTScore: 0.8926, Average: 0.6271
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f3f451ae5, 'nl_pl_best_ast_score': 0.3617, 'nl_pl_best_graphcodebert_score': 0.8926, 'nl_pl_best_average_score': 0.6271
+	Recording NL->PL1->PL2 result: 'hexsha': 4f3f451ae5, 'nl_pl1_pl2_best_ast_score': 0.2045, 'nl_pl1_pl2_best_average_score': 0.5486
+
+Processed 12/33 records. Current record 4f3f451ae5... NL->PL Avg Score: 0.6271, NL->C++->Py Avg Score: 0.5486
+Processing record 13/33 (language: C++)...
+  Generating documentation for 4f4043f2...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### High-Level Overview
+
+This source code is part of a larger system designed to optimize neural network graphs using the Intel Neural Network Library (NGraph). Specifically, it contains implementations for fusion and elimination passes related to concatenation operations. These passes aim to simplify the graph by merging redundant or unnecessary concatenations, thereby improving performance and reducing computational overhead.
+
+### Classes and Structs
+
+#### `ngraph::pass::ConcatElimination`
+
+**Purpose:** This class implements a pass to eliminate redundant concatenation operations where the input and output shapes are identical.
+
+**Fields:**
+- None
+
+**Methods:**
+- `construct_concat_elimination()`: Constructs a pattern matcher to identify and eliminate redundant concatenation operations.
+
+#### `ngraph::pass::SelfConcatFusion`
+
+**Purpose:** This class implements a pass to fuse multiple consecutive self-concatenation operations into a single operation, which can significantly reduce the number of operations in the graph.
+
+**Fields:**
+- `m_concat_pattern_vectors`: A vector of vectors containing nodes that form potential patterns of concatenated operations.
+
+**Methods:**
+- `run_on_function(std::shared_ptr<Function> function)`: Runs the fusion pass on a given function.
+- `construct_concat_patterns(const std::shared_ptr<pattern::Matcher>&
+*************
+Code:
+/*
+ * Copyright (C) 2018-2023 Intel Corporation
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "concat_optimization.hpp"
+
+#include <ngraph/pattern/op/wrap_type.hpp>
+#include <ngraph/pattern/matcher.hpp>
+
+using namespace ngraph;
+using namespace ngraph::pattern;
+
+namespace ngraph {
+    namespace pass {
+
+        ConcatElimination::ConcatElimination() : GraphRewrite(), m_ops() {
+            construct_concat_elimination();
+        }
+
+        void ConcatElimination::construct_concat_elimination() {
+            auto concat = wrap_type<opset1::Concat>(InputVector{any_input(), any_input()}, true);
+
+            auto callback = [](pattern::Matcher &m) {
+                NGRAPH_CHECK(m.get_match_root(),
+                            "Expected Concat as root node",
+                            "but got ",
+                            m.get_match_root()->get_type_info());
+                return false;
+            };
+
+            auto concat_callback = make_shared<Matcher>(concat, "ConcatElimination");
+            this->add_matcher(concat_callback, callback);
+        }
+
+        bool SelfConcatFusion::run_on_function(std::shared_ptr<Function> function) {
+            bool result = false;
+            auto param_to_nodes = build
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5490, GraphCodeBERTScore: 0.8877, Average: 0.7184
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.5
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f4043f254, 'nl_pl_best_ast_score': 0.5490, 'nl_pl_best_graphcodebert_score': 0.8877, 'nl_pl_best_average_score': 0.7184
+	Recording NL->PL1->PL2 result: 'hexsha': 4f4043f254, 'nl_pl1_pl2_best_ast_score': 0.2830, 'nl_pl1_pl2_best_average_score': 0.6049
+
+Processed 14/33 records. Current record 4f4043f254... NL->PL Avg Score: 0.7184, NL->C++->Py Avg Score: 0.6049
+Processing record 15/33 (language: C++)...
+  Generating documentation for 4f40fb04...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+This header file contains CUDA-specific algorithms for handling tensors. It includes two template functions, `get_grid_dims` and `get_grid_dims2`, which calculate the appropriate grid dimensions and thread work sizes for CUDA kernels based on the shape of the tensor region. These functions are essential for optimizing the execution of GPU-based computations.
+
+### Classes and Structs
+
+#### None
+
+There are no classes or structs defined in this header file. All functionality is encapsulated within static template functions.
+
+### Functions and Methods
+
+#### `get_grid_dims`
+
+**Purpose:**
+Calculates the grid dimensions and thread work size for a CUDA kernel based on the given tensor region using a fixed block size and maximum thread work size.
+
+**Parameters:**
+- `region`: A reference to a `Shape` object representing the dimensions of the tensor region.
+- `grid_dims`: A reference to a `dim3` object where the calculated grid dimensions will be stored.
+- `thread_work_size`: A reference to an integer where the calculated thread work size will be stored.
+
+**Return Value:**
+- **None**: The function modifies the `grid_dims` and `thread_work_size` parameters directly.
+
+**Algorithm:**
+1. Determine the number of dimensions (`nd`) in the tensor region.
+
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (35082 > 32768). Running this sequence through the model will result in indexing errors
+*************
+Code:
+```
+static void get_grid_dims(const Shape &region,
+                         dim3 &grid_dims,
+                         int &thread_work_size)
+{
+  const unsigned nd = region.dims.size();
+  // Fixed block size
+  const unsigned bs = 16;
+
+  if (nd == 0) {
+    grid_dims.x = 1;
+    grid_dims.y = 1;
+    grid_dims.z = 1;
+    thread_work_size = 1;
+    return;
+  }
+
+  if (nd == 1) {
+    thread_work_size = std::min<int>(bs, region.dims[0]);
+    grid_dims.x = (region.dims[0] + thread_work_size - 1) / thread_work_size;
+    grid_dims.y = 1;
+    grid_dims.z = 1;
+    return;
+  }
+  if (nd == 2) {
+    thread_work_size =
+        std::min<int>(bs * bs, region.dims[0] * region.dims[1]);
+    grid_dims.x = (region.dims[0] + bs - 1) / bs;
+    grid_dims.y = (region.dims[1] + bs - 1) / bs;
+    grid_dims.z =
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.5610, GraphCodeBERTScore: 0.9653, Average: 0.7632
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Recording result: 'hexsha': 4f40fb04ac, 'nl_pl_best_ast_score': 0.5610, 'nl_pl_best_graphcodebert_score': 0.9653, 'nl_pl_best_average_score': 0.7632
+	Recording NL->PL1->PL2 result: 'hexsha': 4f40fb04ac, 'nl_pl1_pl2_best_ast_score': 0.0541, 'nl_pl1_pl2_best_average_score': 0.3771
+
+Processed 16/33 records. Current record 4f40fb04ac... NL->PL Avg Score: 0.7632, NL->C++->Py Avg Score: 0.3771
+Processing record 17/33 (language: C++)...
+  Generating documentation for 4f40fe19...
+Warning: Input length 35082 >= model max 32768. Truncating.
+Exceptinon: CUDA out of memory. Tried to allocate 1.16 GiB. GPU 0 has a total capacity of 47.36 GiB of which 958.12 MiB is free. Including non-PyTorch memory, this process has 45.89 GiB memory in use. Of the allocated memory 45.02 GiB is allocated by PyTorch, and 376.45 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+48334685184
+48729423872
+48334685184

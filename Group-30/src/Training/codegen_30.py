@@ -1394,9 +1394,10 @@ def materialize_and_enrich_dataset(
             processed_count += 1
 
             # Clear unused CUDA memory after processing each record
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                gc.collect()
+            # DISABLED: CUDA cache clearing and garbage collection commented out
+            # if torch.cuda.is_available():
+            #     torch.cuda.empty_cache()
+            #     gc.collect()
 
     print("Creating enriched dataset from generator (this may take a long time for full dataset)...")
     materialized_dataset = Dataset.from_generator(generator_function)
@@ -1553,13 +1554,14 @@ class BaselineData(metaclass=SingletonMeta):
         gc.collect()
 
         # Clear GPU cache if available
-        if torch.cuda.is_available():
-            try:
-                torch.cuda.empty_cache()
-                torch.cuda.synchronize()
-                print("GPU cache cleared.")
-            except RuntimeError as e:
-                print(f"Could not clear GPU cache: {e}")
+        # DISABLED: CUDA cache clearing and garbage collection commented out
+        # if torch.cuda.is_available():
+        #     try:
+        #         torch.cuda.empty_cache()
+        #         torch.cuda.synchronize()
+        #         print("GPU cache cleared.")
+        #     except RuntimeError as e:
+        #         print(f"Could not clear GPU cache: {e}")
 
     def _load_codegen_model(self):
         """
@@ -1998,9 +2000,10 @@ class BaselineData(metaclass=SingletonMeta):
                     continue
 
             # Clear unused CUDA memory before processing each record
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                gc.collect()
+            # DISABLED: CUDA cache clearing and garbage collection commented out
+            # if torch.cuda.is_available():
+            #     torch.cuda.empty_cache()
+            #     gc.collect()
 
             if not record.get('is_processable_code', True):
                 print(f"compute baseline, record no processable")
@@ -2176,14 +2179,15 @@ class BaselineData(metaclass=SingletonMeta):
                 )
 
             # Option 2: Clear GPU cache after each record to prevent memory fragmentation
-            if torch.cuda.is_available():
-                try:
-                    print("\tClear GPU cache after each record to prevent memory fragmentation")
-                    torch.cuda.empty_cache()
-                    gc.collect()
-                except RuntimeError:
-                    print("GPU is in bad state, skip cache clearing")
-                    pass
+            # DISABLED: CUDA cache clearing and garbage collection commented out
+            # if torch.cuda.is_available():
+            #     try:
+            #         print("\tClear GPU cache after each record to prevent memory fragmentation")
+            #         torch.cuda.empty_cache()
+            #         gc.collect()
+            #     except RuntimeError:
+            #         print("GPU is in bad state, skip cache clearing")
+            #         pass
 
             print(f"\tRecording result: 'hexsha': {original_hexsha[:10]}, 'nl_pl_best_ast_score': {best_ast_score_nl_pl:0.4f}, 'nl_pl_best_graphcodebert_score': {best_graphcodebert_score_nl_pl:0.4f}, 'nl_pl_best_average_score': {best_average_score_nl_pl:0.4f}")
 
@@ -2321,15 +2325,32 @@ os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # For better error reporting
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(
-    description="Run baseline evaluation and LORA fine-tuning for code generation.",
+    description="Run baseline evaluation, LORA fine-tuning, and validation for code generation.",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog="""
 Examples:
-  python codegen_30.py                    # Use default 10 records
-  python codegen_30.py -n 100             # Use 100 records
-  python codegen_30.py -c                 # Clean cached dataset and run with default records
-  python codegen_30.py -n 50 -c          # Clean cache and run with 50 records
+  python codegen_30.py -b              # Run baseline computation with default 10 records
+  python codegen_30.py -b -n 100       # Run baseline with 100 records
+  python codegen_30.py -b -n 50 -c     # Clean cache and run baseline with 50 records
+  python codegen_30.py -t -n 100       # Run LORA training with 100 records
+  python codegen_30.py -v -n 100       # Run validation with 100 records
+  python codegen_30.py -b -t -v        # Run all phases with default records
 """
+)
+parser.add_argument(
+    '-b', '--baseline',
+    action='store_true',
+    help='Run baseline computation'
+)
+parser.add_argument(
+    '-t', '--train',
+    action='store_true',
+    help='Run LORA training'
+)
+parser.add_argument(
+    '-v', '--validate',
+    action='store_true',
+    help='Run validation'
 )
 parser.add_argument(
     '-n', '--num-records',
@@ -2340,19 +2361,26 @@ parser.add_argument(
 parser.add_argument(
     '-c', '--clean',
     action='store_true',
-    help='Clean the cached dataset before running'
+    help='Clean the cached dataset before running (only for baseline)'
 )
 args = parser.parse_args()
 
+# Default to all phases if none specified
+run_baseline = args.baseline or (not args.baseline and not args.train and not args.validate)
+run_training = args.train
+run_validation = args.validate
+purge_cache = False
 # Handle clean option - clean before running, not exit
-if args.clean:
+if args.clean and run_baseline:
     import shutil
     cache_path = get_cache_path(args.num_records)
+    purge_cache = True
     if os.path.exists(cache_path):
         shutil.rmtree(cache_path)
         print(f"Local cached dataset purged: {cache_path}")
     else:
         print(f"No cached dataset found at: {cache_path}")
+
 
 # Check if GPU is in a usable state
 def is_gpu_usable():
@@ -2367,7 +2395,24 @@ def is_gpu_usable():
     except RuntimeError:
         return False
 
-print("\n--- Starting Baseline Evaluation for the entire dataset ---")
+# Print active options
+print("=" * 50)
+print("Active Options:")
+print(f"  - Baseline (-b)             : {'Enabled' if run_baseline else 'Disabled'}")
+print(f"  - Training (-t)             : {'Enabled' if run_training else 'Disabled'}")
+print(f"  - Validation (-v)           : {'Enabled' if run_validation else 'Disabled'}")
+print(f"  - Number of records to cache: {args.num_records}")
+print(f"  - Purge Cached Dataset      : {'True' if purge_cache else 'False'}")
+print("=" * 50)
+
+# Dataset split configuration (defined before conditional blocks so all phases can use them)
+# - Records 0 to MAX_DATASET_SIZE/3-1: Baseline computation
+# - Records MAX_DATASET_SIZE/3 to MAX_DATASET_SIZE*2/3-1: LORA training
+# - Records MAX_DATASET_SIZE*2/3 to MAX_DATASET_SIZE-1: LORA validation
+MAX_DATASET_SIZE = args.num_records
+MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 3
+MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 3
+MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 3
 
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized ---
 # This is crucial in interactive environments where class definitions might be re-run
@@ -2391,727 +2436,709 @@ if torch.cuda.is_available() and not is_gpu_usable():
     BaselineData._preferred_device = 'cpu'
 
 # Instantiate the BaselineData singleton with lazy loading (models loaded on demand)
-MAX_DATASET_SIZE = args.num_records
 print(f"Using dataset with {MAX_DATASET_SIZE} records")
 baseline_evaluator = BaselineData(num_samples = MAX_DATASET_SIZE, load_all_models=False)
 
-# Load all models needed for baseline computation
+# Load all models needed (required for all phases)
 baseline_evaluator._load_all_models()
 
-# Dataset split configuration:
-# - Records 0 to MAX_DATASET_SIZE/3-1: Baseline computation
-# - Records MAX_DATASET_SIZE/3 to MAX_DATASET_SIZE*2/3-1: LORA training
-# - Records MAX_DATASET_SIZE*2/3 to MAX_DATASET_SIZE-1: LORA validation
-MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 3
-MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 3
-MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 3
+if run_baseline:
+    print("\n--- Starting Baseline Evaluation for the entire dataset ---")
+    print(f"Processing {MAX_RECORDS_BASELINE} records for baseline evaluation")
 
-num_records_for_full_eval: Optional[int] = MAX_RECORDS_BASELINE
-# For testing with smaller dataset, uncomment:
-# num_records_for_full_eval = 10
+    num_records_for_full_eval: Optional[int] = MAX_RECORDS_BASELINE
+    # For testing with smaller dataset, uncomment:
+    # num_records_for_full_eval = 10
 
-num_generation_tries_eval = 3 # Number of tries for code generation per record
+    num_generation_tries_eval = 3 # Number of tries for code generation per record
 
-full_baseline_results = baseline_evaluator.compute_baseline(
-    num_records=num_records_for_full_eval, # Pass None here
-    num_tries=num_generation_tries_eval
-)
-
-# Compute baseline summary
-baseline_summary = baseline_evaluator.compute_summary(full_baseline_results)
-baseline_summary_desription = "\n\n"+"*"*30+"\n\n"
-baseline_summary_desription += f"\nBaseline Summary:"
-baseline_summary_desription += f"\n  Total records processed: {baseline_summary.get('total_records', 0)}"
-baseline_summary_desription += f"\n\t- Python records: {baseline_summary.get('python_records', 0)}"
-baseline_summary_desription += f"\n\t- C++ records: {baseline_summary.get('cpp_records', 0)}"
-baseline_summary_desription += f"\nNL->PL Average Score: {baseline_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
-baseline_summary_desription += f"\n\tNL->PL AST Score: {baseline_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
-baseline_summary_desription += f"\n\tNL->PL GCB Score: {baseline_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
-
-if 'python_nl_pl_phase' in baseline_summary:
-    py = baseline_summary['python_nl_pl_phase']
-    baseline_summary_desription += f"\n\tPython NL->PL Average Score: {py.get('average_score', 0):.4f} (n={py.get('count', 0)})"
-
-if 'cpp_nl_pl_phase' in baseline_summary:
-    cpp = baseline_summary['cpp_nl_pl_phase']
-    baseline_summary_desription += f"\n\tC++ NL->PL Average Score: {cpp.get('average_score', 0):.4f} (n={cpp.get('count', 0)})"
-
-if 'nl_pl1_pl2_phase' in baseline_summary:
-    pl1_pl2 = baseline_summary['nl_pl1_pl2_phase']
-    baseline_summary_desription += f"\n\tNL->PL1->PL2 Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
-
-print(baseline_summary_desription)
-# ============================================================================
-# LORA Training Phase
-# ============================================================================
-
-"""
-### Load the Codegen-350M-multi model
-#### Lora Adapt
-#### For the C++ and python code, get one, get the documentation, give model the documentation and let it generate the code.
-#### The generated code must be same as the code for which the documetation was generated.
-
-#### The second set of train is where we give documentation of a python code and have the model generate C++ Code:
-# 1. Take C++ code.
-# 2. generate documentation,
-# 3. Generated documentation input to model to genreate Python Code
-# 4. Python Code as input to model to generate C++ Code
-# 5. C++ code comparison gives the loss.
-"""
-
-from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
-
-#model_name_codegen = "Salesforce/codegen-350M-multi"
-model_name_codegen = "Qwen/Qwen2.5-Coder-7B-Instruct"
-
-# Load tokenizer and model for codegen
-tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
-# Ensure pad_token_id is explicitly set for the global tokenizer
-if tokenizer_codegen.pad_token_id is None:
-    tokenizer_codegen.pad_token_id = tokenizer_codegen.eos_token_id
-
-model_codegen = AutoModelForCausalLM.from_pretrained(
-    model_name_codegen,
-    torch_dtype=torch.float16,
-    device_map="auto",
-    trust_remote_code=False
-)
-# Enable gradient checkpointing to reduce memory usage
-model_codegen.gradient_checkpointing_enable()
-
-tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
-model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
-
-# Define LORA adapter save directories (defined once, used for both saving and loading)
-LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
-LORA_ADAPTER_NL_TO_PL = "../model/Qwen_NL_to_PL_LORA_Adapter"
-
-print("Printing modules in Qwen2.5-Coder-7B-Instruct model")
-for name, module in model_codegen.named_modules():
-    print(f"\t{name}")
-
-"""
-### LORA Adaptation for `Qwen/Qwen2.5-Coder-7B-Instruct`
-Set up Low-Rank Adaptation (LORA) for the `Qwen/Qwen2.5-Coder-7B-Instruct. This allows us to fine-tune the model efficiently without modifying all its parameters. We'll specify the LORA configuration, including the rank (`r`), alpha (`lora_alpha`), dropout (`lora_dropout`), and target modules (the layers to apply LORA to).
-
-"""
-
-from peft import LoraConfig, get_peft_model, TaskType
-
-
-# Define LORA configuration
-lora_config = LoraConfig(
-    task_type=TaskType.CAUSAL_LM, # For Causal Language Modeling
-    inference_mode=False,
-    r=16, # Rank of the update matrices
-    lora_alpha=32, # Scaling factor
-    lora_dropout=0.1, # Dropout probability
-    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"] # Apply LORA to Qwen2.5 projection layers
-)
-
-# Apply LORA to the codegen model
-model_codegen_lora = get_peft_model(model_codegen, lora_config)
-
-print("\n"+"*"*30+"\nLORA adapted model summary:")
-model_codegen_lora.print_trainable_parameters()
-print("\n"+"*"*30)
-
-import torch
-
-print(torch.cuda.memory_summary())
-
-#!nvidia-smi
-
-"""### Train the LORA Model (NL->PL1): Phase 1
-
-Train LORA using the filtered data set for C++ Code. Where for each record the model is trianed thrice to generate C++ code from its documentation.
-The ground truth C++ code is in the dataset and then there is the generated C++ Code for comparison.
-
-Comparison is performed using the AST coparision using the GraphCodeBertScore (for AST similarity) and CodeBERTScore for code similarity.
-
-After this training the model is expected to be able to convert a documenation to C++ code.
-
-Set up the `Trainer` from the `transformers` library to fine-tune our LORA-adapted `codegen` model.
-Define `TrainingArguments` to control the training process, such as the number of epochs, learning rate, and logging strategy.
-Use a `DataCollatorForLanguageModeling` to handle batching and masking for language modeling tasks.
-
-To save the best model based on validation accuracy , you would typically include a validation set and a custom `TrainerCallback` or configure `save_strategy='epoch'` and `load_best_model_at_end=True` with a specified `metric_for_best_model` in `TrainingArguments`.
-
-"""
-
-import torch
-from datasets import Dataset
-from tqdm import tqdm
-
-# --- BEGIN FIX: Ensure all singletons are fully re-initialized before use in this cell ---
-# This is crucial in interactive environments where class definitions might be re-run
-# or partial executions can leave singletons in an inconsistent state.
-# Reset Singleton states for all classes involved to ensure clean re-initfialization.
-print("Resetting singleton states for BaselineData and its dependencies")
-for cls_to_reset in [BaselineData, CodeDocumentationGenerator, AST, GraphCodeBERTScorer, FilteredDataset, LLMJudge, QwenModelBase]:
-    if cls_to_reset in SingletonMeta._instances:
-        del SingletonMeta._instances[cls_to_reset]
-    if hasattr(cls_to_reset, '_initialized'):
-        cls_to_reset._initialized = False
-    # QwenModelBase has a specific initialization flag
-    if hasattr(cls_to_reset, '_initialized_qwen'):
-        cls_to_reset._initialized_qwen = False
-# --- END FIX ---
-
-# # Instantiate the BaselineData singleton. This call will now guarantee a fresh instance.
-# baseline_evaluator = BaselineData(num_samples = MAX_DATASET_SIZE)
-# print("BaselineData instance ensured for LORA training dataset generation.")
-
-# Assuming baseline_evaluator is already initialized
-filtered_dataset_instance = baseline_evaluator._filtered_dataset
-documentation_generator = baseline_evaluator._documentation_generator
-
-# Collect C++ examples for LORA training (NL->C++)
-# Dataset split: records from MAX_RECORDS_BASELINE to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
-lora_nl_cpp_examples = []
-MAX_RECORDS_FOR_LORA_NL_CPP = MAX_RECORDS_LORA_TRAINING
-
-print(f"Collecting {MAX_RECORDS_FOR_LORA_NL_CPP} C++ records for LORA NL->C++ training (records {MAX_RECORDS_BASELINE} to {MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING - 1})...")
-
-# Reset iterators to start from begining
-filtered_dataset_instance.reset_iterator()
-# Get a fresh iterator for the C++ stream only
-cpp_stream_iterator = filtered_dataset_instance.get_cpp_stream_iterator()
-
-# Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
-skip_count = MAX_RECORDS_BASELINE
-skipped_records = 0
-while skipped_records < skip_count:
-    try:
-        next(cpp_stream_iterator)
-        skipped_records += 1
-        if skipped_records % 100 == 0:
-            print(f"Skipped {skipped_records} records for baseline...")
-    except StopIteration:
-        print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
-        break
-
-print(f"Skipped {skipped_records} records. Starting LORA training data collection from record {skip_count + 1}...")
-
-processed_cpp_records = 0
-for record in tqdm(cpp_stream_iterator, desc=f"Processing C++ records for LORA NL->C++ data {processed_cpp_records}/{MAX_RECORDS_FOR_LORA_NL_CPP}"):
-    if processed_cpp_records >= MAX_RECORDS_FOR_LORA_NL_CPP:
-        print(f"Reached max records for LORA NL->C++ training: {MAX_RECORDS_FOR_LORA_NL_CPP}")
-        break
-
-    if not record['is_processable_code'] or record['language'].lower() not in ['c++', 'cpp']:
-        print(f"Record not processable for language {record['language'].lower()}")
-        continue
-
-    # Use existing documentation from the record (generated by BaselineData if available)
-    # If not, generate new documentation as a fallback
-    documentation = record.get('documentation')
-    if not documentation or not documentation.strip():
-        # Fallback to generating documentation if not present or empty
-        documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
-        #documentation= baseline_evaluator._ast_processor.generate_ast_documentation(record['content'], record['language'])
-        if not documentation.strip():
-            print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
-            continue
-
-    lora_nl_cpp_examples.append({
-        "document": documentation,
-        "code": record['content'] # The ground truth C++ code
-    })
-    processed_cpp_records += 1
-    print(f"Processed {processed_cpp_records} C++ records for LORA NL->C++")
-
-    # Clear unused CUDA memory after processing each record
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        gc.collect()
-
-if lora_nl_cpp_examples:
-    training_dataset = Dataset.from_list(lora_nl_cpp_examples)
-    print(f"Successfully created training_dataset with {len(training_dataset)} examples for NL->C++.")
-else:
-    training_dataset = Dataset.from_list([])
-    print("No suitable training examples were generated for NL->C++.")
-
-from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
-
-# Tokenize the training dataset
-def tokenize_function(examples):
-    # Combine document (prompt) and code (target) into a single text string for Causal LM training
-    # The tokenizer will then process this combined text.
-    # DataCollatorForLanguageModeling with mlm=False will automatically handle shifting labels
-    # so that the loss is only computed on the target code part.
-    full_texts = []
-    for doc, code in zip(examples['document'], examples['code']):
-        prompt = f"Generate C++ code based on the following documentation:\n{doc}\nC++ code:\n"
-        full_texts.append(prompt + code)
-    #return tokenizer_codegen(full_texts, truncation=True, max_length=256)
-    return tokenizer_codegen(full_texts, truncation=True, max_length=512)
-
-# Map the training_dataset with the updated tokenize_function
-tokenized_training_dataset = training_dataset.map(tokenize_function, batched=True)
-
-# Data collator for language modeling (will handle padding and labels for CausalLM)
-data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer_codegen, mlm=False)
-
-# Define training arguments
-training_args = TrainingArguments(
-    output_dir="./codegen_lora_results",
-    per_device_train_batch_size=1, # Adjust based on GPU memory
-    gradient_accumulation_steps=8, # Increase if batch size is small
-    num_train_epochs=3, # Number of training epochs
-    learning_rate=2e-4,
-    logging_dir="./codegen_lora_logs",
-    logging_steps=10,
-    save_strategy="epoch", # Save checkpoint every epoch
-    save_total_limit=1, # Only keep the best model
-    fp16=True, # Enable mixed precision training to save memory
-    # evaluation_strategy="epoch", # Uncomment if you have a validation set
-    # load_best_model_at_end=True, # Uncomment if you have a validation set
-    # metric_for_best_model="eval_loss", # Uncomment if you have a validation set
-)
-
-print("Created Training arguments for LORA")
-
-# Initialize Trainer
-trainer = Trainer(
-    model=model_codegen_lora,
-    args=training_args,
-    train_dataset=tokenized_training_dataset,
-    # eval_dataset=tokenized_validation_dataset, # Uncomment if you have a validation set
-    data_collator=data_collator,
-)
-print("\n"+"="*30+"\n")
-print("Created Trainer for LORA")
-# Start training
-print("Starting LORA training for Phase 1 NL->PL1...")
-trainer.train()
-print("LORA training for Phase 1 NL->PL1 complete.")
-print("\n"+"="*30+"\n")
-
-# Save the final LORA model (or the best model if validation is used)
-model_codegen_lora.save_pretrained(LORA_ADAPTER_NL_TO_PL)
-print(f"LORA adapter model saved to '{LORA_ADAPTER_NL_TO_PL}'.")
-print("\n"+"="*30+"\n")
-
-"""### LORA Training Phase 2 (PL1->PL2): Python to C++  Code Generation
-This phase aims to train the LORA-adapted model to translate Python to C++ . The process involves:
-1.  **Extract C++ Data**: Obtain records from the C++ stream of the `FilteredDataset`.
-2.  **Generate  Documentation**: For each original C++ code snippet, generate its documentation using `CodeDocumentationGenerator` if the documentation does not already exist.
-3.  **Generate Python Code**: Using the *base* `Qwen` model (not the LORA-adapted one), generate Python code based on the C++ documentation. This generated Python code will serve as the *input prompt* for the LORA training. The Python code is genereated three times and the best out three is taken as the Python code for the record. LLM Judge is used to decide which of the three is the best.
-4.  **LORA Training Pair**: The LORA model will be trained on pairs of (`generated_python_code`, `original_cpp_code`), effectively learning to translate from Python back to C++.
-This is a specific form of code-to-code translation where the Python code serves as the source and C++  code as the target.
-
-#### NL -> PL1 from fine tuned cogden model
-"""
-
-import torch
-from datasets import Dataset
-from tqdm import tqdm
-import os
-
-print("Generating LORA training dataset for C++ to Python translation...")
-
-# Helper function to generate code using the LORA-tuned model (User Requirement 2)
-def generate_code_from_documentation(model, tokenizer, documentation: str, target_lang: str, device: str) -> str:
-    prompt = f"Convert the following documentation to {target_lang} code:\n{documentation}\n{target_lang} code:"
-    inputs = tokenizer(prompt, return_tensors="pt").to(device)
-    input_ids = inputs["input_ids"]
-    attention_mask = inputs["attention_mask"]
-
-    output_ids = model.generate(
-        input_ids,
-        attention_mask=attention_mask,
-        max_new_tokens=256,
-        do_sample=True,
-        top_k=50,
-        num_return_sequences=1,
-        pad_token_id=tokenizer.eos_token_id
+    full_baseline_results = baseline_evaluator.compute_baseline(
+        num_records=num_records_for_full_eval, # Pass None here
+        num_tries=num_generation_tries_eval
     )
-    generated_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
-    code_prefix = f"{target_lang} code:"
-    if code_prefix in generated_text:
-        generated_code = generated_text.split(code_prefix, 1)[1].strip()
-    else:
-        generated_code = generated_text.strip()
+    # Compute baseline summary
+    baseline_summary = baseline_evaluator.compute_summary(full_baseline_results)
+    baseline_summary_desription = "\n\n"+"*"*30+"\n\n"
+    baseline_summary_desription += f"\nBaseline Summary:"
+    baseline_summary_desription += f"\n  Total records processed: {baseline_summary.get('total_records', 0)}"
+    baseline_summary_desription += f"\n\t- Python records: {baseline_summary.get('python_records', 0)}"
+    baseline_summary_desription += f"\n\t- C++ records: {baseline_summary.get('cpp_records', 0)}"
+    baseline_summary_desription += f"\nNL->PL Average Score: {baseline_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+    baseline_summary_desription += f"\n\tNL->PL AST Score: {baseline_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+    baseline_summary_desription += f"\n\tNL->PL GCB Score: {baseline_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
 
-    if documentation in generated_code:
-        generated_code = generated_code.replace(documentation, "").strip()
-    return generated_code
+    if 'python_nl_pl_phase' in baseline_summary:
+        py = baseline_summary['python_nl_pl_phase']
+        baseline_summary_desription += f"\n\tPython NL->PL Average Score: {py.get('average_score', 0):.4f} (n={py.get('count', 0)})"
 
-pl1_to_pl2_training_examples = []
-processed_python_records = 0
-MAX_RECORDS_FOR_LORA_CPP_TO_PY = MAX_RECORDS_LORA_TRAINING
+    if 'cpp_nl_pl_phase' in baseline_summary:
+        cpp = baseline_summary['cpp_nl_pl_phase']
+        baseline_summary_desription += f"\n\tC++ NL->PL Average Score: {cpp.get('average_score', 0):.4f} (n={cpp.get('count', 0)})"
 
-# Unload models not needed for LORA training to free memory
-baseline_evaluator.unload_model("qwen_generator")
-baseline_evaluator.unload_model("graphcodebert")
-baseline_evaluator.unload_model("ast")
+    if 'nl_pl1_pl2_phase' in baseline_summary:
+        pl1_pl2 = baseline_summary['nl_pl1_pl2_phase']
+        baseline_summary_desription += f"\n\tPL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
 
-# Load only models needed for LORA training (memory efficient)
-baseline_evaluator.load_models_for_lora_training()
+    print(baseline_summary_desription)
 
-# Reset iterator and get fresh C++ stream
-baseline_evaluator._filtered_dataset.reset_iterator()
-pl2_stream_iterator = baseline_evaluator._filtered_dataset.get_cpp_stream_iterator()
+if run_training:
+    # ============================================================================
+    # LORA Training Phase
+    # ============================================================================
+    print(f"Processing {MAX_RECORDS_LORA_TRAINING} records for LORA training")
 
-# Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
-# Then process MAX_RECORDS_LORA_TRAINING records for training
-# Note: We need a new iterator since Phase 1 consumed the first MAX_RECORDS_LORA_TRAINING records after baseline
-skip_count = MAX_RECORDS_BASELINE
-skipped_records = 0
-while skipped_records < skip_count:
-    try:
-        next(pl2_stream_iterator)
-        skipped_records += 1
-        if skipped_records % 100 == 0:
-            print(f"Skipped {skipped_records} records for baseline...")
-    except StopIteration:
-        print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
-        break
+    """
+    ### Load the Codegen-350M-multi model
+    #### Lora Adapt
+    #### For the C++ and python code, get one, get the documentation, give model the documentation and let it generate the code.
+    #### The generated code must be same as the code for which the documetation was generated.
 
-print(f"Skipped {skipped_records} records. Starting Phase 2 LORA training data collection from record {skip_count + 1}...")
+    #### The second set of train is where we give documentation of a python code and have the model generate C++ Code:
+    # 1. Take C++ code.
+    # 2. generate documentation,
+    # 3. Generated documentation input to model to genreate Python Code
+    # 4. Python Code as input to model to generate C++ Code
+    # 5. C++ code comparison gives the loss.
+    """
 
-for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to Python data"):
-    if processed_python_records >= MAX_RECORDS_FOR_LORA_CPP_TO_PY:
-        print(f"Reached max records for C++ to Python LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
-        break
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    import torch
 
-    if not record['is_processable_code'] or record['language'].lower() not in ['c++', 'cpp']:
-        continue
+    #model_name_codegen = "Salesforce/codegen-350M-multi"
+    model_name_codegen = "Qwen/Qwen2.5-Coder-7B-Instruct"
 
-    original_pl2_code = record['content']
+    # Load tokenizer and model for codegen
+    tokenizer_codegen = AutoTokenizer.from_pretrained(model_name_codegen)
+    # Ensure pad_token_id is explicitly set for the global tokenizer
+    if tokenizer_codegen.pad_token_id is None:
+        tokenizer_codegen.pad_token_id = tokenizer_codegen.eos_token_id
 
-    # Step 1: Use the C++ documentation from the dataset itself (User Requirement 1)
-    pl2_documentation = record.get('documentation', '')
-    if not pl2_documentation.strip():
-        print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
-        # Fallback: Generate documentation if not present in the record
-        pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+    model_codegen = AutoModelForCausalLM.from_pretrained(
+        model_name_codegen,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=False
+    )
+    # Enable gradient checkpointing to reduce memory usage
+    model_codegen.gradient_checkpointing_enable()
 
-        if not pl2_documentation.strip(): # If still no documentation, skip
-            print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
+    tokenizer_codegen.pad_token = tokenizer_codegen.eos_token
+    model_codegen.config.pad_token_id = model_codegen.config.eos_token_id
+
+    # Define LORA adapter save directories (defined once, used for both saving and loading)
+    LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
+    LORA_ADAPTER_NL_TO_PL = "../model/Qwen_NL_to_PL_LORA_Adapter"
+
+    print("Printing modules in Qwen2.5-Coder-7B-Instruct model")
+    for name, module in model_codegen.named_modules():
+        print(f"\t{name}")
+
+    """
+    ### LORA Adaptation for `Qwen/Qwen2.5-Coder-7B-Instruct`
+    Set up Low-Rank Adaptation (LORA) for the `Qwen/Qwen2.5-Coder-7B-Instruct. This allows us to fine-tune the model efficiently without modifying all its parameters. We'll specify the LORA configuration, including the rank (`r`), alpha (`lora_alpha`), dropout (`lora_dropout`), and target modules (the layers to apply LORA to).
+
+    """
+
+    from peft import LoraConfig, get_peft_model, TaskType
+
+
+    # Define LORA configuration
+    lora_config = LoraConfig(
+        task_type=TaskType.CAUSAL_LM, # For Causal Language Modeling
+        inference_mode=False,
+        r=16, # Rank of the update matrices
+        lora_alpha=32, # Scaling factor
+        lora_dropout=0.1, # Dropout probability
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"] # Apply LORA to Qwen2.5 projection layers
+    )
+
+    # Apply LORA to the codegen model
+    model_codegen_lora = get_peft_model(model_codegen, lora_config)
+
+    print("\n"+"*"*30+"\nLORA adapted model summary:")
+    model_codegen_lora.print_trainable_parameters()
+    print("\n"+"*"*30)
+
+    import torch
+
+    print(torch.cuda.memory_summary())
+
+    #!nvidia-smi
+
+    """### Train the LORA Model (NL->PL1): Phase 1
+
+    Train LORA using the filtered data set for C++ Code. Where for each record the model is trianed thrice to generate C++ code from its documentation.
+    The ground truth C++ code is in the dataset and then there is the generated C++ Code for comparison.
+
+    Comparison is performed using the AST coparision using the GraphCodeBertScore (for AST similarity) and CodeBERTScore for code similarity.
+
+    After this training the model is expected to be able to convert a documenation to C++ code.
+
+    Set up the `Trainer` from the `transformers` library to fine-tune our LORA-adapted `codegen` model.
+    Define `TrainingArguments` to control the training process, such as the number of epochs, learning rate, and logging strategy.
+    Use a `DataCollatorForLanguageModeling` to handle batching and masking for language modeling tasks.
+
+    To save the best model based on validation accuracy , you would typically include a validation set and a custom `TrainerCallback` or configure `save_strategy='epoch'` and `load_best_model_at_end=True` with a specified `metric_for_best_model` in `TrainingArguments`.
+
+    """
+
+    import torch
+    from datasets import Dataset
+    from tqdm import tqdm
+
+    # Assuming baseline_evaluator is already initialized
+    filtered_dataset_instance = baseline_evaluator._filtered_dataset
+    documentation_generator = baseline_evaluator._documentation_generator
+
+    # Collect C++ examples for LORA training (NL->C++)
+    # Dataset split: records from MAX_RECORDS_BASELINE to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+    lora_nl_cpp_examples = []
+    MAX_RECORDS_FOR_LORA_NL_CPP = MAX_RECORDS_LORA_TRAINING
+
+    print(f"Collecting {MAX_RECORDS_FOR_LORA_NL_CPP} C++ records for LORA NL->C++ training (records {MAX_RECORDS_BASELINE} to {MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING - 1})...")
+
+    # Reset iterators to start from begining
+    filtered_dataset_instance.reset_iterator()
+    # Get a fresh iterator for the C++ stream only
+    cpp_stream_iterator = filtered_dataset_instance.get_cpp_stream_iterator()
+
+    # Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
+    skip_count = MAX_RECORDS_BASELINE
+    skipped_records = 0
+    while skipped_records < skip_count:
+        try:
+            next(cpp_stream_iterator)
+            skipped_records += 1
+            if skipped_records % 100 == 0:
+                print(f"Skipped {skipped_records} records for baseline...")
+        except StopIteration:
+            print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
+            break
+
+    print(f"Skipped {skipped_records} records. Starting LORA training data collection from record {skip_count + 1}...")
+
+    processed_cpp_records = 0
+    for record in tqdm(cpp_stream_iterator, desc=f"Processing C++ records for LORA NL->C++ data {processed_cpp_records}/{MAX_RECORDS_FOR_LORA_NL_CPP}"):
+        if processed_cpp_records >= MAX_RECORDS_FOR_LORA_NL_CPP:
+            print(f"Reached max records for LORA NL->C++ training: {MAX_RECORDS_FOR_LORA_NL_CPP}")
+            break
+
+        if not record['is_processable_code'] or record['language'].lower() not in ['c++', 'cpp']:
+            print(f"Record not processable for language {record['language'].lower()}")
             continue
 
-    best_llm_judge_score_for_intermediate_pl1 = -1.0
-    best_generated_pl1_code_for_phase2 = ""
-    num_tries_llm_judge = 3 # Generate PL2 code three times as requested
+        # Use existing documentation from the record (generated by BaselineData if available)
+        # If not, generate new documentation as a fallback
+        documentation = record.get('documentation')
+        if not documentation or not documentation.strip():
+            # Fallback to generating documentation if not present or empty
+            documentation = documentation_generator.generate_documentation(record['content'], max_length=256)
+            #documentation= baseline_evaluator._ast_processor.generate_ast_documentation(record['content'], record['language'])
+            if not documentation.strip():
+                print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
+                continue
 
-    # Step 2: Use the base Qwen model to generate Python code and use LLM Judge to pick the best
-    for _ in range(num_tries_llm_judge):
-        generated_pl1_candidate = baseline_evaluator._qwen_code_generator._generate_code_from_model(pl2_documentation, target_lang='python')
-        if generated_pl1_candidate.strip():
-            # Call the LLM Judge
-            llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(pl2_documentation, generated_pl1_candidate)
-            print(f"LLM Judge Score: {llm_judge_current_score}")
-            if llm_judge_current_score > best_llm_judge_score_for_intermediate_pl1:
-                best_llm_judge_score_for_intermediate_pl1 = llm_judge_current_score
-                best_generated_pl1_code_for_phase2 = generated_pl1_candidate
-            if llm_judge_current_score <= 0.3:
-                print(f"----------\nInput to LLM Judge\nDocumentation{pl2_documentation}\n------------\nCode:{generated_pl1_candidate}")
-
-    generated_pl1_code = best_generated_pl1_code_for_phase2
-
-    if generated_pl1_code.strip(): # Only add if PL1 code was successfully generated and deemed best
-        # The training pair will be (generated_pl1_code, original_pl2_code)
-        pl1_to_pl2_training_examples.append({
-            "pl1_code_prompt": generated_pl1_code,
-            "pl2_code_target": original_pl2_code
+        lora_nl_cpp_examples.append({
+            "document": documentation,
+            "code": record['content'] # The ground truth C++ code
         })
-        processed_python_records += 1
+        processed_cpp_records += 1
+        print(f"Processed {processed_cpp_records} C++ records for LORA NL->C++")
 
-    # Clear unused CUDA memory after processing each record
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        gc.collect()
+        # Clear unused CUDA memory after processing each record
+        # DISABLED: CUDA cache clearing and garbage collection commented out
+        # if torch.cuda.is_available():
+        #     torch.cuda.empty_cache()
+        #     gc.collect()
 
-# Convert the list of dictionaries to a Hugging Face Dataset
-if pl1_to_pl2_training_examples:
-    pl1_to_pl2_training_dataset = Dataset.from_list(pl1_to_pl2_training_examples)
-    print(f"Successfully created pl1_to_pl2_training_dataset with {len(pl1_to_pl2_training_dataset)} examples.")
-    print("First training example for Python to C++:")
-    print(pl1_to_pl2_training_dataset[0])
-else:
-    pl1_to_pl2_training_dataset = Dataset.from_list([])
-    print("No suitable training examples were generated for Python to C++.")
-    # Skip Phase 2 training if no examples
-    raise ValueError("No suitable training examples were generated for Python to C++.")
+    if lora_nl_cpp_examples:
+        training_dataset = Dataset.from_list(lora_nl_cpp_examples)
+        print(f"Successfully created training_dataset with {len(training_dataset)} examples for NL->C++.")
+    else:
+        training_dataset = Dataset.from_list([])
+        print("No suitable training examples were generated for NL->C++.")
 
+    from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
 
-"""#### PL1 -> PL2 fine tuning"""
+    # Tokenize the training dataset
+    def tokenize_function(examples):
+        # Combine document (prompt) and code (target) into a single text string for Causal LM training
+        # The tokenizer will then process this combined text.
+        # DataCollatorForLanguageModeling with mlm=False will automatically handle shifting labels
+        # so that the loss is only computed on the target code part.
+        full_texts = []
+        for doc, code in zip(examples['document'], examples['code']):
+            prompt = f"Generate C++ code based on the following documentation:\n{doc}\nC++ code:\n"
+            full_texts.append(prompt + code)
+        #return tokenizer_codegen(full_texts, truncation=True, max_length=256)
+        return tokenizer_codegen(full_texts, truncation=True, max_length=512)
 
-from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
+    # Map the training_dataset with the updated tokenize_function
+    tokenized_training_dataset = training_dataset.map(tokenize_function, batched=True)
 
-# Tokenize the new training dataset for C++ to Python
-def tokenize_function_cpp_to_py(examples):
-    # Combine generated Python code (prompt) and original C++ code (target) into a single text string
-    full_texts = []
-    for pl1_code, pl2_code in zip(examples['pl1_code_prompt'], examples['pl2_code_target']):
-        prompt = f"Translate the following Python code to C++:\n{pl1_code}\nC++ code:\n"
-        full_texts.append(prompt + pl2_code)
-    return tokenizer_codegen(full_texts, truncation=True, max_length=256, padding='max_length')
+    # Data collator for language modeling (will handle padding and labels for CausalLM)
+    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer_codegen, mlm=False)
 
-# Map the new training_dataset with the updated tokenize_function
-tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize_function_cpp_to_py, batched=True, remove_columns=['pl1_code_prompt', 'pl2_code_target'])
+    # Define training arguments
+    training_args = TrainingArguments(
+        output_dir="./codegen_lora_results",
+        per_device_train_batch_size=1, # Adjust based on GPU memory
+        gradient_accumulation_steps=8, # Increase if batch size is small
+        num_train_epochs=3, # Number of training epochs
+        learning_rate=2e-4,
+        logging_dir="./codegen_lora_logs",
+        logging_steps=10,
+        save_strategy="epoch", # Save checkpoint every epoch
+        save_total_limit=1, # Only keep the best model
+        fp16=True, # Enable mixed precision training to save memory
+        # evaluation_strategy="epoch", # Uncomment if you have a validation set
+        # load_best_model_at_end=True, # Uncomment if you have a validation set
+        # metric_for_best_model="eval_loss", # Uncomment if you have a validation set
+    )
 
-# Data collator for language modeling (will handle padding and labels for CausalLM)
-# Use the same data_collator as before
+    print("Created Training arguments for LORA")
 
-# Define training arguments (can reuse or modify from previous phase)
-# It's good practice to have separate output directories for different training phases
-training_args_py_to_cpp = TrainingArguments(
-    output_dir="./codegen_lora_results_py_to_cpp",
-    per_device_train_batch_size=1, # Adjust based on GPU memory
-    gradient_accumulation_steps=8, # Increase if batch size is small
-    num_train_epochs=3, # Number of training epochs
-    learning_rate=2e-4,
-    logging_dir="./codegen_lora_logs_py_to_cpp",
-    logging_steps=10,
-    save_strategy="epoch", # Save checkpoint every epoch
-    save_total_limit=1, # Only keep the best model
-    fp16=True, # Enable mixed precision training to save memory
-    remove_unused_columns=False, # Keep all columns to avoid dataset/model mismatch
-)
+    # Initialize Trainer
+    trainer = Trainer(
+        model=model_codegen_lora,
+        args=training_args,
+        train_dataset=tokenized_training_dataset,
+        # eval_dataset=tokenized_validation_dataset, # Uncomment if you have a validation set
+        data_collator=data_collator,
+    )
+    print("\n"+"="*30+"\n")
+    print("Created Trainer for LORA")
+    # Start training
+    print("Starting LORA training for Phase 1 NL->PL1...")
+    trainer.train()
+    print("LORA training for Phase 1 NL->PL1 complete.")
+    print("\n"+"="*30+"\n")
 
-# Create a FRESH LORA model from base model for Phase 2 (to avoid catastrophic forgetting)
-print("Creating fresh LORA model for Phase 2 (Python to C++)...")
-# Reload base model fresh to avoid PEFT config conflict from Phase 1
-from transformers import AutoModelForCausalLM
-model_codegen_fresh = AutoModelForCausalLM.from_pretrained(
-    model_name_codegen,
-    torch_dtype=torch.float16,
-    device_map="auto",
-    trust_remote_code=False
-)
-model_codegen_fresh.gradient_checkpointing_enable()
-model_codegen_lora_py_to_cpp = get_peft_model(model_codegen_fresh, lora_config)
-model_codegen_lora_py_to_cpp.print_trainable_parameters()
+    # Save the final LORA model (or the best model if validation is used)
+    model_codegen_lora.save_pretrained(LORA_ADAPTER_NL_TO_PL)
+    print(f"LORA adapter model saved to '{LORA_ADAPTER_NL_TO_PL}'.")
+    print("\n"+"="*30+"\n")
 
-# Initialize Trainer for the new training phase
-trainer_py_to_cpp = Trainer(
-    model=model_codegen_lora_py_to_cpp, # Fresh LORA model from base, not continued from Phase 1
-    args=training_args_py_to_cpp,
-    train_dataset=tokenized_pl1_to_pl2_training_dataset,
-    data_collator=data_collator,
-)
+    """### LORA Training Phase 2 (PL1->PL2): Python to C++  Code Generation
+    This phase aims to train the LORA-adapted model to translate Python to C++ . The process involves:
+    1.  **Extract C++ Data**: Obtain records from the C++ stream of the `FilteredDataset`.
+    2.  **Generate  Documentation**: For each original C++ code snippet, generate its documentation using `CodeDocumentationGenerator` if the documentation does not already exist.
+    3.  **Generate Python Code**: Using the *base* `Qwen` model (not the LORA-adapted one), generate Python code based on the C++ documentation. This generated Python code will serve as the *input prompt* for the LORA training. The Python code is genereated three times and the best out three is taken as the Python code for the record. LLM Judge is used to decide which of the three is the best.
+    4.  **LORA Training Pair**: The LORA model will be trained on pairs of (`generated_python_code`, `original_cpp_code`), effectively learning to translate from Python back to C++.
+    This is a specific form of code-to-code translation where the Python code serves as the source and C++  code as the target.
 
-# Start training
-print("\n"+"="*30+"\n")
-print("Starting LORA training for Python to C++ translation...")
-trainer_py_to_cpp.train()
-print("LORA training for Python to C++ complete.")
-print("\n"+"="*30+"\n")
+    #### NL -> PL1 from fine tuned cogden model
+    """
 
-# Save the final LORA model (or the best model if validation is used)
-model_codegen_lora_py_to_cpp.save_pretrained(LORA_ADAPTER_PY_TO_CPP)
-print(f"LORA adapter model saved to '{LORA_ADAPTER_PY_TO_CPP}'.")
-print("\n"+"="*30+"\n")
+    import torch
+    from datasets import Dataset
+    from tqdm import tqdm
+    import os
 
-# ============================================================================
-# LORA Validation Phase
-# Dataset split: records from MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
-# to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING + MAX_RECORDS_LORA_VALIDATION
-# ============================================================================
-print("\n"+"="*30+"\n")
-print("Starting LORA model validation phase...")
+    print("Generating LORA training dataset for C++ to Python translation...")
 
-# Reload models needed for validation (they were unloaded during LORA training)
-print("Reloading models needed for validation...")
-if baseline_evaluator._ast_processor is None:
-    print("\tLoading AST processor...")
-    baseline_evaluator._ast_processor = AST()
-if baseline_evaluator._graphcodebert_scorer is None:
-    print("\tLoading GraphCodeBERT scorer...")
-    baseline_evaluator._graphcodebert_scorer = GraphCodeBERTScorer()
+    # Helper function to generate code using the LORA-tuned model (User Requirement 2)
+    def generate_code_from_documentation(model, tokenizer, documentation: str, target_lang: str, device: str) -> str:
+        prompt = f"Convert the following documentation to {target_lang} code:\n{documentation}\n{target_lang} code:"
+        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+        input_ids = inputs["input_ids"]
+        attention_mask = inputs["attention_mask"]
 
-# Load the fine-tuned LORA model for validation
-print("Loading fine-tuned LORA model for validation...")
-from peft import PeftModel
+        output_ids = model.generate(
+            input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=256,
+            do_sample=True,
+            top_k=50,
+            num_return_sequences=1,
+            pad_token_id=tokenizer.eos_token_id
+        )
+        generated_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
-# Load separate base models for each LORA adapter to avoid conflicts
-# Python->C++ translation model
-base_model_py_to_cpp = AutoModelForCausalLM.from_pretrained(
-    "Qwen/Qwen2.5-Coder-7B-Instruct",
-    torch_dtype=torch.float16,
-    device_map="auto"
-)
-pl1_to_pl2_fine_tuned_model = PeftModel.from_pretrained(base_model_py_to_cpp, LORA_ADAPTER_PY_TO_CPP)
-pl1_to_pl2_fine_tuned_model.eval()
-print(f"Fine-tuned LORA model loaded from '{LORA_ADAPTER_PY_TO_CPP}'")
-
-# NL->C++ documentation model (separate base model to avoid peft_config conflict)
-base_model_nl_to_pl = AutoModelForCausalLM.from_pretrained(
-    "Qwen/Qwen2.5-Coder-7B-Instruct",
-    torch_dtype=torch.float16,
-    device_map="auto"
-)
-nl_pl_fine_tuned_model = PeftModel.from_pretrained(base_model_nl_to_pl, LORA_ADAPTER_NL_TO_PL)
-nl_pl_fine_tuned_model.eval()
-print(f"NL->PL LORA model loaded from '{LORA_ADAPTER_NL_TO_PL}'")
-
-# Create a custom generator that uses appropriate LORA model based on task
-class FineTunedGenerator:
-    def __init__(self, py_to_cpp_model, nl_to_cpp_model, tokenizer, base_generator, device):
-        self._py_to_cpp_model = py_to_cpp_model  # For Python->C++ translation
-        self._nl_to_cpp_model = nl_to_cpp_model  # For documentation->C++ code
-        self._tokenizer = tokenizer
-        self._base_generator = base_generator  # Keep reference to base model for other tasks
-        # Use the model's actual device (important for device_map="auto")
-        # Handle meta device parameters that may be offloaded to CPU
-        self._device = self._get_model_device(py_to_cpp_model)
-        print(f"FineTunedGenerator using device: {self._device}")
-
-    def _get_model_device(self, model):
-        """Get the actual device from model parameters, handling meta device."""
-        for param in model.parameters():
-            if param.device.type != 'meta':
-                return param.device
-        # Fallback to CPU if all parameters are on meta device
-        return torch.device('cpu')
-
-    def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
-        """Generate code using the appropriate model.
-
-        - For Python->C++ conversion (is_py_to_cpp=True, target_lang='cpp'): use py_to_cpp_model
-        - For documentation->C++ (is_py_to_cpp=False, target_lang='cpp'): use nl_to_cpp_model
-        - For other tasks: use base model
-        """
-        if is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
-            # Use fine-tuned model: Python code -> C++ code
-            prompt = f"Translate the following Python code to C++:\n{documentation}\nC++ code:"
-            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-            # Move inputs to the same device as model parameters
-            inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
-            with torch.no_grad():
-                outputs = self._py_to_cpp_model.generate(
-                    **inputs,
-                    max_new_tokens=256,
-                    do_sample=True,
-                    temperature=0.7,
-                    top_p=0.9,
-                    pad_token_id=self._tokenizer.eos_token_id
-                )
-
-            generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
-            # Extract just the code part - look for code block markers
-            generated_code = generated_text
-            # Try to extract content between ```cpp and ``` markers
-            cpp_block_start = generated_text.find("```cpp")
-            if cpp_block_start != -1:
-                code_start = cpp_block_start + 6  # Skip past ```cpp
-                code_end = generated_text.find("```", code_start)
-                if code_end != -1:
-                    generated_code = generated_text[code_start:code_end].strip()
-                else:
-                    generated_code = generated_text[code_start:].strip()
-            else:
-                # Fallback: extract after "C++ code:" marker
-                code_marker = "C++ code:"
-                marker_pos = generated_text.lower().find(code_marker.lower())
-                if marker_pos != -1:
-                    generated_code = generated_text[marker_pos + len(code_marker):].strip()
-                    # Remove any trailing explanation
-                    if "Explanation:" in generated_code:
-                        generated_code = generated_code.split("Explanation:")[0].strip()
-        elif not is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
-            # Use NL->C++ fine-tuned model for documentation->code
-            prompt = f"Generate C++ code based on the following documentation:\n{documentation}\nC++ code:"
-            inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-            # Move inputs to the same device as model parameters
-            inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
-            with torch.no_grad():
-                outputs = self._nl_to_cpp_model.generate(
-                    **inputs,
-                    max_new_tokens=256,
-                    do_sample=True,
-                    temperature=0.7,
-                    top_p=0.9,
-                    pad_token_id=self._tokenizer.eos_token_id
-                )
-
-            generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
-            # Extract just the code part - look for code block markers
-            generated_code = generated_text
-            # Try to extract content between ```cpp and ``` markers
-            cpp_block_start = generated_text.find("```cpp")
-            if cpp_block_start != -1:
-                code_start = cpp_block_start + 6  # Skip past ```cpp
-                code_end = generated_text.find("```", code_start)
-                if code_end != -1:
-                    generated_code = generated_text[code_start:code_end].strip()
-                else:
-                    generated_code = generated_text[code_start:].strip()
-            else:
-                # Fallback: extract after "C++ code:" marker
-                code_marker = "C++ code:"
-                marker_pos = generated_text.lower().find(code_marker.lower())
-                if marker_pos != -1:
-                    generated_code = generated_text[marker_pos + len(code_marker):].strip()
-                    # Remove any trailing explanation
-                    if "Explanation:" in generated_code:
-                        generated_code = generated_code.split("Explanation:")[0].strip()
+        code_prefix = f"{target_lang} code:"
+        if code_prefix in generated_text:
+            generated_code = generated_text.split(code_prefix, 1)[1].strip()
         else:
-            # Use base model for other tasks
-            generated_code = self._base_generator._generate_code_from_model(documentation, target_lang, is_py_to_cpp=False)
+            generated_code = generated_text.strip()
 
+        if documentation in generated_code:
+            generated_code = generated_code.replace(documentation, "").strip()
         return generated_code
 
-# Save original generator first
-original_generator = baseline_evaluator._qwen_code_generator
+    pl1_to_pl2_training_examples = []
+    processed_python_records = 0
+    MAX_RECORDS_FOR_LORA_CPP_TO_PY = MAX_RECORDS_LORA_TRAINING
 
-finetuned_generator = FineTunedGenerator(pl1_to_pl2_fine_tuned_model, nl_pl_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
+    # Unload models not needed for LORA training to free memory
+    baseline_evaluator.unload_model("qwen_generator")
+    baseline_evaluator.unload_model("graphcodebert")
+    baseline_evaluator.unload_model("ast")
 
-# Temporarily replace the model in baseline_evaluator for validation
-baseline_evaluator._qwen_code_generator = finetuned_generator
+    # Load only models needed for LORA training (memory efficient)
+    baseline_evaluator.load_models_for_lora_training()
 
-# Compute validation scores using the fine-tuned model
-validation_start_index = MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+    # Reset iterator and get fresh C++ stream
+    baseline_evaluator._filtered_dataset.reset_iterator()
+    pl2_stream_iterator = baseline_evaluator._filtered_dataset.get_cpp_stream_iterator()
 
-# Debug: Check what languages are in the validation range
-print(f"\nDebug: Checking dataset languages from index {validation_start_index}...")
-cpp_count_in_range = 0
-other_langs = {}
-for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset))):
-    record = baseline_evaluator._cached_dataset[i]
-    lang = record.get('language', 'unknown').lower()
-    is_proc = record.get('is_processable_code', True)
-    if lang in ['cpp', 'c++']:
-        cpp_count_in_range += 1
+    # Skip the first MAX_RECORDS_BASELINE records (used for baseline computation)
+    # Then process MAX_RECORDS_LORA_TRAINING records for training
+    # Note: We need a new iterator since Phase 1 consumed the first MAX_RECORDS_LORA_TRAINING records after baseline
+    skip_count = MAX_RECORDS_BASELINE
+    skipped_records = 0
+    while skipped_records < skip_count:
+        try:
+            next(pl2_stream_iterator)
+            skipped_records += 1
+            if skipped_records % 100 == 0:
+                print(f"Skipped {skipped_records} records for baseline...")
+        except StopIteration:
+            print(f"Reached end of stream while skipping. Only {skipped_records} records available to skip.")
+            break
+
+    print(f"Skipped {skipped_records} records. Starting Phase 2 LORA training data collection from record {skip_count + 1}...")
+
+    for record in tqdm(pl2_stream_iterator, desc="Processing C++ records for C++ to Python data"):
+        if processed_python_records >= MAX_RECORDS_FOR_LORA_CPP_TO_PY:
+            print(f"Reached max records for C++ to Python LORA training: {MAX_RECORDS_FOR_LORA_CPP_TO_PY}")
+            break
+
+        if not record['is_processable_code'] or record['language'].lower() not in ['c++', 'cpp']:
+            continue
+
+        original_pl2_code = record['content']
+
+        # Step 1: Use the C++ documentation from the dataset itself (User Requirement 1)
+        pl2_documentation = record.get('documentation', '')
+        if not pl2_documentation.strip():
+            print(f"Warning: C++ documentation not found in record {record.get('hexsha', 'unknown')}. Re-generating for this record as a fallback.")
+            # Fallback: Generate documentation if not present in the record
+            pl2_documentation = baseline_evaluator._documentation_generator.generate_documentation(original_pl2_code, max_length=256)
+
+            if not pl2_documentation.strip(): # If still no documentation, skip
+                print(f"Skipping record {record.get('hexsha', 'unknown')} due to inability to generate/find C++ documentation.")
+                continue
+
+        best_llm_judge_score_for_intermediate_pl1 = -1.0
+        best_generated_pl1_code_for_phase2 = ""
+        num_tries_llm_judge = 3 # Generate PL2 code three times as requested
+
+        # Step 2: Use the base Qwen model to generate Python code and use LLM Judge to pick the best
+        for _ in range(num_tries_llm_judge):
+            generated_pl1_candidate = baseline_evaluator._qwen_code_generator._generate_code_from_model(pl2_documentation, target_lang='python')
+            if generated_pl1_candidate.strip():
+                # Call the LLM Judge
+                llm_judge_current_score = baseline_evaluator._llm_judge.qwen_code_judge(pl2_documentation, generated_pl1_candidate)
+                print(f"LLM Judge Score: {llm_judge_current_score}")
+                if llm_judge_current_score > best_llm_judge_score_for_intermediate_pl1:
+                    best_llm_judge_score_for_intermediate_pl1 = llm_judge_current_score
+                    best_generated_pl1_code_for_phase2 = generated_pl1_candidate
+                if llm_judge_current_score <= 0.3:
+                    print(f"----------\nInput to LLM Judge\nDocumentation{pl2_documentation}\n------------\nCode:{generated_pl1_candidate}")
+
+        generated_pl1_code = best_generated_pl1_code_for_phase2
+
+        if generated_pl1_code.strip(): # Only add if PL1 code was successfully generated and deemed best
+            # The training pair will be (generated_pl1_code, original_pl2_code)
+            pl1_to_pl2_training_examples.append({
+                "pl1_code_prompt": generated_pl1_code,
+                "pl2_code_target": original_pl2_code
+            })
+            processed_python_records += 1
+
+        # Clear unused CUDA memory after processing each record
+        # DISABLED: CUDA cache clearing and garbage collection commented out
+        # if torch.cuda.is_available():
+        #     torch.cuda.empty_cache()
+        #     gc.collect()
+
+    # Convert the list of dictionaries to a Hugging Face Dataset
+    if pl1_to_pl2_training_examples:
+        pl1_to_pl2_training_dataset = Dataset.from_list(pl1_to_pl2_training_examples)
+        print(f"Successfully created pl1_to_pl2_training_dataset with {len(pl1_to_pl2_training_dataset)} examples.")
+        print("First training example for Python to C++:")
+        print(pl1_to_pl2_training_dataset[0])
     else:
-        other_langs[lang] = other_langs.get(lang, 0) + 1
-print(f"Found {cpp_count_in_range} C++ records in validation range")
-print(f"Other languages: {other_langs}")
-# Check if any are unprocessable
-unprocessable_count = sum(1 for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset)))
-                          if not baseline_evaluator._cached_dataset[i].get('is_processable_code', True))
-print(f"Unprocessable records in range: {unprocessable_count}")
+        pl1_to_pl2_training_dataset = Dataset.from_list([])
+        print("No suitable training examples were generated for Python to C++.")
+        # Skip Phase 2 training if no examples
+        raise ValueError("No suitable training examples were generated for Python to C++.")
 
-validation_results = baseline_evaluator.compute_validation(
-    num_records=MAX_RECORDS_LORA_VALIDATION,
-    num_tries=3,
-    start_index=validation_start_index
-)
 
-# Restore original generator
-baseline_evaluator._qwen_code_generator = original_generator
+    """#### PL1 -> PL2 fine tuning"""
 
-# Compute summary statistics
-validation_summary = baseline_evaluator.compute_summary(validation_results)
-validation_summary_description = "\n\n"+"*"*30+"\n\n"
-validation_summary_description += f"\nValidation Summary (using fine-tuned LORA model - C++ records only):"
-validation_summary_description += f"\n\tTotal C++ records processed: {validation_summary.get('total_records', 0)}"
-validation_summary_description += f"\n\tNL->PL Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
-validation_summary_description += f"\n\tNL->PL AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
-validation_summary_description += f"\n\tNL->PL GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
+    from transformers import Trainer, TrainingArguments, DataCollatorForLanguageModeling
 
-if 'nl_pl1_pl2_phase' in validation_summary:
-    pl1_pl2 = validation_summary['nl_pl1_pl2_phase']
-    validation_summary_description += f"\n\tPL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+    # Tokenize the new training dataset for C++ to Python
+    def tokenize_function_cpp_to_py(examples):
+        # Combine generated Python code (prompt) and original C++ code (target) into a single text string
+        full_texts = []
+        for pl1_code, pl2_code in zip(examples['pl1_code_prompt'], examples['pl2_code_target']):
+            prompt = f"Translate the following Python code to C++:\n{pl1_code}\nC++ code:\n"
+            full_texts.append(prompt + pl2_code)
+        return tokenizer_codegen(full_texts, truncation=True, max_length=256, padding='max_length')
 
-print("\n"+"="*30+"\n")
-print(baseline_summary_desription)
-print(validation_summary_description)
+    # Map the new training_dataset with the updated tokenize_function
+    tokenized_pl1_to_pl2_training_dataset = pl1_to_pl2_training_dataset.map(tokenize_function_cpp_to_py, batched=True, remove_columns=['pl1_code_prompt', 'pl2_code_target'])
+
+    # Data collator for language modeling (will handle padding and labels for CausalLM)
+    # Use the same data_collator as before
+
+    # Define training arguments (can reuse or modify from previous phase)
+    # It's good practice to have separate output directories for different training phases
+    training_args_py_to_cpp = TrainingArguments(
+        output_dir="./codegen_lora_results_py_to_cpp",
+        per_device_train_batch_size=1, # Adjust based on GPU memory
+        gradient_accumulation_steps=8, # Increase if batch size is small
+        num_train_epochs=3, # Number of training epochs
+        learning_rate=2e-4,
+        logging_dir="./codegen_lora_logs_py_to_cpp",
+        logging_steps=10,
+        save_strategy="epoch", # Save checkpoint every epoch
+        save_total_limit=1, # Only keep the best model
+        fp16=True, # Enable mixed precision training to save memory
+        remove_unused_columns=False, # Keep all columns to avoid dataset/model mismatch
+    )
+
+    # Create a FRESH LORA model from base model for Phase 2 (to avoid catastrophic forgetting)
+    print("Creating fresh LORA model for Phase 2 (Python to C++)...")
+    # Reload base model fresh to avoid PEFT config conflict from Phase 1
+    from transformers import AutoModelForCausalLM
+    model_codegen_fresh = AutoModelForCausalLM.from_pretrained(
+        model_name_codegen,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=False
+    )
+    model_codegen_fresh.gradient_checkpointing_enable()
+    model_codegen_lora_py_to_cpp = get_peft_model(model_codegen_fresh, lora_config)
+    model_codegen_lora_py_to_cpp.print_trainable_parameters()
+
+    # Initialize Trainer for the new training phase
+    trainer_py_to_cpp = Trainer(
+        model=model_codegen_lora_py_to_cpp, # Fresh LORA model from base, not continued from Phase 1
+        args=training_args_py_to_cpp,
+        train_dataset=tokenized_pl1_to_pl2_training_dataset,
+        data_collator=data_collator,
+    )
+
+    # Start training
+    print("\n"+"="*30+"\n")
+    print("Starting LORA training for Python to C++ translation...")
+    trainer_py_to_cpp.train()
+    print("LORA training for Python to C++ complete.")
+    print("\n"+"="*30+"\n")
+
+    # Save the final LORA model (or the best model if validation is used)
+    model_codegen_lora_py_to_cpp.save_pretrained(LORA_ADAPTER_PY_TO_CPP)
+    print(f"LORA adapter model saved to '{LORA_ADAPTER_PY_TO_CPP}'.")
+    print("\n"+"="*30+"\n")
+
+if run_validation:
+    # ============================================================================
+    # LORA Validation Phase
+    # Dataset split: records from MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+    # to MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING + MAX_RECORDS_LORA_VALIDATION
+    # ============================================================================
+    print("\n"+"="*30+"\n")
+    print("Starting LORA model validation phase...")
+    print(f"Processing {MAX_RECORDS_LORA_VALIDATION} records for validation")
+
+    # Reload models needed for validation (they were unloaded during LORA training)
+    print("Reloading models needed for validation...")
+    if baseline_evaluator._ast_processor is None:
+        print("\tLoading AST processor...")
+        baseline_evaluator._ast_processor = AST()
+    if baseline_evaluator._graphcodebert_scorer is None:
+        print("\tLoading GraphCodeBERT scorer...")
+        baseline_evaluator._graphcodebert_scorer = GraphCodeBERTScorer()
+
+    # Load the fine-tuned LORA model for validation
+    print("Loading fine-tuned LORA model for validation...")
+    from peft import PeftModel
+
+    # Load separate base models for each LORA adapter to avoid conflicts
+    # Python->C++ translation model
+    base_model_py_to_cpp = AutoModelForCausalLM.from_pretrained(
+        "Qwen/Qwen2.5-Coder-7B-Instruct",
+        torch_dtype=torch.float16,
+        device_map="auto"
+    )
+    pl1_to_pl2_fine_tuned_model = PeftModel.from_pretrained(base_model_py_to_cpp, LORA_ADAPTER_PY_TO_CPP)
+    pl1_to_pl2_fine_tuned_model.eval()
+    print(f"Fine-tuned LORA model loaded from '{LORA_ADAPTER_PY_TO_CPP}'")
+
+    # NL->C++ documentation model (separate base model to avoid peft_config conflict)
+    base_model_nl_to_pl = AutoModelForCausalLM.from_pretrained(
+        "Qwen/Qwen2.5-Coder-7B-Instruct",
+        torch_dtype=torch.float16,
+        device_map="auto"
+    )
+    nl_pl_fine_tuned_model = PeftModel.from_pretrained(base_model_nl_to_pl, LORA_ADAPTER_NL_TO_PL)
+    nl_pl_fine_tuned_model.eval()
+    print(f"NL->PL LORA model loaded from '{LORA_ADAPTER_NL_TO_PL}'")
+
+    # Create a custom generator that uses appropriate LORA model based on task
+    class FineTunedGenerator:
+        def __init__(self, py_to_cpp_model, nl_to_cpp_model, tokenizer, base_generator, device):
+            self._py_to_cpp_model = py_to_cpp_model  # For Python->C++ translation
+            self._nl_to_cpp_model = nl_to_cpp_model  # For documentation->C++ code
+            self._tokenizer = tokenizer
+            self._base_generator = base_generator  # Keep reference to base model for other tasks
+            # Use the model's actual device (important for device_map="auto")
+            # Handle meta device parameters that may be offloaded to CPU
+            self._device = self._get_model_device(py_to_cpp_model)
+            print(f"FineTunedGenerator using device: {self._device}")
+
+        def _get_model_device(self, model):
+            """Get the actual device from model parameters, handling meta device."""
+            for param in model.parameters():
+                if param.device.type != 'meta':
+                    return param.device
+            # Fallback to CPU if all parameters are on meta device
+            return torch.device('cpu')
+
+        def _generate_code_from_model(self, documentation, target_lang='python', is_py_to_cpp=True):
+            """Generate code using the appropriate model.
+
+            - For Python->C++ conversion (is_py_to_cpp=True, target_lang='cpp'): use py_to_cpp_model
+            - For documentation->C++ (is_py_to_cpp=False, target_lang='cpp'): use nl_to_cpp_model
+            - For other tasks: use base model
+            """
+            if is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
+                # Use fine-tuned model: Python code -> C++ code
+                prompt = f"Translate the following Python code to C++:\n{documentation}\nC++ code:"
+                inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+                # Move inputs to the same device as model parameters
+                inputs = {k: v.to(self._device) for k, v in inputs.items()}
+
+                with torch.no_grad():
+                    outputs = self._py_to_cpp_model.generate(
+                        **inputs,
+                        max_new_tokens=256,
+                        do_sample=True,
+                        temperature=0.7,
+                        top_p=0.9,
+                        pad_token_id=self._tokenizer.eos_token_id
+                    )
+
+                generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
+                # Extract just the code part - look for code block markers
+                generated_code = generated_text
+                # Try to extract content between ```cpp and ``` markers
+                cpp_block_start = generated_text.find("```cpp")
+                if cpp_block_start != -1:
+                    code_start = cpp_block_start + 6  # Skip past ```cpp
+                    code_end = generated_text.find("```", code_start)
+                    if code_end != -1:
+                        generated_code = generated_text[code_start:code_end].strip()
+                    else:
+                        generated_code = generated_text[code_start:].strip()
+                else:
+                    # Fallback: extract after "C++ code:" marker
+                    code_marker = "C++ code:"
+                    marker_pos = generated_text.lower().find(code_marker.lower())
+                    if marker_pos != -1:
+                        generated_code = generated_text[marker_pos + len(code_marker):].strip()
+                        # Remove any trailing explanation
+                        if "Explanation:" in generated_code:
+                            generated_code = generated_code.split("Explanation:")[0].strip()
+            elif not is_py_to_cpp and target_lang.lower() in ['cpp', 'c++']:
+                # Use NL->C++ fine-tuned model for documentation->code
+                prompt = f"Generate C++ code based on the following documentation:\n{documentation}\nC++ code:"
+                inputs = self._tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+                # Move inputs to the same device as model parameters
+                inputs = {k: v.to(self._device) for k, v in inputs.items()}
+
+                with torch.no_grad():
+                    outputs = self._nl_to_cpp_model.generate(
+                        **inputs,
+                        max_new_tokens=256,
+                        do_sample=True,
+                        temperature=0.7,
+                        top_p=0.9,
+                        pad_token_id=self._tokenizer.eos_token_id
+                    )
+
+                generated_text = self._tokenizer.decode(outputs[0], skip_special_tokens=True)
+                # Extract just the code part - look for code block markers
+                generated_code = generated_text
+                # Try to extract content between ```cpp and ``` markers
+                cpp_block_start = generated_text.find("```cpp")
+                if cpp_block_start != -1:
+                    code_start = cpp_block_start + 6  # Skip past ```cpp
+                    code_end = generated_text.find("```", code_start)
+                    if code_end != -1:
+                        generated_code = generated_text[code_start:code_end].strip()
+                    else:
+                        generated_code = generated_text[code_start:].strip()
+                else:
+                    # Fallback: extract after "C++ code:" marker
+                    code_marker = "C++ code:"
+                    marker_pos = generated_text.lower().find(code_marker.lower())
+                    if marker_pos != -1:
+                        generated_code = generated_text[marker_pos + len(code_marker):].strip()
+                        # Remove any trailing explanation
+                        if "Explanation:" in generated_code:
+                            generated_code = generated_code.split("Explanation:")[0].strip()
+            else:
+                # Use base model for other tasks
+                generated_code = self._base_generator._generate_code_from_model(documentation, target_lang, is_py_to_cpp=False)
+
+            return generated_code
+
+    # Save original generator first
+    original_generator = baseline_evaluator._qwen_code_generator
+
+    finetuned_generator = FineTunedGenerator(pl1_to_pl2_fine_tuned_model, nl_pl_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
+
+    # Temporarily replace the model in baseline_evaluator for validation
+    baseline_evaluator._qwen_code_generator = finetuned_generator
+
+    # Compute validation scores using the fine-tuned model
+    validation_start_index = MAX_RECORDS_BASELINE + MAX_RECORDS_LORA_TRAINING
+
+    # Debug: Check what languages are in the validation range
+    print(f"\nDebug: Checking dataset languages from index {validation_start_index}...")
+    cpp_count_in_range = 0
+    other_langs = {}
+    for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset))):
+        record = baseline_evaluator._cached_dataset[i]
+        lang = record.get('language', 'unknown').lower()
+        is_proc = record.get('is_processable_code', True)
+        if lang in ['cpp', 'c++']:
+            cpp_count_in_range += 1
+        else:
+            other_langs[lang] = other_langs.get(lang, 0) + 1
+    print(f"Found {cpp_count_in_range} C++ records in validation range")
+    print(f"Other languages: {other_langs}")
+    # Check if any are unprocessable
+    unprocessable_count = sum(1 for i in range(validation_start_index, min(validation_start_index + MAX_RECORDS_LORA_VALIDATION, len(baseline_evaluator._cached_dataset)))
+                            if not baseline_evaluator._cached_dataset[i].get('is_processable_code', True))
+    print(f"Unprocessable records in range: {unprocessable_count}")
+
+    validation_results = baseline_evaluator.compute_validation(
+        num_records=MAX_RECORDS_LORA_VALIDATION,
+        num_tries=3,
+        start_index=validation_start_index
+    )
+
+    # Restore original generator
+    baseline_evaluator._qwen_code_generator = original_generator
+
+    # Compute summary statistics
+    validation_summary = baseline_evaluator.compute_summary(validation_results)
+    validation_summary_description = "\n\n"+"*"*30+"\n\n"
+    validation_summary_description += f"\nValidation Summary (using fine-tuned LORA model - C++ records only):"
+    validation_summary_description += f"\n\tTotal C++ records processed: {validation_summary.get('total_records', 0)}"
+    validation_summary_description += f"\n\tNL->PL Average Score: {validation_summary.get('nl_pl_phase', {}).get('average_score', 0):.4f}"
+    validation_summary_description += f"\n\tNL->PL AST Score: {validation_summary.get('nl_pl_phase', {}).get('average_ast_score', 0):.4f}"
+    validation_summary_description += f"\n\tNL->PL GCB Score: {validation_summary.get('nl_pl_phase', {}).get('average_gcb_score', 0):.4f}"
+
+    if 'nl_pl1_pl2_phase' in validation_summary:
+        pl1_pl2 = validation_summary['nl_pl1_pl2_phase']
+        validation_summary_description += f"\n\tPL1->PL2 (Python->C++) Average Score: {pl1_pl2.get('average_score', 0):.4f} (n={pl1_pl2.get('count', 0)})"
+
+    print("\n"+"="*30+"\n")
+    print(validation_summary_description)

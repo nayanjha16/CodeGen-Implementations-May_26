@@ -94,31 +94,16 @@ class MLflowTracker:
                 }
             )
             metric_keys = [
-                "bleu",
-                "bertscore",
-                "codebleu",
-                "exact_match",
                 "execution_accuracy",
-                "rouge_l",
-                "syntax_validity",
-                "ngram_match",
-                "syntax_match",
-                "semantic_match",
+                "exact_match",
+                "structural_similarity",
             ]
             logged = {k: metrics[k] for k in metric_keys if k in metrics}
             if nosql_metrics:
                 nosql_keys = [
+                    "execution_accuracy",
                     "exact_match",
-                    "syntax_validity",
-                    "token_f1",
-                    "structural_equivalence",
-                    "bleu",
-                    "rouge_l",
-                    "bertscore",
-                    "codebleu",
-                    "ngram_match",
-                    "syntax_match",
-                    "semantic_match",
+                    "structural_similarity",
                 ]
                 logged.update(
                     {f"nosql_{k}": nosql_metrics[k] for k in nosql_keys if k in nosql_metrics}

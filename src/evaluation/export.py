@@ -20,26 +20,21 @@ TEXT2SQL_DETAILS_CSV = "text2sql_details.csv"
 SQL2NOSQL_DETAILS_CSV = "sql2nosql_details.csv"
 DOCUMENTATION_DETAILS_CSV = "documentation_details.csv"
 
-TASK_METRIC_KEYS = [
-    "exact_match",
-    "syntax_validity",
-    "token_f1",
-    "bleu",
-    "rouge_l",
-    "bertscore",
-    "codebleu",
-    "ngram_match",
-    "syntax_match",
-    "semantic_match",
-    "count",
+TEXT2SQL_METRIC_KEYS = [
     "execution_accuracy",
-    "structural_equivalence",
-    "total_count",
-    "scored_count",
-    "translation_success_rate",
-    "judge_correct_rate",
-    "judge_overall_correct_rate",
-    "judge_count",
+    "exact_match",
+    "structural_similarity",
+]
+
+SQL2NOSQL_METRIC_KEYS = [
+    "execution_accuracy",
+    "exact_match",
+    "structural_similarity",
+]
+
+DOCUMENTATION_METRIC_KEYS = [
+    "embedding_similarity",
+    "judge_score",
 ]
 
 
@@ -49,24 +44,10 @@ def merge_judge_summary_into_metrics(
     *,
     task: str,
 ) -> dict[str, Any]:
-    """Merge Ollama judge aggregate metrics and normalize to the shared task schema."""
+    """Merge documentation judge scores into metrics."""
     merged = dict(base_metrics or {})
-    if judge_summary:
-        if task == "text2sql":
-            merged["judge_correct_rate"] = judge_summary.get("sql_correct_rate")
-            merged["judge_overall_correct_rate"] = judge_summary.get("sql_correct_rate")
-        elif task == "sql2nosql":
-            merged["judge_correct_rate"] = judge_summary.get("query_correct_rate")
-            merged["judge_overall_correct_rate"] = judge_summary.get(
-                "overall_correct_rate"
-            )
-        elif task == "documentation":
-            merged["judge_correct_rate"] = judge_summary.get("doc_correct_rate")
-            merged["judge_overall_correct_rate"] = judge_summary.get(
-                "overall_correct_rate"
-            )
-        if "count" in judge_summary:
-            merged["judge_count"] = judge_summary["count"]
+    if judge_summary and task == "documentation":
+        merged["judge_score"] = judge_summary.get("judge_score", 0.0)
     return normalize_task_metrics(merged, task=task)
 
 
@@ -75,31 +56,20 @@ def normalize_task_metrics(
     *,
     task: str,
 ) -> dict[str, Any]:
-    """Return metrics with the same keys for text2sql and sql2nosql."""
+    """Return metrics with the canonical keys for each task."""
     source = dict(metrics or {})
-    count = source.get("count", 0)
-
     if task == "text2sql":
-        source.setdefault("total_count", count)
-        source.setdefault("scored_count", count)
-        source.setdefault(
-            "translation_success_rate", source.get("syntax_validity", 0.0)
-        )
+        keys = TEXT2SQL_METRIC_KEYS
     elif task == "sql2nosql":
-        source.setdefault("execution_accuracy", 0.0)
-    elif task == "documentation":
-        source.setdefault("execution_accuracy", 0.0)
-        source.setdefault("structural_equivalence", 0.0)
+        keys = SQL2NOSQL_METRIC_KEYS
+    else:
+        keys = DOCUMENTATION_METRIC_KEYS
 
     normalized: dict[str, Any] = {}
-    for key in TASK_METRIC_KEYS:
-        if key in source:
-            normalized[key] = source[key]
-        elif key.startswith("judge_"):
-            normalized[key] = None
-        else:
-            normalized[key] = 0.0
+    for key in keys:
+        normalized[key] = source.get(key, 0.0)
     return normalized
+
 
 TEXT2SQL_DETAIL_FIELDS = [
     "index",
@@ -110,9 +80,8 @@ TEXT2SQL_DETAIL_FIELDS = [
     "predicted_sql",
     "predicted_sql_valid",
     "ground_truth",
-    "judge_sql_correct",
-    "judge_reason",
-    "judge_raw_response",
+    "execution_match",
+    "execution_error",
 ]
 
 SQL2NOSQL_DETAIL_FIELDS = [
@@ -124,9 +93,8 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "reference_mongodb_query",
     "mongodb_warnings",
     "mongodb_success",
-    "judge_query_correct",
-    "judge_reason",
-    "judge_raw_response",
+    "execution_match",
+    "execution_error",
 ]
 
 DOCUMENTATION_DETAIL_FIELDS = [
@@ -134,42 +102,50 @@ DOCUMENTATION_DETAIL_FIELDS = [
     "prompt",
     "input_token_count",
     "raw_output",
-    "judge_doc_correct",
+    "predicted_documentation",
+    "reference_documentation",
+    "judge_score",
+    "judge_correctness",
+    "judge_completeness",
+    "judge_clarity",
+    "judge_relevance",
     "judge_reason",
     "judge_raw_response",
 ]
 
 
+def _execution_context_from_prediction(pred: dict[str, str]) -> dict[str, str] | None:
+    db_id = str(pred.get("db_id", "")).strip()
+    if not db_id:
+        return None
+    dataset = str(pred.get("source_dataset", "spider")).strip() or "spider"
+    return {"db_id": db_id, "dataset": dataset}
+
+
 def save_text2sql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-    db_paths: list[str | None] | None = None,
-    judge: OllamaJudge | None = None,
-    use_judge: bool = True,
-    model_name: str | None = None,
     config: dict[str, Any] | None = None,
-) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write text-to-SQL per-sample details to CSV using Ollama semantic evaluation."""
+    model_name: str | None = None,
+) -> tuple[Path, list[dict[str, Any]]]:
+    """Write text-to-SQL per-sample details to CSV."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total = len(predictions)
-    log_step("text2sql", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
+    log_step("text2sql", "Exporting details CSV (%d rows)", total)
 
-    db_paths = db_paths or [None] * len(predictions)
-    evaluator = judge
-    if use_judge and evaluator is None:
-        evaluator = create_judge(cfg)
-
-    fieldnames = TEXT2SQL_DETAIL_FIELDS
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
+    from src.evaluation.database_execution import compare_sql_execution, is_database_available
 
-    judge_results: list[dict[str, Any]] = []
+    db_available = is_database_available()
+    detail_rows: list[dict[str, Any]] = []
+
     with open(output_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=TEXT2SQL_DETAIL_FIELDS)
         writer.writeheader()
 
-        for idx, (pred, _db_path) in enumerate(zip(predictions, db_paths)):
+        for idx, pred in enumerate(predictions):
             log_batch_progress("text2sql", idx + 1, total, every=25)
             predicted_sql = pred.get("sql", "")
             ground_truth = pred.get("ground_truth", "")
@@ -183,76 +159,60 @@ def save_text2sql_details_csv(
                     config=cfg,
                 )
 
-            judge_eval: dict[str, Any] = {}
-            if use_judge and evaluator is not None:
-                sql_valid = (
-                    predicted_sql_valid
-                    if isinstance(predicted_sql_valid, bool)
-                    else None
-                )
-                judge_eval = evaluator.evaluate_text2sql_sample(
-                    question=pred.get("question", ""),
-                    schema=pred.get("schema", ""),
-                    predicted_sql=predicted_sql,
-                    ground_truth_sql=ground_truth,
-                    raw_output=pred.get("raw_output", ""),
-                    prompt=pred.get("prompt", ""),
-                    predicted_sql_valid=sql_valid,
-                )
-                judge_results.append(judge_eval)
-                if predicted_sql_valid == "":
-                    predicted_sql_valid = judge_eval.get("predicted_sql_valid", "")
+            execution_match = ""
+            execution_error = ""
+            if db_available:
+                context = _execution_context_from_prediction(pred)
+                if context and predicted_sql and ground_truth:
+                    comparison = compare_sql_execution(
+                        predicted_sql,
+                        ground_truth,
+                        db_id=context["db_id"],
+                        dataset=context["dataset"],
+                    )
+                    execution_match = comparison.match
+                    execution_error = comparison.error or comparison.diff_summary or ""
 
-            writer.writerow(
-                {
-                    "index": idx,
-                    "question": pred.get("question", ""),
-                    "prompt": prompt,
-                    "input_token_count": input_token_count,
-                    "raw_output": pred.get("raw_output", ""),
-                    "predicted_sql": predicted_sql,
-                    "predicted_sql_valid": predicted_sql_valid,
-                    "ground_truth": ground_truth,
-                    "judge_sql_correct": judge_eval.get("sql_correct", ""),
-                    "judge_reason": judge_eval.get("reason", ""),
-                    "judge_raw_response": judge_eval.get("raw_response", ""),
-                }
-            )
+            row = {
+                "index": idx,
+                "question": pred.get("question", ""),
+                "prompt": prompt,
+                "input_token_count": input_token_count,
+                "raw_output": pred.get("raw_output", ""),
+                "predicted_sql": predicted_sql,
+                "predicted_sql_valid": predicted_sql_valid,
+                "ground_truth": ground_truth,
+                "execution_match": execution_match,
+                "execution_error": execution_error,
+            }
+            detail_rows.append(row)
+            writer.writerow(row)
 
-    summary = (
-        OllamaJudge.summarize_text2sql(judge_results)
-        if use_judge
-        else {"sql_correct_rate": 0.0, "count": len(predictions)}
-    )
     logger.info("[%s] Details CSV saved: %s", "text2sql (Text-to-SQL)", output_path)
-    return output_path, judge_results, summary
+    return output_path, detail_rows
 
 
 def save_sql2nosql_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
-    judge: OllamaJudge | None = None,
-    use_judge: bool = True,
-    model_name: str | None = None,
     config: dict[str, Any] | None = None,
-) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write SQL-to-MongoDB per-sample details to CSV using Ollama semantic evaluation."""
+    model_name: str | None = None,
+) -> tuple[Path, list[dict[str, Any]]]:
+    """Write SQL-to-MongoDB per-sample details to CSV."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total = len(predictions)
-    log_step("sql2nosql", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
+    log_step("sql2nosql", "Exporting details CSV (%d rows)", total)
 
-    evaluator = judge
-    if use_judge and evaluator is None:
-        evaluator = create_judge(cfg)
-
-    fieldnames = SQL2NOSQL_DETAIL_FIELDS
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
+    from src.evaluation.database_execution import compare_sql_to_mongo_execution, is_database_available
 
-    judge_results: list[dict[str, Any]] = []
+    db_available = is_database_available()
+    detail_rows: list[dict[str, Any]] = []
+
     with open(output_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=SQL2NOSQL_DETAIL_FIELDS)
         writer.writeheader()
 
         for idx, pred in enumerate(predictions):
@@ -269,42 +229,37 @@ def save_sql2nosql_details_csv(
                     config=cfg,
                 )
 
-            judge_eval: dict[str, Any] = {}
-            if use_judge and evaluator is not None:
-                judge_eval = evaluator.evaluate_sql2nosql_sample(
-                    predicted_mongodb_query=predicted_mongodb,
-                    reference_mongodb_query=reference_mongodb,
-                    reference_sql=reference_sql,
-                )
-                judge_results.append(judge_eval)
+            execution_match = ""
+            execution_error = ""
+            if db_available:
+                context = _execution_context_from_prediction(pred)
+                if context and reference_sql and predicted_mongodb:
+                    comparison = compare_sql_to_mongo_execution(
+                        reference_sql,
+                        predicted_mongodb,
+                        db_id=context["db_id"],
+                        dataset=context["dataset"],
+                    )
+                    execution_match = comparison.match
+                    execution_error = comparison.error or comparison.diff_summary or ""
 
-            writer.writerow(
-                {
-                    "reference_sql": reference_sql,
-                    "prompt": prompt,
-                    "input_token_count": input_token_count,
-                    "raw_output": pred.get("nosql_raw_output", pred.get("raw_output", "")),
-                    "predicted_mongodb_query": predicted_mongodb,
-                    "reference_mongodb_query": reference_mongodb,
-                    "mongodb_warnings": pred.get("mongodb_warnings", ""),
-                    "mongodb_success": pred.get("mongodb_success", ""),
-                    "judge_query_correct": judge_eval.get("query_correct", ""),
-                    "judge_reason": judge_eval.get("reason", ""),
-                    "judge_raw_response": judge_eval.get("raw_response", ""),
-                }
-            )
+            row = {
+                "reference_sql": reference_sql,
+                "prompt": prompt,
+                "input_token_count": input_token_count,
+                "raw_output": pred.get("nosql_raw_output", pred.get("raw_output", "")),
+                "predicted_mongodb_query": predicted_mongodb,
+                "reference_mongodb_query": reference_mongodb,
+                "mongodb_warnings": pred.get("mongodb_warnings", ""),
+                "mongodb_success": pred.get("mongodb_success", ""),
+                "execution_match": execution_match,
+                "execution_error": execution_error,
+            }
+            detail_rows.append(row)
+            writer.writerow(row)
 
-    summary = (
-        OllamaJudge.summarize_sql2nosql(judge_results)
-        if use_judge
-        else {
-            "query_correct_rate": 0.0,
-            "overall_correct_rate": 0.0,
-            "count": len(predictions),
-        }
-    )
     logger.info("[%s] Details CSV saved: %s", "sql2nosql (SQL-to-MongoDB)", output_path)
-    return output_path, judge_results, summary
+    return output_path, detail_rows
 
 
 def save_documentation_details_csv(
@@ -315,23 +270,21 @@ def save_documentation_details_csv(
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write MongoDB documentation per-sample details to CSV using Ollama evaluation."""
+    """Write MongoDB documentation per-sample details to CSV using the LLM judge."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total = len(predictions)
     log_step("nosql2doc", "Exporting details CSV (%d rows, judge=%s)", total, use_judge)
 
+    cfg = config or load_config()
+    generation_model = model_name or get_model_name(cfg)
     evaluator = judge
     if use_judge and evaluator is None:
         evaluator = create_judge(cfg)
 
-    fieldnames = DOCUMENTATION_DETAIL_FIELDS
-    cfg = config or load_config()
-    generation_model = model_name or get_model_name(cfg)
-
     judge_results: list[dict[str, Any]] = []
     with open(output_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=DOCUMENTATION_DETAIL_FIELDS)
         writer.writeheader()
 
         for idx, pred in enumerate(predictions):
@@ -343,6 +296,8 @@ def save_documentation_details_csv(
                     pred.get("mongodb_query", pred.get("predicted_mongodb_query", "")),
                 ),
             )
+            predicted_doc = pred.get("predicted_documentation", "")
+            reference_doc = pred.get("reference_documentation", "")
             prompt = pred.get("doc_prompt", pred.get("prompt", ""))
             input_token_count = pred.get("input_token_count")
             if input_token_count in ("", None):
@@ -359,6 +314,8 @@ def save_documentation_details_csv(
                     mongodb_query=mongodb_query,
                     raw_output=raw_output,
                     reference_sql=pred.get("reference_sql", pred.get("ground_truth", "")),
+                    predicted_documentation=predicted_doc,
+                    reference_documentation=reference_doc,
                 )
                 judge_results.append(judge_eval)
 
@@ -368,7 +325,13 @@ def save_documentation_details_csv(
                     "prompt": prompt,
                     "input_token_count": input_token_count,
                     "raw_output": pred.get("doc_raw_output", pred.get("raw_output", "")),
-                    "judge_doc_correct": judge_eval.get("doc_correct", ""),
+                    "predicted_documentation": predicted_doc,
+                    "reference_documentation": reference_doc,
+                    "judge_score": judge_eval.get("judge_score", ""),
+                    "judge_correctness": judge_eval.get("correctness", ""),
+                    "judge_completeness": judge_eval.get("completeness", ""),
+                    "judge_clarity": judge_eval.get("clarity", ""),
+                    "judge_relevance": judge_eval.get("relevance", ""),
                     "judge_reason": judge_eval.get("reason", ""),
                     "judge_raw_response": judge_eval.get("raw_response", ""),
                 }
@@ -377,11 +340,7 @@ def save_documentation_details_csv(
     summary = (
         OllamaJudge.summarize_documentation(judge_results)
         if use_judge
-        else {
-            "doc_correct_rate": 0.0,
-            "overall_correct_rate": 0.0,
-            "count": len(predictions),
-        }
+        else {"judge_score": 0.0, "count": len(predictions)}
     )
     logger.info("[%s] Details CSV saved: %s", "nosql2doc (NoSQL-to-Documentation)", output_path)
     return output_path, judge_results, summary

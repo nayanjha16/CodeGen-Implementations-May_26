@@ -80,7 +80,10 @@ class TENDLoader:
         """Map a Hugging Face record to the project example schema."""
         return {
             "id": str(row.get("id", "")),
-            "source_dataset": str(row.get("source_dataset", "")),
+            "source_dataset": str(
+                row.get("source_dataset", row.get("dataset", "spider"))
+            ).strip()
+            or "spider",
             "split": str(row.get("split", "")),
             "db_id": str(row.get("db_id", "")),
             "question": str(row.get("question", "")).strip(),
@@ -90,6 +93,8 @@ class TENDLoader:
             "nosql_query": str(row.get("nosql_query", "")).strip(),
             "documentation": str(row.get("documentation", "")).strip(),
             "evaluation_summary": str(row.get("evaluation_summary", "")).strip(),
+            "execution_accuracy": str(row.get("execution_accuracy", "")).strip(),
+            "execution_comparison": str(row.get("execution_comparison", "")).strip(),
         }
 
     def _cache_dir(self) -> Path:
@@ -164,8 +169,52 @@ class TENDLoader:
             rows.append(self.standardize(json.loads(line)))
         return rows
 
-    def load_split(self, split: str = "test") -> list[dict[str, str]]:
+    def _fetch_split(self, split: str) -> list[dict[str, str]]:
+        """Download one split from Hugging Face (datasets API with HTTP fallback)."""
+        try:
+            rows = self._load_from_huggingface(split)
+        except Exception as exc:
+            logger.warning(
+                "load_dataset failed for %s/%s (%s); falling back to direct JSONL download",
+                self.dataset_id,
+                self.config,
+                exc,
+            )
+            rows = self._download_jsonl_via_http(split)
+        return rows
+
+    def refresh_split(self, split: str = "test") -> list[dict[str, str]]:
+        """Force-download a split from Hugging Face and overwrite the local cache."""
+        normalized = split.strip().lower()
+        if normalized == "validation":
+            normalized = "test"
+        if normalized not in TEND_SPLITS:
+            allowed = ", ".join(sorted(TEND_SPLITS))
+            raise ValueError(
+                f"Unknown TEND split '{split}'. Expected one of: {allowed} "
+                "(or 'validation' as an alias for 'test')."
+            )
+
+        cache_path = self._cache_path(normalized)
+        if cache_path.exists():
+            cache_path.unlink()
+
+        rows = self._fetch_split(normalized)
+        self._write_cache(normalized, rows)
+        logger.info(
+            "Refreshed TEND %s/%s (%d rows) at %s",
+            self.config,
+            normalized,
+            len(rows),
+            cache_path,
+        )
+        return rows
+
+    def load_split(self, split: str = "test", *, force_refresh: bool = False) -> list[dict[str, str]]:
         """Load one split (`train` or `test`) for the configured subset."""
+        if force_refresh:
+            return self.refresh_split(split)
+
         normalized = split.strip().lower()
         if normalized == "validation":
             normalized = "test"
@@ -187,17 +236,7 @@ class TENDLoader:
             )
             return cached
 
-        try:
-            rows = self._load_from_huggingface(normalized)
-        except Exception as exc:
-            logger.warning(
-                "load_dataset failed for %s/%s (%s); falling back to direct JSONL download",
-                self.dataset_id,
-                self.config,
-                exc,
-            )
-            rows = self._download_jsonl_via_http(normalized)
-
+        rows = self._fetch_split(normalized)
         self._write_cache(normalized, rows)
         logger.info(
             "Cached TEND %s/%s (%d rows) at %s",

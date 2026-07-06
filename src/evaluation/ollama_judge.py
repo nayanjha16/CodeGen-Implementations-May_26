@@ -12,8 +12,6 @@ from src.utils.config import get_judge_model, get_llm_provider
 
 logger = logging.getLogger("codegen")
 
-DEFAULT_JUDGE_MODEL = "qwen3:4b"
-
 _TEXT2SQL_PROMPT = """You are a strict SQL equivalence judge.
 
 Compare the predicted SQL against the ground truth SQL. Use the text-to-SQL generation context below when judging whether the predicted query answers the question.
@@ -68,25 +66,38 @@ Respond with JSON only (no markdown fences). In reason, do not include curly bra
 
 _DOCUMENTATION_PROMPT = """You are a strict MongoDB query documentation judge.
 
-Decide whether the generated documentation accurately and completely explains the MongoDB query below.
+Compare the generated documentation against the reference documentation for the MongoDB query below.
+Evaluate relevance to the reference documentation from the dataset.
+
+Score each criterion from 0 to 10:
+- correctness: factual accuracy about what the query does
+- completeness: covers filters, projections, sorting, limits, and aggregation behavior
+- clarity: readable and understandable for a developer
+- relevance: explains the same intent as the reference documentation
 
 Rules:
-- doc_correct is true ONLY if the documentation correctly explains the collection, operation, filters, projections, sorting, limits, and aggregation behavior when present.
-- Ignore stylistic differences when the meaning matches the query.
-- doc_correct must be false if the output is empty, unrelated, or misses key query semantics.
-- Brief mentions of the MongoDB query syntax inside the explanation are acceptable.
-- Do not mark doc_correct true unless you are confident the documentation would help a developer understand what the query returns.
+- Use the reference documentation as the gold standard for meaning.
+- Ignore stylistic differences when the meaning matches.
+- Penalize missing key query semantics or incorrect explanations.
+- Return an overall judge_score from 0 to 10 (average of the four criteria, rounded to one decimal).
 
 {context}MongoDB query:
 {mongodb_query}
 
+Reference documentation:
+{reference_documentation}
+
 Generated documentation:
 {generated_output}
 
-Respond with JSON only (no markdown fences). In reason, do not include curly braces or backticks:
+Respond with JSON only (no markdown fences):
 {{
-  "doc_correct": true or false,
-  "reason": "short reason focused on missing or incorrect explanation"
+  "correctness": 0-10,
+  "completeness": 0-10,
+  "clarity": 0-10,
+  "relevance": 0-10,
+  "judge_score": 0-10,
+  "reason": "short reason focused on relevance to the reference documentation"
 }}"""
 
 _TEND_PROMPT = """You are a database expert. Compare the SQL input with the MongoDB output.
@@ -293,28 +304,70 @@ class OllamaJudge:
             "raw_response": raw_response,
         }
 
+    @staticmethod
+    def _extract_numeric_field(text: str, field: str) -> float | None:
+        match = re.search(
+            rf'"{re.escape(field)}"\s*:\s*([0-9]+(?:\.[0-9]+)?)',
+            text,
+        )
+        if not match:
+            return None
+        return float(match.group(1))
+
     def _parse_documentation_response(self, text: str) -> dict[str, Any]:
         raw_response = text
         text = self._strip_code_fences(self._strip_assistant_prefix(text))
-        parsed = self._extract_eval_json(text, {"doc_correct"})
+        parsed = self._extract_eval_json(text, {"judge_score"})
         if parsed is not None:
-            return {
-                "doc_correct": bool(parsed.get("doc_correct")),
-                "reason": str(parsed.get("reason", "")),
-                "raw_response": raw_response,
-            }
+            return self._normalize_documentation_scores(parsed, raw_response)
 
-        doc_correct = self._extract_bool_field(text, "doc_correct")
-        if doc_correct is not None:
+        judge_score = self._extract_numeric_field(text, "judge_score")
+        if judge_score is not None:
             return {
-                "doc_correct": doc_correct,
+                "correctness": self._extract_numeric_field(text, "correctness") or 0.0,
+                "completeness": self._extract_numeric_field(text, "completeness") or 0.0,
+                "clarity": self._extract_numeric_field(text, "clarity") or 0.0,
+                "relevance": self._extract_numeric_field(text, "relevance") or 0.0,
+                "judge_score": judge_score,
                 "reason": self._extract_string_field(text, "reason"),
                 "raw_response": raw_response,
             }
 
         return {
-            "doc_correct": False,
+            "correctness": 0.0,
+            "completeness": 0.0,
+            "clarity": 0.0,
+            "relevance": 0.0,
+            "judge_score": 0.0,
             "reason": "Unable to parse model response",
+            "raw_response": raw_response,
+        }
+
+    @staticmethod
+    def _normalize_documentation_scores(
+        parsed: dict[str, Any],
+        raw_response: str,
+    ) -> dict[str, Any]:
+        def _score(key: str) -> float:
+            value = parsed.get(key, 0)
+            try:
+                return max(0.0, min(10.0, float(value)))
+            except (TypeError, ValueError):
+                return 0.0
+
+        criteria = {
+            "correctness": _score("correctness"),
+            "completeness": _score("completeness"),
+            "clarity": _score("clarity"),
+            "relevance": _score("relevance"),
+        }
+        judge_score = _score("judge_score")
+        if judge_score == 0.0 and any(criteria.values()):
+            judge_score = round(sum(criteria.values()) / len(criteria), 1)
+        return {
+            **criteria,
+            "judge_score": judge_score,
+            "reason": str(parsed.get("reason", "")),
             "raw_response": raw_response,
         }
 
@@ -424,15 +477,16 @@ class OllamaJudge:
         raw_output: str = "",
         reference_sql: str = "",
         predicted_documentation: str = "",
+        reference_documentation: str = "",
         **_kwargs: Any,
     ) -> dict[str, Any]:
-        """Evaluate one MongoDB query documentation sample with the Ollama judge."""
+        """Evaluate one MongoDB query documentation sample with the LLM judge."""
         generated_output = raw_output.strip() or predicted_documentation.strip()
 
         if not mongodb_query.strip():
             skip_reason = "Skipped judge evaluation: missing MongoDB query"
             return {
-                "doc_correct": False,
+                "judge_score": 0.0,
                 "reason": "Missing MongoDB query",
                 "raw_response": skip_reason,
             }
@@ -440,7 +494,7 @@ class OllamaJudge:
         if not generated_output:
             skip_reason = "Skipped judge evaluation: missing model raw output"
             return {
-                "doc_correct": False,
+                "judge_score": 0.0,
                 "reason": "Missing model raw output",
                 "raw_response": skip_reason,
             }
@@ -450,12 +504,11 @@ class OllamaJudge:
             _DOCUMENTATION_PROMPT.format(
                 context=context,
                 mongodb_query=mongodb_query.strip(),
+                reference_documentation=reference_documentation.strip(),
                 generated_output=generated_output,
             )
         )
-        result = self._parse_documentation_response(response)
-        result["overall_correct"] = result["doc_correct"]
-        return result
+        return self._parse_documentation_response(response)
 
     def evaluate_tend_sample(
         self,
@@ -548,6 +601,9 @@ class OllamaJudge:
                     predicted_documentation=sample.get(
                         "predicted_documentation", sample.get("documentation", "")
                     ),
+                    reference_documentation=sample.get(
+                        "reference_documentation", sample.get("documentation", "")
+                    ),
                 )
             )
         return results
@@ -583,14 +639,9 @@ class OllamaJudge:
     def summarize_documentation(results: list[dict[str, Any]]) -> dict[str, Any]:
         total = len(results)
         if total == 0:
-            return {
-                "doc_correct_rate": 0.0,
-                "overall_correct_rate": 0.0,
-                "count": 0,
-            }
-        doc_correct = sum(1 for result in results if result.get("doc_correct"))
+            return {"judge_score": 0.0, "count": 0}
+        scores = [float(result.get("judge_score", 0.0)) for result in results]
         return {
-            "doc_correct_rate": doc_correct / total,
-            "overall_correct_rate": doc_correct / total,
+            "judge_score": sum(scores) / total,
             "count": total,
         }

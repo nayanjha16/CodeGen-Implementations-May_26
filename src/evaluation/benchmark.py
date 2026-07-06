@@ -212,6 +212,7 @@ class BenchmarkRunner:
                     "question": example.get("question", ""),
                     "schema": example.get("schema", ""),
                     "db_id": example.get("db_id", ""),
+                    "source_dataset": example.get("source_dataset", "spider"),
                     "reference_sql": ref_sql,
                     "reference_sql_valid": ref_sql_valid,
                     "nosql_schema": nosql_gen.get("nosql_schema", ""),
@@ -232,18 +233,19 @@ class BenchmarkRunner:
                 }
             )
 
+        execution_contexts = [
+            {
+                "db_id": example.get("db_id", ""),
+                "dataset": example.get("source_dataset", "spider") or "spider",
+            }
+            for example in samples
+        ]
+        reference_sql_queries = [example.get("sql", "") for example in samples]
         nosql_metrics = self.nosql_evaluator.evaluate_all(
             pred_queries,
             ref_queries,
-            structured_preds,
-            structured_refs,
-        )
-        nosql_metrics["total_count"] = len(nosql_results)
-        nosql_metrics["scored_count"] = len(pred_queries)
-        nosql_metrics["translation_success_rate"] = (
-            sum(1 for r in nosql_results if r.get("mongodb_success")) / len(nosql_results)
-            if nosql_results
-            else 0.0
+            reference_sql_queries=reference_sql_queries,
+            execution_contexts=execution_contexts,
         )
         valid = sum(1 for r in nosql_results if r.get("mongodb_success"))
         log_step(
@@ -333,20 +335,8 @@ class BenchmarkRunner:
                 }
             )
 
-        doc_metrics = self.doc_evaluator.evaluate_all(
-            pred_docs,
-            ref_docs,
-            mongodb_queries=mongodb_queries,
-            structured_preds=structured_preds,
-            structured_refs=structured_refs,
-        )
-        doc_metrics["total_count"] = len(doc_results)
-        doc_metrics["scored_count"] = len(pred_docs)
-        doc_metrics["translation_success_rate"] = (
-            sum(1 for r in doc_results if r.get("documentation_success")) / len(doc_results)
-            if doc_results
-            else 0.0
-        )
+        doc_metrics = self.doc_evaluator.evaluate_all(pred_docs, ref_docs)
+        doc_metrics["judge_score"] = 0.0
         valid = sum(1 for r in doc_results if r.get("documentation_success"))
         log_step(
             "nosql2doc",
@@ -375,6 +365,7 @@ class BenchmarkRunner:
         for result, example in zip(gen_results, samples):
             result.setdefault("schema", example.get("schema", ""))
             result.setdefault("db_id", example.get("db_id", ""))
+            result.setdefault("source_dataset", example.get("source_dataset", "spider"))
             if not result.get("prompt"):
                 result["prompt"] = self.sql_generator.build_prompt(
                     result.get("question", example.get("question", "")),
@@ -384,17 +375,20 @@ class BenchmarkRunner:
         predictions = [r["sql"] for r in gen_results]
         references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]
 
-        db_paths = []
-        if db_resolver:
-            for result, example in zip(gen_results, samples):
-                db_path = db_resolver(example.get("db_id", ""))
-                db_paths.append(db_path)
-                result["db_path"] = db_path
-        else:
-            db_paths = [None] * len(samples)
+        execution_contexts = [
+            {
+                "db_id": example.get("db_id", ""),
+                "dataset": example.get("source_dataset", "spider") or "spider",
+            }
+            for example in samples
+        ]
 
-        log_step("text2sql", "Computing metrics (EM, execution accuracy, BLEU, ...)")
-        eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
+        log_step("text2sql", "Computing metrics (execution accuracy, exact match, structural similarity)")
+        eval_metrics = self.metrics.evaluate_all(
+            predictions,
+            references,
+            execution_contexts,
+        )
         valid_sql = sum(1 for r in gen_results if r.get("sql_valid"))
         log_step(
             "text2sql",

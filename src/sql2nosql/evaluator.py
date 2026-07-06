@@ -36,123 +36,77 @@ class NoSQLEvaluator:
         """Check whether a string looks like valid MongoDB shell syntax."""
         q = query.strip()
         valid = bool(
-            re.match(r"db\.\w+\.(find|aggregate|distinct)\s*\(", q)
+            re.match(
+                r"db\.\w+\.(?:find|aggregate|distinct|countDocuments)\s*\(",
+                q,
+                re.IGNORECASE,
+            )
         )
         return {"valid": valid}
 
-    def syntax_validity_rate(self, predictions: list[str]) -> float:
-        """Fraction of syntactically valid MongoDB query predictions."""
-        if not predictions:
-            return 0.0
-        valid = sum(1 for p in predictions if self.validate_syntax(p)["valid"])
-        return valid / len(predictions)
-
-    def structural_equivalence_rate(
+    def execution_accuracy(
         self,
-        structured_preds: list[dict[str, Any]],
-        structured_refs: list[dict[str, Any]],
+        predicted_queries: list[str],
+        reference_sql_queries: list[str],
+        execution_contexts: list[dict[str, str] | None],
     ) -> float:
-        """Fraction of structurally equivalent filter/projection/collection."""
-        if not structured_preds:
+        """Compare predicted MongoDB output against reference SQL on live databases."""
+        from src.evaluation.database_execution import _ExecutionSession, is_database_available
+
+        if not is_database_available():
             return 0.0
-        matches = sum(
-            1
-            for pred, ref in zip(structured_preds, structured_refs)
-            if self.query_equivalence(pred, ref)["equivalent"]
-        )
-        return matches / len(structured_preds)
 
-    def token_f1_batch(
-        self, predictions: list[str], references: list[str]
-    ) -> float:
-        """Average token F1 across predictions."""
-        if not predictions:
+        correct = 0
+        total = 0
+
+        try:
+            with _ExecutionSession() as session:
+                for pred, ref_sql, context in zip(
+                    predicted_queries,
+                    reference_sql_queries,
+                    execution_contexts,
+                ):
+                    if not context:
+                        continue
+                    db_id = context.get("db_id", "").strip()
+                    dataset = context.get("dataset", "spider").strip() or "spider"
+                    if not db_id or not ref_sql.strip() or not pred.strip():
+                        continue
+                    total += 1
+                    result = session.compare_sql_to_mongo(
+                        dataset=dataset,
+                        db_id=db_id,
+                        reference_sql=ref_sql,
+                        predicted_mongo=pred,
+                    )
+                    if result.match:
+                        correct += 1
+        except RuntimeError:
             return 0.0
-        scores = [
-            self.translation_accuracy(p, r)["token_f1"]
-            for p, r in zip(predictions, references)
-        ]
-        return sum(scores) / len(scores)
 
-    def translation_accuracy(
-        self,
-        predicted: str,
-        reference: str,
-    ) -> dict[str, Any]:
-        """Compare predicted vs reference MongoDB query."""
-        pred_norm = self.normalize_query(predicted)
-        ref_norm = self.normalize_query(reference)
-        exact_match = pred_norm == ref_norm
-
-        pred_tokens = set(re.findall(r"\w+", pred_norm))
-        ref_tokens = set(re.findall(r"\w+", ref_norm))
-        overlap = len(pred_tokens & ref_tokens)
-        union = len(pred_tokens | ref_tokens) or 1
-        token_f1 = (
-            2 * overlap / (len(pred_tokens) + len(ref_tokens))
-            if pred_tokens or ref_tokens
-            else 0.0
-        )
-
-        return {
-            "exact_match": exact_match,
-            "token_overlap": overlap / union,
-            "token_f1": token_f1,
-        }
-
-    def query_equivalence(
-        self,
-        predicted: dict[str, Any],
-        reference: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Check structural equivalence of parsed query components."""
-        pred_filter = predicted.get("filter", {})
-        ref_filter = reference.get("filter", {})
-        pred_proj = predicted.get("projection", {})
-        ref_proj = reference.get("projection", {})
-
-        filter_match = pred_filter == ref_filter
-        projection_match = pred_proj == ref_proj
-        collection_match = predicted.get("collection") == reference.get("collection")
-
-        return {
-            "equivalent": filter_match and projection_match and collection_match,
-            "filter_match": filter_match,
-            "projection_match": projection_match,
-            "collection_match": collection_match,
-        }
+        return correct / total if total > 0 else 0.0
 
     def evaluate_all(
         self,
         predictions: list[str],
         references: list[str],
-        structured_preds: list[dict[str, Any]] | None = None,
-        structured_refs: list[dict[str, Any]] | None = None,
+        reference_sql_queries: list[str] | None = None,
+        execution_contexts: list[dict[str, str] | None] | None = None,
     ) -> dict[str, Any]:
         """Run full evaluation suite for MongoDB query translation."""
-        from src.evaluation.metrics import EvaluationMetrics
+        from src.evaluation.structural_similarity import mongo_structural_similarity_batch
 
-        text_metrics = EvaluationMetrics()
-        codebleu = text_metrics.compute_codebleu(
-            predictions, references, lang="javascript"
-        )
-        metrics: dict[str, Any] = {
+        ref_sql = reference_sql_queries or [""] * len(predictions)
+        contexts = execution_contexts or [None] * len(predictions)
+        return {
+            "execution_accuracy": self.execution_accuracy(
+                predictions, ref_sql, contexts
+            ),
             "exact_match": self.exact_match_batch(predictions, references),
-            "syntax_validity": self.syntax_validity_rate(predictions),
-            "token_f1": self.token_f1_batch(predictions, references),
-            "bleu": text_metrics.compute_bleu(predictions, references),
-            "rouge_l": text_metrics.compute_rouge_l(predictions, references),
-            "bertscore": text_metrics.compute_bertscore(predictions, references),
-            **codebleu,
-            "count": len(predictions),
+            "structural_similarity": mongo_structural_similarity_batch(
+                predictions, references
+            ),
         }
-
-        if structured_preds and structured_refs:
-            metrics["structural_equivalence"] = self.structural_equivalence_rate(
-                structured_preds, structured_refs
-            )
-
-        return metrics
 
     def evaluate_batch(
         self,
@@ -162,12 +116,21 @@ class NoSQLEvaluator:
         """Evaluate a batch of translations."""
         if not predictions:
             return {
+                "execution_accuracy": 0.0,
                 "exact_match": 0.0,
-                "syntax_validity": 0.0,
-                "token_f1": 0.0,
-                "count": 0,
+                "structural_similarity": 0.0,
             }
 
         pred_queries = [p.get("mongodb_query", "") for p in predictions]
         ref_queries = [r.get("mongodb_query", "") for r in references]
-        return self.evaluate_all(pred_queries, ref_queries, predictions, references)
+        ref_sql = [p.get("reference_sql", "") for p in predictions]
+        contexts = [
+            {"db_id": p.get("db_id", ""), "dataset": p.get("source_dataset", "spider")}
+            for p in predictions
+        ]
+        return self.evaluate_all(
+            pred_queries,
+            ref_queries,
+            reference_sql_queries=ref_sql,
+            execution_contexts=contexts,
+        )

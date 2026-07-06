@@ -6,11 +6,10 @@ for all baseline runs.
 
 Evaluates three independent tasks on gold dataset rows:
   text2sql (question + schema), sql2nosql (gold sql), nosql2doc (gold nosql_query).
-Each task uses its own adapter when --adapter-run is set; outputs are not chained.
 
-Computes: Exact Match, Execution Accuracy, Syntax Validity,
-          BLEU, ROUGE-L, BERTScore, CodeBLEU
-          Ollama judge semantic correctness (qwen3:4b by default)
+Metrics:
+  text2sql / sql2nosql: execution_accuracy, exact_match, structural_similarity
+  documentation: embedding_similarity, judge_score (LLM judge only)
 
 Usage:
   python scripts/run_baseline_eval.py
@@ -18,13 +17,13 @@ Usage:
   python scripts/run_baseline_eval.py --mlflow
   python scripts/run_baseline_eval.py --output spider_gold_baseline
   python scripts/run_baseline_eval.py --full-split --split test
+  python scripts/run_baseline_eval.py --no-judge
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -32,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.datasets.tend_loader import GOLD_VALIDATION_DATASET_NAME, load_gold_validation
+from src.evaluation.database_execution import is_database_available
 from src.evaluation.benchmark import BenchmarkRunner
 from src.evaluation.export import (
     DOCUMENTATION_DETAILS_CSV,
@@ -49,7 +49,6 @@ from src.models.model_loader import is_model_cached
 from src.text2sql.sql_executor import build_text2sql_prompt
 from src.utils.config import (
     get_adapter_path,
-    get_bertscore_model_name,
     get_judge_model,
     get_llm_provider,
     get_model_name,
@@ -62,39 +61,6 @@ from src.utils.paths import (
 )
 from src.utils.logging import setup_logging
 from src.utils.seeds import set_seeds
-
-def _compute_text2sql_translation_success_rate(
-    predictions: list[dict[str, object]],
-) -> float:
-    """Rate of predictions that are complete SELECT ... FROM SQL statements."""
-    if not predictions:
-        return 0.0
-
-    from src.text2sql.sql_validator import SQLValidator
-
-    validator = SQLValidator()
-    successful = 0
-
-    for pred in predictions:
-        sql_valid = pred.get("sql_valid")
-        if isinstance(sql_valid, bool):
-            successful += int(sql_valid)
-            continue
-
-        sql = str(pred.get("sql", "")).strip()
-        if not sql:
-            continue
-        if not re.match(r"^\s*SELECT\b", sql, re.IGNORECASE):
-            continue
-        if not re.search(r"\bFROM\b", sql, re.IGNORECASE):
-            continue
-
-        syntax = validator.validate_syntax(sql)
-        completeness = validator.validate_completeness(sql)
-        if syntax["valid"] and completeness["complete"]:
-            successful += 1
-
-    return successful / len(predictions)
 
 
 def _ensure_text2sql_prompts(
@@ -119,41 +85,15 @@ def _ensure_text2sql_prompts(
         )
 
 
-def print_metrics(metrics: dict, title: str, prefix: str = "") -> None:
+def print_metrics(metrics: dict, title: str) -> None:
     print("\n" + "=" * 60)
     print(f"  {title}")
     print("=" * 60)
-    labels = [
-        ("exact_match", "Exact Match Accuracy"),
-        ("judge_correct_rate", "Judge Correct Rate"),
-        ("judge_overall_correct_rate", "Judge Overall Correct Rate"),
-        ("execution_accuracy", "Execution Accuracy"),
-        ("syntax_validity", "Syntax Validity Rate"),
-        ("structural_equivalence", "Structural Equivalence"),
-        ("translation_success_rate", "Translation Success Rate"),
-        ("scored_count", "Scored Sample Count"),
-        ("total_count", "Total Sample Count"),
-        ("token_f1", "Token F1"),
-        ("bleu", "BLEU"),
-        ("rouge_l", "ROUGE-L"),
-        ("bertscore", "BERTScore"),
-        ("codebleu", "CodeBLEU"),
-        ("ngram_match", "  CodeBLEU N-gram"),
-        ("syntax_match", "  CodeBLEU Syntax"),
-        ("semantic_match", "  CodeBLEU Semantic"),
-        ("count", "Sample Count"),
-        ("judge_count", "Judge Sample Count"),
-    ]
-    for key, label in labels:
-        if key in metrics:
-            val = metrics[key]
-            if val is None:
-                continue
-            display_label = f"{prefix}{label}" if prefix else label
-            if isinstance(val, float):
-                print(f"  {display_label:30s}: {val:.4f}")
-            else:
-                print(f"  {display_label:30s}: {val}")
+    for key, value in metrics.items():
+        if isinstance(value, float):
+            print(f"  {key:30s}: {value:.4f}")
+        else:
+            print(f"  {key:30s}: {value}")
 
 
 def run_tend_baseline(
@@ -230,7 +170,7 @@ def main() -> None:
     parser.add_argument(
         "--no-judge",
         action="store_true",
-        help="Skip Ollama semantic judge for detail CSVs and metrics",
+        help="Skip LLM judge for documentation metrics",
     )
     parser.add_argument(
         "--version",
@@ -250,11 +190,9 @@ def main() -> None:
     if use_gold_validation:
         gold_count = len(load_gold_validation())
         dataset_label = GOLD_VALIDATION_DATASET_NAME
-        split_label = "gold"
     else:
         gold_count = None
         dataset_label = f"tend_{args.tend_config}_{args.split}"
-        split_label = args.split
     output_name = args.output or build_results_run_name(
         dataset=dataset_label,
         model_name=(
@@ -269,7 +207,8 @@ def main() -> None:
         print(f"Adapter run: {args.adapter_run}")
         for task in ("text2sql", "sql2nosql", "nosql2doc"):
             print(f"  {task}: {get_adapter_path(task, config, run=args.adapter_run)}")
-    print(f"Semantic judge ({llm_provider}): {judge_model_name}")
+    print(f"Documentation judge ({llm_provider}): {judge_model_name}")
+    print(f"Database execution available: {is_database_available()}")
     if use_gold_validation:
         print(
             f"Dataset: {GOLD_VALIDATION_DATASET_NAME} "
@@ -332,30 +271,22 @@ def main() -> None:
         config=config,
         model_name=model_name,
     )
-    db_paths = [pred.get("db_path") for pred in text2sql_predictions]
 
-    use_judge = not args.no_judge
-    judge = None
-    if use_judge:
-        judge = create_judge(config)
-
-    _, _, judge_text2sql_metrics = save_text2sql_details_csv(
+    save_text2sql_details_csv(
         text2sql_details_path,
         text2sql_predictions,
-        db_paths=db_paths,
-        judge=judge,
-        use_judge=use_judge,
         model_name=model_name,
         config=config,
     )
-    _, _, judge_sql2nosql_metrics = save_sql2nosql_details_csv(
+    save_sql2nosql_details_csv(
         sql2nosql_details_path,
         sql2nosql_predictions,
-        judge=judge,
-        use_judge=use_judge,
         model_name=model_name,
         config=config,
     )
+
+    use_judge = not args.no_judge
+    judge = create_judge(config) if use_judge else None
     _, _, judge_documentation_metrics = save_documentation_details_csv(
         documentation_details_path,
         documentation_predictions,
@@ -365,21 +296,8 @@ def main() -> None:
         config=config,
     )
 
-    text2sql_metrics = merge_judge_summary_into_metrics(
-        result["metrics"],
-        judge_text2sql_metrics if use_judge else None,
-        task="text2sql",
-    )
-    text2sql_metrics["total_count"] = len(text2sql_predictions)
-    text2sql_metrics["scored_count"] = len(text2sql_predictions)
-    text2sql_metrics["translation_success_rate"] = (
-        _compute_text2sql_translation_success_rate(text2sql_predictions)
-    )
-    sql2nosql_metrics = merge_judge_summary_into_metrics(
-        result.get("nosql_metrics"),
-        judge_sql2nosql_metrics if use_judge else None,
-        task="sql2nosql",
-    )
+    text2sql_metrics = normalize_task_metrics(result["metrics"], task="text2sql")
+    sql2nosql_metrics = normalize_task_metrics(result.get("nosql_metrics"), task="sql2nosql")
     documentation_metrics = merge_judge_summary_into_metrics(
         result.get("doc_metrics"),
         judge_documentation_metrics if use_judge else None,
@@ -393,6 +311,7 @@ def main() -> None:
                 "adapter_run": args.adapter_run,
                 "run_type": "lora" if args.adapter_run else "baseline",
                 "judge_model": judge_model_name if use_judge else None,
+                "database_execution": is_database_available(),
                 "dataset": result["dataset"],
                 "text2sql": text2sql_metrics,
                 "sql2nosql": sql2nosql_metrics,
@@ -401,35 +320,6 @@ def main() -> None:
             },
             f,
             indent=2,
-        )
-
-    if use_judge:
-        judge_text2sql_only = {
-            key: value
-            for key, value in text2sql_metrics.items()
-            if key.startswith("judge_")
-        }
-        judge_sql2nosql_only = {
-            key: value
-            for key, value in sql2nosql_metrics.items()
-            if key.startswith("judge_")
-        }
-        judge_documentation_only = {
-            key: value
-            for key, value in documentation_metrics.items()
-            if key.startswith("judge_")
-        }
-        print_metrics(
-            judge_text2sql_only,
-            f"Ollama Judge Text-to-SQL ({result['dataset']})",
-        )
-        print_metrics(
-            judge_sql2nosql_only,
-            f"Ollama Judge SQL-to-MongoDB ({result['dataset']})",
-        )
-        print_metrics(
-            judge_documentation_only,
-            f"Ollama Judge MongoDB Documentation ({result['dataset']})",
         )
 
     print(f"  Run saved: {run_dir}")

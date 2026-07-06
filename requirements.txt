@@ -16,11 +16,9 @@ requests>=2.31.0
 # SQL processing
 sqlparse>=0.4.4
 
-# Evaluation metrics
-nltk>=3.8.1
-rouge-score>=0.1.2
-bert-score>=0.3.13
-codebleu>=0.7.0
+# Database execution (TEND PostgreSQL + MongoDB integration)
+psycopg[binary]>=3.1.0
+pymongo>=4.6.0
 
 # Experiment tracking
 mlflow>=2.9.0

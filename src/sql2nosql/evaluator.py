@@ -50,8 +50,9 @@ class NoSQLEvaluator:
         reference_sql_queries: list[str],
         execution_contexts: list[dict[str, str] | None],
     ) -> float:
-        """Compare predicted MongoDB output against reference SQL on live databases."""
+        """Compare predicted MongoDB output against gold or live reference SQL results."""
         from src.evaluation.database_execution import _ExecutionSession, is_database_available
+        from src.evaluation.gold_output_comparison import compare_predicted_mongo_to_gold_outputs
 
         if not is_database_available():
             return 0.0
@@ -70,15 +71,30 @@ class NoSQLEvaluator:
                         continue
                     db_id = context.get("db_id", "").strip()
                     dataset = context.get("dataset", "spider").strip() or "spider"
-                    if not db_id or not ref_sql.strip() or not pred.strip():
+                    if not db_id or not pred.strip():
                         continue
                     total += 1
-                    result = session.compare_sql_to_mongo(
-                        dataset=dataset,
-                        db_id=db_id,
-                        reference_sql=ref_sql,
-                        predicted_mongo=pred,
-                    )
+                    gold_nosql_output = str(context.get("nosql_output", "")).strip()
+                    gold_sql_output = str(context.get("sql_output", "")).strip()
+                    if gold_nosql_output:
+                        result, _ = compare_predicted_mongo_to_gold_outputs(
+                            pred,
+                            gold_nosql_output,
+                            gold_sql_output=gold_sql_output,
+                            reference_sql=ref_sql,
+                            db_id=db_id,
+                            dataset=dataset,
+                            session=session,
+                        )
+                    elif ref_sql.strip():
+                        result = session.compare_sql_to_mongo(
+                            dataset=dataset,
+                            db_id=db_id,
+                            reference_sql=ref_sql,
+                            predicted_mongo=pred,
+                        )
+                    else:
+                        continue
                     if result.match:
                         correct += 1
         except RuntimeError:

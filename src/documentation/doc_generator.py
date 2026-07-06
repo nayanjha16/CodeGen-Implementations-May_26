@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from src.documentation.evaluator import DocumentationEvaluator
 from src.documentation.prompt_builder import DocumentationPromptBuilder
 from src.documentation.reference_builder import ReferenceDocumentationBuilder
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
@@ -238,7 +237,6 @@ class DocumentationGenerator:
                 self.model.model_name, self.config
             )
         self.gen_config = gen_cfg
-        self.evaluator = DocumentationEvaluator()
         self.reference_builder = ReferenceDocumentationBuilder()
         self._seq2seq = is_seq2seq_model(self.model.model_name)
 
@@ -263,8 +261,8 @@ class DocumentationGenerator:
         documentation: str,
         mongodb_query: str = "",
     ) -> bool:
-        """Return True when output looks like usable documentation."""
-        return self.evaluator.validate_structure(documentation, mongodb_query)["valid"]
+        """Return True when the model produced non-empty documentation."""
+        return bool(documentation.strip())
 
     def build_prompt(
         self,

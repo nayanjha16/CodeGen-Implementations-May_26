@@ -41,8 +41,9 @@ class EvaluationMetrics:
         references: list[str],
         execution_contexts: list[dict[str, str] | None],
     ) -> float:
-        """Execution accuracy comparing PostgreSQL result sets."""
+        """Execution accuracy comparing predicted SQL against gold or live reference output."""
         from src.evaluation.database_execution import _ExecutionSession, is_database_available
+        from src.evaluation.gold_output_comparison import compare_predicted_sql_to_gold_output
 
         if not is_database_available():
             return 0.0
@@ -62,12 +63,23 @@ class EvaluationMetrics:
                     if not db_id:
                         continue
                     total += 1
-                    result = session.compare_sql(
-                        dataset=dataset,
-                        db_id=db_id,
-                        predicted_sql=pred,
-                        reference_sql=ref,
-                    )
+                    gold_sql_output = str(context.get("sql_output", "")).strip()
+                    if gold_sql_output:
+                        result = compare_predicted_sql_to_gold_output(
+                            pred,
+                            gold_sql_output,
+                            reference_sql=ref,
+                            db_id=db_id,
+                            dataset=dataset,
+                            session=session,
+                        )
+                    else:
+                        result = session.compare_sql(
+                            dataset=dataset,
+                            db_id=db_id,
+                            predicted_sql=pred,
+                            reference_sql=ref,
+                        )
                     if result.match:
                         correct += 1
         except RuntimeError:

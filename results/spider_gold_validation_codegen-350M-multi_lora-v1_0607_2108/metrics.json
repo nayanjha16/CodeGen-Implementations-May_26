@@ -6,9 +6,9 @@
   "database_execution": true,
   "dataset": "spider_gold_validation",
   "text2sql": {
-    "execution_accuracy": 0.1,
-    "exact_match": 0.0,
-    "structural_similarity": 0.704031746031746
+    "execution_accuracy": 0.2,
+    "exact_match": 0.08,
+    "structural_similarity": 0.7920578231292517
   },
   "sql2nosql": {
     "execution_accuracy": 0.04,
@@ -16,8 +16,9 @@
     "structural_similarity": 0.5532463856223867
   },
   "documentation": {
+    "exact_match": 0.0,
     "embedding_similarity": 0.8894518315792084,
-    "judge_score": 2.1519999999999997
+    "judge_score": 1.508
   },
   "mlflow_run_id": null
 }

@@ -76,9 +76,11 @@ Score each criterion from 0 to 10:
 - relevance: explains the same intent as the reference documentation
 
 Rules:
+- Score ONLY the Generated documentation text. Do NOT infer quality from the MongoDB query or reference documentation alone.
 - Use the reference documentation as the gold standard for meaning.
 - Ignore stylistic differences when the meaning matches.
 - Penalize missing key query semantics or incorrect explanations.
+- judge_score must be 0 when the generated documentation is empty, prompt/template echo (e.g. "MongoDB documentation", "MongoDB query"), raw query code, or otherwise not plain-English documentation.
 - Return an overall judge_score from 0 to 10 (average of the four criteria, rounded to one decimal).
 
 {context}MongoDB query:
@@ -481,7 +483,7 @@ class OllamaJudge:
         **_kwargs: Any,
     ) -> dict[str, Any]:
         """Evaluate one MongoDB query documentation sample with the LLM judge."""
-        generated_output = raw_output.strip() or predicted_documentation.strip()
+        generated_output = predicted_documentation.strip() or raw_output.strip()
 
         if not mongodb_query.strip():
             skip_reason = "Skipped judge evaluation: missing MongoDB query"
@@ -492,10 +494,10 @@ class OllamaJudge:
             }
 
         if not generated_output:
-            skip_reason = "Skipped judge evaluation: missing model raw output"
+            skip_reason = "Skipped judge evaluation: missing generated documentation"
             return {
                 "judge_score": 0.0,
-                "reason": "Missing model raw output",
+                "reason": "Missing generated documentation",
                 "raw_response": skip_reason,
             }
 

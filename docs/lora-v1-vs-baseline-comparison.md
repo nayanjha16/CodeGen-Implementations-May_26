@@ -17,23 +17,25 @@ LoRA v1 was fine-tuned on **50 training samples** for **10 epochs** (smoke-scale
 | Run | Path |
 |-----|------|
 | Baseline (no adapter) | `results/spider_gold_validation_codegen-350M-multi_0607_1841/metrics.json` |
-| LoRA v1 | `results/spider_gold_validation_codegen-350M-multi_lora-v1_0607_1907/metrics.json` |
+| LoRA v1 | `results/spider_gold_validation_codegen-350M-multi_lora-v1_0607_2108/metrics.json` |
 
 ## Summary
 
-With the updated evaluation stack (execution accuracy, structural similarity, embedding similarity, and a 0–10 judge score), LoRA v1 shows **mixed results**. The clearest wins are **sql2nosql structural similarity** (0.16 → 0.55) and **documentation embedding similarity** (0.71 → 0.89). **Execution accuracy** regresses on sql2nosql (22% → 4%) and text2sql (12% → 10%), and the documentation **judge score** drops (3.4 → 2.2).
+With the updated evaluation stack (execution accuracy, structural similarity, embedding similarity, and a 0–10 judge score), LoRA v1 shows **clear gains on text2sql and documentation**, with **sql2nosql unchanged in the structural/execution trade-off** seen earlier.
+
+The strongest wins are **text2sql execution accuracy** (12% → 20%), **text2sql structural similarity** (0.70 → 0.79), and **documentation embedding similarity** (0.71 → 0.89). **SQL2NoSQL structural similarity** remains much higher under LoRA (0.16 → 0.55), but **execution accuracy** still regresses (22% → 4%). The documentation **judge score** also improves (0.1 → 1.5 on a 0–10 scale), though both runs remain low in absolute terms.
 
 ---
 
-## Text2SQL — slight structural gain, execution slightly down
+## Text2SQL — execution, structure, and exact match all improve
 
 | Metric | Baseline | LoRA v1 | Change |
 |--------|----------|---------|--------|
-| **Execution accuracy** | **12%** | 10% | −2 pp |
-| Structural similarity | 0.700 | **0.704** | +0.004 (+0.6%) |
-| Exact match | 0% | 0% | 0 |
+| **Execution accuracy** | 12% | **20%** | **+8 pp** |
+| **Structural similarity** | 0.700 | **0.792** | **+0.092 (+13.1%)** |
+| **Exact match** | 0% | **8%** | **+8 pp** |
 
-LoRA v1 marginally improves query structure overlap but does not improve exact match or execution accuracy on this split.
+LoRA v1 improves across all three text2sql metrics on this split — the clearest overall task-level win.
 
 ---
 
@@ -49,20 +51,20 @@ LoRA v1 produces MongoDB queries that are much closer in structure to gold refer
 
 ---
 
-## Documentation — strong embedding gain, judge score down
+## Documentation — embedding and judge score both improve
 
 | Metric | Baseline | LoRA v1 | Change |
 |--------|----------|---------|--------|
 | **Embedding similarity** | 0.714 | **0.889** | **+0.175 (+24.5%)** |
-| Judge score (0–10) | **3.4** | 2.2 | −1.2 (−36%) |
+| **Judge score (0–10)** | 0.1 | **1.5** | **+1.4** |
 
-Generated documentation is semantically closer to references by embedding distance, but the LLM judge rates LoRA v1 output lower on correctness, completeness, clarity, and relevance.
+Generated documentation is semantically closer to references by embedding distance, and the LLM judge rates LoRA v1 output higher on correctness, completeness, clarity, and relevance. Absolute judge scores remain low for both runs (baseline max 2.3, LoRA v1 max 10.0).
 
 ---
 
 ## Takeaways
 
-- **SQL2NoSQL:** LoRA v1 is the clearest structural win — **3.4×** structural similarity (0.16 → 0.55) — but execution accuracy and exact match both fall.
-- **Documentation:** Embedding similarity improves substantially (0.71 → 0.89), yet the judge score drops (3.4 → 2.2), suggesting surface-level semantic overlap without satisfying the rubric.
-- **Text2SQL:** Both runs remain weak on exact match (0%); LoRA v1 is roughly flat on structure and slightly worse on execution (12% → 10%).
-- **Training scale:** Despite training on only 50 samples for 10 epochs, LoRA v1 shows meaningful structural and embedding gains on sql2nosql and documentation — but execution-based metrics do not yet reflect those improvements.
+- **Text2SQL:** LoRA v1 is the clearest win — execution accuracy **12% → 20%**, structural similarity **0.70 → 0.79**, and exact match **0% → 8%**.
+- **SQL2NoSQL:** LoRA v1 retains a **3.4×** structural similarity gain (0.16 → 0.55), but execution accuracy and exact match both fall (22% → 4%, 4% → 0%).
+- **Documentation:** Both embedding similarity (0.71 → 0.89) and judge score (0.1 → 1.5) improve under LoRA v1, though overall documentation quality remains weak in absolute terms.
+- **Training scale:** Despite training on only 50 samples for 10 epochs, LoRA v1 shows meaningful gains on text2sql and documentation; sql2nosql structural improvements still do not translate to better execution accuracy.

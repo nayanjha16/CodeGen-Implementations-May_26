@@ -1,4 +1,4 @@
-index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,execution_match,execution_error
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,exact_match,execution_match,execution_error
 0,How many singers do we have?,"Task: text2sql
 
 Translate the question into SQL.
@@ -55,7 +55,7 @@ CREATE TABLE song (
     song_track_count_average_total INTEGER,
     song_track_count_average_average INTEGER,
     song_track_count_average_total_total INTEGER,
-    song_track_count_average",SELECT COUNT(*) FROM singer,True,SELECT count(*) FROM singer,True,
+    song_track_count_average",SELECT COUNT(*) FROM singer,True,SELECT count(*) FROM singer,False,True,
 1,What is the total number of singers?,"Task: text2sql
 
 Translate the question into SQL.
@@ -112,7 +112,7 @@ CREATE TABLE song (
     song_track_count_count INTEGER,
     song_track_count_average_count INTEGER,
     song_track_count_count_average INTEGER,
-    song_track_count_count_average_",SELECT COUNT(*) FROM singer;,True,SELECT count(*) FROM singer,True,
+    song_track_count_count_average_",SELECT COUNT(*) FROM singer;,True,SELECT count(*) FROM singer,False,True,
 2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Task: text2sql
 
 Translate the question into SQL.
@@ -170,7 +170,7 @@ CREATE TABLE song (
     is_danceable_by_artist TEXT,
     is_danceable_by_album TEXT,
     is_danceable_by_track_count INTEGER,
-    is_danceable_by_year INTEGER","SELECT name, country, age FROM singer ORDER BY age DESC LIMIT 1;",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",False,row count mismatch: sql=1 mongo=6
+    is_danceable_by_year INTEGER","SELECT name, country, age FROM singer ORDER BY age DESC LIMIT 1;",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",False,False,row count mismatch: predicted=1 reference=6
 3,"What are the names, countries, and ages for every singer in descending order of age?","Task: text2sql
 
 Translate the question into SQL.
@@ -227,7 +227,7 @@ CREATE TABLE song (
     song_track_count_max REAL,
     song_track_count_min REAL,
     song_track_count_sum REAL,
-    song_track_count_total REAL,","SELECT name, country, song_name, song_release_year, age FROM singer WHERE song_name <> ''' + ''''",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",False,Unterminated ' string in SQL
+    song_track_count_total REAL,","SELECT name, country, song_name, song_release_year, age FROM singer WHERE song_name <> ''' + ''''",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",False,False,Unterminated ' string in SQL
 4,"What is the average, minimum, and maximum age of all singers from France?","Task: text2sql
 
 Translate the question into SQL.
@@ -282,7 +282,7 @@ CREATE TABLE song (
     song_track_count_max_avg REAL,
     song_track_count_min_avg_min REAL,
     song_track_count_max_avg_max REAL,
-    song_track","SELECT SUM(age) AS average, MIN(name) AS minimum, MAX(name) AS maximum FROM singer GROUP BY song_name ORDER BY average DESC, minimum DESC, maximum DESC LIMIT 10",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,row count mismatch: sql=6 mongo=1
+    song_track","SELECT SUM(age) AS average, MIN(name) AS minimum, MAX(name) AS maximum FROM singer GROUP BY song_name ORDER BY average DESC, minimum DESC, maximum DESC LIMIT 10",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,False,row count mismatch: predicted=6 reference=1
 5,"What is the average, minimum, and maximum age for all French singers?","Task: text2sql
 
 Translate the question into SQL.
@@ -337,7 +337,7 @@ CREATE TABLE song (
     song_track_count_max_avg REAL,
     song_track_count_min_avg_min REAL,
     song_track_count_max_avg_max REAL,
-    song_track","SELECT SUM(age) AS average, MIN(name) AS minimum, MAX(name) AS maximum FROM singer GROUP BY song_name ORDER BY average DESC, minimum DESC, maximum DESC LIMIT 50",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,row count mismatch: sql=6 mongo=1
+    song_track","SELECT SUM(age) AS average, MIN(name) AS minimum, MAX(name) AS maximum FROM singer GROUP BY song_name ORDER BY average DESC, minimum DESC, maximum DESC LIMIT 50",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",False,False,row count mismatch: predicted=6 reference=1
 6,Show the name and the release year of the song by the youngest singer.,"Task: text2sql
 
 Translate the question into SQL.
@@ -394,7 +394,7 @@ CREATE TABLE song (
     track_count_highest INTEGER,
     track_count_highest_total INTEGER,
     track_count_lowest INTEGER,
-    track_count_lowest_total INTEGER,","SELECT name, song_name, song_release_year, age FROM singer WHERE song_name = 'Singer'",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,row count mismatch: sql=0 mongo=1
+    track_count_lowest_total INTEGER,","SELECT name, song_name, song_release_year, age FROM singer WHERE song_name = 'Singer'",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,False,row count mismatch: predicted=0 reference=1
 7,What are the names and release years for all the songs of the youngest singer?,"Task: text2sql
 
 Translate the question into SQL.
@@ -451,7 +451,7 @@ CREATE TABLE song (
     song_track_count_average INTEGER,
     song_track_count_count INTEGER,
     song_track_count_average_count INTEGER,
-    song_track_","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'Singer 1'",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,row count mismatch: sql=0 mongo=1
+    song_track_","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'Singer 1'",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,False,row count mismatch: predicted=0 reference=1
 8,List all song names by singers above the average age.,"Task: text2sql
 
 Translate the question into SQL.
@@ -484,7 +484,7 @@ List all song names by singers above the average age.
 SQL:",194,"SELECT song_name, song_release_year, age, is_male FROM singer
 WHERE song_name > ?
 ORDER BY song_name, song_release_year, age DESC
-LIMIT ?","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name > ? ORDER BY song_name, song_release_year, age DESC LIMIT ?",True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),False,"syntax error at or near ""ORDER""
+LIMIT ?","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name > ? ORDER BY song_name, song_release_year, age DESC LIMIT ?",True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),False,False,"syntax error at or near ""ORDER""
 LINE 1: ...ear, age, is_male FROM singer WHERE song_name > ? ORDER by s...
                                                              ^"
 9,What are all the song names by singers who are older than average?,"Task: text2sql
@@ -544,7 +544,7 @@ CREATE TABLE song (
     song_track_count_sum REAL,
     song_track_count_total REAL,
     song_track_count_total_avg REAL,
-    song_track_",SELECT song_name FROM singer WHERE song_name <> '',True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),False,row count mismatch: sql=6 mongo=3
+    song_track_",SELECT song_name FROM singer WHERE song_name <> '',True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),False,False,row count mismatch: predicted=6 reference=3
 10,Show location and name for all stadiums with a capacity between 5000 and 10000.,"Task: text2sql
 
 Translate the question into SQL.
@@ -638,7 +638,7 @@ SELECT
     stadium_id,
     location,
     name,
-    capacity,","SELECT stadium_id, location, name, capacity, highest, lowest, average FROM stadium WHERE capacity >= 5000 AND capacity < 10000 GROUP BY location, name ORDER BY location, name LIMIT 10",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,
+    capacity,","SELECT stadium_id, location, name, capacity, highest, lowest, average FROM stadium WHERE capacity >= 5000 AND capacity < 10000 GROUP BY location, name ORDER BY location, name LIMIT 10",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",False,True,
 11,What are the locations and names of all stations with capacity between 5000 and 10000?,"Task: text2sql
 
 Translate the question into SQL.
@@ -739,7 +739,7 @@ ORDER BY
     name
 LIMIT 10
 
-SELECT","SELECT location, name, capacity, highest, lowest, average FROM stadium WHERE capacity >= 5000 AND capacity < 10000",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,
+SELECT","SELECT location, name, capacity, highest, lowest, average FROM stadium WHERE capacity >= 5000 AND capacity < 10000",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",False,True,
 12,What is the average and maximum capacities for all stadiums ?,"Task: text2sql
 
 Translate the question into SQL.
@@ -785,7 +785,7 @@ CREATE TABLE stadium_capacity (
 Question:
 What is the average and maximum capacity for all stadiums ?
 
-SQL:","SELECT SUM(capacity) AS average, MAX(capacity) AS highest, MIN(capacity) AS lowest FROM stadium GROUP BY location, name ORDER BY highest DESC, lowest DESC LIMIT 10",True,"SELECT avg(capacity) ,  max(capacity) FROM stadium",False,row count mismatch: sql=9 mongo=1
+SQL:","SELECT SUM(capacity) AS average, MAX(capacity) AS highest, MIN(capacity) AS lowest FROM stadium GROUP BY location, name ORDER BY highest DESC, lowest DESC LIMIT 10",True,"SELECT avg(capacity) ,  max(capacity) FROM stadium",False,False,row count mismatch: predicted=9 reference=1
 13,What is the name and capacity for the stadium with highest average attendance?,"Task: text2sql
 
 Translate the question into SQL.
@@ -839,7 +839,7 @@ CREATE TABLE stadium_attendance (
 Question:
 What is the name and average attendance for the stadium with highest average attendance?
 
-SQL:","SELECT name, capacity FROM stadium WHERE highest = average",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",False,row count mismatch: sql=0 mongo=1
+SQL:","SELECT name, capacity FROM stadium WHERE highest = average",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",False,False,row count mismatch: predicted=0 reference=1
 14,What is the name and capacity for the stadium with the highest average attendance?,"Task: text2sql
 
 Translate the question into SQL.
@@ -895,7 +895,7 @@ CREATE TABLE stadium (
 Question:
 What is the name and capacity for the stadium with the highest average attendance?
 
-SQL:","SELECT name, capacity FROM stadium WHERE highest = average",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",False,row count mismatch: sql=0 mongo=1
+SQL:","SELECT name, capacity FROM stadium WHERE highest = average",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",False,False,row count mismatch: predicted=0 reference=1
 15,How many concerts are there in year 2014 or 2015?,"Task: text2sql
 
 Translate the question into SQL.
@@ -948,7 +948,7 @@ CREATE TABLE concert_count (
 Question:
 How many concerts are there in year 2014 or 2015?
 
-SQL:",SELECT COUNT(*) FROM concert WHERE year = 2014 OR year = 2015,True,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,True,
+SQL:",SELECT COUNT(*) FROM concert WHERE year = 2014 OR year = 2015,True,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,False,True,
 16,How many concerts occurred in 2014 or 2015?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1013,7 +1013,7 @@ WHERE (
                                                                                             	(
                                                                                             	(
                                                                                             	(
-                                                                                            	(",SELECT COUNT(*) FROM concert WHERE ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( (,False,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,False,"syntax error at end of input
+                                                                                            	(",SELECT COUNT(*) FROM concert WHERE ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( (,False,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,False,False,"syntax error at end of input
 LINE 1: ... ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( ( (
                                                                        ^"
 17,Show the stadium name and the number of concerts in each stadium.,"Task: text2sql
@@ -1115,7 +1115,7 @@ ORDER BY
 
 GROUP BY
     stadium_name
-ORDER","SELECT stadium_name, COUNT(*) as count FROM stadium GROUP BY stadium_name ORDER BY stadium_name",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,"column ""stadium_name"" does not exist
+ORDER","SELECT stadium_name, COUNT(*) as count FROM stadium GROUP BY stadium_name ORDER BY stadium_name",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,False,"column ""stadium_name"" does not exist
 LINE 1: SELECT stadium_name, count(*) AS count FROM stadium GROUP BY...
                ^"
 18,"For each stadium, how many concerts play there?","Task: text2sql
@@ -1161,7 +1161,7 @@ GROUP BY location
 ORDER BY highest DESC, lowest DESC, average DESC
 LIMIT 10
 
-SQL:","SELECT COUNT(*) FROM concert WHERE location = 'Stadium' GROUP BY location ORDER BY highest DESC, lowest DESC, average DESC LIMIT 10",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,"column ""location"" does not exist
+SQL:","SELECT COUNT(*) FROM concert WHERE location = 'Stadium' GROUP BY location ORDER BY highest DESC, lowest DESC, average DESC LIMIT 10",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,False,"column ""location"" does not exist
 LINE 1: SELECT count(*) FROM concert WHERE location = 'Stadium' GROU...
                                            ^"
 19,Show the stadium names without any concert.,"Task: text2sql
@@ -1231,7 +1231,7 @@ CREATE TABLE concert_category (
 Question:
 Show the concert names without any concert.
 
-SQL:",SELECT name FROM stadium WHERE location = 'Stadium',True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),False,row count mismatch: sql=0 mongo=4
+SQL:",SELECT name FROM stadium WHERE location = 'Stadium',True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),False,False,row count mismatch: predicted=0 reference=4
 20,What are the names of the stadiums without any concerts?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1271,7 +1271,7 @@ What are the names of the stadiums without any concerts?
 
 SQL:",231,"SELECT name FROM stadium WHERE location = 'Stadium'
 
-SQL:",SELECT name FROM stadium WHERE location = 'Stadium',True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),False,row count mismatch: sql=0 mongo=4
+SQL:",SELECT name FROM stadium WHERE location = 'Stadium',True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),False,False,row count mismatch: predicted=0 reference=4
 21,Show countries where a singer above age 40 and a singer below 30 are from.,"Task: text2sql
 
 Translate the question into SQL.
@@ -1314,7 +1314,7 @@ CREATE TABLE country (
 Question:
 Show countries where a singer above age 40 and a singer below 30 are from.
 
-SQL:","SELECT name, country, song_name, song_release_year, age, is_male FROM singer WHERE age > 40 AND age < 30",True,SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30,False,row count mismatch: sql=0 mongo=1
+SQL:","SELECT name, country, song_name, song_release_year, age, is_male FROM singer WHERE age > 40 AND age < 30",True,SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30,False,False,row count mismatch: predicted=0 reference=1
 22,Show names for all stadiums except for stadiums having a concert in year 2014.,"Task: text2sql
 
 Translate the question into SQL.
@@ -1389,7 +1389,7 @@ CREATE TABLE stadium (
 
 CREATE TABLE concert (
     concert_id REAL PRIMARY KEY,
-    concert_name TEXT,","SELECT name, location, highest, lowest, average FROM stadium WHERE location = 'Stadium' AND name = 'Concert' AND year = 2014",True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,"column ""year"" does not exist
+    concert_name TEXT,","SELECT name, location, highest, lowest, average FROM stadium WHERE location = 'Stadium' AND name = 'Concert' AND year = 2014",True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,False,"column ""year"" does not exist
 LINE 1: ...ERE location = 'Stadium' AND name = 'Concert' AND year = '20...
                                                              ^"
 23,What are the names of all stadiums that did not have a concert in 2014?,"Task: text2sql
@@ -1458,7 +1458,7 @@ CREATE TABLE concert_category (
 Question:
 What are the names of all stadiums that did not have a concert in 2014?
 
-SQL:",SELECT name FROM stadium WHERE name IS NOT NULL,True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,row count mismatch: sql=9 mongo=6
+SQL:",SELECT name FROM stadium WHERE name IS NOT NULL,True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,False,row count mismatch: predicted=9 reference=6
 24,Show the name and theme for all concerts and the number of singers in each concert.,"Task: text2sql
 
 Translate the question into SQL.
@@ -1543,7 +1543,7 @@ ORDER BY
     singer_id,
     singer_name,
     theme,
-    stadium_id,","SELECT singer_id, singer_name, theme, stadium_id, year FROM concert WHERE concert_id = 1",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,"column ""singer_id"" does not exist
+    stadium_id,","SELECT singer_id, singer_name, theme, stadium_id, year FROM concert WHERE concert_id = 1",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,False,"column ""singer_id"" does not exist
 LINE 1: SELECT singer_id, singer_name, theme, stadium_id, year FROM ...
                ^"
 25,"What are the names , themes , and number of singers for every concert ?","Task: text2sql
@@ -1630,7 +1630,7 @@ ORDER BY
     singer_id,
     singer_name,
     theme,
-    stadium_","SELECT singer_id, singer_name, theme, stadium_id, year FROM concert WHERE concert_id = 1",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,"column ""singer_id"" does not exist
+    stadium_","SELECT singer_id, singer_name, theme, stadium_id, year FROM concert WHERE concert_id = 1",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,False,"column ""singer_id"" does not exist
 LINE 1: SELECT singer_id, singer_name, theme, stadium_id, year FROM ...
                ^"
 26,List singer names and number of concerts for each singer.,"Task: text2sql
@@ -1687,7 +1687,7 @@ Order by:
     singer.name
 
 Limit:
-    10","SELECT singer.name, COUNT(*) as count FROM singer WHERE singer.name IS NOT NULL GROUP BY singer.name ORDER BY singer.name LIMIT 10",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,row count mismatch: sql=6 mongo=5
+    10","SELECT singer.name, COUNT(*) as count FROM singer WHERE singer.name IS NOT NULL GROUP BY singer.name ORDER BY singer.name LIMIT 10",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,False,row count mismatch: predicted=6 reference=5
 27,What are the names of the singers and number of concerts for each person?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1743,7 +1743,7 @@ ORDER BY
     name
 LIMIT 10
 
-SQL:","SELECT singer_id, name, country, song_name, song_release_year, age, is_male FROM singer WHERE name LIKE '%Singer%' GROUP BY singer_id, name HAVING COUNT(*) > 0 ORDER BY name LIMIT 10",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,row count mismatch: sql=0 mongo=5
+SQL:","SELECT singer_id, name, country, song_name, song_release_year, age, is_male FROM singer WHERE name LIKE '%Singer%' GROUP BY singer_id, name HAVING COUNT(*) > 0 ORDER BY name LIMIT 10",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,False,row count mismatch: predicted=0 reference=5
 28,List all singer names in concerts in year 2014.,"Task: text2sql
 
 Translate the question into SQL.
@@ -1815,7 +1815,7 @@ CREATE TABLE singer_in_concert (
 Question:
 List all concerts in year 2014.
 
-SQL:",SELECT name FROM singer WHERE name LIKE '%' || name || '%' ORDER BY name ASC;,True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,first mismatch at row 0: sql='Joe Sharp' mongo='Timbaland'
+SQL:",SELECT name FROM singer WHERE name LIKE '%' || name || '%' ORDER BY name ASC;,True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,False,first mismatch at row 0: predicted='Joe Sharp' reference='Timbaland'
 29,What are the names of the singers who performed in a concert in 2014?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1878,7 +1878,7 @@ GROUP BY name, country, song_name, song_release_year, age, is_male
 ORDER BY name, country, song_name, song_release_year, age, is_male
 LIMIT 1
 
-SQL:","SELECT name, country, song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'The Beatles'",True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,row count mismatch: sql=0 mongo=6
+SQL:","SELECT name, country, song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'The Beatles'",True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,False,row count mismatch: predicted=0 reference=6
 30,what is the name and nation of the singer who have a song having 'Hey' in its name?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1938,7 +1938,7 @@ CREATE TABLE song (
     track_count INTEGER,
     year INTEGER,
     genre TEXT,
-    album_count INTEGER,","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'Hey'",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,row count mismatch: sql=0 mongo=1
+    album_count INTEGER,","SELECT song_name, song_release_year, age, is_male FROM singer WHERE song_name = 'Hey'",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,False,row count mismatch: predicted=0 reference=1
 31,What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?,"Task: text2sql
 
 Translate the question into SQL.
@@ -1992,7 +1992,7 @@ CREATE TABLE song (
     song_genre_name TEXT,
     song_genre_year TEXT,
     song_genre_count INTEGER,
-    song_genre_count_id","SELECT Singer.singer_id, Singer.name, Singer.country, Singer.song_name, Singer.song_release_year, Singer.age, Singer.is_male FROM Singer JOIN Singer ON Singer.singer_id = Singer.singer_id",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,"table name ""singer"" specified more than once"
+    song_genre_count_id","SELECT Singer.singer_id, Singer.name, Singer.country, Singer.song_name, Singer.song_release_year, Singer.age, Singer.is_male FROM Singer JOIN Singer ON Singer.singer_id = Singer.singer_id",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,False,"table name ""singer"" specified more than once"
 32,Find the number of pets whose weight is heavier than 10.,"Task: text2sql
 
 Translate the question into SQL.
@@ -2042,7 +2042,7 @@ CREATE TABLE pets (
 Question:
 Find the number of pets whose weight is heavier than 10.
 
-SQL:",SELECT COUNT(*) FROM pets WHERE weight > 10;,True,SELECT count(*) FROM pets WHERE weight  >  10,True,
+SQL:",SELECT COUNT(*) FROM pets WHERE weight > 10;,True,SELECT count(*) FROM pets WHERE weight  >  10,False,True,
 33,How many pets have a greater weight than 10?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2075,7 +2075,7 @@ GROUP BY pettype
 ORDER BY pet_age DESC
 LIMIT 10
 
-SQL:",SELECT COUNT(*) FROM pets WHERE pettype = 'pet' GROUP BY pettype ORDER BY pet_age DESC LIMIT 10,True,SELECT count(*) FROM pets WHERE weight  >  10,False,"column ""pets.pet_age"" must appear in the GROUP BY clause or be used in an aggregate function
+SQL:",SELECT COUNT(*) FROM pets WHERE pettype = 'pet' GROUP BY pettype ORDER BY pet_age DESC LIMIT 10,True,SELECT count(*) FROM pets WHERE weight  >  10,False,False,"column ""pets.pet_age"" must appear in the GROUP BY clause or be used in an aggregate function
 LINE 1: ...s WHERE pettype = 'pet' GROUP BY pettype ORDER by pet_age DE...
                                                              ^"
 34,Find the weight of the youngest dog.,"Task: text2sql
@@ -2120,7 +2120,7 @@ CREATE TABLE pets (
 Question:
 Find the weight of the youngest dog.
 
-SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pettype = 'younger' ORDER BY pet_age DESC LIMIT 1;",True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,row count mismatch: sql=0 mongo=1
+SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pettype = 'younger' ORDER BY pet_age DESC LIMIT 1;",True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,False,row count mismatch: predicted=0 reference=1
 35,How much does the youngest dog weigh?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2164,7 +2164,7 @@ CREATE TABLE pets (
 Question:
 How much does the youngest dog weigh?
 
-SQL:",SELECT COUNT(*) FROM pets WHERE pettype = 'youngest' GROUP BY pettype ORDER BY pettype LIMIT 1,True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,row count mismatch: sql=0 mongo=1
+SQL:",SELECT COUNT(*) FROM pets WHERE pettype = 'youngest' GROUP BY pettype ORDER BY pettype LIMIT 1,True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,False,row count mismatch: predicted=0 reference=1
 36,Find the maximum weight for each type of pet. List the maximum weight and pet type.,"Task: text2sql
 
 Translate the question into SQL.
@@ -2199,7 +2199,7 @@ SQL:",179,"SELECT MAX(pet.weight) AS max_weight,
 FROM pets
 GROUP BY pet.pettype
 ORDER BY pet.pet_age DESC
-LIMIT 10;","SELECT MAX(pet.weight) AS max_weight, pet.pettype AS pet_type, pet.petid AS petid, pet.pet_age AS pet_age, pet.weight AS weight FROM pets GROUP BY pet.pettype ORDER BY pet.pet_age DESC LIMIT 10;",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",False,"syntax error at or near ""AS""
+LIMIT 10;","SELECT MAX(pet.weight) AS max_weight, pet.pettype AS pet_type, pet.petid AS petid, pet.pet_age AS pet_age, pet.weight AS weight FROM pets GROUP BY pet.pettype ORDER BY pet.pet_age DESC LIMIT 10;",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",False,False,"syntax error at or near ""AS""
 LINE 1: ...eight FROM pets GROUP BY pet.pettype, pet.pettype AS pet_typ...
                                                              ^"
 37,List the maximum weight and type for each type of pet.,"Task: text2sql
@@ -2236,7 +2236,7 @@ FROM pets
 WHERE pet.pettype = 'pet'
 GROUP BY pet.pet_age
 ORDER BY pet.pet_age DESC
-LIMIT 10","SELECT MAX(pet.weight) AS max_weight, pet.pettype AS pet_type, pet.pet_age AS pet_age, pet.weight AS max_weight FROM pets WHERE pet.pettype = 'pet' GROUP BY pet.pet_age ORDER BY pet.pet_age DESC LIMIT 10",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",False,"syntax error at or near ""AS""
+LIMIT 10","SELECT MAX(pet.weight) AS max_weight, pet.pettype AS pet_type, pet.pet_age AS pet_age, pet.weight AS max_weight FROM pets WHERE pet.pettype = 'pet' GROUP BY pet.pet_age ORDER BY pet.pet_age DESC LIMIT 10",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",False,False,"syntax error at or near ""AS""
 LINE 1: ...pettype = 'pet' GROUP BY pet.pet_age, pet.pettype AS pet_typ...
                                                              ^"
 38,Find the number of distinct type of pets.,"Task: text2sql
@@ -2288,7 +2288,7 @@ CREATE TABLE pets (
 Question:
 Find the number of distinct type of pets.
 
-SQL:",SELECT COUNT(*) FROM pets;,True,SELECT count(DISTINCT pettype) FROM pets,False,first mismatch at row 0: sql=3 mongo=2
+SQL:",SELECT COUNT(*) FROM pets;,True,SELECT count(DISTINCT pettype) FROM pets,False,False,first mismatch at row 0: predicted=3 reference=2
 39,How many different types of pet are there?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2338,7 +2338,7 @@ CREATE TABLE pets (
 Question:
 How many different types of pet are there?
 
-SQL:",SELECT COUNT(*) FROM pets,True,SELECT count(DISTINCT pettype) FROM pets,False,first mismatch at row 0: sql=3 mongo=2
+SQL:",SELECT COUNT(*) FROM pets,True,SELECT count(DISTINCT pettype) FROM pets,False,False,first mismatch at row 0: predicted=3 reference=2
 40,Find the first name of students who have cat or dog pet.,"Task: text2sql
 
 Translate the question into SQL.
@@ -2412,7 +2412,7 @@ CREATE TABLE pets (
 Question:
 Find the first name of students who have cat or dog pet.
 
-SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1",True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,row count mismatch: sql=0 mongo=2
+SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1",True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,False,row count mismatch: predicted=0 reference=2
 41,What are the first names of every student who has a cat or dog as a pet?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2486,7 +2486,7 @@ CREATE TABLE pets (
 Question:
 What are the first names of every student who has a cat or dog as a pet?
 
-SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1",True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,row count mismatch: sql=0 mongo=2
+SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1",True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,False,row count mismatch: predicted=0 reference=2
 42,Find the first name of students who have both cat and dog pets .,"Task: text2sql
 
 Translate the question into SQL.
@@ -2565,7 +2565,7 @@ CREATE TABLE pets (
 );
 
 Question:
-Find the first","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1 AND lname = 'Cat' AND fname = 'Dog' AND age = 20 AND sex = 'Male' AND major = 1 AND advisor = 'None' AND city_code = 'Sydney'",True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,"invalid input syntax for type bigint: ""None""
+Find the first","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1 AND lname = 'Cat' AND fname = 'Dog' AND age = 20 AND sex = 'Male' AND major = 1 AND advisor = 'None' AND city_code = 'Sydney'",True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,False,"invalid input syntax for type bigint: ""None""
 LINE 1: ...= 20 AND sex = 'Male' AND major = 1 AND advisor = 'None' AND...
                                                              ^"
 43,What are the students' first names who have both cats and dogs as pets?,"Task: text2sql
@@ -2646,7 +2646,7 @@ CREATE TABLE pets (
 Question:
 What are the students' first names who have both cats and dogs as pets?
 
-SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1 AND lname = 'John' AND fname = 'John' AND age = 30 AND sex = 'male' AND major = 10 AND advisor = 'dog' AND city_code = 'CA'",True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,"invalid input syntax for type bigint: ""dog""
+SQL:","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1 AND lname = 'John' AND fname = 'John' AND age = 30 AND sex = 'male' AND major = 10 AND advisor = 'dog' AND city_code = 'CA'",True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,False,"invalid input syntax for type bigint: ""dog""
 LINE 1: ... 30 AND sex = 'male' AND major = 10 AND advisor = 'dog' AND ...
                                                              ^"
 44,Find the first name and age of students who have a dog but do not have a cat as a pet.,"Task: text2sql
@@ -2699,7 +2699,7 @@ SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHE
 SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 6;
 SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 7;
 SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 8;
-SELECT stuid, lname, fname, age, sex, major","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1;",True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,row count mismatch: sql=0 mongo=2
+SELECT stuid, lname, fname, age, sex, major","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid = 1;",True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,False,row count mismatch: predicted=0 reference=2
 45,What is the first name of every student who has a dog but does not have a cat?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2773,7 +2773,7 @@ CREATE TABLE pets (
 );
 
 CREATE TABLE pets (
-    petid","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid NOT IN (SELECT stuid FROM has_pet) AND stuid NOT IN (SELECT stuid FROM pets) AND stuid NOT IN (SELECT stuid FROM pets) ORDER BY stuid, lname, fname, age, sex, major, advisor, city_code LIMIT 1",True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,row count mismatch: sql=0 mongo=2
+    petid","SELECT stuid, lname, fname, age, sex, major, advisor, city_code FROM student WHERE stuid NOT IN (SELECT stuid FROM has_pet) AND stuid NOT IN (SELECT stuid FROM pets) AND stuid NOT IN (SELECT stuid FROM pets) ORDER BY stuid, lname, fname, age, sex, major, advisor, city_code LIMIT 1",True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,False,row count mismatch: predicted=0 reference=2
 46,Find the type and weight of the youngest pet.,"Task: text2sql
 
 Translate the question into SQL.
@@ -2812,7 +2812,7 @@ GROUP BY
     pet.pettype
 ORDER BY
     pet.pet_age
-LIMIT 1","SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM pets WHERE pet.pettype = 'younger' GROUP BY pet.pettype ORDER BY pet.pet_age LIMIT 1",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",False,"missing FROM-clause entry for table ""pet""
+LIMIT 1","SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM pets WHERE pet.pettype = 'younger' GROUP BY pet.pettype ORDER BY pet.pet_age LIMIT 1",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",False,False,"missing FROM-clause entry for table ""pet""
 LINE 1: SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM ...
                ^"
 47,"What type of pet is the youngest animal, and how much does it weigh?","Task: text2sql
@@ -2856,7 +2856,7 @@ ORDER BY
     pet.pet_age
 LIMIT 10
 
-SQL:","SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM pets WHERE pet.pettype = 'young'",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",False,"missing FROM-clause entry for table ""pet""
+SQL:","SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM pets WHERE pet.pettype = 'young'",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",False,False,"missing FROM-clause entry for table ""pet""
 LINE 1: SELECT pet.petid, pet.pettype, pet.pet_age, pet.weight FROM ...
                ^"
 48,Find the id and weight of all pets whose age is older than 1.,"Task: text2sql
@@ -2908,7 +2908,7 @@ CREATE TABLE pets (
 Question:
 Find the id and weight of all pets whose age is older than 1.
 
-SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pet_age > 1;",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,"first mismatch at row 0: sql=(2, 2002, 'dog', 13.4) mongo=(2001, 12.0)"
+SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pet_age > 1;",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,False,"first mismatch at row 0: predicted=(2, 2002, 'dog', 13.4) reference=(2001, 12.0)"
 49,What is the id and weight of every pet who is older than 1?,"Task: text2sql
 
 Translate the question into SQL.
@@ -2952,4 +2952,4 @@ CREATE TABLE pets_old (
 Question:
 What is the id and weight of every pet who is older than 1?
 
-SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pet_age > 1 ORDER BY pet_age DESC LIMIT 1",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,row count mismatch: sql=1 mongo=2
+SQL:","SELECT petid, pettype, pet_age, weight FROM pets WHERE pet_age > 1 ORDER BY pet_age DESC LIMIT 1",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,False,row count mismatch: predicted=1 reference=2

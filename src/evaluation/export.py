@@ -33,6 +33,7 @@ SQL2NOSQL_METRIC_KEYS = [
 ]
 
 DOCUMENTATION_METRIC_KEYS = [
+    "exact_match",
     "embedding_similarity",
     "judge_score",
 ]
@@ -80,6 +81,7 @@ TEXT2SQL_DETAIL_FIELDS = [
     "predicted_sql",
     "predicted_sql_valid",
     "ground_truth",
+    "exact_match",
     "execution_match",
     "execution_error",
 ]
@@ -93,7 +95,10 @@ SQL2NOSQL_DETAIL_FIELDS = [
     "reference_mongodb_query",
     "mongodb_warnings",
     "mongodb_success",
+    "exact_match",
+    "structural_similarity",
     "execution_match",
+    "gold_sql_output_match",
     "execution_error",
 ]
 
@@ -104,6 +109,7 @@ DOCUMENTATION_DETAIL_FIELDS = [
     "raw_output",
     "predicted_documentation",
     "reference_documentation",
+    "exact_match",
     "judge_score",
     "judge_correctness",
     "judge_completeness",
@@ -137,8 +143,11 @@ def save_text2sql_details_csv(
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
     from src.evaluation.database_execution import compare_sql_execution, is_database_available
+    from src.evaluation.gold_output_comparison import compare_predicted_sql_to_gold_output
+    from src.evaluation.metrics import EvaluationMetrics
 
     db_available = is_database_available()
+    sql_metrics = EvaluationMetrics()
     detail_rows: list[dict[str, Any]] = []
 
     with open(output_path, "w", encoding="utf-8", newline="") as f:
@@ -161,17 +170,33 @@ def save_text2sql_details_csv(
 
             execution_match = ""
             execution_error = ""
+            exact_match = ""
+            if predicted_sql and ground_truth:
+                exact_match = sql_metrics.exact_match(predicted_sql, ground_truth)
             if db_available:
                 context = _execution_context_from_prediction(pred)
-                if context and predicted_sql and ground_truth:
-                    comparison = compare_sql_execution(
-                        predicted_sql,
-                        ground_truth,
-                        db_id=context["db_id"],
-                        dataset=context["dataset"],
-                    )
-                    execution_match = comparison.match
-                    execution_error = comparison.error or comparison.diff_summary or ""
+                gold_sql_output = str(pred.get("sql_output", "")).strip()
+                if context and predicted_sql:
+                    if gold_sql_output:
+                        comparison = compare_predicted_sql_to_gold_output(
+                            predicted_sql,
+                            gold_sql_output,
+                            reference_sql=ground_truth,
+                            db_id=context["db_id"],
+                            dataset=context["dataset"],
+                        )
+                    elif ground_truth:
+                        comparison = compare_sql_execution(
+                            predicted_sql,
+                            ground_truth,
+                            db_id=context["db_id"],
+                            dataset=context["dataset"],
+                        )
+                    else:
+                        comparison = None
+                    if comparison is not None:
+                        execution_match = comparison.match
+                        execution_error = comparison.error or comparison.diff_summary or ""
 
             row = {
                 "index": idx,
@@ -182,6 +207,7 @@ def save_text2sql_details_csv(
                 "predicted_sql": predicted_sql,
                 "predicted_sql_valid": predicted_sql_valid,
                 "ground_truth": ground_truth,
+                "exact_match": exact_match,
                 "execution_match": execution_match,
                 "execution_error": execution_error,
             }
@@ -207,8 +233,12 @@ def save_sql2nosql_details_csv(
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
     from src.evaluation.database_execution import compare_sql_to_mongo_execution, is_database_available
+    from src.evaluation.gold_output_comparison import compare_predicted_mongo_to_gold_outputs
+    from src.evaluation.structural_similarity import mongo_structural_similarity
+    from src.sql2nosql.evaluator import NoSQLEvaluator
 
     db_available = is_database_available()
+    nosql_evaluator = NoSQLEvaluator()
     detail_rows: list[dict[str, Any]] = []
 
     with open(output_path, "w", encoding="utf-8", newline="") as f:
@@ -230,18 +260,51 @@ def save_sql2nosql_details_csv(
                 )
 
             execution_match = ""
+            gold_sql_output_match = ""
             execution_error = ""
+            exact_match = ""
+            structural_similarity = ""
+            if predicted_mongodb and reference_mongodb:
+                exact_match = nosql_evaluator.exact_match(
+                    predicted_mongodb,
+                    reference_mongodb,
+                )
+                structural_similarity = mongo_structural_similarity(
+                    predicted_mongodb,
+                    reference_mongodb,
+                )
             if db_available:
                 context = _execution_context_from_prediction(pred)
-                if context and reference_sql and predicted_mongodb:
-                    comparison = compare_sql_to_mongo_execution(
-                        reference_sql,
-                        predicted_mongodb,
-                        db_id=context["db_id"],
-                        dataset=context["dataset"],
-                    )
-                    execution_match = comparison.match
-                    execution_error = comparison.error or comparison.diff_summary or ""
+                gold_nosql_output = str(
+                    pred.get("gold_nosql_output", pred.get("nosql_output", ""))
+                ).strip()
+                gold_sql_output = str(
+                    pred.get("gold_sql_output", pred.get("sql_output", ""))
+                ).strip()
+                if context and predicted_mongodb:
+                    if gold_nosql_output:
+                        comparison, sql_comparison = compare_predicted_mongo_to_gold_outputs(
+                            predicted_mongodb,
+                            gold_nosql_output,
+                            gold_sql_output=gold_sql_output,
+                            reference_sql=reference_sql,
+                            reference_mongo_query=reference_mongodb,
+                            db_id=context["db_id"],
+                            dataset=context["dataset"],
+                        )
+                        execution_match = comparison.match
+                        execution_error = comparison.error or comparison.diff_summary or ""
+                        if sql_comparison is not None:
+                            gold_sql_output_match = sql_comparison.match
+                    elif reference_sql:
+                        comparison = compare_sql_to_mongo_execution(
+                            reference_sql,
+                            predicted_mongodb,
+                            db_id=context["db_id"],
+                            dataset=context["dataset"],
+                        )
+                        execution_match = comparison.match
+                        execution_error = comparison.error or comparison.diff_summary or ""
 
             row = {
                 "reference_sql": reference_sql,
@@ -252,7 +315,10 @@ def save_sql2nosql_details_csv(
                 "reference_mongodb_query": reference_mongodb,
                 "mongodb_warnings": pred.get("mongodb_warnings", ""),
                 "mongodb_success": pred.get("mongodb_success", ""),
+                "exact_match": exact_match,
+                "structural_similarity": structural_similarity,
                 "execution_match": execution_match,
+                "gold_sql_output_match": gold_sql_output_match,
                 "execution_error": execution_error,
             }
             detail_rows.append(row)
@@ -262,6 +328,47 @@ def save_sql2nosql_details_csv(
     return output_path, detail_rows
 
 
+def run_documentation_judge(
+    predictions: list[dict[str, str]],
+    judge: OllamaJudge | None = None,
+    *,
+    use_judge: bool = True,
+    config: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Run the documentation LLM judge over all predictions."""
+    total = len(predictions)
+    log_step("nosql2doc", "Running documentation judge (%d rows, judge=%s)", total, use_judge)
+
+    if not use_judge:
+        return [], {"judge_score": 0.0, "count": total}
+
+    evaluator = judge
+    if evaluator is None:
+        evaluator = create_judge(config or load_config())
+
+    judge_results: list[dict[str, Any]] = []
+    for idx, pred in enumerate(predictions):
+        log_batch_progress("nosql2doc", idx + 1, total, every=25)
+        mongodb_query = pred.get(
+            "input_mongodb_query",
+            pred.get(
+                "reference_mongodb_query",
+                pred.get("mongodb_query", pred.get("predicted_mongodb_query", "")),
+            ),
+        )
+        judge_eval = evaluator.evaluate_documentation_sample(
+            mongodb_query=mongodb_query,
+            raw_output=pred.get("doc_raw_output", pred.get("raw_output", "")),
+            reference_sql=pred.get("reference_sql", pred.get("ground_truth", "")),
+            predicted_documentation=pred.get("predicted_documentation", ""),
+            reference_documentation=pred.get("reference_documentation", ""),
+        )
+        judge_results.append(judge_eval)
+
+    summary = OllamaJudge.summarize_documentation(judge_results)
+    return judge_results, summary
+
+
 def save_documentation_details_csv(
     path: str | Path,
     predictions: list[dict[str, str]],
@@ -269,8 +376,9 @@ def save_documentation_details_csv(
     use_judge: bool = True,
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
+    judge_results: list[dict[str, Any]] | None = None,
 ) -> tuple[Path, list[dict[str, Any]], dict[str, Any]]:
-    """Write MongoDB documentation per-sample details to CSV using the LLM judge."""
+    """Write MongoDB documentation per-sample details to CSV."""
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total = len(predictions)
@@ -278,11 +386,23 @@ def save_documentation_details_csv(
 
     cfg = config or load_config()
     generation_model = model_name or get_model_name(cfg)
-    evaluator = judge
-    if use_judge and evaluator is None:
-        evaluator = create_judge(cfg)
+    from src.documentation.evaluator import DocumentationEvaluator
 
-    judge_results: list[dict[str, Any]] = []
+    doc_evaluator = DocumentationEvaluator()
+
+    if use_judge and judge_results is None:
+        judge_results, summary = run_documentation_judge(
+            predictions,
+            judge=judge,
+            use_judge=True,
+            config=cfg,
+        )
+    elif use_judge and judge_results is not None:
+        summary = OllamaJudge.summarize_documentation(judge_results)
+    else:
+        judge_results = []
+        summary = {"judge_score": 0.0, "count": len(predictions)}
+
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=DOCUMENTATION_DETAIL_FIELDS)
         writer.writeheader()
@@ -307,17 +427,10 @@ def save_documentation_details_csv(
                     config=cfg,
                 )
 
-            judge_eval: dict[str, Any] = {}
-            if use_judge and evaluator is not None:
-                raw_output = pred.get("doc_raw_output", pred.get("raw_output", ""))
-                judge_eval = evaluator.evaluate_documentation_sample(
-                    mongodb_query=mongodb_query,
-                    raw_output=raw_output,
-                    reference_sql=pred.get("reference_sql", pred.get("ground_truth", "")),
-                    predicted_documentation=predicted_doc,
-                    reference_documentation=reference_doc,
-                )
-                judge_results.append(judge_eval)
+            judge_eval = judge_results[idx] if idx < len(judge_results) else {}
+            exact_match = ""
+            if predicted_doc and reference_doc:
+                exact_match = doc_evaluator.exact_match(predicted_doc, reference_doc)
 
             writer.writerow(
                 {
@@ -327,6 +440,7 @@ def save_documentation_details_csv(
                     "raw_output": pred.get("doc_raw_output", pred.get("raw_output", "")),
                     "predicted_documentation": predicted_doc,
                     "reference_documentation": reference_doc,
+                    "exact_match": exact_match,
                     "judge_score": judge_eval.get("judge_score", ""),
                     "judge_correctness": judge_eval.get("correctness", ""),
                     "judge_completeness": judge_eval.get("completeness", ""),
@@ -337,10 +451,5 @@ def save_documentation_details_csv(
                 }
             )
 
-    summary = (
-        OllamaJudge.summarize_documentation(judge_results)
-        if use_judge
-        else {"judge_score": 0.0, "count": len(predictions)}
-    )
     logger.info("[%s] Details CSV saved: %s", "nosql2doc (NoSQL-to-Documentation)", output_path)
     return output_path, judge_results, summary

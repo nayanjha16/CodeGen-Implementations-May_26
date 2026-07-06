@@ -95,6 +95,8 @@ class TENDLoader:
             "evaluation_summary": str(row.get("evaluation_summary", "")).strip(),
             "execution_accuracy": str(row.get("execution_accuracy", "")).strip(),
             "execution_comparison": str(row.get("execution_comparison", "")).strip(),
+            "sql_output": str(row.get("sql_output", "")).strip(),
+            "nosql_output": str(row.get("nosql_output", "")).strip(),
         }
 
     def _cache_dir(self) -> Path:

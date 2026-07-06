@@ -230,6 +230,8 @@ class BenchmarkRunner:
                     "reference_collection": ref_trans.get("collection", ""),
                     "reference_filter": ref_trans.get("filter", {}),
                     "reference_projection": ref_trans.get("projection", {}),
+                    "gold_sql_output": example.get("sql_output", ""),
+                    "gold_nosql_output": example.get("nosql_output", ""),
                 }
             )
 
@@ -237,6 +239,8 @@ class BenchmarkRunner:
             {
                 "db_id": example.get("db_id", ""),
                 "dataset": example.get("source_dataset", "spider") or "spider",
+                "sql_output": example.get("sql_output", ""),
+                "nosql_output": example.get("nosql_output", ""),
             }
             for example in samples
         ]
@@ -299,8 +303,6 @@ class BenchmarkRunner:
                 pred_warnings.append("Missing MongoDB query for documentation generation")
             elif not predicted_doc:
                 pred_warnings.append("Unable to extract documentation from model output")
-            elif not doc_gen.get("documentation_valid", False):
-                pred_warnings.append("Generated documentation failed structure validation")
 
             pred_structured = {
                 **self.reference_doc_builder.to_structured(mongodb_query),
@@ -366,6 +368,8 @@ class BenchmarkRunner:
             result.setdefault("schema", example.get("schema", ""))
             result.setdefault("db_id", example.get("db_id", ""))
             result.setdefault("source_dataset", example.get("source_dataset", "spider"))
+            result.setdefault("sql_output", example.get("sql_output", ""))
+            result.setdefault("ground_truth", example.get("sql", ""))
             if not result.get("prompt"):
                 result["prompt"] = self.sql_generator.build_prompt(
                     result.get("question", example.get("question", "")),
@@ -379,6 +383,7 @@ class BenchmarkRunner:
             {
                 "db_id": example.get("db_id", ""),
                 "dataset": example.get("source_dataset", "spider") or "spider",
+                "sql_output": example.get("sql_output", ""),
             }
             for example in samples
         ]

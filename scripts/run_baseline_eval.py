@@ -9,7 +9,7 @@ Evaluates three independent tasks on gold dataset rows:
 
 Metrics:
   text2sql / sql2nosql: execution_accuracy, exact_match, structural_similarity
-  documentation: embedding_similarity, judge_score (LLM judge only)
+  documentation: exact_match, embedding_similarity, judge_score
 
 Usage:
   python scripts/run_baseline_eval.py
@@ -40,6 +40,7 @@ from src.evaluation.export import (
     TEXT2SQL_DETAILS_CSV,
     merge_judge_summary_into_metrics,
     normalize_task_metrics,
+    run_documentation_judge,
     save_documentation_details_csv,
     save_sql2nosql_details_csv,
     save_text2sql_details_csv,
@@ -272,29 +273,18 @@ def main() -> None:
         model_name=model_name,
     )
 
-    save_text2sql_details_csv(
-        text2sql_details_path,
-        text2sql_predictions,
-        model_name=model_name,
-        config=config,
-    )
-    save_sql2nosql_details_csv(
-        sql2nosql_details_path,
-        sql2nosql_predictions,
-        model_name=model_name,
-        config=config,
-    )
-
     use_judge = not args.no_judge
     judge = create_judge(config) if use_judge else None
-    _, _, judge_documentation_metrics = save_documentation_details_csv(
-        documentation_details_path,
-        documentation_predictions,
-        judge=judge,
-        use_judge=use_judge,
-        model_name=model_name,
-        config=config,
-    )
+
+    judge_results: list[dict[str, object]] = []
+    judge_documentation_metrics: dict[str, object] = {}
+    if use_judge:
+        judge_results, judge_documentation_metrics = run_documentation_judge(
+            documentation_predictions,
+            judge=judge,
+            use_judge=True,
+            config=config,
+        )
 
     text2sql_metrics = normalize_task_metrics(result["metrics"], task="text2sql")
     sql2nosql_metrics = normalize_task_metrics(result.get("nosql_metrics"), task="sql2nosql")
@@ -321,6 +311,28 @@ def main() -> None:
             f,
             indent=2,
         )
+
+    save_text2sql_details_csv(
+        text2sql_details_path,
+        text2sql_predictions,
+        model_name=model_name,
+        config=config,
+    )
+    save_sql2nosql_details_csv(
+        sql2nosql_details_path,
+        sql2nosql_predictions,
+        model_name=model_name,
+        config=config,
+    )
+    save_documentation_details_csv(
+        documentation_details_path,
+        documentation_predictions,
+        judge=judge,
+        use_judge=use_judge,
+        model_name=model_name,
+        config=config,
+        judge_results=judge_results if use_judge else None,
+    )
 
     print(f"  Run saved: {run_dir}")
     print(f"    metrics: {metrics_path}")

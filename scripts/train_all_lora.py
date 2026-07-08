@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+if not hasattr(sys.stdout, "isatty"):
+    sys.stdout.isatty = lambda: False
+
 from src.datasets.tend_loader import GOLD_VALIDATION_DATASET_NAME, load_gold_validation
 from src.training.adapter_verify import verify_all_adapters
 from src.training.lora_trainer import train_lora

@@ -228,7 +228,11 @@ def main() -> int:
             )
             print(f"Done {task}: adapter={result.output_dir}")
 
-        verify = verify_all_adapters(config=config, run=args.run or args.checkpoint_suite)
+        verify = verify_all_adapters(
+            tasks=tuple(args.tasks),
+            config=config,
+            run=args.run or args.checkpoint_suite,
+        )
         failed = [task for task, res in verify.items() if not res.ok]
         if failed:
             print("Adapter verification failed for:", ", ".join(failed))

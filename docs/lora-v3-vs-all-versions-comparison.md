@@ -49,47 +49,83 @@ The progression baseline → v1 → v2 → v3 is monotonic on nearly every metri
 
 ## Visual overview
 
-
-
 ### Execution accuracy & judge progression
 
-Metric progression across adapter versions
+![Metric progression across adapter versions](images/metric-progression.png)
 
 ### Execution accuracy by run
 
-Execution accuracy by run
+![Execution accuracy by run](images/execution-accuracy-by-run.png)
 
 ### Structural & embedding similarity
 
-Structural and embedding similarity by run
+![Structural and embedding similarity by run](images/similarity-by-run.png)
 
 ### Exact match by task
 
-Exact match by task and run
+![Exact match by task and run](images/exact-match-by-run.png)
 
-### Mermaid — execution accuracy trend
+### Mermaid — execution accuracy by version
 
 ```mermaid
+---
+config:
+  xyChart:
+    showLegend: true
+    width: 900
+    height: 420
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#3b82f6, #8b5cf6"
+---
 xychart-beta
-    title "Execution Accuracy Progression (%)"
+    title "Execution Accuracy by Version (%)"
     x-axis ["Baseline", "v1", "v2", "v3"]
     y-axis "Accuracy" 0 --> 80
-    line "Text2SQL" [12, 20, 34, 54]
-    line "SQL2NoSQL" [22, 4, 32, 74]
+    bar "Text2SQL" [12, 20, 34, 54]
+    bar "SQL2NoSQL" [22, 4, 32, 74]
 ```
 
-
-
-
-
-### Mermaid — documentation judge trend
+### Mermaid — documentation judge by version
 
 ```mermaid
+---
+config:
+  xyChart:
+    showLegend: true
+    width: 900
+    height: 360
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#10b981"
+---
 xychart-beta
     title "Documentation Judge Score (0–10)"
     x-axis ["Baseline", "v1", "v2", "v3"]
     y-axis "Score" 0 --> 8
-    line "Judge score" [0.1, 1.5, 3.1, 6.4]
+    bar "Judge score" [0.1, 1.5, 3.1, 6.4]
+```
+
+### Mermaid — exact match by version
+
+```mermaid
+---
+config:
+  xyChart:
+    showLegend: true
+    width: 900
+    height: 420
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#3b82f6, #8b5cf6, #10b981"
+---
+xychart-beta
+    title "Exact Match by Version (%)"
+    x-axis ["Baseline", "v1", "v2", "v3"]
+    y-axis "Exact match" 0 --> 65
+    bar "Text2SQL" [0, 8, 20, 38]
+    bar "SQL2NoSQL" [4, 0, 8, 58]
+    bar "Documentation" [0, 0, 0, 2]
 ```
 
 

@@ -1,5 +1,7 @@
 # All Results — Spider Gold Validation Comparison
 
+> **Updated:** See [LoRA v3 vs all versions](lora-v3-vs-all-versions-comparison.md) for the latest full comparison including v3.
+
 > **Project:** CodeGen Fine-Tuning with PEFT & LoRA  
 > **Date:** 2026-07-06  
 > **Model:** `Salesforce/codegen-350M-multi`  

@@ -1,0 +1,778 @@
+
+=== LoRA training batch ===
+Model: Salesforce/codegen-350M-multi
+Device: mps (requested: auto)
+Checkpoint run: v1
+Started: 2026-07-06T13:23:45.572422+00:00
+
+=== Training text2sql ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 7084.25 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 35010.88 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 8108.78it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 3821.41 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 1368.02 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 7806.55 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 59510.56 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 1914.11 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 8168.71 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:07<02:24,  7.59s/it] 10%|#         | 2/20 [00:11<01:38,  5.46s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:01<00:04,  1.24it/s][A
+ 43%|####2     | 3/7 [00:02<00:02,  1.43it/s][A
+ 57%|#####7    | 4/7 [00:02<00:01,  1.50it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.90it/s][A
+ 86%|########5 | 6/7 [00:03<00:00,  1.71it/s][A                                              
+                                             [A{'eval_loss': '8.463', 'eval_runtime': '4.212', 'eval_samples_per_second': '11.87', 'eval_steps_per_second': '1.662', 'eval_entropy': '6.931', 'eval_num_tokens': '1.189e+04', 'eval_mean_token_accuracy': '0', 'epoch': '1'}
+ 10%|#         | 2/20 [00:15<01:38,  5.46s/it]
+100%|##########| 7/7 [00:03<00:00,  1.71it/s][A
+                                             [A 15%|#5        | 3/20 [00:22<02:14,  7.89s/it] 20%|##        | 4/20 [00:24<01:32,  5.81s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.35it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.09it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.93it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.23it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.36it/s][A                                              
+                                             [A{'eval_loss': '7.563', 'eval_runtime': '2.453', 'eval_samples_per_second': '20.38', 'eval_steps_per_second': '2.853', 'eval_entropy': '7.24', 'eval_num_tokens': '2.379e+04', 'eval_mean_token_accuracy': '0.04084', 'epoch': '2'}
+ 20%|##        | 4/20 [00:27<01:32,  5.81s/it]
+100%|##########| 7/7 [00:02<00:00,  2.36it/s][A
+                                             [A 25%|##5       | 5/20 [00:33<01:41,  6.75s/it] 30%|###       | 6/20 [00:36<01:17,  5.50s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.25it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.04it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.92it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.21it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.35it/s][A                                              
+                                             [A{'eval_loss': '7.065', 'eval_runtime': '2.478', 'eval_samples_per_second': '20.18', 'eval_steps_per_second': '2.825', 'eval_entropy': '7.344', 'eval_num_tokens': '3.568e+04', 'eval_mean_token_accuracy': '0.04084', 'epoch': '3'}
+ 30%|###       | 6/20 [00:38<01:17,  5.50s/it]
+100%|##########| 7/7 [00:02<00:00,  2.35it/s][A
+                                             [A 35%|###5      | 7/20 [00:44<01:23,  6.39s/it] 40%|####      | 8/20 [00:47<01:03,  5.31s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.30it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.06it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.92it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.21it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.33it/s][A                                              
+                                             [A{'eval_loss': '6.751', 'eval_runtime': '2.486', 'eval_samples_per_second': '20.11', 'eval_steps_per_second': '2.816', 'eval_entropy': '7.123', 'eval_num_tokens': '4.758e+04', 'eval_mean_token_accuracy': '0.04084', 'epoch': '4'}
+ 40%|####      | 8/20 [00:50<01:03,  5.31s/it]
+100%|##########| 7/7 [00:02<00:00,  2.33it/s][A
+                                             [A 45%|####5     | 9/20 [00:56<01:10,  6.38s/it] 50%|#####     | 10/20 [00:59<00:52,  5.30s/it]                                               {'loss': '7.434', 'grad_norm': '4.152', 'learning_rate': '0.0001245', 'entropy': '6.968', 'num_tokens': '5.947e+04', 'mean_token_accuracy': '0.04655', 'epoch': '5'}
+ 50%|#####     | 10/20 [00:59<00:52,  5.30s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.20it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.04it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.91it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.20it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.33it/s][A                                               
+                                             [A{'eval_loss': '6.493', 'eval_runtime': '2.476', 'eval_samples_per_second': '20.19', 'eval_steps_per_second': '2.827', 'eval_entropy': '6.563', 'eval_num_tokens': '5.947e+04', 'eval_mean_token_accuracy': '0.04084', 'epoch': '5'}
+ 50%|#####     | 10/20 [01:01<00:52,  5.30s/it]
+100%|##########| 7/7 [00:02<00:00,  2.33it/s][A
+                                             [A 55%|#####5    | 11/20 [01:07<00:55,  6.13s/it] 60%|######    | 12/20 [01:11<00:43,  5.44s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.20it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.99it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.88it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.17it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.33it/s][A                                               
+                                             [A{'eval_loss': '6.375', 'eval_runtime': '2.493', 'eval_samples_per_second': '20.05', 'eval_steps_per_second': '2.808', 'eval_entropy': '5.904', 'eval_num_tokens': '7.136e+04', 'eval_mean_token_accuracy': '0.04845', 'epoch': '6'}
+ 60%|######    | 12/20 [01:13<00:43,  5.44s/it]
+100%|##########| 7/7 [00:02<00:00,  2.33it/s][A
+                                             [A 65%|######5   | 13/20 [01:18<00:42,  6.13s/it] 70%|#######   | 14/20 [01:22<00:32,  5.46s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.19it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.02it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.90it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.20it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.34it/s][A                                               
+                                             [A{'eval_loss': '6.308', 'eval_runtime': '2.475', 'eval_samples_per_second': '20.2', 'eval_steps_per_second': '2.828', 'eval_entropy': '5.638', 'eval_num_tokens': '8.326e+04', 'eval_mean_token_accuracy': '0.04845', 'epoch': '7'}
+ 70%|#######   | 14/20 [01:25<00:32,  5.46s/it]
+100%|##########| 7/7 [00:02<00:00,  2.34it/s][A
+                                             [A 75%|#######5  | 15/20 [01:31<00:31,  6.36s/it] 80%|########  | 16/20 [01:34<00:21,  5.40s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.18it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.02it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.90it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.19it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.33it/s][A                                               
+                                             [A{'eval_loss': '6.261', 'eval_runtime': '2.49', 'eval_samples_per_second': '20.08', 'eval_steps_per_second': '2.811', 'eval_entropy': '5.586', 'eval_num_tokens': '9.515e+04', 'eval_mean_token_accuracy': '0.04084', 'epoch': '8'}
+ 80%|########  | 16/20 [01:36<00:21,  5.40s/it]
+100%|##########| 7/7 [00:02<00:00,  2.33it/s][A
+                                             [A 85%|########5 | 17/20 [01:43<00:19,  6.36s/it] 90%|######### | 18/20 [01:46<00:10,  5.39s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.15it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.99it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.86it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.16it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.32it/s][A                                               
+                                             [A{'eval_loss': '6.241', 'eval_runtime': '2.513', 'eval_samples_per_second': '19.89', 'eval_steps_per_second': '2.785', 'eval_entropy': '5.571', 'eval_num_tokens': '1.07e+05', 'eval_mean_token_accuracy': '0.04084', 'epoch': '9'}
+ 90%|######### | 18/20 [01:48<00:10,  5.39s/it]
+100%|##########| 7/7 [00:02<00:00,  2.32it/s][A
+                                             [A 95%|#########5| 19/20 [01:54<00:06,  6.19s/it]100%|##########| 20/20 [01:57<00:00,  5.35s/it]                                               {'loss': '5.641', 'grad_norm': '3.422', 'learning_rate': '1.364e-06', 'entropy': '5.801', 'num_tokens': '1.189e+05', 'mean_token_accuracy': '0.0634', 'epoch': '10'}
+100%|##########| 20/20 [01:57<00:00,  5.35s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.15it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.01it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.89it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.19it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.32it/s][A                                               
+                                             [A{'eval_loss': '6.236', 'eval_runtime': '2.488', 'eval_samples_per_second': '20.1', 'eval_steps_per_second': '2.813', 'eval_entropy': '5.57', 'eval_num_tokens': '1.189e+05', 'eval_mean_token_accuracy': '0.04084', 'epoch': '10'}
+100%|##########| 20/20 [02:00<00:00,  5.35s/it]
+100%|##########| 7/7 [00:02<00:00,  2.32it/s][A
+                                             [A                                               {'train_runtime': '120.2', 'train_samples_per_second': '4.161', 'train_steps_per_second': '0.166', 'train_loss': '6.538', 'epoch': '10'}
+100%|##########| 20/20 [02:00<00:00,  5.35s/it]100%|##########| 20/20 [02:00<00:00,  6.01s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:00<00:00,  7.22it/s] 43%|####2     | 3/7 [00:00<00:00,  4.02it/s] 57%|#####7    | 4/7 [00:01<00:01,  2.89it/s] 71%|#######1  | 5/7 [00:01<00:00,  3.21it/s] 86%|########5 | 6/7 [00:02<00:00,  2.34it/s]100%|##########| 7/7 [00:02<00:00,  3.23it/s]
+2026/07/06 18:55:53 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/07/06 18:55:53 INFO mlflow.store.db.utils: Updating database tables
+Done text2sql: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/text2sql
+
+=== Training sql2nosql ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 4962.85 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 38843.34 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 9745.40it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 45909.63 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 1245.73 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 5586.00 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 56496.55 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 1455.19 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 5847.35 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:09<03:03,  9.67s/it] 10%|#         | 2/20 [00:16<02:19,  7.76s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.04it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.85it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.47it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.70it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.23it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.68it/s][A
+                                             [A                                              {'eval_loss': '1.359', 'eval_runtime': '4.91', 'eval_samples_per_second': '10.18', 'eval_steps_per_second': '1.426', 'eval_entropy': '1.118', 'eval_num_tokens': '1.682e+04', 'eval_mean_token_accuracy': '0.6687', 'epoch': '1'}
+
+100%|##########| 7/7 [00:04<00:00,  1.68it/s][A 10%|#         | 2/20 [00:21<02:19,  7.76s/it]
+                                             [A 15%|#5        | 3/20 [00:32<03:19, 11.73s/it] 20%|##        | 4/20 [00:36<02:20,  8.76s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.12it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.49it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.71it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.25it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A
+                                             [A                                              {'eval_loss': '1.149', 'eval_runtime': '4.764', 'eval_samples_per_second': '10.49', 'eval_steps_per_second': '1.469', 'eval_entropy': '1.057', 'eval_num_tokens': '3.364e+04', 'eval_mean_token_accuracy': '0.6985', 'epoch': '2'}
+
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A 20%|##        | 4/20 [00:41<02:20,  8.76s/it]
+                                             [A 25%|##5       | 5/20 [00:51<02:46, 11.09s/it] 30%|###       | 6/20 [00:57<02:08,  9.18s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.14it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.72it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.25it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.74it/s][A
+                                             [A                                              {'eval_loss': '1.002', 'eval_runtime': '4.769', 'eval_samples_per_second': '10.49', 'eval_steps_per_second': '1.468', 'eval_entropy': '0.9844', 'eval_num_tokens': '5.046e+04', 'eval_mean_token_accuracy': '0.7198', 'epoch': '3'}
+
+100%|##########| 7/7 [00:04<00:00,  1.74it/s][A 30%|###       | 6/20 [01:02<02:08,  9.18s/it]
+                                             [A 35%|###5      | 7/20 [01:12<02:23, 11.03s/it] 40%|####      | 8/20 [01:17<01:51,  9.27s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.13it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.70it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.24it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A
+                                             [A                                              {'eval_loss': '0.9147', 'eval_runtime': '4.794', 'eval_samples_per_second': '10.43', 'eval_steps_per_second': '1.46', 'eval_entropy': '0.9007', 'eval_num_tokens': '6.728e+04', 'eval_mean_token_accuracy': '0.7555', 'epoch': '4'}
+
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A 40%|####      | 8/20 [01:22<01:51,  9.27s/it]
+                                             [A 45%|####5     | 9/20 [01:33<02:05, 11.37s/it] 50%|#####     | 10/20 [01:38<01:33,  9.38s/it]                                               {'loss': '1.026', 'grad_norm': '0.862', 'learning_rate': '0.0001245', 'entropy': '1.023', 'num_tokens': '8.41e+04', 'mean_token_accuracy': '0.7274', 'epoch': '5'}
+ 50%|#####     | 10/20 [01:38<01:33,  9.38s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.11it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.85it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.47it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.70it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.24it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.72it/s][A
+                                             [A                                               {'eval_loss': '0.8609', 'eval_runtime': '4.803', 'eval_samples_per_second': '10.41', 'eval_steps_per_second': '1.457', 'eval_entropy': '0.8259', 'eval_num_tokens': '8.41e+04', 'eval_mean_token_accuracy': '0.7701', 'epoch': '5'}
+
+100%|##########| 7/7 [00:04<00:00,  1.72it/s][A 50%|#####     | 10/20 [01:43<01:33,  9.38s/it]
+                                             [A 55%|#####5    | 11/20 [01:53<01:38, 10.91s/it] 60%|######    | 12/20 [02:00<01:17,  9.75s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.11it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.87it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.71it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.25it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A
+                                             [A                                               {'eval_loss': '0.8283', 'eval_runtime': '4.787', 'eval_samples_per_second': '10.45', 'eval_steps_per_second': '1.462', 'eval_entropy': '0.7639', 'eval_num_tokens': '1.009e+05', 'eval_mean_token_accuracy': '0.7831', 'epoch': '6'}
+
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A 60%|######    | 12/20 [02:04<01:17,  9.75s/it]
+                                             [A 65%|######5   | 13/20 [02:14<01:17, 11.05s/it] 70%|#######   | 14/20 [02:21<00:58,  9.83s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.14it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.49it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.72it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.24it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A
+                                             [A                                               {'eval_loss': '0.8083', 'eval_runtime': '4.764', 'eval_samples_per_second': '10.49', 'eval_steps_per_second': '1.469', 'eval_entropy': '0.717', 'eval_num_tokens': '1.177e+05', 'eval_mean_token_accuracy': '0.7889', 'epoch': '7'}
+
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A 70%|#######   | 14/20 [02:25<00:58,  9.83s/it]
+                                             [A 75%|#######5  | 15/20 [02:36<00:57, 11.43s/it] 80%|########  | 16/20 [02:41<00:38,  9.67s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.13it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.49it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.71it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.24it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A
+                                             [A                                               {'eval_loss': '0.797', 'eval_runtime': '4.781', 'eval_samples_per_second': '10.46', 'eval_steps_per_second': '1.464', 'eval_entropy': '0.6906', 'eval_num_tokens': '1.346e+05', 'eval_mean_token_accuracy': '0.7974', 'epoch': '8'}
+
+100%|##########| 7/7 [00:04<00:00,  1.73it/s][A 80%|########  | 16/20 [02:46<00:38,  9.67s/it]
+                                             [A 85%|########5 | 17/20 [02:57<00:34, 11.42s/it] 90%|######### | 18/20 [03:03<00:19,  9.73s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.13it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.47it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.70it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.22it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.70it/s][A
+                                             [A                                               {'eval_loss': '0.792', 'eval_runtime': '4.825', 'eval_samples_per_second': '10.36', 'eval_steps_per_second': '1.451', 'eval_entropy': '0.6791', 'eval_num_tokens': '1.514e+05', 'eval_mean_token_accuracy': '0.7994', 'epoch': '9'}
+
+100%|##########| 7/7 [00:04<00:00,  1.70it/s][A 90%|######### | 18/20 [03:08<00:19,  9.73s/it]
+                                             [A 95%|#########5| 19/20 [03:17<00:11, 11.19s/it]100%|##########| 20/20 [03:23<00:00,  9.63s/it]                                               {'loss': '0.484', 'grad_norm': '0.8812', 'learning_rate': '1.364e-06', 'entropy': '0.6346', 'num_tokens': '1.682e+05', 'mean_token_accuracy': '0.858', 'epoch': '10'}
+100%|##########| 20/20 [03:23<00:00,  9.63s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.13it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.71it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.24it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.72it/s][A
+                                             [A                                               {'eval_loss': '0.791', 'eval_runtime': '4.788', 'eval_samples_per_second': '10.44', 'eval_steps_per_second': '1.462', 'eval_entropy': '0.6765', 'eval_num_tokens': '1.682e+05', 'eval_mean_token_accuracy': '0.8004', 'epoch': '10'}
+
+100%|##########| 7/7 [00:04<00:00,  1.72it/s][A100%|##########| 20/20 [03:28<00:00,  9.63s/it]
+                                             [A                                               {'train_runtime': '208.7', 'train_samples_per_second': '2.396', 'train_steps_per_second': '0.096', 'train_loss': '0.755', 'epoch': '10'}
+100%|##########| 20/20 [03:28<00:00,  9.63s/it]100%|##########| 20/20 [03:28<00:00, 10.44s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:00<00:01,  3.12it/s] 43%|####2     | 3/7 [00:01<00:02,  1.87it/s] 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s] 71%|#######1  | 5/7 [00:02<00:01,  1.71it/s] 86%|########5 | 6/7 [00:04<00:00,  1.24it/s]100%|##########| 7/7 [00:04<00:00,  1.69it/s]
+Done sql2nosql: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/sql2nosql
+
+=== Training nosql2doc ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 36045.93 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 40650.36 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 19000.64it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 46811.43 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 919.97 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 4647.12 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 51025.60 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 889.28 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 3685.42 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:12<03:53, 12.29s/it] 10%|#         | 2/20 [00:19<02:48,  9.33s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.15it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.45it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.19it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.26it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.02it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.38it/s][A                                              
+                                             [A{'eval_loss': '3.346', 'eval_runtime': '6.178', 'eval_samples_per_second': '8.094', 'eval_steps_per_second': '1.133', 'eval_entropy': '2.855', 'eval_num_tokens': '2.299e+04', 'eval_mean_token_accuracy': '0.3612', 'epoch': '1'}
+ 10%|#         | 2/20 [00:25<02:48,  9.33s/it]
+100%|##########| 7/7 [00:05<00:00,  1.38it/s][A
+                                             [A 15%|#5        | 3/20 [00:39<04:01, 14.18s/it] 20%|##        | 4/20 [00:45<02:56, 11.02s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.22it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.47it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.23it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.07it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A
+                                             [A                                              {'eval_loss': '2.879', 'eval_runtime': '5.961', 'eval_samples_per_second': '8.388', 'eval_steps_per_second': '1.174', 'eval_entropy': '2.751', 'eval_num_tokens': '4.599e+04', 'eval_mean_token_accuracy': '0.4403', 'epoch': '2'}
+
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A 20%|##        | 4/20 [00:51<02:56, 11.02s/it]
+                                             [A 25%|##5       | 5/20 [01:04<03:25, 13.71s/it] 30%|###       | 6/20 [01:11<02:39, 11.38s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.21it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.48it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.23it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.07it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A                                              
+                                             [A{'eval_loss': '2.495', 'eval_runtime': '5.935', 'eval_samples_per_second': '8.425', 'eval_steps_per_second': '1.18', 'eval_entropy': '2.646', 'eval_num_tokens': '6.898e+04', 'eval_mean_token_accuracy': '0.4401', 'epoch': '3'}
+ 30%|###       | 6/20 [01:16<02:39, 11.38s/it]
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A
+                                             [A 35%|###5      | 7/20 [01:28<02:56, 13.54s/it] 40%|####      | 8/20 [01:35<02:16, 11.39s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.21it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.48it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.23it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.07it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A
+                                             [A                                              {'eval_loss': '2.3', 'eval_runtime': '5.938', 'eval_samples_per_second': '8.421', 'eval_steps_per_second': '1.179', 'eval_entropy': '2.506', 'eval_num_tokens': '9.198e+04', 'eval_mean_token_accuracy': '0.4836', 'epoch': '4'}
+
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A 40%|####      | 8/20 [01:41<02:16, 11.39s/it]
+                                             [A 45%|####5     | 9/20 [01:54<02:31, 13.75s/it] 50%|#####     | 10/20 [02:01<01:54, 11.49s/it]                                               {'loss': '2.953', 'grad_norm': '1.678', 'learning_rate': '0.0001245', 'entropy': '2.911', 'num_tokens': '1.15e+05', 'mean_token_accuracy': '0.4223', 'epoch': '5'}
+ 50%|#####     | 10/20 [02:01<01:54, 11.49s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.19it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.47it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.22it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.29it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.06it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A                                               
+                                             [A{'eval_loss': '2.208', 'eval_runtime': '5.994', 'eval_samples_per_second': '8.342', 'eval_steps_per_second': '1.168', 'eval_entropy': '2.318', 'eval_num_tokens': '1.15e+05', 'eval_mean_token_accuracy': '0.5346', 'epoch': '5'}
+ 50%|#####     | 10/20 [02:07<01:54, 11.49s/it]
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A
+                                             [A 55%|#####5    | 11/20 [02:19<02:01, 13.47s/it] 60%|######    | 12/20 [02:26<01:33, 11.74s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.21it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.48it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.23it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.07it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A
+                                             [A                                               {'eval_loss': '2.147', 'eval_runtime': '5.939', 'eval_samples_per_second': '8.419', 'eval_steps_per_second': '1.179', 'eval_entropy': '2.175', 'eval_num_tokens': '1.38e+05', 'eval_mean_token_accuracy': '0.5364', 'epoch': '6'}
+
+100%|##########| 7/7 [00:05<00:00,  1.46it/s][A 60%|######    | 12/20 [02:32<01:33, 11.74s/it]
+                                             [A 65%|######5   | 13/20 [02:44<01:35, 13.58s/it] 70%|#######   | 14/20 [02:52<01:11, 11.91s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.06it/s][A
+ 43%|####2     | 3/7 [00:02<00:02,  1.40it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.15it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.21it/s][A
+ 86%|########5 | 6/7 [00:05<00:01,  1.02s/it][A
+100%|##########| 7/7 [00:05<00:00,  1.34it/s][A                                               
+                                             [A{'eval_loss': '2.109', 'eval_runtime': '6.407', 'eval_samples_per_second': '7.804', 'eval_steps_per_second': '1.093', 'eval_entropy': '2.083', 'eval_num_tokens': '1.61e+05', 'eval_mean_token_accuracy': '0.5431', 'epoch': '7'}
+ 70%|#######   | 14/20 [02:59<01:11, 11.91s/it]
+100%|##########| 7/7 [00:05<00:00,  1.34it/s][A
+                                             [A 75%|#######5  | 15/20 [03:12<01:11, 14.23s/it] 80%|########  | 16/20 [03:19<00:48, 12.13s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.08it/s][A
+ 43%|####2     | 3/7 [00:02<00:02,  1.37it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.13it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.20it/s][A
+ 86%|########5 | 6/7 [00:05<00:01,  1.02s/it][A
+100%|##########| 7/7 [00:05<00:00,  1.34it/s][A
+                                             [A                                               {'eval_loss': '2.088', 'eval_runtime': '6.436', 'eval_samples_per_second': '7.768', 'eval_steps_per_second': '1.088', 'eval_entropy': '2.03', 'eval_num_tokens': '1.84e+05', 'eval_mean_token_accuracy': '0.5491', 'epoch': '8'}
+
+100%|##########| 7/7 [00:05<00:00,  1.34it/s][A 80%|########  | 16/20 [03:26<00:48, 12.13s/it]
+                                             [A 85%|########5 | 17/20 [03:39<00:43, 14.45s/it] 90%|######### | 18/20 [03:46<00:24, 12.32s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:01<00:02,  1.99it/s][A
+ 43%|####2     | 3/7 [00:02<00:03,  1.33it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.11it/s][A
+ 71%|#######1  | 5/7 [00:04<00:01,  1.17it/s][A
+ 86%|########5 | 6/7 [00:05<00:01,  1.05s/it][A
+100%|##########| 7/7 [00:05<00:00,  1.30it/s][A                                               
+                                             [A{'eval_loss': '2.078', 'eval_runtime': '6.613', 'eval_samples_per_second': '7.561', 'eval_steps_per_second': '1.059', 'eval_entropy': '2.006', 'eval_num_tokens': '2.069e+05', 'eval_mean_token_accuracy': '0.5517', 'epoch': '9'}
+ 90%|######### | 18/20 [03:53<00:24, 12.32s/it]
+100%|##########| 7/7 [00:05<00:00,  1.30it/s][A
+                                             [A 95%|#########5| 19/20 [04:06<00:14, 14.56s/it]100%|##########| 20/20 [04:14<00:00, 12.46s/it]                                               {'loss': '1.94', 'grad_norm': '1.461', 'learning_rate': '1.364e-06', 'entropy': '2.237', 'num_tokens': '2.299e+05', 'mean_token_accuracy': '0.5905', 'epoch': '10'}
+100%|##########| 20/20 [04:14<00:00, 12.46s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:01<00:02,  1.97it/s][A
+ 43%|####2     | 3/7 [00:02<00:03,  1.29it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.08it/s][A
+ 71%|#######1  | 5/7 [00:04<00:01,  1.13it/s][A
+ 86%|########5 | 6/7 [00:05<00:01,  1.08s/it][A
+100%|##########| 7/7 [00:05<00:00,  1.27it/s][A
+                                             [A                                               {'eval_loss': '2.076', 'eval_runtime': '6.833', 'eval_samples_per_second': '7.318', 'eval_steps_per_second': '1.024', 'eval_entropy': '2.001', 'eval_num_tokens': '2.299e+05', 'eval_mean_token_accuracy': '0.5517', 'epoch': '10'}
+
+100%|##########| 7/7 [00:05<00:00,  1.27it/s][A100%|##########| 20/20 [04:20<00:00, 12.46s/it]
+                                             [A                                               {'train_runtime': '261.1', 'train_samples_per_second': '1.915', 'train_steps_per_second': '0.077', 'train_loss': '2.447', 'epoch': '10'}
+100%|##########| 20/20 [04:21<00:00, 12.46s/it]100%|##########| 20/20 [04:21<00:00, 13.06s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:01<00:02,  1.94it/s] 43%|####2     | 3/7 [00:02<00:03,  1.30it/s] 57%|#####7    | 4/7 [00:03<00:02,  1.07it/s] 71%|#######1  | 5/7 [00:04<00:01,  1.13it/s] 86%|########5 | 6/7 [00:05<00:01,  1.08s/it]100%|##########| 7/7 [00:05<00:00,  1.27it/s]100%|##########| 7/7 [00:05<00:00,  1.20it/s]
+Done nosql2doc: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/nosql2doc
+
+All adapters verified. Summary: /Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/training_summary_20260706_190358.json
+
+=== LoRA training batch ===
+Model: Salesforce/codegen-350M-multi
+Device: mps (requested: auto)
+Checkpoint run: v1
+Started: 2026-07-06T15:26:11.993937+00:00
+
+=== Training text2sql ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 4624.47 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 37150.61 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 20915.11it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 38339.16 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 1545.08 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 7535.85 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 58908.76 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 2053.82 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 8390.29 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:05<01:42,  5.40s/it] 10%|#         | 2/20 [00:08<01:17,  4.30s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.97it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  4.00it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.90it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.15it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.35it/s][A                                              
+                                             [A{'eval_loss': '1.673', 'eval_runtime': '2.511', 'eval_samples_per_second': '19.92', 'eval_steps_per_second': '2.788', 'eval_entropy': '1.259', 'eval_num_tokens': '1.189e+04', 'eval_mean_token_accuracy': '0.6441', 'epoch': '1'}
+ 10%|#         | 2/20 [00:11<01:17,  4.30s/it]
+100%|##########| 7/7 [00:02<00:00,  2.35it/s][A
+                                             [A 15%|#5        | 3/20 [00:17<01:46,  6.28s/it] 20%|##        | 4/20 [00:20<01:16,  4.80s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.36it/s][A
+ 43%|####2     | 3/7 [00:00<00:00,  4.12it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.96it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.28it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.40it/s][A                                              
+                                             [A{'eval_loss': '1.352', 'eval_runtime': '2.421', 'eval_samples_per_second': '20.65', 'eval_steps_per_second': '2.891', 'eval_entropy': '1.226', 'eval_num_tokens': '2.379e+04', 'eval_mean_token_accuracy': '0.6778', 'epoch': '2'}
+ 20%|##        | 4/20 [00:22<01:16,  4.80s/it]
+100%|##########| 7/7 [00:02<00:00,  2.40it/s][A
+                                             [A 25%|##5       | 5/20 [00:28<01:30,  6.05s/it] 30%|###       | 6/20 [00:31<01:10,  5.02s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  7.06it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.98it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.85it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.14it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.32it/s][A                                              
+                                             [A{'eval_loss': '1.088', 'eval_runtime': '2.51', 'eval_samples_per_second': '19.92', 'eval_steps_per_second': '2.789', 'eval_entropy': '1.157', 'eval_num_tokens': '3.568e+04', 'eval_mean_token_accuracy': '0.7357', 'epoch': '3'}
+ 30%|###       | 6/20 [00:33<01:10,  5.02s/it]
+100%|##########| 7/7 [00:02<00:00,  2.32it/s][A
+                                             [A 35%|###5      | 7/20 [00:39<01:19,  6.10s/it] 40%|####      | 8/20 [00:42<01:01,  5.12s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.95it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.94it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.84it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.13it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.29it/s][A                                              
+                                             [A{'eval_loss': '0.926', 'eval_runtime': '2.534', 'eval_samples_per_second': '19.73', 'eval_steps_per_second': '2.762', 'eval_entropy': '1.102', 'eval_num_tokens': '4.758e+04', 'eval_mean_token_accuracy': '0.765', 'epoch': '4'}
+ 40%|####      | 8/20 [00:45<01:01,  5.12s/it]
+100%|##########| 7/7 [00:02<00:00,  2.29it/s][A
+                                             [A 45%|####5     | 9/20 [00:51<01:09,  6.29s/it] 50%|#####     | 10/20 [00:54<00:52,  5.24s/it]                                               {'loss': '1.147', 'grad_norm': '1.017', 'learning_rate': '0.0001245', 'entropy': '1.061', 'num_tokens': '5.947e+04', 'mean_token_accuracy': '0.7261', 'epoch': '5'}
+ 50%|#####     | 10/20 [00:54<00:52,  5.24s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.92it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.88it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.78it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.08it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.27it/s][A                                               
+                                             [A{'eval_loss': '0.8429', 'eval_runtime': '2.563', 'eval_samples_per_second': '19.51', 'eval_steps_per_second': '2.731', 'eval_entropy': '1.038', 'eval_num_tokens': '5.947e+04', 'eval_mean_token_accuracy': '0.795', 'epoch': '5'}
+ 50%|#####     | 10/20 [00:57<00:52,  5.24s/it]
+100%|##########| 7/7 [00:02<00:00,  2.27it/s][A
+                                             [A 55%|#####5    | 11/20 [01:02<00:54,  6.10s/it] 60%|######    | 12/20 [01:06<00:43,  5.45s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.67it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.82it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.78it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.07it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.27it/s][A                                               
+                                             [A{'eval_loss': '0.7824', 'eval_runtime': '2.58', 'eval_samples_per_second': '19.38', 'eval_steps_per_second': '2.714', 'eval_entropy': '0.9739', 'eval_num_tokens': '7.136e+04', 'eval_mean_token_accuracy': '0.799', 'epoch': '6'}
+ 60%|######    | 12/20 [01:09<00:43,  5.45s/it]
+100%|##########| 7/7 [00:02<00:00,  2.27it/s][A
+                                             [A 65%|######5   | 13/20 [01:14<00:43,  6.18s/it] 70%|#######   | 14/20 [01:18<00:32,  5.49s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.95it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.90it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.80it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.09it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.27it/s][A                                               
+                                             [A{'eval_loss': '0.7373', 'eval_runtime': '2.57', 'eval_samples_per_second': '19.46', 'eval_steps_per_second': '2.724', 'eval_entropy': '0.9233', 'eval_num_tokens': '8.326e+04', 'eval_mean_token_accuracy': '0.7976', 'epoch': '7'}
+ 70%|#######   | 14/20 [01:20<00:32,  5.49s/it]
+100%|##########| 7/7 [00:02<00:00,  2.27it/s][A
+                                             [A 75%|#######5  | 15/20 [01:26<00:32,  6.43s/it] 80%|########  | 16/20 [01:30<00:21,  5.46s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.86it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.88it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.80it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.11it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.28it/s][A                                               
+                                             [A{'eval_loss': '0.7114', 'eval_runtime': '2.563', 'eval_samples_per_second': '19.51', 'eval_steps_per_second': '2.731', 'eval_entropy': '0.8919', 'eval_num_tokens': '9.515e+04', 'eval_mean_token_accuracy': '0.8034', 'epoch': '8'}
+ 80%|########  | 16/20 [01:32<00:21,  5.46s/it]
+100%|##########| 7/7 [00:02<00:00,  2.28it/s][A
+                                             [A 85%|########5 | 17/20 [01:38<00:19,  6.43s/it] 90%|######### | 18/20 [01:41<00:10,  5.45s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.82it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.87it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.79it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.08it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.27it/s][A                                               
+                                             [A{'eval_loss': '0.7008', 'eval_runtime': '2.595', 'eval_samples_per_second': '19.27', 'eval_steps_per_second': '2.697', 'eval_entropy': '0.8786', 'eval_num_tokens': '1.07e+05', 'eval_mean_token_accuracy': '0.8075', 'epoch': '9'}
+ 90%|######### | 18/20 [01:44<00:10,  5.45s/it]
+100%|##########| 7/7 [00:02<00:00,  2.27it/s][A
+                                             [A 95%|#########5| 19/20 [01:50<00:06,  6.27s/it]100%|##########| 20/20 [01:53<00:00,  5.42s/it]                                               {'loss': '0.5009', 'grad_norm': '0.7378', 'learning_rate': '1.364e-06', 'entropy': '0.7541', 'num_tokens': '1.189e+05', 'mean_token_accuracy': '0.8795', 'epoch': '10'}
+100%|##########| 20/20 [01:53<00:00,  5.42s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:00,  6.98it/s][A
+ 43%|####2     | 3/7 [00:00<00:01,  3.88it/s][A
+ 57%|#####7    | 4/7 [00:01<00:01,  2.78it/s][A
+ 71%|#######1  | 5/7 [00:01<00:00,  3.01it/s][A
+ 86%|########5 | 6/7 [00:02<00:00,  2.25it/s][A                                               
+                                             [A{'eval_loss': '0.6987', 'eval_runtime': '2.581', 'eval_samples_per_second': '19.37', 'eval_steps_per_second': '2.712', 'eval_entropy': '0.8755', 'eval_num_tokens': '1.189e+05', 'eval_mean_token_accuracy': '0.8087', 'epoch': '10'}
+100%|##########| 20/20 [01:56<00:00,  5.42s/it]
+100%|##########| 7/7 [00:02<00:00,  2.25it/s][A
+                                             [A                                               {'train_runtime': '116.2', 'train_samples_per_second': '4.302', 'train_steps_per_second': '0.172', 'train_loss': '0.8239', 'epoch': '10'}
+100%|##########| 20/20 [01:56<00:00,  5.42s/it]100%|##########| 20/20 [01:56<00:00,  5.81s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:00<00:00,  6.96it/s] 43%|####2     | 3/7 [00:00<00:01,  3.89it/s] 57%|#####7    | 4/7 [00:01<00:01,  2.80it/s] 71%|#######1  | 5/7 [00:01<00:00,  3.12it/s] 86%|########5 | 6/7 [00:02<00:00,  2.29it/s]100%|##########| 7/7 [00:02<00:00,  3.15it/s]
+Done text2sql: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/text2sql
+
+=== Training sql2nosql ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 30845.01 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 29831.47 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 18006.93it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 45334.03 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 1336.04 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 5559.35 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 51755.97 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 1338.04 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 5157.78 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:09<03:05,  9.77s/it] 10%|#         | 2/20 [00:16<02:20,  7.82s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.01it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.83it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.45it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.68it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.20it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.65it/s][A
+                                             [A                                              {'eval_loss': '1.359', 'eval_runtime': '4.958', 'eval_samples_per_second': '10.08', 'eval_steps_per_second': '1.412', 'eval_entropy': '1.118', 'eval_num_tokens': '1.682e+04', 'eval_mean_token_accuracy': '0.6687', 'epoch': '1'}
+
+100%|##########| 7/7 [00:04<00:00,  1.65it/s][A 10%|#         | 2/20 [00:21<02:20,  7.82s/it]
+                                             [A 15%|#5        | 3/20 [00:32<03:21, 11.85s/it] 20%|##        | 4/20 [00:37<02:21,  8.85s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.09it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.88it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.49it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.72it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.22it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.70it/s][A
+                                             [A                                              {'eval_loss': '1.149', 'eval_runtime': '4.845', 'eval_samples_per_second': '10.32', 'eval_steps_per_second': '1.445', 'eval_entropy': '1.057', 'eval_num_tokens': '3.364e+04', 'eval_mean_token_accuracy': '0.6985', 'epoch': '2'}
+
+100%|##########| 7/7 [00:04<00:00,  1.70it/s][A 20%|##        | 4/20 [00:41<02:21,  8.85s/it]
+                                             [A 25%|##5       | 5/20 [00:52<02:48, 11.21s/it] 30%|###       | 6/20 [00:57<02:09,  9.25s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.12it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.90it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.49it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.72it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.23it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.71it/s][A
+                                             [A                                              {'eval_loss': '1.002', 'eval_runtime': '4.8', 'eval_samples_per_second': '10.42', 'eval_steps_per_second': '1.458', 'eval_entropy': '0.9844', 'eval_num_tokens': '5.046e+04', 'eval_mean_token_accuracy': '0.7198', 'epoch': '3'}
+
+100%|##########| 7/7 [00:04<00:00,  1.71it/s][A 30%|###       | 6/20 [01:02<02:09,  9.25s/it]
+                                             [A 35%|###5      | 7/20 [01:12<02:24, 11.11s/it] 40%|####      | 8/20 [01:18<01:51,  9.30s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.06it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.85it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.48it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.69it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.21it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.68it/s][A
+                                             [A                                              {'eval_loss': '0.9147', 'eval_runtime': '4.882', 'eval_samples_per_second': '10.24', 'eval_steps_per_second': '1.434', 'eval_entropy': '0.9007', 'eval_num_tokens': '6.728e+04', 'eval_mean_token_accuracy': '0.7555', 'epoch': '4'}
+
+100%|##########| 7/7 [00:04<00:00,  1.68it/s][A 40%|####      | 8/20 [01:23<01:51,  9.30s/it]
+                                             [A 45%|####5     | 9/20 [01:34<02:06, 11.50s/it] 50%|#####     | 10/20 [01:39<01:34,  9.48s/it]                                               {'loss': '1.026', 'grad_norm': '0.862', 'learning_rate': '0.0001245', 'entropy': '1.023', 'num_tokens': '8.41e+04', 'mean_token_accuracy': '0.7274', 'epoch': '5'}
+ 50%|#####     | 10/20 [01:39<01:34,  9.48s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  2.83it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.77it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.41it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.64it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.19it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.65it/s][A
+                                             [A                                               {'eval_loss': '0.8609', 'eval_runtime': '5.027', 'eval_samples_per_second': '9.947', 'eval_steps_per_second': '1.393', 'eval_entropy': '0.8259', 'eval_num_tokens': '8.41e+04', 'eval_mean_token_accuracy': '0.7701', 'epoch': '5'}
+
+100%|##########| 7/7 [00:04<00:00,  1.65it/s][A 50%|#####     | 10/20 [01:44<01:34,  9.48s/it]
+                                             [A 55%|#####5    | 11/20 [01:54<01:40, 11.14s/it] 60%|######    | 12/20 [02:01<01:19,  9.99s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  2.94it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.75it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.40it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.62it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.16it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A
+                                             [A                                               {'eval_loss': '0.8283', 'eval_runtime': '5.107', 'eval_samples_per_second': '9.791', 'eval_steps_per_second': '1.371', 'eval_entropy': '0.7639', 'eval_num_tokens': '1.009e+05', 'eval_mean_token_accuracy': '0.7831', 'epoch': '6'}
+
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A 60%|######    | 12/20 [02:06<01:19,  9.99s/it]
+                                             [A 65%|######5   | 13/20 [02:16<01:19, 11.41s/it] 70%|#######   | 14/20 [02:23<01:01, 10.18s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  2.93it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.80it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.40it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.62it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.16it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A
+                                             [A                                               {'eval_loss': '0.8083', 'eval_runtime': '5.085', 'eval_samples_per_second': '9.833', 'eval_steps_per_second': '1.377', 'eval_entropy': '0.717', 'eval_num_tokens': '1.177e+05', 'eval_mean_token_accuracy': '0.7889', 'epoch': '7'}
+
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A 70%|#######   | 14/20 [02:28<01:01, 10.18s/it]
+                                             [A 75%|#######5  | 15/20 [02:39<00:59, 11.90s/it] 80%|########  | 16/20 [02:45<00:40, 10.06s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  2.93it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.80it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.42it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.62it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.16it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A
+                                             [A                                               {'eval_loss': '0.797', 'eval_runtime': '5.079', 'eval_samples_per_second': '9.844', 'eval_steps_per_second': '1.378', 'eval_entropy': '0.6906', 'eval_num_tokens': '1.346e+05', 'eval_mean_token_accuracy': '0.7974', 'epoch': '8'}
+
+100%|##########| 7/7 [00:04<00:00,  1.61it/s][A 80%|########  | 16/20 [02:50<00:40, 10.06s/it]
+                                             [A 85%|########5 | 17/20 [03:01<00:35, 11.91s/it] 90%|######### | 18/20 [03:07<00:20, 10.09s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  2.96it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.78it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.42it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.64it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.18it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.64it/s][A
+                                             [A                                               {'eval_loss': '0.792', 'eval_runtime': '5.023', 'eval_samples_per_second': '9.954', 'eval_steps_per_second': '1.394', 'eval_entropy': '0.6791', 'eval_num_tokens': '1.514e+05', 'eval_mean_token_accuracy': '0.7994', 'epoch': '9'}
+
+100%|##########| 7/7 [00:04<00:00,  1.64it/s][A 90%|######### | 18/20 [03:12<00:20, 10.09s/it]
+                                             [A 95%|#########5| 19/20 [03:22<00:11, 11.56s/it]100%|##########| 20/20 [03:28<00:00,  9.93s/it]                                               {'loss': '0.484', 'grad_norm': '0.8812', 'learning_rate': '1.364e-06', 'entropy': '0.6346', 'num_tokens': '1.682e+05', 'mean_token_accuracy': '0.858', 'epoch': '10'}
+100%|##########| 20/20 [03:28<00:00,  9.93s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:01,  3.01it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.79it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.43it/s][A
+ 71%|#######1  | 5/7 [00:02<00:01,  1.64it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.18it/s][A
+100%|##########| 7/7 [00:04<00:00,  1.64it/s][A
+                                             [A                                               {'eval_loss': '0.791', 'eval_runtime': '5.005', 'eval_samples_per_second': '9.989', 'eval_steps_per_second': '1.398', 'eval_entropy': '0.6765', 'eval_num_tokens': '1.682e+05', 'eval_mean_token_accuracy': '0.8004', 'epoch': '10'}
+
+100%|##########| 7/7 [00:04<00:00,  1.64it/s][A100%|##########| 20/20 [03:33<00:00,  9.93s/it]
+                                             [A                                               {'train_runtime': '213.9', 'train_samples_per_second': '2.338', 'train_steps_per_second': '0.094', 'train_loss': '0.755', 'epoch': '10'}
+100%|##########| 20/20 [03:33<00:00,  9.93s/it]100%|##########| 20/20 [03:33<00:00, 10.69s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:00<00:01,  2.97it/s] 43%|####2     | 3/7 [00:01<00:02,  1.80it/s] 57%|#####7    | 4/7 [00:02<00:02,  1.44it/s] 71%|#######1  | 5/7 [00:02<00:01,  1.66it/s] 86%|########5 | 6/7 [00:04<00:00,  1.19it/s]100%|##########| 7/7 [00:04<00:00,  1.63it/s]
+Done sql2nosql: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/sql2nosql
+
+=== Training nosql2doc ===
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 36548.48 examples/s]
+Map:   0%|          | 0/50 [00:00<?, ? examples/s]Map: 100%|##########| 50/50 [00:00<00:00, 39862.23 examples/s]
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen-350M-multi
+Loading weights:   0%|          | 0/165 [00:00<?, ?it/s]Loading weights: 100%|##########| 165/165 [00:00<00:00, 19584.58it/s]
+Adding EOS to train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to train dataset: 100%|##########| 50/50 [00:00<00:00, 47169.41 examples/s]
+Tokenizing train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing train dataset: 100%|##########| 50/50 [00:00<00:00, 1002.35 examples/s]
+Building labels for train dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for train dataset: 100%|##########| 50/50 [00:00<00:00, 4424.74 examples/s]
+Adding EOS to eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Adding EOS to eval dataset: 100%|##########| 50/50 [00:00<00:00, 50803.10 examples/s]
+Tokenizing eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Tokenizing eval dataset: 100%|##########| 50/50 [00:00<00:00, 917.53 examples/s]
+Building labels for eval dataset:   0%|          | 0/50 [00:00<?, ? examples/s]Building labels for eval dataset: 100%|##########| 50/50 [00:00<00:00, 4337.26 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|5         | 1/20 [00:12<03:54, 12.36s/it] 10%|#         | 2/20 [00:19<02:49,  9.40s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.13it/s][A
+ 43%|####2     | 3/7 [00:02<00:02,  1.39it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.16it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.23it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.01it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.38it/s][A                                              
+                                             [A{'eval_loss': '3.346', 'eval_runtime': '6.257', 'eval_samples_per_second': '7.991', 'eval_steps_per_second': '1.119', 'eval_entropy': '2.855', 'eval_num_tokens': '2.299e+04', 'eval_mean_token_accuracy': '0.3612', 'epoch': '1'}
+ 10%|#         | 2/20 [00:25<02:49,  9.40s/it]
+100%|##########| 7/7 [00:05<00:00,  1.38it/s][A
+                                             [A 15%|#5        | 3/20 [00:39<04:00, 14.15s/it] 20%|##        | 4/20 [00:45<02:54, 10.88s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.21it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.43it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.19it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.27it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.04it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A
+                                             [A                                              {'eval_loss': '2.879', 'eval_runtime': '6.094', 'eval_samples_per_second': '8.205', 'eval_steps_per_second': '1.149', 'eval_entropy': '2.751', 'eval_num_tokens': '4.599e+04', 'eval_mean_token_accuracy': '0.4403', 'epoch': '2'}
+
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A 20%|##        | 4/20 [00:51<02:54, 10.88s/it]
+                                             [A 25%|##5       | 5/20 [01:04<03:25, 13.70s/it] 30%|###       | 6/20 [01:10<02:39, 11.38s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.20it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.44it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.19it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.27it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.04it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A                                              
+                                             [A{'eval_loss': '2.495', 'eval_runtime': '6.078', 'eval_samples_per_second': '8.226', 'eval_steps_per_second': '1.152', 'eval_entropy': '2.646', 'eval_num_tokens': '6.898e+04', 'eval_mean_token_accuracy': '0.4401', 'epoch': '3'}
+ 30%|###       | 6/20 [01:17<02:39, 11.38s/it]
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A
+                                             [A 35%|###5      | 7/20 [01:29<02:56, 13.61s/it] 40%|####      | 8/20 [01:35<02:17, 11.46s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.19it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.45it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.20it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.27it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.04it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.43it/s][A
+                                             [A                                              {'eval_loss': '2.3', 'eval_runtime': '6.046', 'eval_samples_per_second': '8.27', 'eval_steps_per_second': '1.158', 'eval_entropy': '2.506', 'eval_num_tokens': '9.198e+04', 'eval_mean_token_accuracy': '0.4836', 'epoch': '4'}
+
+100%|##########| 7/7 [00:05<00:00,  1.43it/s][A 40%|####      | 8/20 [01:42<02:17, 11.46s/it]
+                                             [A 45%|####5     | 9/20 [01:54<02:31, 13.81s/it] 50%|#####     | 10/20 [02:01<01:55, 11.53s/it]                                               {'loss': '2.953', 'grad_norm': '1.678', 'learning_rate': '0.0001245', 'entropy': '2.911', 'num_tokens': '1.15e+05', 'mean_token_accuracy': '0.4223', 'epoch': '5'}
+ 50%|#####     | 10/20 [02:01<01:55, 11.53s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.15it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.40it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.16it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.24it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.03it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.40it/s][A                                               
+                                             [A{'eval_loss': '2.208', 'eval_runtime': '6.19', 'eval_samples_per_second': '8.078', 'eval_steps_per_second': '1.131', 'eval_entropy': '2.318', 'eval_num_tokens': '1.15e+05', 'eval_mean_token_accuracy': '0.5346', 'epoch': '5'}
+ 50%|#####     | 10/20 [02:07<01:55, 11.53s/it]
+100%|##########| 7/7 [00:05<00:00,  1.40it/s][A
+                                             [A 55%|#####5    | 11/20 [02:19<02:02, 13.58s/it] 60%|######    | 12/20 [02:27<01:34, 11.85s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.25it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.43it/s][A
+ 57%|#####7    | 4/7 [00:03<00:02,  1.19it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.26it/s][A
+ 86%|########5 | 6/7 [00:05<00:00,  1.03it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A
+                                             [A                                               {'eval_loss': '2.147', 'eval_runtime': '6.079', 'eval_samples_per_second': '8.225', 'eval_steps_per_second': '1.151', 'eval_entropy': '2.175', 'eval_num_tokens': '1.38e+05', 'eval_mean_token_accuracy': '0.5364', 'epoch': '6'}
+
+100%|##########| 7/7 [00:05<00:00,  1.42it/s][A 60%|######    | 12/20 [02:33<01:34, 11.85s/it]
+                                             [A 65%|######5   | 13/20 [02:45<01:35, 13.68s/it] 70%|#######   | 14/20 [02:53<01:11, 11.89s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.26it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.49it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.22it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.06it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A                                               
+                                             [A{'eval_loss': '2.109', 'eval_runtime': '5.952', 'eval_samples_per_second': '8.4', 'eval_steps_per_second': '1.176', 'eval_entropy': '2.083', 'eval_num_tokens': '1.61e+05', 'eval_mean_token_accuracy': '0.5431', 'epoch': '7'}
+ 70%|#######   | 14/20 [02:59<01:11, 11.89s/it]
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A
+                                             [A 75%|#######5  | 15/20 [03:11<01:09, 13.85s/it] 80%|########  | 16/20 [03:18<00:47, 11.77s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.25it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.49it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.23it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.30it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.06it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.44it/s][A
+                                             [A                                               {'eval_loss': '2.088', 'eval_runtime': '5.966', 'eval_samples_per_second': '8.381', 'eval_steps_per_second': '1.173', 'eval_entropy': '2.03', 'eval_num_tokens': '1.84e+05', 'eval_mean_token_accuracy': '0.5491', 'epoch': '8'}
+
+100%|##########| 7/7 [00:05<00:00,  1.44it/s][A 80%|########  | 16/20 [03:24<00:47, 11.77s/it]
+                                             [A 85%|########5 | 17/20 [03:37<00:41, 13.82s/it] 90%|######### | 18/20 [03:44<00:23, 11.76s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.24it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.48it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.21it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.29it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.06it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A                                               
+                                             [A{'eval_loss': '2.078', 'eval_runtime': '5.965', 'eval_samples_per_second': '8.382', 'eval_steps_per_second': '1.174', 'eval_entropy': '2.006', 'eval_num_tokens': '2.069e+05', 'eval_mean_token_accuracy': '0.5517', 'epoch': '9'}
+ 90%|######### | 18/20 [03:50<00:23, 11.76s/it]
+100%|##########| 7/7 [00:05<00:00,  1.45it/s][A
+                                             [A 95%|#########5| 19/20 [04:02<00:13, 13.70s/it]100%|##########| 20/20 [04:09<00:00, 11.66s/it]                                               {'loss': '1.94', 'grad_norm': '1.461', 'learning_rate': '1.364e-06', 'entropy': '2.237', 'num_tokens': '2.299e+05', 'mean_token_accuracy': '0.5905', 'epoch': '10'}
+100%|##########| 20/20 [04:09<00:00, 11.66s/it]
+  0%|          | 0/7 [00:00<?, ?it/s][A
+ 29%|##8       | 2/7 [00:00<00:02,  2.24it/s][A
+ 43%|####2     | 3/7 [00:01<00:02,  1.46it/s][A
+ 57%|#####7    | 4/7 [00:02<00:02,  1.21it/s][A
+ 71%|#######1  | 5/7 [00:03<00:01,  1.29it/s][A
+ 86%|########5 | 6/7 [00:04<00:00,  1.06it/s][A
+100%|##########| 7/7 [00:05<00:00,  1.44it/s][A
+                                             [A                                               {'eval_loss': '2.076', 'eval_runtime': '5.984', 'eval_samples_per_second': '8.356', 'eval_steps_per_second': '1.17', 'eval_entropy': '2.001', 'eval_num_tokens': '2.299e+05', 'eval_mean_token_accuracy': '0.5517', 'epoch': '10'}
+
+100%|##########| 7/7 [00:05<00:00,  1.44it/s][A100%|##########| 20/20 [04:15<00:00, 11.66s/it]
+                                             [A                                               {'train_runtime': '255.2', 'train_samples_per_second': '1.959', 'train_steps_per_second': '0.078', 'train_loss': '2.447', 'epoch': '10'}
+100%|##########| 20/20 [04:15<00:00, 11.66s/it]100%|##########| 20/20 [04:15<00:00, 12.76s/it]
+  0%|          | 0/7 [00:00<?, ?it/s] 29%|##8       | 2/7 [00:00<00:02,  2.25it/s] 43%|####2     | 3/7 [00:01<00:02,  1.48it/s] 57%|#####7    | 4/7 [00:02<00:02,  1.22it/s] 71%|#######1  | 5/7 [00:03<00:01,  1.29it/s] 86%|########5 | 6/7 [00:04<00:00,  1.05it/s]100%|##########| 7/7 [00:05<00:00,  1.44it/s]100%|##########| 7/7 [00:05<00:00,  1.37it/s]
+Done nosql2doc: adapter=/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/nosql2doc
+
+All adapters verified. Summary: /Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v1/training_summary_20260706_210616.json

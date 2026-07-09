@@ -1,0 +1,50 @@
+{
+  "checkpoint_run": "v2",
+  "model_name": "Salesforce/codegen-350M-multi",
+  "started_at": "2026-07-06T15:56:22.185222+00:00",
+  "completed_at": "2026-07-06T16:55:04.733931+00:00",
+  "max_samples": 500,
+  "epochs": 5,
+  "baseline_results_run": null,
+  "tasks": [
+    {
+      "task": "text2sql",
+      "checkpoint_run": "v2",
+      "train_rows": 500,
+      "eval_rows": 500,
+      "train_loss": 0.4025722801685333,
+      "eval_loss": 0.32468855381011963,
+      "best_eval_loss": 0.32468855381011963,
+      "train_runtime_seconds": 672.0214,
+      "adapter_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/text2sql",
+      "mlflow_run_id": "cafa49138455413490f91c7c46dd6440",
+      "metadata_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/text2sql/run_metadata.json"
+    },
+    {
+      "task": "sql2nosql",
+      "checkpoint_run": "v2",
+      "train_rows": 500,
+      "eval_rows": 500,
+      "train_loss": 0.3687059313058853,
+      "eval_loss": 0.2289234697818756,
+      "best_eval_loss": 0.2289234697818756,
+      "train_runtime_seconds": 1191.5307,
+      "adapter_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/sql2nosql",
+      "mlflow_run_id": "38147a01349d49c5a24297fab34094bc",
+      "metadata_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/sql2nosql/run_metadata.json"
+    },
+    {
+      "task": "nosql2doc",
+      "checkpoint_run": "v2",
+      "train_rows": 500,
+      "eval_rows": 500,
+      "train_loss": 1.6306341648101808,
+      "eval_loss": 1.4971799850463867,
+      "best_eval_loss": 1.4971799850463867,
+      "train_runtime_seconds": 1505.2182,
+      "adapter_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/nosql2doc",
+      "mlflow_run_id": "0da44c4bb3b24acd9fe1d84fc574c266",
+      "metadata_path": "/Volumes/Work/CodeGen-Implementations-May_26/models/checkpoints/v2/nosql2doc/run_metadata.json"
+    }
+  ]
+}

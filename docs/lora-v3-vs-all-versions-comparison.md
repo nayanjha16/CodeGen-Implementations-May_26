@@ -7,7 +7,7 @@
 > **Dataset:** `spider_gold_validation` (50 examples per task)  
 > **Execution eval:** PostgreSQL result-set comparison enabled (all runs below)
 
-See also: [all-results-comparison.md](all-results-comparison.md) (baseline through v2 only).
+See also: [lora-v2-vs-all-versions-comparison.md](lora-v2-vs-all-versions-comparison.md) (baseline through v2 only).
 
 ## Training context
 

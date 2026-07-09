@@ -1,8 +1,108 @@
-# CodeGen – Interactive Database Querying Using Small Code Language Models
+# CodeGen
 
-A modular, reproducible, research-oriented project for evaluating and fine-tuning small code language models on database query generation and translation tasks.
+**Evaluating and Fine-Tuning Small Code Language Models on a Three-Stage Database Query Pipeline**
 
-**Default base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configurable via `.env`)
+---
+
+A modular, reproducible research pipeline for evaluating and fine-tuning small code language models on a **three-stage database query workflow**:
+
+```
+Natural language  →  SQL  →  MongoDB  →  Documentation
+```
+
+**Base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configure in `.env`)
+
+## Results snapshot (n=50)
+
+Spider gold validation set · 50 examples · semantic judge `gemma3:4b` · LoRA v1 vs base model only
+
+| Task | Judge correct rate (baseline → LoRA v1) |
+| ---- | --------------------------------------- |
+| Text-to-SQL | 4% → 20% (+16 pp) |
+| SQL-to-MongoDB | 30% → 62% (+32 pp) |
+| Documentation | 24% → 56% (+32 pp) |
+
+LoRA v1 adapters were smoke-trained (50 training rows, 5 epochs per task).  
+Full report: [baseline-vs-lora-v1-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/baseline-vs-lora-v1-comparison.md)  
+Execution accuracy is 0% on both runs until Spider SQLite databases are wired.
+
+---
+
+## Complete end-to-end flow
+
+Run the project in this order: **setup → pre-flight → baseline eval → LoRA training → fine-tuned eval → compare results**.
+
+```mermaid
+flowchart LR
+  subgraph setup [1. Setup]
+    A[Install deps + .env]
+    B[Cache base model]
+  end
+  subgraph preflight [2. Pre-flight]
+    C[inspect_lora_modules]
+    D[test_tend_loader]
+    E[test_prompt_parity]
+  end
+  subgraph baseline [3. Baseline eval]
+    F[run_baseline_eval\nno adapter]
+    G[metrics.json + CSVs]
+  end
+  subgraph train [4. LoRA training]
+    H[train_lora / train_all_lora\n--version v1]
+    I[models/checkpoints/v1/]
+  end
+  subgraph lora_eval [5. Fine-tuned eval]
+    J[run_baseline_eval\n--adapter-run v1]
+    K[metrics.json + CSVs]
+  end
+  subgraph compare [6. Compare]
+    L[baseline-vs-lora report]
+  end
+  A --> B --> C --> D --> E --> F --> G
+  G --> H --> I --> J --> K --> L
+```
+
+### Pipeline stages (inference)
+
+Each evaluation example flows through three tasks. At inference time, **one LoRA adapter is loaded per task** when using `--adapter-run`:
+
+```
+Question + SQL schema
+        │
+        ▼  text2sql          (adapter: models/checkpoints/<run>/text2sql/)
+     SQL query
+        │
+        ▼  sql2nosql          (adapter: models/checkpoints/<run>/sql2nosql/)
+  MongoDB query
+        │
+        ▼  nosql2doc           (adapter: models/checkpoints/<run>/nosql2doc/)
+  Documentation
+```
+
+### Phase summary
+
+| Phase | Goal | Key command |
+| ----- | ---- | ----------- |
+| **1. Setup** | Python env, deps, `.env`, `PYTHONPATH` | See [Quick Start](#quick-start) |
+| **2. Pre-flight** | Verify LoRA targets, dataset, prompts | `inspect_lora_modules.py`, `test_tend_loader.py`, `test_prompt_parity` |
+| **3. Baseline eval** | Score **base model** (no adapter) on gold validation | `run_baseline_eval.py --max-samples 50` |
+| **4. LoRA training** | Fine-tune one adapter per task | `train_lora.py --version v1` or `train_all_lora.py --version v1` |
+| **5. Fine-tuned eval** | Score **base + adapters** on same set | `run_baseline_eval.py --max-samples 50 --adapter-run v1` |
+| **6. Compare** | Baseline vs LoRA metrics | Compare `results/*/metrics.json` or see comparison report under LoRA run folder |
+
+**Typical outputs**
+
+```
+results/spider_gold_validation_codegen-350M-multi_baseline_50samples/
+  metrics.json, text2sql_details.csv, sql2nosql_details.csv, documentation_details.csv
+
+results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/
+  metrics.json, *_details.csv, baseline-vs-lora-v1-comparison.md
+```
+
+**Smoke-first on CPU:** use `--max-samples 5` before full 50-sample runs (~2–3 hours each with judge on CPU).
+
+---
 
 ## Features
 
@@ -26,11 +126,12 @@ CodeGen-Implementations-May_26/
 │   ├── models/              # HuggingFace model loader (base + LoRA adapters)
 │   ├── datasets/            # TEND Hugging Face loader, preprocessing
 │   ├── training/            # LoRA trainer, SFT dataset builder, collator
-│   ├── evaluation/          # Metrics, benchmarks, MLflow, Ollama judge
+│   ├── evaluation/          # Metrics, benchmarks, MLflow, semantic judge
+│   ├── llm/                 # Ollama client + Hugging Face judge fallback
 │   └── utils/               # Config, paths, logging, seeds
 ├── models/
 │   ├── base/                # Downloaded HuggingFace base models (cached once)
-│   └── checkpoints/         # LoRA adapter weights (one dir per task)
+│   └── checkpoints/         # LoRA runs: checkpoints/<run>/<task>/
 ├── data/
 │   ├── spider_gold_validation.jsonl   # Frozen 50-example eval set
 │   └── DATASETS.md
@@ -54,12 +155,22 @@ export PYTHONPATH="$(pwd)"
 ```
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell (conda)
 conda create -n ai python=3.11 -y
 conda activate ai
 pip install -r requirements.txt
 $env:PYTHONPATH = (Get-Location).Path
 ```
+
+```powershell
+# Windows PowerShell (venv)
+py -3.11 -m venv myvenv
+.\myvenv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:PYTHONPATH = (Get-Location).Path
+```
+
+Re-run `$env:PYTHONPATH = (Get-Location).Path` (or `export PYTHONPATH="$(pwd)"`) in every new terminal session.
 
 ### 2. Configure Environment
 
@@ -74,8 +185,8 @@ Edit `.env` — at minimum set `MODEL_NAME` and `BERTSCORE_MODEL_NAME`:
 MODEL_NAME=Salesforce/codegen-350M-multi
 BERTSCORE_MODEL_NAME=distilbert-base-uncased
 
-# Optional: load a LoRA adapter at inference time
-# MODEL_ADAPTER=text2sql
+# LoRA adapter run folder (optional; used with --adapter-run v1 in eval)
+MODEL_ADAPTER_RUN=v1
 
 # Local storage paths (defaults shown)
 MODELS_BASE_DIR=models/base
@@ -84,9 +195,10 @@ TEND_DATASET_ID=care2achieve/tend
 TEND_CACHE_DIR=data/cache/tend
 RESULTS_DIR=results
 
-# Ollama semantic judge (used in baseline eval detail CSVs)
+# Semantic judge: Ollama when available, else Hugging Face fallback
 OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_JUDGE_MODEL=qwen3:4b
+OLLAMA_JUDGE_MODEL=gemma3:4b
+# JUDGE_HF_MODEL=google/gemma-3-4b-it   # optional explicit HF fallback
 OLLAMA_TIMEOUT=120
 ```
 
@@ -94,15 +206,16 @@ OLLAMA_TIMEOUT=120
 | -------- | ----------- | ------- |
 | `MODEL_NAME` | HuggingFace base model identifier (**required**) | — |
 | `BERTSCORE_MODEL_NAME` | BERTScore metric model (**required**) | — |
-| `MODEL_ADAPTER` | Task name whose LoRA adapter to load (`text2sql`, `sql2nosql`, `nosql2doc`) | — |
+| `MODEL_ADAPTER_RUN` | Default LoRA run name (e.g. `v1`) under `models/checkpoints/` | — |
 | `MODELS_BASE_DIR` | Where base models are cached | `models/base` |
-| `MODELS_CHECKPOINTS_DIR` | Where LoRA adapters are stored | `models/checkpoints` |
+| `MODELS_CHECKPOINTS_DIR` | Root for LoRA runs (`<run>/<task>/`) | `models/checkpoints` |
 | `TEND_DATASET_ID` | Hugging Face TEND dataset id | `care2achieve/tend` |
 | `TEND_CACHE_DIR` | Local cache for TEND JSONL splits | `data/cache/tend` |
 | `SPIDER_GOLD_VALIDATION_PATH` | Frozen Spider gold validation JSONL | `data/spider_gold_validation.jsonl` |
 | `RESULTS_DIR` | Evaluation output directory | `results` |
 | `OLLAMA_BASE_URL` | Ollama API URL for semantic judge | `http://localhost:11434` |
-| `OLLAMA_JUDGE_MODEL` | Ollama model for semantic correctness | `qwen3:4b` |
+| `OLLAMA_JUDGE_MODEL` | Ollama judge model tag (maps to HF if Ollama unavailable) | `gemma3:4b` |
+| `JUDGE_HF_MODEL` | Optional explicit Hugging Face judge model id | auto-mapped from `OLLAMA_JUDGE_MODEL` |
 
 YAML settings in `configs/default.yaml` cover generation, evaluation limits, training hyperparameters, and LoRA config. Model name and storage paths always come from `.env`.
 
@@ -110,36 +223,38 @@ YAML settings in `configs/default.yaml` cover generation, evaluation limits, tra
 
 ## Recommended Workflow
 
-Run these steps in order for a full baseline → train → evaluate cycle:
+Full **baseline → train → fine-tuned eval → compare** cycle (PowerShell examples; same commands on bash):
 
-```bash
-# 0. Pre-flight: verify LoRA target modules on the base model
-python scripts/inspect_lora_modules.py
+```powershell
+# Activate env and set PYTHONPATH each session
+.\myvenv\Scripts\Activate.ps1
+$env:PYTHONPATH = (Get-Location).Path
 
-# 1. Smoke-test TEND dataset loading
-python scripts/test_tend_loader.py
+# --- Phase 2: Pre-flight ---
+python scripts/inspect_lora_modules.py          # trainable LoRA params > 0
+python scripts/test_tend_loader.py              # TEND + gold validation load OK
+python -m unittest tests.training.test_prompt_parity -v   # fast; skip slow training tests on CPU
+python scripts/build_sft_dataset.py             # SFT builder smoke
 
-# 2. Run unit + smoke tests (fast, ~1–2 min)
-python -m unittest discover -s tests/training -v
+# --- Phase 3: Baseline evaluation (base model, no adapter) ---
+python scripts/run_baseline_eval.py --max-samples 5 --output spider_gold_validation_codegen-350M-multi_baseline_5samples
+python scripts/run_baseline_eval.py --max-samples 50 --output spider_gold_validation_codegen-350M-multi_baseline_50samples
 
-# 3. Baseline evaluation (base model, no adapter)
-python scripts/run_baseline_eval.py --max-samples 50
+# --- Phase 4: LoRA training ---
+# Smoke (one task)
+python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow --device cpu --version v1
+# Full (all three tasks)
+python scripts/train_all_lora.py --no-mlflow --device cpu --version v1
+python scripts/verify_lora_adapters.py --version v1
 
-# 4. Smoke-check SFT dataset builder
-python scripts/build_sft_dataset.py
+# --- Phase 5: Fine-tuned evaluation (per-task adapters from run v1) ---
+python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1_50samples
 
-# 5. Train one task (smoke run)
-python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
-
-# 6. Full training (all three tasks)
-python scripts/train_all_lora.py --no-mlflow
-
-# 7. Verify adapter artifacts
-python scripts/verify_lora_adapters.py
-
-# 8. Evaluate with LoRA adapter
-MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
+# --- Phase 6: Compare ---
+# See results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/baseline-vs-lora-v1-comparison.md
 ```
+
+Use `--no-judge` to skip the semantic judge (faster; no Ollama required). Without Ollama, the judge falls back to a cached Hugging Face model (e.g. `google/gemma-3-4b-it` for `gemma3:4b`).
 
 ---
 
@@ -200,7 +315,7 @@ Prints attention module suffixes and confirms trainable parameter count > 0. For
 
 ## Training (LoRA Fine-Tuning)
 
-LoRA fine-tuning trains **one adapter per task** on the causal LM base model (`MODEL_NAME`). Base weights stay frozen in `models/base/`; only adapter weights are saved under `models/checkpoints/<task>/`.
+LoRA fine-tuning trains **one adapter per task** on the causal LM base model (`MODEL_NAME`). Base weights stay frozen in `models/base/`; adapter weights are saved under `models/checkpoints/<run>/<task>/` (e.g. `models/checkpoints/v1/text2sql/`).
 
 ### Supported tasks
 
@@ -233,10 +348,11 @@ Long prompts are truncated from the **start** (schema head dropped, question + t
 python scripts/train_lora.py --task text2sql
 
 # Smoke / debug run
-python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow
+python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow --version v1
 
-# Override device or output directory
-python scripts/train_lora.py --task sql2nosql --device mps --output-dir models/checkpoints/sql2nosql_v2
+# Override device or custom output directory
+python scripts/train_lora.py --task sql2nosql --device mps --version v1
+python scripts/train_lora.py --task sql2nosql --output-dir models/checkpoints/custom_run/sql2nosql
 
 # Custom training data
 python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --eval-csv data/my_eval.jsonl
@@ -247,7 +363,8 @@ python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --
 | `--task` | *(required)* | `text2sql`, `sql2nosql`, or `nosql2doc` |
 | `--train-csv` | HF spider+bird train | Optional CSV/JSONL training rows |
 | `--eval-csv` | HF spider+bird test | Optional CSV/JSONL eval rows |
-| `--output-dir` | `models/checkpoints/<task>/` | Adapter output directory |
+| `--output-dir` | `models/checkpoints/<run>/<task>/` | Adapter output directory (overrides default path) |
+| `--version`, `--name` | date-based `DDMM` | Run folder under `models/checkpoints/` (e.g. `v1`) |
 | `--max-samples` | all rows | Limit rows for smoke/debug |
 | `--epochs` | `5` (from config) | Override epoch count |
 | `--device` | `auto` | `auto`, `cuda`, `mps`, or `cpu` |
@@ -261,7 +378,7 @@ python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --
 python scripts/train_all_lora.py
 
 # Smoke run
-python scripts/train_all_lora.py --max-samples 50 --epochs 1 --no-mlflow
+python scripts/train_all_lora.py --max-samples 50 --epochs 1 --no-mlflow --version v1
 
 # Run baseline eval first, then train
 python scripts/train_all_lora.py --run-baseline --baseline-max-samples 50
@@ -307,7 +424,7 @@ lora:
 Training uses TRL `SFTTrainer` with **completion-only loss** (prompt tokens masked). Each run writes:
 
 ```
-models/checkpoints/text2sql/
+models/checkpoints/v1/text2sql/
 ├── adapter_config.json
 ├── adapter_model.safetensors
 └── run_metadata.json          # train/eval loss, filter stats, token stats
@@ -317,8 +434,8 @@ models/checkpoints/text2sql/
 
 ```bash
 python scripts/verify_lora_adapters.py
-python scripts/verify_lora_adapters.py --task text2sql
-python scripts/verify_lora_adapters.py --no-require-metadata
+python scripts/verify_lora_adapters.py --version v1
+python scripts/verify_lora_adapters.py --version v1 --no-require-metadata
 ```
 
 Checks for `adapter_config.json`, `adapter_model.safetensors`, and optionally `run_metadata.json`.
@@ -369,7 +486,8 @@ python scripts/run_baseline_eval.py --full-split --split test --tend-config spid
 | `--max-samples` | `50` | Number of examples |
 | `--mlflow` | off | Log metrics to MLflow |
 | `--output` | auto-generated | Run folder name under `results/` |
-| `--no-judge` | off | Skip Ollama semantic judge |
+| `--adapter-run` | off | Load per-task LoRA adapters from `models/checkpoints/<run>/` |
+| `--no-judge` | off | Skip semantic judge (Ollama or HF fallback) |
 
 **Metrics computed:** Exact Match, Execution Accuracy, Syntax Validity, BLEU, ROUGE-L, BERTScore, CodeBLEU, Ollama judge correct rate.
 
@@ -383,17 +501,19 @@ results/<run_name>/
 └── documentation_details.csv
 ```
 
-#### Evaluate with a LoRA adapter
+#### Evaluate with LoRA adapters (all three tasks)
 
-Set `MODEL_ADAPTER` in `.env` or inline:
+Use `--adapter-run` to load **per-task adapters** from `models/checkpoints/<run>/`:
 
-```bash
-MODEL_ADAPTER=text2sql python scripts/run_baseline_eval.py --max-samples 50
-MODEL_ADAPTER=sql2nosql python scripts/run_baseline_eval.py --max-samples 50
-MODEL_ADAPTER=nosql2doc python scripts/run_baseline_eval.py --max-samples 50
+```powershell
+# Fine-tuned eval (text2sql + sql2nosql + nosql2doc adapters from run v1)
+python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1
+
+# Named output folder
+python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1_50samples
 ```
 
-The loader applies the adapter from `models/checkpoints/<task>/` on top of the base model in `models/base/`.
+The benchmark loads `models/checkpoints/v1/text2sql/`, `.../sql2nosql/`, and `.../nosql2doc/` on top of the cached base model in `models/base/`.
 
 ### `run_all_baseline_eval.py` — Multi-model comparison
 
@@ -429,15 +549,16 @@ Checked before every load. Downloaded from HuggingFace only when missing. Config
 
 ```
 models/checkpoints/
-├── text2sql/
-│   ├── adapter_config.json
-│   ├── adapter_model.safetensors
-│   └── run_metadata.json
-├── sql2nosql/
-└── nosql2doc/
+└── v1/                         # run name (--version v1 or MODEL_ADAPTER_RUN)
+    ├── text2sql/
+    │   ├── adapter_config.json
+    │   ├── adapter_model.safetensors
+    │   └── run_metadata.json
+    ├── sql2nosql/
+    └── nosql2doc/
 ```
 
-Set `MODEL_ADAPTER=text2sql` in `.env` to load an adapter at inference time.
+Use `--adapter-run v1` in `run_baseline_eval.py` to evaluate with all three adapters.
 
 ### TEND dataset (Hugging Face)
 
@@ -518,14 +639,16 @@ See [data/DATASETS.md](data/DATASETS.md) for TEND field definitions, split namin
 
 | Metric | Description |
 | ------ | ----------- |
-| Exact Match | Normalized SQL string equality |
-| Execution Accuracy | Result set comparison on SQLite |
-| Syntax Validity | Valid SQL structure rate |
+| Exact Match | Normalized string equality (text2sql: case-insensitive identifiers via sqlparse) |
+| Execution Accuracy | SQLite result-set match (requires Spider DB files + `db_resolver`; not wired by default) |
+| Syntax Validity | Valid SQL / MongoDB / doc structure rate |
 | BLEU | N-gram overlap |
 | ROUGE-L | Longest common subsequence |
 | BERTScore | Contextual embedding similarity |
 | CodeBLEU | n-gram + syntax + semantic match |
-| Judge Correct Rate | Ollama semantic equivalence (optional) |
+| Judge Correct Rate | Semantic equivalence via Ollama (`OLLAMA_JUDGE_MODEL`) or Hugging Face fallback |
+
+**Semantic judge:** If Ollama is running and has the configured model (e.g. `gemma3:4b`), the judge uses Ollama. Otherwise it downloads and runs the mapped Hugging Face model (e.g. `google/gemma-3-4b-it`). Use `--no-judge` to skip entirely.
 
 ---
 
@@ -554,16 +677,20 @@ Seeds are set in `configs/default.yaml` for `random`, `numpy`, and `torch`. All 
 
 | Issue | Fix |
 | ----- | --- |
-| `MODEL_NAME is not set` | Run `cp .env.example .env` and set `MODEL_NAME` |
+| `MODEL_NAME is not set` | Copy `.env.example` to `.env` and set `MODEL_NAME` |
 | `BERTSCORE_MODEL_NAME is not set` | Add `BERTSCORE_MODEL_NAME=distilbert-base-uncased` to `.env` |
-| `ModuleNotFoundError: src` | Export `PYTHONPATH=$(pwd)` from project root |
+| `ModuleNotFoundError: src` | Set `$env:PYTHONPATH = (Get-Location).Path` from project root |
+| `MODELS_CHECKPOINTS_DIR==...` (double `=`) | Use single `=` in `.env`: `MODELS_CHECKPOINTS_DIR=models/checkpoints` |
+| Adapter verify FAIL for `v1` | Ensure adapters live at `models/checkpoints/v1/<task>/`, then `verify_lora_adapters.py --version v1` |
 | Model re-downloads every run | Check `models/base/<slug>/.downloaded` exists; ensure write permissions |
 | Out of memory on GPU/MPS | Reduce `--max-samples`, set `--device cpu`, or lower `per_device_train_batch_size` in config |
 | Zero trainable LoRA params | Run `inspect_lora_modules.py`; fix `lora.target_modules` in config |
-| Adapter not found | Ensure `models/checkpoints/<task>/adapter_config.json` exists; set `MODEL_ADAPTER=<task>` |
-| Ollama judge fails | Start Ollama locally or pass `--no-judge` to skip semantic scoring |
-| Token length warnings during training | Update to latest code; prompts are truncated to 2048 before SFT tokenization |
-| Training very slow on Mac | Expected on MPS/CPU; use smoke runs (`--max-samples 50 --epochs 1`) to validate first |
+| Execution accuracy always 0 | Expected until Spider SQLite DBs are wired via `db_resolver` in benchmark |
+| Ollama judge fails | Start Ollama + pull judge model, or rely on HF fallback, or use `--no-judge` |
+| Eval appears hung at startup | MLflow import can take 1–2 min on first run; wait for `Baseline Evaluation:` line |
+| Training tests very slow on CPU | Run `test_prompt_parity` only; skip `test_adapter_load` / full `discover` until GPU or overnight |
+| Token length warnings during training | Prompts truncated to 2048 before SFT tokenization |
+| Training very slow on CPU | Use smoke runs (`--max-samples 50 --epochs 1 --device cpu`) before full training |
 
 ---
 

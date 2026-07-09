@@ -12,12 +12,17 @@ class EvaluationMetrics:
     """Compute NLP, code, and execution metrics for text-to-SQL."""
 
     def normalize_sql(self, sql: str) -> str:
-        """Normalize SQL for exact match comparison."""
+        """Normalize SQL for exact match comparison.
+
+        Keywords are uppercased via sqlparse, then the full string is lowercased
+        so identifier case (Country vs country) does not affect exact match.
+        """
         sql = sql.strip().rstrip(";")
         try:
-            return sqlparse.format(sql, reindent=True, keyword_case="upper")
+            formatted = sqlparse.format(sql, reindent=True, keyword_case="upper")
         except Exception:
-            return sql.upper().strip()
+            formatted = sql.strip()
+        return formatted.lower()
 
     def exact_match(self, predicted: str, reference: str) -> bool:
         """Exact match accuracy after normalization."""

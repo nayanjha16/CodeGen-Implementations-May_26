@@ -1,6 +1,6 @@
 # Architecture Map — CodeGen Studio (PEFT / LoRA Research)
 
-> Current architecture as of 2026-06-21, oriented toward adding LoRA PEFT for the three
+> Current architecture as of 2026-07-05, oriented toward adding LoRA PEFT for the three
 > tasks: **text2sql**, **sql2nosql**, **nosql2doc**.
 
 ## 1. Module Overview

@@ -217,5 +217,4 @@ Documentation quality improves steadily with training scale. LoRA v3 is the firs
 - **Text2SQL:** Execution accuracy follows a clear ladder: **12% → 20% → 34% → 54%**. Exact match accelerates under v3 (38%), suggesting full-dataset training helps the model memorize query patterns, not just structure.
 - **SQL2NoSQL:** v3 is the breakout run. Execution accuracy **74%** and exact match **58%** show that structural learning (0.93 similarity) now reliably translates to correct MongoDB result sets.
 - **Documentation:** Judge scores remain the most human-interpretable signal; v3’s **6.4** indicates generated docs are approaching acceptable quality, though there is still headroom below a perfect 10.
-- **v3 workflow:** Adapters were trained on Kaggle (`notebooks/kaggle_train_lora.ipynb`), pushed to Hugging Face Hub, downloaded locally, and evaluated with `run_baseline_eval.py --version v3`. This validates the cloud-train / local-eval pipeline for production-scale LoRA runs.
 

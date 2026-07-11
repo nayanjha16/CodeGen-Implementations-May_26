@@ -120,3 +120,62 @@ def test_intent_override(client: TestClient) -> None:
     assert response.status_code == 200
     assert response.json()["codegen_routing"]["method"] == "override"
     assert response.json()["codegen_routing"]["intent"] == "sql2nosql"
+
+
+def test_chat_accepts_cursor_content_parts(client: TestClient) -> None:
+    """Cursor sends multimodal content arrays, not plain strings."""
+    response = client.post(
+        "/v1/chat/completions",
+        json={
+            "model": "codegen-multi-adapter",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "<open_and_recently_viewed_files>\n"
+                                "User currently doesn't have any open files.\n"
+                                "</open_and_recently_viewed_files>"
+                            ),
+                        },
+                        {
+                            "type": "text",
+                            "text": (
+                                "<user_query>\n"
+                                "Write a SQL query to list customer names.\n\n"
+                                "Schema:\ncustomers(id, name)\n\nSQL:\n"
+                                "</user_query>"
+                            ),
+                        },
+                    ],
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["codegen_routing"]["intent"] == "text2sql"
+    assert response.json()["choices"][0]["message"]["content"] == "SELECT 1;"
+
+
+def test_chat_streaming(client: TestClient) -> None:
+    response = client.post(
+        "/v1/chat/completions",
+        json={
+            "model": "codegen-multi-adapter",
+            "stream": True,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Write a SQL query to list customers.\n\nSchema:\nc(id)\n\nSQL:",
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200, response.text
+    assert "text/event-stream" in response.headers.get("content-type", "")
+    body = response.text
+    assert "chat.completion.chunk" in body
+    assert "SELECT 1;" in body
+    assert "data: [DONE]" in body

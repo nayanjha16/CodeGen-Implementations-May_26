@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 import uuid
+from collections.abc import Iterator
 from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from hf_deploy import CLARIFY_INTENT, INTENTS
 from hf_deploy.adapters.router import MultiAdapterRouter
@@ -29,6 +32,12 @@ from hf_deploy.config import load_manifest
 from hf_deploy.prompt import CLARIFY_MESSAGE, format_generation_prompt
 
 logger = logging.getLogger("hf_deploy.api")
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    )
+logger.setLevel(logging.INFO)
 
 _manifest: dict[str, Any] = {}
 _router: MultiAdapterRouter | None = None
@@ -64,6 +73,129 @@ def _build_services(manifest: dict[str, Any]) -> tuple[MultiAdapterRouter, Inten
     )
     router = MultiAdapterRouter.from_manifest(manifest)
     return router, classifier
+
+
+def _resolve_routing(
+    body: ChatCompletionRequest,
+    user_text: str,
+) -> IntentMetadata:
+    router = get_router()
+    if body.intent:
+        intent = body.intent.strip().lower()
+        if intent not in INTENTS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid intent '{body.intent}'. Expected one of: {list(INTENTS)}",
+            )
+        return IntentMetadata(
+            intent=intent,
+            confidence=1.0,
+            method="override",
+            scores={name: 1.0 if name == intent else 0.0 for name in INTENTS},
+            adapter=intent,
+            checkpoint_version=router.checkpoint_version,
+        )
+
+    result = get_classifier().classify(user_text)
+    return IntentMetadata(
+        intent=result.intent,
+        confidence=result.confidence,
+        method=result.method,
+        scores=result.scores,
+        adapter=result.intent if result.intent in INTENTS else None,
+        checkpoint_version=router.checkpoint_version,
+    )
+
+
+def _generate_assistant_text(
+    body: ChatCompletionRequest,
+    user_text: str,
+    routing: IntentMetadata,
+) -> tuple[str, str]:
+    """Return (assistant_text, response_model_id)."""
+    if routing.intent == CLARIFY_INTENT:
+        return CLARIFY_MESSAGE, body.model
+
+    prompt = format_generation_prompt(routing.intent, user_text)
+    try:
+        output = get_router().generate(
+            prompt,
+            intent=routing.intent,
+            max_new_tokens=body.max_tokens,
+            temperature=body.temperature,
+            top_p=body.top_p,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Generation failed")
+        raise HTTPException(status_code=500, detail=f"Generation failed: {exc}") from exc
+    return output, f"codegen-{routing.intent}"
+
+
+def _sse_chunk(
+    *,
+    completion_id: str,
+    created: int,
+    model: str,
+    delta: dict[str, Any],
+    finish_reason: str | None = None,
+) -> str:
+    payload = {
+        "id": completion_id,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": model,
+        "choices": [
+            {
+                "index": 0,
+                "delta": delta,
+                "finish_reason": finish_reason,
+            }
+        ],
+    }
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def _iter_sse(
+    *,
+    completion_id: str,
+    created: int,
+    model: str,
+    content: str,
+) -> Iterator[str]:
+    """OpenAI-compatible SSE. Content is generated fully, then emitted in chunks."""
+    yield _sse_chunk(
+        completion_id=completion_id,
+        created=created,
+        model=model,
+        delta={"role": "assistant", "content": ""},
+    )
+    # Emit in modest pieces so Cursor shows progressive output.
+    step = 48
+    if not content:
+        yield _sse_chunk(
+            completion_id=completion_id,
+            created=created,
+            model=model,
+            delta={"content": ""},
+        )
+    else:
+        for i in range(0, len(content), step):
+            yield _sse_chunk(
+                completion_id=completion_id,
+                created=created,
+                model=model,
+                delta={"content": content[i : i + step]},
+            )
+    yield _sse_chunk(
+        completion_id=completion_id,
+        created=created,
+        model=model,
+        delta={},
+        finish_reason="stop",
+    )
+    yield "data: [DONE]\n\n"
 
 
 @asynccontextmanager
@@ -128,79 +260,62 @@ def list_models() -> ModelList:
     return ModelList(data=cards)
 
 
-@app.post("/v1/chat/completions", response_model=ChatCompletionResponse)
-def chat_completions(body: ChatCompletionRequest) -> ChatCompletionResponse:
-    if body.stream:
-        raise HTTPException(status_code=400, detail="Streaming is not supported yet.")
-
+@app.post("/v1/chat/completions", response_model=None)
+def chat_completions(
+    body: ChatCompletionRequest,
+) -> ChatCompletionResponse | StreamingResponse:
     router = get_router()
-    classifier = get_classifier()
+    _ = router  # ensure initialized
     user_text = _extract_user_text(body.messages)
-
-    if body.intent:
-        intent = body.intent.strip().lower()
-        if intent not in INTENTS:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid intent '{body.intent}'. Expected one of: {list(INTENTS)}",
-            )
-        routing = IntentMetadata(
-            intent=intent,
-            confidence=1.0,
-            method="override",
-            scores={name: 1.0 if name == intent else 0.0 for name in INTENTS},
-            adapter=intent,
-            checkpoint_version=router.checkpoint_version,
-        )
-    else:
-        result = classifier.classify(user_text)
-        routing = IntentMetadata(
-            intent=result.intent,
-            confidence=result.confidence,
-            method=result.method,
-            scores=result.scores,
-            adapter=result.intent if result.intent in INTENTS else None,
-            checkpoint_version=router.checkpoint_version,
-        )
-
+    routing = _resolve_routing(body, user_text)
     created = int(time.time())
     completion_id = f"chatcmpl-{uuid.uuid4().hex[:24]}"
+    output, model_id = _generate_assistant_text(body, user_text, routing)
 
-    if routing.intent == CLARIFY_INTENT:
-        return ChatCompletionResponse(
-            id=completion_id,
-            created=created,
-            model=body.model,
-            choices=[
-                ChatCompletionChoice(
-                    index=0,
-                    message=ChatMessage(role="assistant", content=CLARIFY_MESSAGE),
-                    finish_reason="stop",
-                )
-            ],
-            usage=UsageInfo(),
-            codegen_routing=routing,
-        )
+    logger.info(
+        "/v1/chat/completions request id=%s stream=%s model=%s intent=%s "
+        "confidence=%.3f method=%s user_chars=%d",
+        completion_id,
+        body.stream,
+        body.model,
+        routing.intent,
+        routing.confidence,
+        routing.method,
+        len(user_text),
+    )
+    logger.info(
+        "/v1/chat/completions user_text id=%s\n%s",
+        completion_id,
+        user_text[:2000],
+    )
+    logger.info(
+        "/v1/chat/completions response id=%s model=%s chars=%d\n%s",
+        completion_id,
+        model_id,
+        len(output),
+        output[:4000],
+    )
 
-    prompt = format_generation_prompt(routing.intent, user_text)
-    try:
-        output = router.generate(
-            prompt,
-            intent=routing.intent,
-            max_new_tokens=body.max_tokens,
-            temperature=body.temperature,
-            top_p=body.top_p,
+    if body.stream:
+        return StreamingResponse(
+            _iter_sse(
+                completion_id=completion_id,
+                created=created,
+                model=model_id,
+                content=output,
+            ),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Codegen-Intent": routing.intent,
+            },
         )
-    except FileNotFoundError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
-    except Exception as exc:
-        logger.exception("Generation failed")
-        raise HTTPException(status_code=500, detail=f"Generation failed: {exc}") from exc
 
     return ChatCompletionResponse(
         id=completion_id,
         created=created,
-        model=f"codegen-{routing.intent}",
+        model=model_id,
         choices=[
             ChatCompletionChoice(
                 index=0,

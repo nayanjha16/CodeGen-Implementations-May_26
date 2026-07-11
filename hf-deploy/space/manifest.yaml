@@ -1,0 +1,30 @@
+# Hugging Face deployment manifest — Space defaults (hub adapters).
+base_model: Salesforce/codegen-350M-multi
+checkpoint_version: v3
+adapter_source: hub
+checkpoints_root: models/checkpoints
+
+adapters:
+  text2sql: text2sql
+  sql2nosql: sql2nosql
+  nosql2doc: nosql2doc
+
+hub:
+  org: care2achieve
+  repos:
+    text2sql: codegen-350M-text2sql-lora
+    sql2nosql: codegen-350M-sql2nosql-lora
+    nosql2doc: codegen-350M-nosql2doc-lora
+  space_repo: codegen-multi-adapter
+
+generation:
+  max_new_tokens: 256
+  documentation_max_new_tokens: 96
+  temperature: 0.2
+  top_p: 0.95
+  do_sample: false
+  decoding_strategy: greedy
+
+classifier:
+  confidence_threshold: 0.45
+  prefer_rules: true

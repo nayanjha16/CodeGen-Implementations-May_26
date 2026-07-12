@@ -31,12 +31,15 @@ Install all the necessary packages
 
 #from google.colab import userdata
 import os
+import sys  # Added for stdout redirection
+from datetime import datetime  # Added for timestamps
 # Force CPU to wait for GPU
 #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 # Described debug output from GPU
 #os.environ["TORCH_USE_CUDA_DSA"] = "1"
-# Force on single GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# Note: CUDA_VISIBLE_DEVICES is not hardcoded. Set it externally before running:
+#   Windows: set CUDA_VISIBLE_DEVICES=0 && python script.py -b
+#   Linux: CUDA_VISIBLE_DEVICES=0 python script.py -b
 
 import gc #Added for memory cleanup
 #from dotenv import load_dotenv
@@ -272,18 +275,31 @@ class CodeDocumentationGenerator(QwenModelBase):
       # Ensure input doesn't exceed model's max position embeddings
       max_pos = getattr(self._model.config, 'max_position_embeddings', 32768)
       input_len = model_inputs.input_ids.shape[1]
+      # Reserve space for generation output (at least 512 tokens for output)
+      max_input_len = max_pos - 512
       if input_len >= max_pos:
           print(f"Warning: Input length {input_len} >= model max {max_pos}. Truncating.")
+          print(f"Skipping documentation generation to avoid exceptions")
           truncated = {k: v[:, :max_pos-1] for k, v in model_inputs.items() if k in ['input_ids', 'attention_mask']}
           model_inputs = BatchEncoding(truncated)
+          return "Error: Documentation generation failed"
+      elif input_len > max_input_len:
+          # Truncate input to leave room for generation
+          print(f"Warning: Input length {input_len} too large for generation. Truncating to {max_input_len}.")
+          truncated = {k: v[:, :max_input_len] for k, v in model_inputs.items() if k in ['input_ids', 'attention_mask']}
+          model_inputs = BatchEncoding(truncated)
+          print(f"Skipping documentation generation to avoid exceptions")
+          return "Error: Documentation generation failed"
 
       # Use safer generation parameters to avoid probability tensor errors
+      # Cap max_new_tokens to prevent extremely long outputs (max model context is 32768)
+      effective_max_tokens = min(max_length, 4096)
       generated_ids = None
       if True: #try:
         with torch.no_grad():
             generated_ids = self._model.generate(
                 **model_inputs,
-                max_new_tokens=max_length,
+                max_new_tokens=effective_max_tokens,
                 do_sample=False,  # Use greedy decoding for stability
                 temperature=1.0,
             )
@@ -345,6 +361,16 @@ class CodeDocumentationGenerator(QwenModelBase):
       if not decoded:
           return ""
       response = decoded[0]
+      
+      # Validate and truncate response if it's excessively long (prevent memory issues)
+      # Estimate token count by splitting on whitespace as a rough approximation
+      estimated_tokens = len(response.split())
+      if estimated_tokens > 8000:
+          print(f"Warning: Generated documentation is very long ({estimated_tokens} tokens). Truncating to 8000 tokens.")
+          # Truncate to approximately 8000 tokens worth of text
+          words = response.split()[:8000]
+          response = ' '.join(words)
+      
       return response
 
 class QwenCodeGenerator(QwenModelBase):
@@ -2029,6 +2055,13 @@ class BaselineData(metaclass=SingletonMeta):
             print(f"  Generating documentation for {original_hexsha[:8]}...")
             # Generate documentation for Phase 1
             generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
+            
+            # Validate documentation length to prevent memory issues
+            doc_token_estimate = len(generated_doc_phase1.split())
+            if doc_token_estimate > 8000:
+                print(f"  Warning: Documentation too long ({doc_token_estimate} tokens). Skipping this record.")
+                continue
+            
             #generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
 
             print(f"  Generating code from documentation for {language}...")
@@ -2179,15 +2212,13 @@ class BaselineData(metaclass=SingletonMeta):
                 )
 
             # Option 2: Clear GPU cache after each record to prevent memory fragmentation
-            # DISABLED: CUDA cache clearing and garbage collection commented out
-            # if torch.cuda.is_available():
-            #     try:
-            #         print("\tClear GPU cache after each record to prevent memory fragmentation")
-            #         torch.cuda.empty_cache()
-            #         gc.collect()
-            #     except RuntimeError:
-            #         print("GPU is in bad state, skip cache clearing")
-            #         pass
+            # Only clear cache in validation phase (update_cache=False) to prevent OOM
+            if not update_cache and torch.cuda.is_available():
+                try:
+                    torch.cuda.empty_cache()
+                    gc.collect()
+                except RuntimeError:
+                    pass  # GPU in bad state, continue anyway
 
             print(f"\tRecording result: 'hexsha': {original_hexsha[:10]}, 'nl_pl_best_ast_score': {best_ast_score_nl_pl:0.4f}, 'nl_pl_best_graphcodebert_score': {best_graphcodebert_score_nl_pl:0.4f}, 'nl_pl_best_average_score': {best_average_score_nl_pl:0.4f}")
 
@@ -2334,7 +2365,14 @@ Examples:
   python codegen_30.py -b -n 50 -c     # Clean cache and run baseline with 50 records
   python codegen_30.py -t -n 100       # Run LORA training with 100 records
   python codegen_30.py -v -n 100       # Run validation with 100 records
-  python codegen_30.py -b -t -v        # Run all phases with default records
+
+Multi-GPU Usage (run two separate instances):
+  Windows:
+    set CUDA_VISIBLE_DEVICES=0 && python codegen_30.py -b -n 100
+    set CUDA_VISIBLE_DEVICES=1 && python codegen_30.py -t -n 100
+  Linux:
+    CUDA_VISIBLE_DEVICES=0 python codegen_30.py -b -n 100
+    CUDA_VISIBLE_DEVICES=1 python codegen_30.py -t -n 100
 """
 )
 parser.add_argument(
@@ -2365,11 +2403,60 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Default to all phases if none specified
-run_baseline = args.baseline or (not args.baseline and not args.train and not args.validate)
+# Determine which phases to run
+run_baseline = args.baseline
 run_training = args.train
 run_validation = args.validate
 purge_cache = False
+
+# Validate that exactly one option is specified
+options_count = sum([run_baseline, run_training, run_validation])
+if options_count > 1:
+    print("Error: Only one option can be specified at a time. Use -b, -t, or -v (not multiple).")
+    sys.exit(1)
+elif options_count == 0:
+    # Default to baseline if no options specified (for backward compatibility)
+    run_baseline = True
+
+# Determine log file based on the active option
+log_file = None
+if run_baseline:
+    log_file = 'baseline.log'
+elif run_training:
+    log_file = 'training.log'
+elif run_validation:
+    log_file = 'validation.log'
+
+# Create a Tee class to duplicate output to both console and log file
+class Tee:
+    def __init__(self, *files):
+        self.files = files
+    
+    def write(self, text):
+        for f in self.files:
+            f.write(text)
+            f.flush()
+    
+    def flush(self):
+        for f in self.files:
+            f.flush()
+    
+    def isatty(self):
+        return False
+    
+    def close(self):
+        for f in reversed(self.files):
+            f.close()
+
+# Redirect stdout to both console and log file
+if log_file:
+    log_handle = open(log_file, 'w', encoding='utf-8')
+    original_stdout = sys.stdout
+    sys.stdout = Tee(sys.stdout, log_handle)
+    # Print start timestamp
+    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Log started at: {start_time}")
+
 # Handle clean option - clean before running, not exit
 if args.clean and run_baseline:
     import shutil
@@ -2406,13 +2493,13 @@ print(f"  - Purge Cached Dataset      : {'True' if purge_cache else 'False'}")
 print("=" * 50)
 
 # Dataset split configuration (defined before conditional blocks so all phases can use them)
-# - Records 0 to MAX_DATASET_SIZE/3-1: Baseline computation
-# - Records MAX_DATASET_SIZE/3 to MAX_DATASET_SIZE*2/3-1: LORA training
-# - Records MAX_DATASET_SIZE*2/3 to MAX_DATASET_SIZE-1: LORA validation
+# - Records 0 to MAX_DATASET_SIZE/4-1: Baseline computation (25%)
+# - Records MAX_DATASET_SIZE/4 to MAX_DATASET_SIZE*3/4-1: LORA training (50%)
+# - Records MAX_DATASET_SIZE*3/4 to MAX_DATASET_SIZE-1: LORA validation (25%)
 MAX_DATASET_SIZE = args.num_records
-MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 3
-MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 3
-MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 3
+MAX_RECORDS_BASELINE = MAX_DATASET_SIZE // 4
+MAX_RECORDS_LORA_TRAINING = MAX_DATASET_SIZE // 2
+MAX_RECORDS_LORA_VALIDATION = MAX_DATASET_SIZE // 4
 
 # Define LORA adapter save directories (defined once, used for both saving and loading)
 LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
@@ -3186,3 +3273,13 @@ if run_validation:
 
     print("\n" + "="*30 + "\n")
     print(pl1pl2_summary)
+
+# Print end timestamp before restoring stdout
+if log_file:
+    end_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"Log ended at: {end_time}")
+
+# Restore stdout and close log file
+if log_file:
+    sys.stdout = original_stdout
+    log_handle.close()

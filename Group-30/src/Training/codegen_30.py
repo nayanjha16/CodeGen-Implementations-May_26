@@ -2010,241 +2010,249 @@ class BaselineData(metaclass=SingletonMeta):
         end_index = total_cached if num_records is None else min(start_index + num_records, total_cached)
 
         for i in range(start_index, end_index):
-            if num_records is not None and processed_count >= num_records:
-                break
+            try:
+                if num_records is not None and processed_count >= num_records:
+                    break
 
-            record = self._cached_dataset[i]
+                record = self._cached_dataset[i]
 
-            # Apply language filter if specified
-            if language_filter is not None:
-                record_lang = record.get('language', '').lower()
-                if language_filter.lower() not in ['cpp', 'c++']:
-                    language_filter_norm = language_filter.lower()
-                else:
-                    language_filter_norm = 'cpp'
-                if record_lang != language_filter_norm and not (language_filter_norm == 'cpp' and record_lang in ['cpp', 'c++']):
+                # Apply language filter if specified
+                if language_filter is not None:
+                    record_lang = record.get('language', '').lower()
+                    if language_filter.lower() not in ['cpp', 'c++']:
+                        language_filter_norm = language_filter.lower()
+                    else:
+                        language_filter_norm = 'cpp'
+                    if record_lang != language_filter_norm and not (language_filter_norm == 'cpp' and record_lang in ['cpp', 'c++']):
+                        continue
+
+                # Clear unused CUDA memory before processing each record
+                # DISABLED: CUDA cache clearing and garbage collection commented out
+                # if torch.cuda.is_available():
+                #     torch.cuda.empty_cache()
+                #     gc.collect()
+
+                if not record.get('is_processable_code', True):
+                    print(f"compute baseline, record no processable")
+                    continue # Skip unprocessable records
+
+                # Debug: print language distribution
+                if len(results) == 0:
+                    print(f"DEBUG: First record language: '{record.get('language', 'unknown')}', is_processable: {record.get('is_processable_code', True)}")
+
+                processed_count += 1
+                print(f"Processing record {processed_count}/{num_records if num_records else 'all'} (language: {record.get('language', 'unknown')})...")
+
+                original_hexsha = record['hexsha']
+                original_code = record['content']
+                language = record['language']
+
+                # --- Phase 1: NL -> PL1 (Documentation to Code) --- (NL->PL1 for the record's actual language)
+                best_ast_score_nl_pl = -1.0
+                best_graphcodebert_score_nl_pl = -1.0
+                best_average_score_nl_pl = -1.0
+                best_documentation = "" # This stores documentation for the best NL->PL1 result
+
+                print(f"  Generating documentation for {original_hexsha[:8]}...")
+                # Generate documentation for Phase 1
+                generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
+
+                # Validate documentation length to prevent memory issues
+                doc_token_estimate = len(generated_doc_phase1.split())
+                if doc_token_estimate > 8000:
+                    print(f"  Warning: Documentation too long ({doc_token_estimate} tokens). Skipping this record.")
                     continue
 
-            # Clear unused CUDA memory before processing each record
-            # DISABLED: CUDA cache clearing and garbage collection commented out
-            # if torch.cuda.is_available():
-            #     torch.cuda.empty_cache()
-            #     gc.collect()
+                #generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
 
-            if not record.get('is_processable_code', True):
-                print(f"compute baseline, record no processable")
-                continue # Skip unprocessable records
+                print(f"  Generating code from documentation for {language}...")
+                # Generate code from the generated documentation using the base model
+                #generated_code_phase1 = self.__generate_code_from_model(generated_doc_phase1, language)
+                generated_code_phase1 = self._qwen_code_generator._generate_code_from_model(generated_doc_phase1, language, is_py_to_cpp=False)
+                print(f"*************\nDocumentation:\n{generated_doc_phase1}")
+                print(f"*************\nCode:\n{generated_code_phase1}")
+                print("***************")
 
-            # Debug: print language distribution
-            if len(results) == 0:
-                print(f"DEBUG: First record language: '{record.get('language', 'unknown')}', is_processable: {record.get('is_processable_code', True)}")
+                if not generated_code_phase1.strip():
+                    print(f"  Warning: Empty generated code, skipping...")
+                    continue
 
-            processed_count += 1
-            print(f"Processing record {processed_count}/{num_records if num_records else 'all'} (language: {record.get('language', 'unknown')})...")
+                print(f"  Comparing ASTs...")
+                try:
+                    original_ast = self._ast_processor.generate_ast(original_code, language)
+                    generated_ast_phase1 = self._ast_processor.generate_ast(generated_code_phase1, language)
+                    ast_similarity_phase1 = self._ast_processor.compare_ast(original_ast, generated_ast_phase1)
+                except Exception as e:
+                    print(f"  AST comparison error: {e}")
+                    ast_similarity_phase1 = 0.0
 
-            original_hexsha = record['hexsha']
-            original_code = record['content']
-            language = record['language']
+                print(f"  Computing semantic similarity GraphCodeBERTScore...")
+                try:
+                    semantic_similarity_phase1 = self._graphcodebert_scorer.score(original_code, generated_code_phase1)
+                except RuntimeError as e:
+                    print(f"  GraphCodeBERTScore comparison CUDA error: {e}")
+                    semantic_similarity_phase1 = 0.0
+                except Exception as e:
+                    print(f"  GraphCodeBERTScore comparison error: {e}")
+                    semantic_similarity_phase1 = 0.0
 
-            # --- Phase 1: NL -> PL1 (Documentation to Code) --- (NL->PL1 for the record's actual language)
-            best_ast_score_nl_pl = -1.0
-            best_graphcodebert_score_nl_pl = -1.0
-            best_average_score_nl_pl = -1.0
-            best_documentation = "" # This stores documentation for the best NL->PL1 result
+                current_average_score_phase1 = (ast_similarity_phase1 + semantic_similarity_phase1) / 2.0
+                print(f"\t AST Similarity Score: {ast_similarity_phase1:0.4f}, GraphCodeBERTScore: {semantic_similarity_phase1:0.4f}, Average: {current_average_score_phase1:0.4f}")
 
-            print(f"  Generating documentation for {original_hexsha[:8]}...")
-            # Generate documentation for Phase 1
-            generated_doc_phase1 = self._documentation_generator.generate_documentation(original_code, max_length=256)
-            
-            # Validate documentation length to prevent memory issues
-            doc_token_estimate = len(generated_doc_phase1.split())
-            if doc_token_estimate > 8000:
-                print(f"  Warning: Documentation too long ({doc_token_estimate} tokens). Skipping this record.")
-                continue
-            
-            #generated_doc_phase1= self._ast_processor.generate_ast_documentation(original_code, language)
+                if current_average_score_phase1 > best_average_score_nl_pl:
+                    best_average_score_nl_pl = current_average_score_phase1
+                    best_ast_score_nl_pl = ast_similarity_phase1
+                    best_graphcodebert_score_nl_pl = semantic_similarity_phase1
+                    best_documentation = generated_doc_phase1 # Store the doc that led to the best score
 
-            print(f"  Generating code from documentation for {language}...")
-            # Generate code from the generated documentation using the base model
-            #generated_code_phase1 = self.__generate_code_from_model(generated_doc_phase1, language)
-            generated_code_phase1 = self._qwen_code_generator._generate_code_from_model(generated_doc_phase1, language, is_py_to_cpp=False)
-            print(f"*************\nDocumentation:\n{generated_doc_phase1}")
-            print(f"*************\nCode:\n{generated_code_phase1}")
-            print("***************")
+                # Initialize Phase 2 scores to None
+                best_ast_score_nl_pl1_pl2 = None
+                best_gcb_score_nl_pl1_pl2 = None
+                best_avg_score_nl_pl1_pl2 = None
 
-            if not generated_code_phase1.strip():
-                print(f"  Warning: Empty generated code, skipping...")
-                continue
-
-            print(f"  Comparing ASTs...")
-            try:
-                original_ast = self._ast_processor.generate_ast(original_code, language)
-                generated_ast_phase1 = self._ast_processor.generate_ast(generated_code_phase1, language)
-                ast_similarity_phase1 = self._ast_processor.compare_ast(original_ast, generated_ast_phase1)
-            except Exception as e:
-                print(f"  AST comparison error: {e}")
-                ast_similarity_phase1 = 0.0
-
-            print(f"  Computing semantic similarity GraphCodeBERTScore...")
-            try:
-                semantic_similarity_phase1 = self._graphcodebert_scorer.score(original_code, generated_code_phase1)
-            except RuntimeError as e:
-                print(f"  GraphCodeBERTScore comparison CUDA error: {e}")
-                semantic_similarity_phase1 = 0.0
-            except Exception as e:
-                print(f"  GraphCodeBERTScore comparison error: {e}")
-                semantic_similarity_phase1 = 0.0
-
-            current_average_score_phase1 = (ast_similarity_phase1 + semantic_similarity_phase1) / 2.0
-            print(f"\t AST Similarity Score: {ast_similarity_phase1:0.4f}, GraphCodeBERTScore: {semantic_similarity_phase1:0.4f}, Average: {current_average_score_phase1:0.4f}")
-
-            if current_average_score_phase1 > best_average_score_nl_pl:
-                best_average_score_nl_pl = current_average_score_phase1
-                best_ast_score_nl_pl = ast_similarity_phase1
-                best_graphcodebert_score_nl_pl = semantic_similarity_phase1
-                best_documentation = generated_doc_phase1 # Store the doc that led to the best score
-
-            # Initialize Phase 2 scores to None
-            best_ast_score_nl_pl1_pl2 = None
-            best_gcb_score_nl_pl1_pl2 = None
-            best_avg_score_nl_pl1_pl2 = None
-
-            # --- Phase 2: NL -> PL1 -> PL2 (Documentation -> Python -> C++) for C++ records ---
-            if language.lower() in ['c++', 'cpp']:
-                current_best_avg_phase2 = -1.0
-                temp_best_ast_phase2 = 0.0
-                temp_best_gcb_phase2 = 0.0
-
-                if not best_documentation.strip(): # Skip phase 2 if no good doc was found in phase 1
-                    # print(f"Skipping Phase 2 for {original_hexsha} due to no valid documentation from Phase 1.")
-                    # Set Phase 2 scores to 0.0 when no valid documentation is available
-                    current_best_avg_phase2 = 0.0
+                # --- Phase 2: NL -> PL1 -> PL2 (Documentation -> Python -> C++) for C++ records ---
+                if language.lower() in ['c++', 'cpp']:
+                    current_best_avg_phase2 = -1.0
                     temp_best_ast_phase2 = 0.0
                     temp_best_gcb_phase2 = 0.0
-                else:
-                    best_llm_judge_score_for_intermediate_python = -1.0
-                    best_generated_python_code_for_phase2 = ""
 
-                    # Step 1: Generate C++ code from best_documentation (from Phase 1) and use LLM Judge to pick the best
-                    for _ in range(num_tries):
-                        import re
-                        documentation_for_pl2 = re.sub(r'cpp|c\+\+', 'Python', best_documentation, flags=re.IGNORECASE)
-                        #generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
-                        generated_python_candidate = self._qwen_code_generator._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
-                        if generated_python_candidate.strip():
-                            llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
-                            print(f"LLM Judge Score: {llm_judge_current_score}")
-                            if llm_judge_current_score > best_llm_judge_score_for_intermediate_python:
-                                best_llm_judge_score_for_intermediate_python = llm_judge_current_score
-                                best_generated_python_code_for_phase2 = generated_python_candidate
-                            if llm_judge_current_score <= 0.3:
-                                print(f"----------\nInput to LLM Judge\nDocumentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
-
-                    generated_python_code_from_doc = best_generated_python_code_for_phase2
-
-                    if not generated_python_code_from_doc.strip():
-                        # Skip Phase 2 but still record Phase 1 results
-                        # Set Phase 2 scores to 0.0 when no valid Python code is generated
+                    if not best_documentation.strip(): # Skip phase 2 if no good doc was found in phase 1
+                        # print(f"Skipping Phase 2 for {original_hexsha} due to no valid documentation from Phase 1.")
+                        # Set Phase 2 scores to 0.0 when no valid documentation is available
                         current_best_avg_phase2 = 0.0
                         temp_best_ast_phase2 = 0.0
                         temp_best_gcb_phase2 = 0.0
                     else:
-                        #for _ in range(num_tries): This we do not have to do thrice
-                        if True:
-                            # Step 2: Generate C++ code from the best generated Python code
-                            #final_generated_cpp_code = self._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
-                            final_generated_cpp_code = self._qwen_code_generator._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
+                        best_llm_judge_score_for_intermediate_python = -1.0
+                        best_generated_python_code_for_phase2 = ""
 
-                            if not final_generated_cpp_code.strip():
-                                # Still record Phase 1 results even if Phase 2 fails
-                                # Set Phase 2 scores to 0.0 when no valid C++ code is generated
-                                current_best_avg_phase2 = 0.0
-                                temp_best_ast_phase2 = 0.0
-                                temp_best_gcb_phase2 = 0.0
-                            else:
-                                # Step 3: Compare final generated Python code with original Python code
-                                try:
-                                    original_ast = self._ast_processor.generate_ast(original_code, language)
-                                    generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_cpp_code, language)
-                                    ast_similarity_phase2 = self._ast_processor.compare_ast(original_ast, generated_ast_phase2)
-                                except Exception as e:
-                                    print(f"Forcing AST Similarity to : AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
-                                    ast_similarity_phase2 = 0.0
+                        # Step 1: Generate C++ code from best_documentation (from Phase 1) and use LLM Judge to pick the best
+                        for _ in range(num_tries):
+                            import re
+                            documentation_for_pl2 = re.sub(r'cpp|c\+\+', 'Python', best_documentation, flags=re.IGNORECASE)
+                            #generated_python_candidate = self._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
+                            generated_python_candidate = self._qwen_code_generator._generate_code_from_model(documentation_for_pl2, 'python',is_py_to_cpp=False)
+                            if generated_python_candidate.strip():
+                                llm_judge_current_score = self._llm_judge.qwen_code_judge(documentation_for_pl2, generated_python_candidate)
+                                print(f"LLM Judge Score: {llm_judge_current_score}")
+                                if llm_judge_current_score > best_llm_judge_score_for_intermediate_python:
+                                    best_llm_judge_score_for_intermediate_python = llm_judge_current_score
+                                    best_generated_python_code_for_phase2 = generated_python_candidate
+                                if llm_judge_current_score <= 0.3:
+                                    print(f"----------\nInput to LLM Judge\nDocumentation{documentation_for_pl2}\n------------\nCode:{generated_python_candidate}")
 
-                                try:
-                                    semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_cpp_code)
-                                except RuntimeError as e:
-                                    print(f"Forcing  GCB comparison for {original_hexsha} (Phase 2) to 0 due to CUDA error: {e}")
-                                    semantic_similarity_phase2 = 0.0
-                                except Exception as e:
-                                    print(f"Forcing GCB comparison for {original_hexsha} (Phase 2) to 0 due to error: {e}")
-                                    semantic_similarity_phase2 = 0.0
+                        generated_python_code_from_doc = best_generated_python_code_for_phase2
 
-                                current_average_score_phase2 = (ast_similarity_phase2 + semantic_similarity_phase2) / 2.0
-
-                                if current_average_score_phase2 > current_best_avg_phase2:
-                                    current_best_avg_phase2 = current_average_score_phase2
-                                    temp_best_ast_phase2 = ast_similarity_phase2
-                                    temp_best_gcb_phase2 = semantic_similarity_phase2
-
-                        if current_best_avg_phase2 > -1.0: # If at least one successful generation occurred in Phase 2
-                            best_ast_score_nl_pl1_pl2 = temp_best_ast_phase2
-                            best_gcb_score_nl_pl1_pl2 = temp_best_gcb_phase2
-                            best_avg_score_nl_pl1_pl2 = current_best_avg_phase2
+                        if not generated_python_code_from_doc.strip():
+                            # Skip Phase 2 but still record Phase 1 results
+                            # Set Phase 2 scores to 0.0 when no valid Python code is generated
+                            current_best_avg_phase2 = 0.0
+                            temp_best_ast_phase2 = 0.0
+                            temp_best_gcb_phase2 = 0.0
                         else:
-                            # No valid Phase 2 results, set scores to 0.0
-                            best_ast_score_nl_pl1_pl2 = 0.0
-                            best_gcb_score_nl_pl1_pl2 = 0.0
-                            best_avg_score_nl_pl1_pl2 = 0.0
+                            #for _ in range(num_tries): This we do not have to do thrice
+                            if True:
+                                # Step 2: Generate C++ code from the best generated Python code
+                                #final_generated_cpp_code = self._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
+                                final_generated_cpp_code = self._qwen_code_generator._generate_code_from_model(generated_python_code_from_doc, 'cpp', is_py_to_cpp=True)
 
-            # Update the FilteredDataset's internal caches with the best results from both phases
-            # Only update if update_cache is True (skip for validation runs to avoid overwriting)
-            if best_average_score_nl_pl > -1.0 and update_cache: # Only update if Phase 1 was successful and caching enabled
-                self._filtered_dataset.update_documentation(original_hexsha, best_documentation)
-                self._filtered_dataset.update_scores(
-                    record_identifier=original_hexsha,
-                    ast_score=best_ast_score_nl_pl,
-                    graphcodebert_score=best_graphcodebert_score_nl_pl,
-                    average_score=best_average_score_nl_pl,
-                    python_translation_ast_score=best_ast_score_nl_pl1_pl2,
-                    python_translation_gcb_score=best_gcb_score_nl_pl1_pl2,
-                    python_translation_average_score=best_avg_score_nl_pl1_pl2
-                )
+                                if not final_generated_cpp_code.strip():
+                                    # Still record Phase 1 results even if Phase 2 fails
+                                    # Set Phase 2 scores to 0.0 when no valid C++ code is generated
+                                    current_best_avg_phase2 = 0.0
+                                    temp_best_ast_phase2 = 0.0
+                                    temp_best_gcb_phase2 = 0.0
+                                else:
+                                    # Step 3: Compare final generated Python code with original Python code
+                                    try:
+                                        original_ast = self._ast_processor.generate_ast(original_code, language)
+                                        generated_ast_phase2 = self._ast_processor.generate_ast(final_generated_cpp_code, language)
+                                        ast_similarity_phase2 = self._ast_processor.compare_ast(original_ast, generated_ast_phase2)
+                                    except Exception as e:
+                                        print(f"Forcing AST Similarity to : AST comparison for {original_hexsha} (Phase 2) due to error: {e}")
+                                        ast_similarity_phase2 = 0.0
 
-            # Option 2: Clear GPU cache after each record to prevent memory fragmentation
-            # Only clear cache in validation phase (update_cache=False) to prevent OOM
-            if not update_cache and torch.cuda.is_available():
-                try:
-                    torch.cuda.empty_cache()
-                    gc.collect()
-                except RuntimeError:
-                    pass  # GPU in bad state, continue anyway
+                                    try:
+                                        semantic_similarity_phase2 = self._graphcodebert_scorer.score(original_code, final_generated_cpp_code)
+                                    except RuntimeError as e:
+                                        print(f"Forcing  GCB comparison for {original_hexsha} (Phase 2) to 0 due to CUDA error: {e}")
+                                        semantic_similarity_phase2 = 0.0
+                                    except Exception as e:
+                                        print(f"Forcing GCB comparison for {original_hexsha} (Phase 2) to 0 due to error: {e}")
+                                        semantic_similarity_phase2 = 0.0
 
-            print(f"\tRecording result: 'hexsha': {original_hexsha[:10]}, 'nl_pl_best_ast_score': {best_ast_score_nl_pl:0.4f}, 'nl_pl_best_graphcodebert_score': {best_graphcodebert_score_nl_pl:0.4f}, 'nl_pl_best_average_score': {best_average_score_nl_pl:0.4f}")
+                                    current_average_score_phase2 = (ast_similarity_phase2 + semantic_similarity_phase2) / 2.0
 
-            record_result = {
-                'hexsha': original_hexsha,
-                'language': language,
-                'nl_pl_best_ast_score': best_ast_score_nl_pl,
-                'nl_pl_best_graphcodebert_score': best_graphcodebert_score_nl_pl,
-                'nl_pl_best_average_score': best_average_score_nl_pl
-            }
+                                    if current_average_score_phase2 > current_best_avg_phase2:
+                                        current_best_avg_phase2 = current_average_score_phase2
+                                        temp_best_ast_phase2 = ast_similarity_phase2
+                                        temp_best_gcb_phase2 = semantic_similarity_phase2
 
-            if language.lower() in ['c++', 'cpp']:
-                record_result.update({
-                    'nl_pl1_pl2_best_ast_score': best_ast_score_nl_pl1_pl2,
-                    'nl_pl1_pl2_best_graphcodebert_score': best_gcb_score_nl_pl1_pl2,
-                    'nl_pl1_pl2_best_average_score': best_avg_score_nl_pl1_pl2
-                })
-                if best_avg_score_nl_pl1_pl2 is not None:
-                    print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, 'nl_pl1_pl2_best_ast_score': {best_ast_score_nl_pl1_pl2:0.4f}, 'nl_pl1_pl2_best_average_score': {best_avg_score_nl_pl1_pl2:0.4f}")
-                else:
-                    print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, Phase 2 did not produce valid results")
-            results.append(record_result)
-            processed_count += 1
-            print(f"\nProcessed {processed_count}/{num_records if num_records is not None else 'all'} records. Current record {original_hexsha[:10]}... " +
-                  f"NL->PL Avg Score: {best_average_score_nl_pl:.4f}" +
-                  (f", NL->C++->Py Avg Score: {best_avg_score_nl_pl1_pl2:.4f}" if best_avg_score_nl_pl1_pl2 is not None else ""))
+                            if current_best_avg_phase2 > -1.0: # If at least one successful generation occurred in Phase 2
+                                best_ast_score_nl_pl1_pl2 = temp_best_ast_phase2
+                                best_gcb_score_nl_pl1_pl2 = temp_best_gcb_phase2
+                                best_avg_score_nl_pl1_pl2 = current_best_avg_phase2
+                            else:
+                                # No valid Phase 2 results, set scores to 0.0
+                                best_ast_score_nl_pl1_pl2 = 0.0
+                                best_gcb_score_nl_pl1_pl2 = 0.0
+                                best_avg_score_nl_pl1_pl2 = 0.0
+
+                # Update the FilteredDataset's internal caches with the best results from both phases
+                # Only update if update_cache is True (skip for validation runs to avoid overwriting)
+                if best_average_score_nl_pl > -1.0 and update_cache: # Only update if Phase 1 was successful and caching enabled
+                    self._filtered_dataset.update_documentation(original_hexsha, best_documentation)
+                    self._filtered_dataset.update_scores(
+                        record_identifier=original_hexsha,
+                        ast_score=best_ast_score_nl_pl,
+                        graphcodebert_score=best_graphcodebert_score_nl_pl,
+                        average_score=best_average_score_nl_pl,
+                        python_translation_ast_score=best_ast_score_nl_pl1_pl2,
+                        python_translation_gcb_score=best_gcb_score_nl_pl1_pl2,
+                        python_translation_average_score=best_avg_score_nl_pl1_pl2
+                    )
+
+                # Option 2: Clear GPU cache after each record to prevent memory fragmentation
+                # Only clear cache in validation phase (update_cache=False) to prevent OOM
+                if not update_cache and torch.cuda.is_available():
+                    try:
+                        torch.cuda.empty_cache()
+                        gc.collect()
+                    except RuntimeError:
+                        pass  # GPU in bad state, continue anyway
+
+                print(f"\tRecording result: 'hexsha': {original_hexsha[:10]}, 'nl_pl_best_ast_score': {best_ast_score_nl_pl:0.4f}, 'nl_pl_best_graphcodebert_score': {best_graphcodebert_score_nl_pl:0.4f}, 'nl_pl_best_average_score': {best_average_score_nl_pl:0.4f}")
+
+                record_result = {
+                    'hexsha': original_hexsha,
+                    'language': language,
+                    'nl_pl_best_ast_score': best_ast_score_nl_pl,
+                    'nl_pl_best_graphcodebert_score': best_graphcodebert_score_nl_pl,
+                    'nl_pl_best_average_score': best_average_score_nl_pl
+                }
+
+                if language.lower() in ['c++', 'cpp']:
+                    record_result.update({
+                        'nl_pl1_pl2_best_ast_score': best_ast_score_nl_pl1_pl2,
+                        'nl_pl1_pl2_best_graphcodebert_score': best_gcb_score_nl_pl1_pl2,
+                        'nl_pl1_pl2_best_average_score': best_avg_score_nl_pl1_pl2
+                    })
+                    if best_avg_score_nl_pl1_pl2 is not None:
+                        print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, 'nl_pl1_pl2_best_ast_score': {best_ast_score_nl_pl1_pl2:0.4f}, 'nl_pl1_pl2_best_average_score': {best_avg_score_nl_pl1_pl2:0.4f}")
+                    else:
+                        print(f"\tRecording NL->PL1->PL2 result: 'hexsha': {original_hexsha[:10]}, Phase 2 did not produce valid results")
+                results.append(record_result)
+                processed_count += 1
+                print(f"\nProcessed {processed_count}/{num_records if num_records is not None else 'all'} records. Current record {original_hexsha[:10]}... " +
+                      f"NL->PL Avg Score: {best_average_score_nl_pl:.4f}" +
+                      (f", NL->C++->Py Avg Score: {best_avg_score_nl_pl1_pl2:.4f}" if best_avg_score_nl_pl1_pl2 is not None else ""))
+
+            except Exception as e:
+                print(f"Exception processing record {i}: {e}")
+                import traceback
+                traceback.print_exc()
+                # Return partial results collected so far
+                return results
 
         return results
 
@@ -3193,7 +3201,7 @@ if run_validation:
     print("\n=== Phase 1: NL->PL (Documentation to Code) Validation ===")
     finetuned_generator_nlpl = FineTunedGeneratorNLPL(nl_pl_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
     baseline_evaluator._qwen_code_generator = finetuned_generator_nlpl
-
+    validation_results_nlpl = []
     try:
         # No language filter - process both Python and C++ records
         validation_results_nlpl = baseline_evaluator.compute_validation(
@@ -3204,8 +3212,8 @@ if run_validation:
         )
     except Exception as e:
         print(f"Exception in NL->PL validation: {e}")
-        import sys
-        sys.exit(1)
+        import traceback
+        traceback.print_exc()
 
     # Restore original generator and unload NL->PL model
     baseline_evaluator._qwen_code_generator = original_generator
@@ -3221,6 +3229,7 @@ if run_validation:
     print("\n=== Phase 2: PL1->PL2 (Python to C++) Validation ===")
     finetuned_generator_pl1pl2 = FineTunedGeneratorPL1PL2(pl1_to_pl2_fine_tuned_model, tokenizer_codegen, original_generator, baseline_evaluator._preferred_device)
     baseline_evaluator._qwen_code_generator = finetuned_generator_pl1pl2
+    validation_results_pl1pl2 = []
 
     try:
         # Filter for Python records only - PL1->PL2 is Python to C++ translation
@@ -3232,8 +3241,9 @@ if run_validation:
         )
     except Exception as e:
         print(f"Exception in PL1->PL2 validation: {e}")
-        import sys
-        sys.exit(1)
+        import traceback
+        traceback.print_exc()
+        
 
     # Restore original generator
     baseline_evaluator._qwen_code_generator = original_generator

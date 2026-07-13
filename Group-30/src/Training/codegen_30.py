@@ -3008,7 +3008,9 @@ if run_training:
     )
     model_codegen_fresh.gradient_checkpointing_enable()
     model_codegen_lora_py_to_cpp = get_peft_model(model_codegen_fresh, lora_config)
+    print("\n"+"*"*30+"\nLORA PL1->PL2 adapted model summary:")
     model_codegen_lora_py_to_cpp.print_trainable_parameters()
+    print("\n"+"*"*30)    
 
     # Initialize Trainer for the new training phase
     trainer_py_to_cpp = Trainer(

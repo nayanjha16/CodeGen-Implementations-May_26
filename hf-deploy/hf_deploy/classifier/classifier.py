@@ -25,6 +25,10 @@ PROTOTYPES: dict[str, list[str]] = {
         "rewrite this sql as mongodb",
         "sql to nosql conversion",
         "generate a mongo query from sql",
+        "generate nosql query for the following sql",
+        "generate a mongodb query for this sql",
+        "turn this sql into a nosql query",
+        "convert the sql query into a mongodb shell query",
     ],
     "nosql2doc": [
         "generate documentation",
@@ -33,34 +37,60 @@ PROTOTYPES: dict[str, list[str]] = {
         "explain this nosql query",
         "create docs for the aggregation",
         "document the mongo pipeline",
+        "generate concise human-readable documentation for the mongodb query",
     ],
 }
 
+# Explicit training-style tag: "Task: text2sql" (optional but accepted).
+_TASK_TAG = re.compile(
+    r"(?i)^\s*task:\s*(text2sql|sql2nosql|nosql2doc)\b"
+)
+
+# Order matters: more specific intents before broader SQL phrasing.
 _RULES: list[tuple[str, re.Pattern[str]]] = [
     (
         "sql2nosql",
         re.compile(
-            r"\b(sql\s*to\s*(mongo|nosql)|convert.*sql.*(mongo|nosql)|"
-            r"mongo(db)?\s*aggregat|rewrite.*sql.*(mongo|nosql))\b",
-            re.I,
+            r"(?is)\b("
+            r"sql\s*to\s*(mongo|nosql)|"
+            r"convert.*sql.*(mongo|nosql)|"
+            r"convert.*sql.*into\s+a?\s*mongo|"
+            r"mongo(db)?\s*aggregat|"
+            r"rewrite.*sql.*(mongo|nosql)|"
+            r"generate\s+(a\s+)?(mongo(db)?|nosql)\s+quer(?:y|ies)\b.*\bsql\b|"
+            r"generate\s+(a\s+)?(mongo(db)?|nosql)\s+quer(?:y|ies)\s+"
+            r"(from|for|based\s+on)\b|"
+            r"turn\s+(this\s+)?sql\s+into\s+(a\s+)?(mongo|nosql)|"
+            r"mongodb\s+shell\s+quer"
+            r")",
         ),
     ),
     (
         "nosql2doc",
         re.compile(
-            r"\b(document(ation|ing)?|write\s+docs?|explain\s+(this\s+)?"
-            r"(mongo|nosql|aggregat|collection)|describe\s+(the\s+)?"
-            r"(query|pipeline|collection))\b",
-            re.I,
+            r"(?i)\b("
+            r"document(ation|ing)?|"
+            r"write\s+docs?|"
+            r"explain\s+(this\s+)?(mongo|nosql|aggregat|collection)|"
+            r"describe\s+(the\s+)?(query|pipeline|collection)|"
+            r"human[- ]readable\s+documentation|"
+            r"documentation\s+(for|of)\s+(this\s+)?(mongo|nosql|query|pipeline)"
+            r")\b",
         ),
     ),
     (
         "text2sql",
         re.compile(
-            r"\b(sql\s+query|write\s+(a\s+)?sql|generate\s+(a\s+)?sql|"
-            r"select\s+statement|natural\s+language\s+to\s+sql|"
-            r"translate.*into\s+sql|query\s+the\s+database)\b",
-            re.I,
+            r"(?i)\b("
+            r"sql\s+query|"
+            r"write\s+(a\s+)?sql|"
+            r"generate\s+(a\s+)?sql|"
+            r"select\s+statement|"
+            r"natural\s+language\s+to\s+sql|"
+            r"translate.*into\s+sql|"
+            r"query\s+the\s+database|"
+            r"question\s+into\s+sql"
+            r")\b",
         ),
     ),
 ]
@@ -113,18 +143,35 @@ class IntentClassifier:
             self._prototype_vectors[intent] = np.asarray(vectors, dtype=float)
 
     @staticmethod
-    def classify_rules(text: str) -> ClassificationResult | None:
+    def _result(intent: str, *, confidence: float, method: str) -> ClassificationResult:
+        scores = {name: 0.0 for name in INTENTS}
+        if intent in scores:
+            scores[intent] = confidence
+        return ClassificationResult(
+            intent=intent,
+            confidence=confidence,
+            method=method,
+            scores=scores,
+        )
+
+    @classmethod
+    def classify_task_tag(cls, text: str) -> ClassificationResult | None:
+        """Honor an explicit ``Task: <intent>`` prefix when present."""
+        match = _TASK_TAG.match(text or "")
+        if match is None:
+            return None
+        return cls._result(match.group(1).lower(), confidence=1.0, method="task_tag")
+
+    @classmethod
+    def classify_rules(cls, text: str) -> ClassificationResult | None:
         """Return a rule match or None when no pattern fires."""
+        tagged = cls.classify_task_tag(text)
+        if tagged is not None:
+            return tagged
+
         for intent, pattern in _RULES:
             if pattern.search(text):
-                scores = {name: 0.0 for name in INTENTS}
-                scores[intent] = 0.99
-                return ClassificationResult(
-                    intent=intent,
-                    confidence=0.99,
-                    method="rules",
-                    scores=scores,
-                )
+                return cls._result(intent, confidence=0.99, method="rules")
         return None
 
     def classify_embeddings(self, text: str) -> ClassificationResult:

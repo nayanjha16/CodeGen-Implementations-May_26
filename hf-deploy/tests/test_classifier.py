@@ -24,14 +24,19 @@ def rules_only() -> IntentClassifier:
         ("generate a sql query for top orders", "text2sql"),
         ("Convert this SQL query to NoSQL / MongoDB", "sql2nosql"),
         ("rewrite the sql as a mongo aggregation", "sql2nosql"),
+        ("generate nosql query for the following sql", "sql2nosql"),
+        ("Generate a MongoDB query for this SQL:\nSELECT * FROM t", "sql2nosql"),
         ("Generate documentation for this MongoDB query", "nosql2doc"),
         ("please document this collection pipeline", "nosql2doc"),
+        ("Task: text2sql\n\nSchema:\nT(a)\n\nQuestion:\nQ\n\nSQL:", "text2sql"),
+        ("Task: sql2nosql\n\nConvert the SQL query...", "sql2nosql"),
+        ("Task: nosql2doc", "nosql2doc"),
     ],
 )
 def test_rule_classification(rules_only: IntentClassifier, text: str, intent: str) -> None:
     result = rules_only.classify(text)
     assert result.intent == intent
-    assert result.method == "rules"
+    assert result.method in {"rules", "task_tag"}
     assert result.confidence >= 0.9
 
 

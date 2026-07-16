@@ -46,20 +46,18 @@ max_new_tokens=300, do_sample=True, temperature=0.7
 
 ---
 
-Overall Performance Evaluation on Custom Dataset
-
-| Metric                          |  Text → Java   | Java → Python  | Python → Java  |
-| :------------------------------ | :------------: | :------------: | :------------: |
-| **Dataset**                     | Custom Dataset | Custom Dataset | Custom Dataset |
-| **Pass@1**                      |   **49.70%**   |       —        |       —        |
-| **Java Compilation Rate**       |       —        |       —        |   **91.87%**   |
-| **CodeBERT Similarity**         |   **0.9485**   |     0.9180     |     0.8809     |
-| **AST Similarity**              |   **0.7384**   |     0.6000     |   **0.7487**   |
-| **BLEU Score**                  |   **0.6961**   |     0.3929     |     0.5319     |
-| **ROUGE-1**                     |   **0.8026**   |     0.6262     |     0.6620     |
-| **ROUGE-2**                     |   **0.7116**   |     0.4454     |     0.4809     |
-| **ROUGE-L**                     |   **0.7813**   |     0.5794     |     0.6052     |
-| **Composite Translation Score** |   **0.8192**   |     0.6824     |     0.7297     |
+| Metric                    | Text → Python  |  Text → Java   | Java → Python  | Python → Java  |
+| :------------------------ | :------------: | :------------: | :------------: | :------------: |
+| **Dataset**               | Custom Dataset | Custom Dataset | Custom Dataset | Custom Dataset |
+| **Pass@1**                |   **53.01%**   |   **49.70%**   |       —        |       —        |
+| **Java Compilation Rate** |       —        |       —        |       —        |   **91.87%**   |
+| **CodeBERT Similarity**   |   **0.8516**   |   **0.9485**   |     0.9180     |     0.8809     |
+| **AST Similarity**        |   **0.7038**   |   **0.7384**   |     0.6000     |   **0.7487**   |
+| **BLEU Score**            |   **0.2869**   |   **0.6961**   |     0.3929     |     0.5319     |
+| **ROUGE-1**               |   **0.5473**   |   **0.8026**   |     0.6262     |     0.6620     |
+| **ROUGE-2**               |   **0.3279**   |   **0.7116**   |     0.4454     |     0.4809     |
+| **ROUGE-L**               |   **0.5014**   |   **0.7813**   |     0.5794     |     0.6052     |
+| **Composite Score**       |   **0.6530**   |   **0.8192**   |     0.6824     |     0.7297     |
 
 --------------------------------------------Text to Java----------------------------------------------------------------------
 

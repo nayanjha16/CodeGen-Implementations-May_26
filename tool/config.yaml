@@ -1,0 +1,23 @@
+app:
+  title: "AI SQL Assistant"
+  page_icon: "🗄️"
+  layout: "wide"
+
+execution:
+  max_result_rows: 1000
+  query_timeout_sec: 30
+  schema_max_tables: 100
+
+schema_selection:
+  embedding_model: "BAAI/bge-small-en-v1.5"
+  top_k: 2
+  min_score: 0.3
+
+fastapi:
+  base_url: "http://localhost:8000/v1"
+  health_url: "http://localhost:8000/health"
+  model: "codegen-text2sql"
+  intent: "text2sql"
+  timeout_sec: 60
+  max_tokens: 256
+  temperature: 0.2

@@ -1,0 +1,39 @@
+Single Table
+List all first_name, last_name, and email from the customer table.
+Find all customers where active = 1.
+Show the title and release_year of all films.
+List all films where rating = 'PG'.
+Find films where rental_rate is greater than 2.99.
+Show all films where length is greater than 120.
+List all categories with their category_id and name.
+Show all actors with first_name and last_name.
+List all payments where amount is greater than 5.00.
+Show all rentals where return_date is NULL.
+
+
+
+
+Two-Table Joins
+find the films acted by first_name = Penelope
+
+Show the title and language.name for each film.
+Join: film → language
+List the first_name, last_name, and amount for each payment.
+Join: payment → customer
+Show the title and store_id for every inventory record.
+Join: inventory → film
+List the title and category_id for every film category.
+Join: film_category → film
+Show the first_name, last_name, and film_id for every actor.
+Join: film_actor → actor
+List the address and city for every address.
+Join: address → city
+Show the city and country for every city.
+Join: city → country
+List the rental_date, return_date, first_name, and last_name of the customer for each rental.
+Join: rental → customer
+Show the payment_date, amount, and first_name of the staff who processed each payment.
+Join: payment → staff
+List the store_id and manager_staff_id along with the manager first_name and last_name.
+Join: store → staff
+These questions intentionally use schema field names like first_name, rental_rate, release_year, payment_date, return_date, and language_id to make the mapping easier for smaller language models while keeping the SQL complexity limited to at most two-table joins.

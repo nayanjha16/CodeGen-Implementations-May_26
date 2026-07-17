@@ -1,48 +1,22 @@
 # Generated Code Report — Stage 4
 
-> **Feature:** `lora-finetuning`  
-> **Date:** 2026-06-25
+**Feature:** text2sql-ui-tool  
+**Date:** 2026-07-16
 
-## Files Created
+## Files created
 
-| Path | Purpose |
-|------|---------|
-| `tests/training/test_adapter_load.py` | Adapter path resolution + load/generate for all three tasks |
+- `tool/tests/conftest.py`
+- `tool/tests/test_*.py` (9 test modules, 26 tests)
+- `tool/desktop/registry.py`
 
-## Files Modified
+## Files modified
 
-| Path | Purpose |
-|------|---------|
-| `src/models/model_loader.py` | PEFT adapter-aware loading |
-| `src/models/__init__.py` | Export new loader helpers |
+- `tool/desktop/main_window.py` — status bar, adapter registry, error UX
+- `tool/core/connection_tester.py` — renamed test helpers
+- `tool/desktop/settings_window.py` — updated helper names
+- `tool/docs/AI_Text_to_SQL_UI_Specification.md` — desktop UI stack
+- `tool/README.md` — tests + manual checklist + troubleshooting
 
-## Validation Status
+## Validation status
 
-| Check | Result |
-|-------|--------|
-| `python -m unittest tests.training.test_adapter_load` | ✅ 4/4 pass |
-| Load base model (no adapter) | ✅ Unchanged behavior |
-| Load adapter + greedy `generate()` per task | ✅ text2sql, sql2nosql, nosql2doc |
-| Linter (`src/models/model_loader.py`) | ✅ No issues |
-
-## API Additions
-
-```python
-from src.models.model_loader import load_model, is_adapter_dir, resolve_adapter_path
-
-# By task name (models/checkpoints/text2sql/)
-model = load_model(adapter="text2sql", eager=True)
-
-# Explicit path
-model = load_model(adapter_path="models/checkpoints/text2sql/", eager=True)
-
-# Env: MODEL_ADAPTER=text2sql
-model = load_model(eager=True)
-```
-
-## Loading Flow
-
-```
-ensure_model_cached(base) → AutoModelForCausalLM.from_pretrained(base)
-→ PeftModel.from_pretrained(base_model, adapter_dir) → generate()
-```
+- `pytest tool/tests/ -q` — ✅ 26 passed

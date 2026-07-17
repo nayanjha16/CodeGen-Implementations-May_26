@@ -1,0 +1,13 @@
+-r requirements.txt
+
+# PyTorch — default pip build includes MPS on Mac (Apple Silicon)
+# Mac:  pip install torch
+# CUDA: pip install torch --index-url https://download.pytorch.org/whl/cu121
+torch>=2.2.0
+trl>=0.12.0
+accelerate>=0.34.0
+
+# Optional (CUDA/Linux only — not supported on Mac MPS)
+# deepspeed>=0.14.0
+# bitsandbytes>=0.43.0
+wandb>=0.16.0

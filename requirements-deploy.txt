@@ -1,0 +1,8 @@
+# Deployment dependencies (HF Hub upload + local Gradio app)
+huggingface_hub>=0.26.0
+gradio>=4.44.0
+torch>=2.2.0
+transformers>=4.46.0
+accelerate>=0.34.0
+sentencepiece>=0.2.0
+audioop-lts; python_version>='3.13'

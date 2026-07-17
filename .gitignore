@@ -33,3 +33,12 @@ Thumbs.db
 .env
 .env.local
 mlflow.db.bak
+
+# Google Cloud / IaC
+hf-deploy/infra/cloudrun/env.sh
+hf-deploy/infra/terraform/terraform.tfvars
+hf-deploy/infra/terraform/.terraform/
+hf-deploy/infra/terraform/*.tfstate
+hf-deploy/infra/terraform/*.tfstate.*
+hf-deploy/infra/terraform/.terraform.lock.hcl
+hf-deploy/infra/ansible/inventory.ini

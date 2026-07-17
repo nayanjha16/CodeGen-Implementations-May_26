@@ -150,9 +150,14 @@ Uploads to `care2achieve/codegen-350M-*-lora` with a Hub-valid model card.
 hf-deploy/
   manifest.yaml
   requirements.txt
+  entrypoint.sh              # Cloud Run container entrypoint
   Dockerfile                 # for Space (Option C)
+  Dockerfile.cloudrun        # for Google Cloud Run
+  cloudbuild.yaml
+  .dockerignore
   .env.example
   publish/push_adapters.py
+  infra/cloudrun/deploy.sh   # redeploy script
   hf_deploy/
     api/app.py               # OpenAI-compatible FastAPI
     classifier/              # rules + embeddings
@@ -168,3 +173,40 @@ PYTHONPATH=hf-deploy pytest hf-deploy/tests -q
 ```
 
 Unit tests do not need GPU or model weights.
+
+---
+
+## Google Cloud Run deployment (recommended)
+
+HTTPS included automatically — no domain needed:
+
+```bash
+cd hf-deploy/infra/cloudrun
+cp env.example env.sh   # first time only — set GCP_PROJECT_ID
+source env.sh && ./deploy.sh
+```
+
+Save the printed URL in **`env.sh`** as `CLOUD_RUN_SERVICE_URL` (gitignored). Use that for Cursor — **do not commit the URL to the repo**.
+
+```bash
+# hf-deploy/infra/cloudrun/env.sh (local only — gitignored)
+export CLOUD_RUN_SERVICE_URL="https://***.asia-south2.run.app"
+```
+
+Or mirror in `hf-deploy/.env` for local tooling:
+
+```bash
+HF_DEPLOY_OPENAI_BASE_URL=https://***.asia-south2.run.app/v1
+```
+
+### Redeploy after changes
+
+| What changed | Commands |
+|--------------|----------|
+| **API / code / `manifest.yaml` / deps** | `cd hf-deploy/infra/cloudrun && source env.sh && ./deploy.sh` |
+| **New adapters on Hub** | `python hf-deploy/publish/push_adapters.py --version v3` then `./deploy.sh` |
+| **Before deploy (optional)** | `PYTHONPATH=hf-deploy pytest hf-deploy/tests -q` |
+
+Hub adapters load at container startup — redeploy restarts containers and pulls latest weights.
+
+Full guide: [infra/README.md](infra/README.md)

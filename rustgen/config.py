@@ -20,6 +20,7 @@ class Config:
     backend: str = "mock"            # "mock" | "hf"
     base_model: str = "Salesforce/codegen-350M-multi"
     adapter_path: str | None = None  # e.g. "models/lora-v1" once trained
+    pivot_model: str = "Qwen/Qwen2.5-Coder-1.5B-Instruct"  # drafts Python for English→Rust
     rag_enabled: bool = False
     rag_backend: str = "mock"        # "mock" | "tfidf"
     rag_corpus_path: str = "data/rust_corpus.jsonl"

@@ -1,4 +1,4 @@
-"""HuggingFace backend: codegen-350M-multi + optional LoRA adapter.
+"""HuggingFace backend: codegen-350M(-derived) base + optional LoRA adapter.
 
 transformers/peft/torch are imported lazily inside the class so the mock
 path never needs them installed.
@@ -7,7 +7,7 @@ path never needs them installed.
 from __future__ import annotations
 
 from rustgen.config import Config
-from rustgen.rag.prompt import build_prompt
+from rustgen.rag.prompt import build_prompt, normalize_signature
 from rustgen.translator.base import TranslationTask, Translator
 
 
@@ -31,7 +31,12 @@ class HFTranslator(Translator):
 
         device = self.config.device
         if device == "auto":
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+            if torch.cuda.is_available():
+                device = "cuda"
+            elif torch.backends.mps.is_available():
+                device = "mps"
+            else:
+                device = "cpu"
         self._device = device
 
         self._tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
@@ -59,21 +64,90 @@ class HFTranslator(Translator):
             )
         new_tokens = output[0][inputs["input_ids"].shape[1]:]
         completion = self._tokenizer.decode(new_tokens, skip_special_tokens=True)
+
         if task.signature:
-            completion = task.signature.rstrip() + completion
+            # The prompt ended with `fn sig(...) {`, so the model wrote a body.
+            body = trim_to_body(completion)
+            if not body.endswith("\n"):
+                body += "\n"
+            return normalize_signature(task.signature) + "\n" + body + "}"
         return trim_to_first_fn(completion)
+
+
+def _scan_to_close(code: str, depth: int) -> int | None:
+    """Index of the brace that brings ``depth`` to 0, ignoring braces inside
+    strings, char literals, and comments. None if it never closes."""
+    i, n = 0, len(code)
+    in_str = in_char = in_line = in_block = False
+    opened = depth > 0
+    while i < n:
+        ch = code[i]
+        nxt = code[i + 1] if i + 1 < n else ""
+        if in_line:
+            if ch == "\n":
+                in_line = False
+            i += 1
+            continue
+        if in_block:
+            if ch == "*" and nxt == "/":
+                in_block = False
+                i += 2
+                continue
+            i += 1
+            continue
+        if in_str:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                in_str = False
+            i += 1
+            continue
+        if in_char:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == "'":
+                in_char = False
+            i += 1
+            continue
+        if ch == "/" and nxt == "/":
+            in_line = True
+            i += 2
+            continue
+        if ch == "/" and nxt == "*":
+            in_block = True
+            i += 2
+            continue
+        if ch == '"':
+            in_str = True
+            i += 1
+            continue
+        if ch == "'":
+            # lifetime ('a) vs char literal ('x' or '\n')
+            if nxt == "\\" or (i + 2 < n and code[i + 2] == "'"):
+                in_char = True
+            i += 1
+            continue
+        if ch == "{":
+            depth += 1
+            opened = True
+        elif ch == "}":
+            depth -= 1
+            if opened and depth == 0:
+                return i
+        i += 1
+    return None
+
+
+def trim_to_body(text: str) -> str:
+    """Generation continued after ``fn sig(...) {`` — cut just before the brace
+    that closes the function (the notebooks' fixed ``trim_to_body``)."""
+    close = _scan_to_close(text, depth=1)
+    return text if close is None else text[:close]
 
 
 def trim_to_first_fn(code: str) -> str:
     """Cut generated text down to the first brace-balanced function."""
-    depth = 0
-    opened = False
-    for i, char in enumerate(code):
-        if char == "{":
-            depth += 1
-            opened = True
-        elif char == "}":
-            depth -= 1
-            if opened and depth == 0:
-                return code[: i + 1]
-    return code
+    close = _scan_to_close(code, depth=0)
+    return code if close is None else code[: close + 1]

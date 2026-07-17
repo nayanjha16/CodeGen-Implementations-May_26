@@ -1,0 +1,64 @@
+[
+  {
+    "id": "A_add_two_numbers",
+    "type": "function_synthesis",
+    "unit": "function",
+    "nl_prompt": "Write a program that prints the sum of 2 and 3.",
+    "features": ["codegen", "execute", "judge", "fix"],
+    "description": "Phase-1 core: NL→Java→Python→run→judge→fix loop"
+  },
+  {
+    "id": "B_router_java_input",
+    "type": "task_router",
+    "unit": "function",
+    "input_type": "java",
+    "java_code": "public class Main {\n  public static void main(String[] args) {\n    System.out.println(2 + 3);\n  }\n}",
+    "nl_prompt": "",
+    "features": ["router", "pl_to_pl"],
+    "description": "Router chooses pl_to_pl when Java is provided"
+  },
+  {
+    "id": "B_pseudocode_factorial",
+    "type": "pseudocode_to_fn",
+    "unit": "function",
+    "input_type": "pseudocode",
+    "nl_prompt": "Algorithm: Factorial\nBegin\n  Set n = 5\n  Set result = 1\n  For i from 1 to n\n    result = result * i\n  End for\n  Print result\nEnd",
+    "features": ["router", "pseudocode"],
+    "description": "Pseudocode → Java → Python path"
+  },
+  {
+    "id": "C_rag_assisted",
+    "type": "rag_assisted",
+    "unit": "function",
+    "use_rag": true,
+    "nl_prompt": "Print whether 7 is a prime number as true or false.",
+    "features": ["rag", "retrieve"],
+    "description": "LangChain retrieve_examples tool before codegen"
+  },
+  {
+    "id": "D_singleton_logger",
+    "type": "design_pattern",
+    "unit": "class",
+    "pattern": "Singleton",
+    "nl_prompt": "Create a Singleton Logger class with a getInstance method and a log(message) method that prints the message.",
+    "features": ["pattern", "class"],
+    "description": "Design-pattern node; unit=class for scale-out"
+  },
+  {
+    "id": "E_ast_fix_hint",
+    "type": "ast_side_info",
+    "unit": "function",
+    "nl_prompt": "Print the maximum of 10 and 20.",
+    "features": ["ast", "fix"],
+    "description": "parse_ast tool feeds Fix Agent prompts"
+  },
+  {
+    "id": "F_repo_aware_helper",
+    "type": "repo_aware",
+    "unit": "function",
+    "repo_root": "agent/problems/repo_toy",
+    "nl_prompt": "Add a helper function add(a, b) that returns a+b and print add(2, 3).",
+    "features": ["repo", "list_files"],
+    "description": "Toy repo list_files → NL codegen path"
+  }
+]

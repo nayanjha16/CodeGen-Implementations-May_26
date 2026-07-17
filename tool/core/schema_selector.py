@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from functools import lru_cache
-from typing import Any
 
 import numpy as np
 
 from tool.core.activity_logger import ActivityLogger
+from tool.core.embedding_cache import load_sentence_model
 from tool.core.schema_loader import TableSchema
 
 
@@ -20,13 +19,6 @@ class SchemaSelectionResult:
     fk_expanded: list[str]
 
 
-@lru_cache(maxsize=2)
-def _load_sentence_model(model_name: str) -> Any:
-    from sentence_transformers import SentenceTransformer
-
-    return SentenceTransformer(model_name)
-
-
 def _cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     norm_a = np.linalg.norm(a)
     norm_b = np.linalg.norm(b)
@@ -36,7 +28,7 @@ def _cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def _embed_texts(model_name: str, texts: list[str]) -> np.ndarray:
-    model = _load_sentence_model(model_name)
+    model = load_sentence_model(model_name)
     return model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
 
 

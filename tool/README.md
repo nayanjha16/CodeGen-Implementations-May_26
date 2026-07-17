@@ -73,4 +73,4 @@ Reuses `src/text2sql/` for prompt building and syntax validation only.
 | No active connection | Settings → add connection and set active |
 | FastAPI errors on Execute | Settings → Test API; start hf-deploy on port 8000 |
 | Empty SQL extracted | Check model response format; see activity log `sql_generated` |
-| Slow first Execute | Embedding model downloads on first schema selection |
+| Slow first Execute | Embedding model downloads once to `tool/.local/models/` on first schema selection; later runs load from cache |

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" role="img" aria-label="IIIT Hyderabad">
+  <defs>
+    <linearGradient id="iiitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c2d4a"/>
+      <stop offset="100%" style="stop-color:#1a6fad"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="420" height="100" rx="12" fill="#FFFFFF" filter="url(#shadow)"/>
+  <rect x="0" y="0" width="420" height="100" rx="12" fill="none" stroke="#0d9488" stroke-width="2"/>
+
+  <rect x="12" y="10" width="80" height="80" rx="10" fill="url(#iiitGrad)"/>
+  <text x="52" y="46" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">IIIT</text>
+  <text x="52" y="66" text-anchor="middle" fill="#b8e0f0" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="600" letter-spacing="1.2">HYDERABAD</text>
+
+  <text x="108" y="40" fill="#0c2d4a" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="700">International Institute of</text>
+  <text x="108" y="64" fill="#0c2d4a" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="700">Information Technology</text>
+  <text x="108" y="84" fill="#0d9488" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="600" letter-spacing="0.8">Hyderabad</text>
+
+  <rect x="108" y="72" width="280" height="2" fill="#14b8a6" opacity="0.7"/>
+</svg>

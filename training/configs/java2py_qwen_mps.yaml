@@ -1,0 +1,41 @@
+# Qwen2.5-Coder-0.5B-Instruct LoRA fine-tune on AVATAR-TC (Java->Python)
+# Mac / Apple Silicon (MPS) config. Trains on the 1/4 train subset produced by
+# data/scripts/preprocess_avatar_tc.py and evaluates on the AVATAR-TC valid split.
+model_name: Qwen/Qwen2.5-Coder-0.5B-Instruct
+task: java2py
+dataset_path: data/processed/java2py_avatar
+output_dir: models/java2py_qwen
+device: mps
+
+# LoRA (Qwen2.5 is Llama-style: q/k/v/o + gate/up/down projections)
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# Training
+num_train_epochs: 3
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 8
+learning_rate: 2.0e-4
+warmup_ratio: 0.03
+weight_decay: 0.01
+max_seq_length: 512
+fp16: false
+bf16: true
+logging_steps: 10
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 2
+load_best_model_at_end: true
+metric_for_best_model: eval_loss
+greater_is_better: false
+seed: 42

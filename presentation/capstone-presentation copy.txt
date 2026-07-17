@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Generation Capstone — IIIT Hyderabad</title>
+  <style>
+    :root {
+      --iiit-purple: #5B2C83;
+      --iiit-purple-light: #8B3D9E;
+      --iiit-purple-dark: #2D1B4E;
+      --iiit-accent: #C9A227;
+      --bg: #0f0a18;
+      --slide-bg: #1a1228;
+      --text: #f0eaf5;
+      --muted: #b8a8cc;
+      --card: rgba(91, 44, 131, 0.18);
+      --border: rgba(201, 162, 39, 0.35);
+      --green: #4ade80;
+      --blue: #60a5fa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      padding: 2.5rem 3.5rem 5rem;
+      background:
+        radial-gradient(ellipse at 85% 15%, rgba(139, 61, 158, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 10% 90%, rgba(91, 44, 131, 0.15) 0%, transparent 50%),
+        var(--slide-bg);
+      animation: fadeIn 0.35s ease;
+    }
+
+    .slide.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 12px;
+      padding: 6px 14px 6px 8px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(201, 162, 39, 0.45);
+    }
+
+    .header img, .header svg { height: 68px; width: auto; display: block; }
+
+    .title-slide .logo-wrap {
+      padding: 10px 20px 10px 12px;
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(201, 162, 39, 0.55);
+    }
+
+    .title-slide .header img,
+    .title-slide .header svg { height: 96px; }
+
+    .team-block {
+      margin-top: 1.75rem;
+      padding: 1.1rem 2rem;
+      background: rgba(91, 44, 131, 0.28);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: inline-block;
+    }
+
+    .team-label {
+      font-size: 0.85rem;
+      color: var(--iiit-accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.65rem;
+      font-weight: 600;
+    }
+
+    .team-names {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.25rem;
+      justify-content: center;
+    }
+
+    .team-member {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      padding: 0.35rem 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(201, 162, 39, 0.3);
+    }
+
+    .title-slide .team-member { font-size: 1.25rem; padding: 0.45rem 1.2rem; }
+
+    .slide-num {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--iiit-accent);
+      margin-bottom: 1.25rem;
+      border-left: 5px solid var(--iiit-purple-light);
+      padding-left: 1rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      color: var(--iiit-accent);
+      margin: 1rem 0 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.35rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    ul { list-style: none; }
+    ul li {
+      position: relative;
+      padding: 0.45rem 0 0.45rem 1.6rem;
+      font-size: 1.15rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    ul li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--iiit-accent);
+      font-weight: bold;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+
+    .card h3 { margin-top: 0; font-size: 1rem; }
+
+    .card p, .card li { font-size: 0.95rem; color: var(--muted); }
+    .card ul li { padding-left: 1.2rem; font-size: 0.92rem; }
+
+    .highlight {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .metric-up { color: var(--green); font-weight: 700; }
+    .metric-label { color: var(--muted); font-size: 0.85rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    th {
+      background: rgba(91, 44, 131, 0.35);
+      color: var(--iiit-accent);
+      font-weight: 600;
+    }
+
+    tr:hover td { background: rgba(255,255,255,0.03); }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    .flow-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .flow-arrow { color: var(--iiit-accent); font-size: 1.4rem; }
+
+    .title-slide {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .title-slide .header { border: none; justify-content: center; margin-bottom: 2rem; }
+    .title-slide h1 { font-size: 3rem; }
+    .title-slide .subtitle { font-size: 1.5rem; max-width: 700px; }
+    .title-slide .meta { margin-top: 2rem; color: var(--muted); font-size: 1.1rem; }
+
+    .badge {
+      display: inline-block;
+      background: rgba(201, 162, 39, 0.2);
+      border: 1px solid var(--iiit-accent);
+      color: var(--iiit-accent);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin: 0.2rem;
+    }
+
+    .big-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .compare-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0.4rem 0;
+      font-size: 0.88rem;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 22px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding-left: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #fff;
+      min-width: 30px;
+    }
+
+    .bar-baseline { background: linear-gradient(90deg, #64748b, #94a3b8); }
+    .bar-finetuned { background: linear-gradient(90deg, var(--iiit-purple), var(--iiit-purple-light)); }
+
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background: rgba(15, 10, 24, 0.92);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .nav button {
+      background: var(--iiit-purple);
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .nav button:hover { background: var(--iiit-purple-light); }
+    .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 60%;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .dot.active { background: var(--iiit-accent); transform: scale(1.3); }
+
+    .note {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 0.75rem;
+    }
+
+    .qa-slide h1 { font-size: 4rem; color: var(--iiit-accent); }
+    .qa-slide p { font-size: 1.4rem; color: var(--muted); }
+
+    kbd {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 1.5rem 1.5rem 4.5rem; }
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.4rem; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <section class="slide active title-slide" data-slide="0">
+    <div class="header">
+      <div class="logo-wrap">
+        <img src="iiit-h-logo.svg" alt="IIIT Hyderabad" />
+      </div>
+    </div>
+    <h1>Code Generation Capstone</h1>
+    <p class="subtitle">Fine-tuning <strong>Qwen2.5-Coder-0.5B-Instruct</strong> for Multi-Task Code Synthesis</p>
+    <div>
+      <span class="badge">Java → Python</span>
+      <span class="badge">NL → Python</span>
+      <span class="badge">Code → Documentation</span>
+      <span class="badge">LoRA Fine-Tuning</span>
+    </div>
+    <div class="team-block">
+      <div class="team-label">Team</div>
+      <div class="team-names">
+        <span class="team-member">Kavita</span>
+        <span class="team-member">Saikrishna</span>
+        <span class="team-member">Ashok</span>
+        <span class="team-member">Mohit</span>
+      </div>
+    </div>
+    <p class="meta">Capstone Project Presentation &nbsp;|&nbsp; Mentors &amp; Faculty Review</p>
+  </section>
+
+  <!-- SLIDE 2: Problem -->
+  <section class="slide" data-slide="1">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">02 / 12</span>
+    </div>
+    <h2>The Problem</h2>
+    <div class="content">
+      <ul>
+        <li>Developers routinely need to <strong>translate code across languages</strong> (e.g., Java → Python) during migrations and polyglot projects.</li>
+        <li>Writing Python from <strong>natural language descriptions</strong> and generating <strong>documentation from code</strong> are high-value but repetitive tasks.</li>
+        <li>General-purpose LLMs can generate code, but they often <strong>fail on structured translation prompts</strong> and lack task-specific alignment.</li>
+        <li>Large models (7B+) demand substantial GPU memory and training cost — we target a <strong>compact, efficient, and deployable</strong> solution.</li>
+      </ul>
+      <div class="grid-2" style="margin-top:1.5rem">
+        <div class="card">
+          <h3>Research Question</h3>
+          <p>Can parameter-efficient fine-tuning of a compact code LLM achieve measurable gains on verified Java→Python translation and extend to multiple code tasks?</p>
+        </div>
+        <div class="card">
+          <h3>Our Approach</h3>
+          <p>Two-stage LoRA SFT on Qwen2.5-Coder-0.5B-Instruct, evaluated on AVATAR-TC with BLEU, CodeBLEU, BERTScore, and execution accuracy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Evolution -->
+  <section class="slide" data-slide="2">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">03 / 12</span>
+    </div>
+    <h2>Project Evolution</h2>
+    <div class="content">
+      <div class="flow">
+        <div class="flow-box"><strong>Phase 1</strong><br/>codegen-350M-multi<br/><small>Salesforce</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box"><strong>Phase 2</strong><br/>Qwen2.5-Coder-0.5B<br/><small>Alibaba Cloud</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box"><strong>Today</strong><br/>Multi-Task LoRA<br/><small>Deployed on HF</small></div>
+      </div>
+      <ul>
+        <li>Started with <strong>codegen-350M-multi</strong> for NL→Python and Java→Python on CoDocBench (early capstone baseline).</li>
+        <li>Migrated to <strong>Qwen2.5-Coder-0.5B-Instruct</strong> for better instruction-following and multi-task extensibility.</li>
+        <li>Built a complete MLOps pipeline: preprocess → train → evaluate → deploy (Gradio demo on Hugging Face).</li>
+      </ul>
+      <div class="grid-3">
+        <div class="card"><h3>55,178</h3><p class="metric-label">AVATAR-TC train pairs</p></div>
+        <div class="card"><h3>1.75%</h3><p class="metric-label">Trainable params (LoRA)</p></div>
+        <div class="card"><h3>4 Tasks</h3><p class="metric-label">Single merged checkpoint</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: Why Qwen2.5 -->
+  <section class="slide" data-slide="3">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">04 / 12</span>
+    </div>
+    <h2>Why Qwen2.5-Coder-0.5B-Instruct?</h2>
+    <div class="content">
+      <div class="grid-2">
+        <div>
+          <ul>
+            <li><strong>Code-specialized architecture</strong> — Pre-trained on large-scale code corpora by Alibaba; designed for programming tasks, not general chat.</li>
+            <li><strong>Instruction-tuned variant</strong> — The base <code>Qwen2.5-Coder-0.5B</code> (non-Instruct) cannot follow translation prompts; Instruct variant is essential for SFT and evaluation.</li>
+            <li><strong>Compact and resource-efficient</strong> — ~503M parameters (~988 MB merged); trains on Mac MPS (Apple Silicon) and standard cloud GPUs (e.g. Colab T4).</li>
+            <li><strong>Efficient fine-tuning</strong> — LoRA trains only <span class="highlight">8.8M / 503M params (1.75%)</span>; full fine-tuning is unnecessary and costly without dedicated high-end hardware.</li>
+            <li><strong>Llama-style architecture</strong> — Well-supported LoRA target modules (q/k/v/o + gate/up/down projections) in HuggingFace PEFT/TRL ecosystem.</li>
+            <li><strong>Multi-task extensibility</strong> — Single checkpoint handles Java2Py, NL2Py, Code2Doc via prompt prefixes — no separate models per task.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Model Comparison</h3>
+          <table>
+            <tr><th>Criteria</th><th>codegen-350M</th><th>Qwen2.5-Coder-0.5B</th></tr>
+            <tr><td>Size</td><td>350M</td><td>503M</td></tr>
+            <tr><td>Instruction following</td><td>Limited</td><td>Strong (Instruct)</td></tr>
+            <tr><td>Code specialization</td><td>Yes</td><td>Yes (Coder family)</td></tr>
+            <tr><td>LoRA ecosystem</td><td>Supported</td><td>Excellent</td></tr>
+            <tr><td>Multi-task routing</td><td>Separate models</td><td>Single checkpoint</td></tr>
+          </table>
+          <p class="note" style="margin-top:0.75rem">Base model: <a href="https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct" style="color:var(--blue)">Qwen/Qwen2.5-Coder-0.5B-Instruct</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: Datasets -->
+  <section class="slide" data-slide="4">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">05 / 12</span>
+    </div>
+    <h2>Why These Datasets?</h2>
+    <div class="content">
+      <h3>Stage 1 — Java → Python (Primary Benchmark)</h3>
+      <div class="card" style="margin-bottom:1rem">
+        <h3>AVATAR-TC (CoTran)</h3>
+        <p><strong>55,178</strong> train / <strong>443</strong> valid / <strong>1,745</strong> test verified Java↔Python parallel pairs from competitive programming (Aizu, LeetCode, Codeforces, AtCoder). Includes I/O test cases for execution-based evaluation.</p>
+        <ul>
+          <li>Verified parallel translations — not scraped heuristics</li>
+          <li>Rich OOP coverage: inheritance, interfaces, generics, design patterns</li>
+          <li>Execution test cases enable sandbox pass-rate metrics</li>
+          <li>Industry-standard benchmark for cross-language code translation research</li>
+        </ul>
+      </div>
+
+      <h3>Stage 2 — Multi-Task Fine-Tuning</h3>
+      <table>
+        <tr><th>Dataset</th><th>Task</th><th>Why Selected</th></tr>
+        <tr><td>AVATAR-TC replay (2K)</td><td>Java2Py</td><td>Prevent catastrophic forgetting of Stage 1 skill</td></tr>
+        <tr><td>MBPP</td><td>NL → Python</td><td>Real natural language + Python pairs</td></tr>
+        <tr><td>DocuMint</td><td>Code → Doc</td><td>High-quality code-documentation pairs</td></tr>
+        <tr><td>CodeParrot</td><td>Comments</td><td>Optional comment generation (disabled by default)</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Pre-training question -->
+  <section class="slide" data-slide="5">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">06 / 12</span>
+    </div>
+    <h2>Was Qwen Already Trained on These Datasets?</h2>
+    <div class="content">
+      <div class="card" style="margin-bottom:1.25rem; border-color: var(--green);">
+        <h3 style="color:var(--green)">Short Answer: No — and our fine-tuning adds significant value</h3>
+        <p>Qwen2.5-Coder was pre-trained on Alibaba's large-scale <em>general code corpora</em> (GitHub, StackOverflow, etc.). It was <strong>not</strong> specifically trained on AVATAR-TC, MBPP, or our task-specific prompt formats.</p>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h3>What Qwen's Pre-training Gives Us</h3>
+          <ul>
+            <li>General Python syntax and programming knowledge</li>
+            <li>Code completion and generation ability</li>
+            <li>Instruction-following (Instruct variant)</li>
+          </ul>
+
+          <h3>What Pre-training Does NOT Give Us</h3>
+          <ul>
+            <li>Structured Java → Python translation with our prompt format</li>
+            <li>Alignment to AVATAR-TC's delexicalized → detokenized style</li>
+            <li>Multi-task routing via <code>### Translate Java to Python:</code> prefixes</li>
+            <li>Strong performance on OOP-heavy competitive programming code</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Evidence: Zero-Shot Baseline (Pre Fine-Tune)</h3>
+          <p class="metric-label">Qwen2.5-Coder-0.5B-Instruct on AVATAR-TC valid (10 samples)</p>
+          <div class="compare-bar">
+            <span style="width:80px">BLEU</span>
+            <div class="bar-track"><div class="bar-fill bar-baseline" style="width:33%">33.2</div></div>
+          </div>
+          <div class="compare-bar">
+            <span style="width:80px">CodeBLEU</span>
+            <div class="bar-track"><div class="bar-fill bar-baseline" style="width:39%">0.39</div></div>
+          </div>
+          <div class="compare-bar">
+            <span style="width:80px">BERTScore</span>
+            <div class="bar-track"><div class="bar-fill bar-baseline" style="width:88%">0.88</div></div>
+          </div>
+          <p class="note">Full valid-set baseline (443 samples, non-Instruct base): BLEU 20.7, CodeBLEU 0.17 — model often fails to follow prompt format entirely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: Methodology -->
+  <section class="slide" data-slide="6">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">07 / 12</span>
+    </div>
+    <h2>Methodology — Two-Stage LoRA Pipeline</h2>
+    <div class="content">
+      <div class="flow" style="justify-content:center; margin: 1.5rem 0;">
+        <div class="flow-box" style="min-width:160px"><strong>Base Model</strong><br/>Qwen2.5-Coder-0.5B-Instruct</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="min-width:160px"><strong>Stage 1</strong><br/>Java2Py LoRA<br/><small>AVATAR-TC (25% train)</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="min-width:160px"><strong>Merge</strong><br/>java2py_qwen/merged</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="min-width:160px"><strong>Stage 2</strong><br/>Multi-Task LoRA<br/><small>NL2Py + Code2Doc + replay</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box" style="min-width:160px"><strong>Deploy</strong><br/>HF Hub + Gradio</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Stage 1 — Specialize</h3>
+          <ul>
+            <li>Dataset: 13,794 AVATAR-TC pairs (25% of train)</li>
+            <li>Epochs: 3 &nbsp;|&nbsp; LR: 2e-4</li>
+            <li>LoRA r=16, α=32, dropout=0.05</li>
+            <li>Batch: 4 × accum 8 (effective 32)</li>
+            <li>Precision: bf16 on Mac MPS</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Stage 2 — Generalize</h3>
+          <ul>
+            <li>Starts from Stage 1 merged weights</li>
+            <li>Epochs: 2 &nbsp;|&nbsp; LR: 5e-5 (lower to preserve Java2Py)</li>
+            <li>AVATAR-TC replay: 2,000 samples</li>
+            <li>+ MBPP, DocuMint</li>
+            <li>Task routing via prompt prefixes</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="note">Stack: HuggingFace Transformers + PEFT (LoRA) + TRL (SFTTrainer). Trained on Mac MPS and Google Colab T4.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: Evaluation -->
+  <section class="slide" data-slide="7">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">08 / 12</span>
+    </div>
+    <h2>Evaluation Framework</h2>
+    <div class="content">
+      <div class="grid-2">
+        <div>
+          <h3>Similarity Metrics</h3>
+          <ul>
+            <li><strong>BLEU</strong> — n-gram overlap with reference Python</li>
+            <li><strong>CodeBLEU</strong> — n-gram + syntax AST + dataflow (code-aware)</li>
+            <li><strong>BERTScore</strong> — semantic similarity (roberta-large)</li>
+            <li><strong>CodeBERTScore</strong> — code-specific semantic similarity</li>
+          </ul>
+
+          <h3>Execution Metrics</h3>
+          <ul>
+            <li><strong>Execution Accuracy</strong> — Docker sandbox pass rate on I/O test cases</li>
+            <li><strong>Output Match Accuracy</strong> — stdout comparison against expected output</li>
+            <li><strong>OOP Category Breakdown</strong> — per-category CodeBLEU (inheritance, interfaces, generics, patterns)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Fair Comparison Protocol</h3>
+          <ul>
+            <li>Same SPLIT, MAX_SAMPLES, SHUFFLE, SEED in baseline and fine-tuned notebooks</li>
+            <li>Identical prompt templates and detokenization pipeline</li>
+            <li>Baseline: pre–fine-tune Instruct model</li>
+            <li>Fine-tuned: merged LoRA checkpoint</li>
+            <li>Eval on AVATAR-TC valid split (443 samples; 10-sample quick eval shown)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: Results -->
+  <section class="slide" data-slide="8">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">09 / 12</span>
+    </div>
+    <h2>Results — Baseline vs Fine-Tuned</h2>
+    <div class="content">
+      <p style="color:var(--muted); margin-bottom:1rem">AVATAR-TC valid split, 10 samples (seed=42) — Java → Python translation</p>
+
+      <table>
+        <tr>
+          <th>Metric</th>
+          <th>Baseline (Pre FT)</th>
+          <th>Fine-Tuned (LoRA)</th>
+          <th>Improvement</th>
+        </tr>
+        <tr>
+          <td><strong>BLEU</strong></td>
+          <td>33.24</td>
+          <td class="highlight">48.60</td>
+          <td class="metric-up">+15.36 (+46%)</td>
+        </tr>
+        <tr>
+          <td><strong>CodeBLEU</strong></td>
+          <td>0.388</td>
+          <td class="highlight">0.525</td>
+          <td class="metric-up">+0.136 (+35%)</td>
+        </tr>
+        <tr>
+          <td><strong>BERTScore F1</strong></td>
+          <td>0.882</td>
+          <td class="highlight">0.931</td>
+          <td class="metric-up">+0.049 (+5.6%)</td>
+        </tr>
+        <tr>
+          <td><strong>CodeBERTScore F1</strong></td>
+          <td>0.886</td>
+          <td class="highlight">0.931</td>
+          <td class="metric-up">+0.045 (+5.1%)</td>
+        </tr>
+        <tr>
+          <td><strong>Execution Accuracy</strong></td>
+          <td>—</td>
+          <td class="highlight">40%</td>
+          <td class="metric-up">Sandbox pass rate</td>
+        </tr>
+      </table>
+
+      <div class="grid-2" style="margin-top:1.25rem">
+        <div class="compare-bar">
+          <span style="width:90px">BLEU</span>
+          <div class="bar-track">
+            <div class="bar-fill bar-baseline" style="width:33%; position:absolute; left:0">33</div>
+            <div class="bar-fill bar-finetuned" style="width:49%; position:absolute; left:0; opacity:0.85">49</div>
+          </div>
+        </div>
+        <div class="compare-bar">
+          <span style="width:90px">CodeBLEU</span>
+          <div class="bar-track">
+            <div class="bar-fill bar-baseline" style="width:39%; position:absolute; left:0">0.39</div>
+            <div class="bar-fill bar-finetuned" style="width:52%; position:absolute; left:0; opacity:0.85">0.52</div>
+          </div>
+        </div>
+      </div>
+      <p class="note">Training only 1.75% of parameters with 13,794 AVATAR-TC pairs yields substantial gains — demonstrating that task-specific SFT adds real value beyond pre-training.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: Value Added -->
+  <section class="slide" data-slide="9">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">10 / 12</span>
+    </div>
+    <h2>Value Added — What We Built Beyond the Base Model</h2>
+    <div class="content">
+      <div class="grid-2">
+        <div>
+          <h3>Technical Contributions</h3>
+          <ul>
+            <li><strong>Task-specific alignment</strong> — +46% BLEU, +35% CodeBLEU on Java→Python vs zero-shot Instruct model</li>
+            <li><strong>Multi-task single checkpoint</strong> — 4 tasks via prompt prefixes, no task-specific models</li>
+            <li><strong>Parameter-efficient training</strong> — Full pipeline on Mac MPS / Colab T4 (no A100 required)</li>
+            <li><strong>Execution-grounded evaluation</strong> — Docker sandbox with real I/O test cases, not just string similarity</li>
+            <li><strong>Two-stage curriculum</strong> — Specialize then multitask without catastrophic forgetting (AVATAR replay)</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Engineering &amp; Deployment</h3>
+          <ul>
+            <li><strong>End-to-end MLOps pipeline</strong> — preprocess → train → eval → deploy (HF Hub + Gradio)</li>
+            <li><strong>HuggingFace Hub</strong> — <a href="https://huggingface.co/Saikrishna2511/qwen-multitask" style="color:var(--blue)">Saikrishna2511/qwen-multitask</a></li>
+            <li><strong>Live Gradio demo</strong> — <a href="https://huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo" style="color:var(--blue)">Interactive browser demo</a></li>
+            <li><strong>Colab notebook</strong> — Reproducible training + eval for mentors/reviewers</li>
+            <li><strong>Pytest test suite</strong> — Automated quality checks across pipeline</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem">
+        <div class="card" style="text-align:center">
+          <div class="big-number">+46%</div>
+          <p class="metric-label">BLEU improvement</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="big-number">1.75%</div>
+          <p class="metric-label">Params trained (LoRA)</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="big-number">4-in-1</div>
+          <p class="metric-label">Tasks in one model</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 11: Architecture -->
+  <section class="slide" data-slide="10">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">11 / 12</span>
+    </div>
+    <h2>System Architecture</h2>
+    <div class="content">
+      <div class="flow" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+          <div class="flow-box">AVATAR-TC<br/>MBPP<br/>DocuMint</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Preprocess<br/><small>detokenize + prompts</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">LoRA SFT<br/><small>PEFT + TRL</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Merged<br/>Checkpoint</div>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+          <div class="flow-box">Eval<br/><small>BLEU, CodeBLEU, Exec</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Gradio UI<br/><small>Local + HF Space</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Docker Sandbox<br/><small>Code execution</small></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1.25rem">
+        <div class="card">
+          <h3>Limitations</h3>
+          <ul>
+            <li>0.5B model — quality varies by task complexity</li>
+            <li>Trained on 25% AVATAR-TC train (compute constraint)</li>
+            <li>Execution accuracy (40%) still has room for improvement</li>
+            <li>Not production-ready without further evaluation</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Future Work</h3>
+          <ul>
+            <li>Scale to Qwen2.5-Coder-1.5B or 7B with more compute</li>
+            <li><strong>FastAPI serving</strong> with RAG few-shot retrieval (FAISS + codegen embeddings)</li>
+            <li><strong>Agentic approach</strong> — autonomous multi-step code synthesis with tool use and self-correction</li>
+            <li>RLHF / DPO on execution feedback</li>
+            <li>More languages beyond Java→Python</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12: Thank You -->
+  <section class="slide title-slide qa-slide" data-slide="11">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    </div>
+    <h1>Thank You</h1>
+    <p>Questions &amp; Discussion</p>
+    <div class="team-block" style="margin-top:1.5rem">
+      <div class="team-label">Presented by</div>
+      <div class="team-names">
+        <span class="team-member">Kavita</span>
+        <span class="team-member">Saikrishna</span>
+        <span class="team-member">Ashok</span>
+        <span class="team-member">Mohit</span>
+      </div>
+    </div>
+    <div style="margin-top:2rem">
+      <p><strong>Live Demo:</strong> <a href="https://huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo" style="color:var(--blue)">huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo</a></p>
+      <p style="margin-top:0.5rem"><strong>Model:</strong> <a href="https://huggingface.co/Saikrishna2511/qwen-multitask" style="color:var(--blue)">huggingface.co/Saikrishna2511/qwen-multitask</a></p>
+      <p style="margin-top:0.5rem"><strong>Repository:</strong> codegen26 (Code Generation Capstone)</p>
+    </div>
+    <p class="meta" style="margin-top:2.5rem">Navigate with <kbd>←</kbd> <kbd>→</kbd> arrow keys or click buttons below</p>
+  </section>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button id="prevBtn" disabled>← Previous</button>
+  <div class="progress-dots" id="dots"></div>
+  <button id="nextBtn">Next →</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('dots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  const dots = dotsContainer.querySelectorAll('.dot');
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    document.querySelectorAll('.slide-num').forEach(el => {
+      const num = parseInt(el.textContent);
+      if (!isNaN(num)) el.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    });
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+  });
+</script>
+
+</body>
+</html>

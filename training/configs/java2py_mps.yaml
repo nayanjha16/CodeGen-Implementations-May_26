@@ -1,0 +1,29 @@
+# Mac / Apple Silicon (MPS) training config
+model_name: Salesforce/codegen-350M-multi
+task: java2py
+dataset_path: data/processed/java2py
+output_dir: models/java2py
+device: mps
+
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+
+num_train_epochs: 3
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 4
+gradient_accumulation_steps: 8
+learning_rate: 2.0e-4
+warmup_ratio: 0.03
+weight_decay: 0.01
+max_seq_length: 512
+fp16: false
+bf16: true
+logging_steps: 10
+eval_strategy: epoch
+save_strategy: epoch
+save_total_limit: 2
+load_best_model_at_end: true
+metric_for_best_model: eval_loss
+greater_is_better: false
+seed: 42

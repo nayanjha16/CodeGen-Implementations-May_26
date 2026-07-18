@@ -1,0 +1,1940 @@
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,exact_match,execution_match,execution_error
+0,How many singers do we have?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+How many singers do we have?
+
+SQL:",345,SELECT count(*) FROM singer,SELECT count(*) FROM singer,True,SELECT count(*) FROM singer,True,True,
+1,What is the total number of singers?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What is the total number of singers?
+
+SQL:",346,SELECT count(*) FROM singer,SELECT count(*) FROM singer,True,SELECT count(*) FROM singer,True,True,
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+SQL:",357,"SELECT name ,  country ,  age FROM singer ORDER by age DESC LIMIT 1","SELECT name , country , age FROM singer ORDER by age DESC LIMIT 1",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",False,False,row count mismatch: predicted=1 reference=6
+3,"What are the names, countries, and ages for every singer in descending order of age?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What are the names, countries, and ages for every singer in descending order of age?
+
+SQL:",356,"SELECT name ,  country ,  age FROM singer ORDER by age DESC","SELECT name , country , age FROM singer ORDER by age DESC",True,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",True,True,
+4,"What is the average, minimum, and maximum age of all singers from France?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What is the average, minimum, and maximum age of all singers from France?
+
+SQL:",354,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = 'France'",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,True,
+5,"What is the average, minimum, and maximum age for all French singers?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What is the average, minimum, and maximum age for all French singers?
+
+SQL:",353,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = 'France'",True,"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'",True,True,
+6,Show the name and the release year of the song by the youngest singer.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+Show the name and the release year of the song by the youngest singer.
+
+SQL:",353,"SELECT name ,  song_release_year FROM singer ORDER by age LIMIT 1","SELECT name , song_release_year FROM singer ORDER by age LIMIT 1",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,False,"first mismatch at row 0: predicted=('Tribal King', '2016') reference=('Love', '2016')"
+7,What are the names and release years for all the songs of the youngest singer?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What are the names and release years for all the songs of the youngest singer?
+
+SQL:",354,"SELECT name ,  song_release_year FROM singer ORDER by age LIMIT 1","SELECT name , song_release_year FROM singer ORDER by age LIMIT 1",True,"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1",False,False,"first mismatch at row 0: predicted=('Tribal King', '2016') reference=('Love', '2016')"
+8,List all song names by singers above the average age.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+List all song names by singers above the average age.
+
+SQL:",349,SELECT song_name FROM singer ORDER by age DESC LIMIT 1,SELECT song_name FROM singer ORDER by age DESC LIMIT 1,True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),False,False,row count mismatch: predicted=1 reference=3
+9,What are all the song names by singers who are older than average?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What are all the song names by singers who are older than average?
+
+SQL:",352,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),SELECT song_name FROM singer WHERE age > (SELECT avg(age) FROM singer),True,SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),True,True,
+10,Show location and name for all stadiums with a capacity between 5000 and 10000.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+Question:
+Show location and name for all stadiums with a capacity between 5000 and 10000.
+
+SQL:",346,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000","SELECT location , name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,True,
+11,What are the locations and names of all stations with capacity between 5000 and 10000?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+Question:
+What are the locations and names of all stations with capacity between 5000 and 10000?
+
+SQL:",347,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000","SELECT location , name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000",True,True,
+12,What is the average and maximum capacities for all stadiums ?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+Question:
+What is the average and maximum capacities for all stadiums ?
+
+SQL:",342,"SELECT avg ,  max(capacity) FROM stadium","SELECT avg , max(capacity) FROM stadium",True,"SELECT avg(capacity) ,  max(capacity) FROM stadium",False,False,"column ""avg"" does not exist
+LINE 1: SELECT avg , max(capacity) FROM stadium GROUP BY avg
+               ^"
+13,What is the name and capacity for the stadium with highest average attendance?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+Question:
+What is the name and capacity for the stadium with highest average attendance?
+
+SQL:",345,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1","SELECT name , capacity FROM stadium ORDER by average DESC LIMIT 1",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",True,True,
+14,What is the name and capacity for the stadium with the highest average attendance?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+Question:
+What is the name and capacity for the stadium with the highest average attendance?
+
+SQL:",346,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1","SELECT name , capacity FROM stadium ORDER by average DESC LIMIT 1",True,"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1",True,True,
+15,How many concerts are there in year 2014 or 2015?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+How many concerts are there in year 2014 or 2015?
+
+SQL:",335,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,SELECT count(*) FROM concert WHERE year = 2014 OR year = 2015,True,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,True,True,
+16,How many concerts occurred in 2014 or 2015?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+How many concerts occurred in 2014 or 2015?
+
+SQL:",333,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,SELECT count(*) FROM concert WHERE year = 2014 OR year = 2015,True,SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,True,True,
+17,Show the stadium name and the number of concerts in each stadium.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+Show the stadium name and the number of concerts in each stadium.
+
+SQL:",388,"SELECT t1.name ,  count(*) FROM stadium AS t1 JOIN concert AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.name","SELECT t1.name , count(*) FROM stadium AS t1 JOIN concert AS t2 ON t1.stadium_id = t2.stadium_id GROUP by t1.name",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,True,
+18,"For each stadium, how many concerts play there?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+For each stadium, how many concerts play there?
+
+SQL:",385,"SELECT count(*) ,  t1.name FROM stadium AS t1 JOIN concert AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.name","SELECT count(*) , t1.name FROM stadium AS t1 JOIN concert AS t2 ON t1.stadium_id = t2.stadium_id GROUP by t1.name",True,"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name",False,True,
+19,Show the stadium names without any concert.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+Show the stadium names without any concert.
+
+SQL:",383,SELECT name FROM stadium WHERE stadium_id NOT IN ( SELECT stadium_id FROM concert );,SELECT name FROM stadium WHERE stadium_id NOT IN ( SELECT stadium_id FROM concert );,True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),True,True,
+20,What are the names of the stadiums without any concerts?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+What are the names of the stadiums without any concerts?
+
+SQL:",386,SELECT name FROM stadium WHERE name NOT LIKE '%concert%',SELECT name FROM stadium WHERE name NOT LIKE '%concert%',True,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),False,False,row count mismatch: predicted=9 reference=4
+21,Show countries where a singer above age 40 and a singer below 30 are from.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+Show countries where a singer above age 40 and a singer below 30 are from.
+
+SQL:",354,SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30,SELECT country FROM singer WHERE age > 40 INTERSECT SELECT country FROM singer WHERE age < 30,True,SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30,True,True,
+22,Show names for all stadiums except for stadiums having a concert in year 2014.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+Show names for all stadiums except for stadiums having a concert in year 2014.
+
+SQL:",390,SELECT name FROM stadium WHERE name != 'Stadium' AND year  =  2014,SELECT name FROM stadium WHERE name != 'Stadium' AND year = 2014,True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,False,"column ""year"" does not exist
+LINE 1: ...ECT name FROM stadium WHERE name != 'Stadium' AND year = '20...
+                                                             ^"
+23,What are the names of all stadiums that did not have a concert in 2014?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE stadium (
+    stadium_id REAL PRIMARY KEY,
+    location TEXT,
+    name TEXT,
+    capacity REAL,
+    highest REAL,
+    lowest REAL,
+    average REAL
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+Question:
+What are the names of all stadiums that did not have a concert in 2014?
+
+SQL:",391,SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert WHERE year  =  2014),SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert WHERE year = 2014),True,SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,False,True,
+24,Show the name and theme for all concerts and the number of singers in each concert.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+Show the name and theme for all concerts and the number of singers in each concert.
+
+SQL:",372,"SELECT t1.concert_name ,  t1.theme FROM concert AS t1 JOIN singer_in_concert AS t2 ON t1.concert_id  =  t2.concert_id","SELECT t1.concert_name , t1.theme FROM concert AS t1 JOIN singer_in_concert AS t2 ON t1.concert_id = t2.concert_id",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,False,row count mismatch: predicted=10 reference=6
+25,"What are the names , themes , and number of singers for every concert ?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+What are the names , themes , and number of singers for every concert ?
+
+SQL:",370,"SELECT t1.concert_name ,  t1.theme ,  count(*) FROM concert AS t1 JOIN singer_in_concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t1.concert_name, t1.theme","SELECT t1.concert_name , t1.theme , count(*) FROM concert AS t1 JOIN singer_in_concert AS t2 ON t1.concert_id = t2.concert_id GROUP by t1.concert_name, t1.theme",True,"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme",False,True,
+26,List singer names and number of concerts for each singer.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+List singer names and number of concerts for each singer.
+
+SQL:",380,"SELECT t1.name ,  count(*) FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t1.name","SELECT t1.name , count(*) FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id = t2.singer_id GROUP by t1.name",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,True,
+27,What are the names of the singers and number of concerts for each person?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+What are the names of the singers and number of concerts for each person?
+
+SQL:",384,"SELECT t1.name ,  count(*) FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t1.name","SELECT t1.name , count(*) FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id = t2.singer_id GROUP by t1.name",True,"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name",False,True,
+28,List all singer names in concerts in year 2014.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+List all singer names in concerts in year 2014.
+
+SQL:",423,SELECT t1.name FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t2.concert_id  =  t3.concert_id WHERE t3.year  =  2014,SELECT t1.name FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id = t2.singer_id JOIN concert AS t3 ON t2.concert_id = t3.concert_id WHERE t3.year = 2014,True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,True,
+29,What are the names of the singers who performed in a concert in 2014?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+CREATE TABLE concert (
+    concert_id REAL PRIMARY KEY,
+    concert_name TEXT,
+    theme TEXT,
+    stadium_id TEXT,
+    year TEXT
+);
+
+CREATE TABLE singer_in_concert (
+    concert_id REAL PRIMARY KEY,
+    singer_id TEXT
+);
+
+Question:
+What are the names of the singers who performed in a concert in 2014?
+
+SQL:",428,SELECT t1.name FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t2.concert_id  =  t3.concert_id WHERE t3.year  =  2014,SELECT t1.name FROM singer AS t1 JOIN singer_in_concert AS t2 ON t1.singer_id = t2.singer_id JOIN concert AS t3 ON t2.concert_id = t3.concert_id WHERE t3.year = 2014,True,SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,False,True,
+30,what is the name and nation of the singer who have a song having 'Hey' in its name?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+what is the name and nation of the singer who have a song having 'Hey' in its name?
+
+SQL:",359,"SELECT name ,  nation FROM singer WHERE song_name LIKE 'Hey'","SELECT name , nation FROM singer WHERE song_name LIKE 'Hey'",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,False,"column ""nation"" does not exist
+LINE 1: SELECT name , nation FROM singer WHERE song_name LIKE 'Hey'
+                      ^"
+31,What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?
+
+SQL:",363,"SELECT name ,  country FROM singer WHERE song_name LIKE 'Hey'","SELECT name , country FROM singer WHERE song_name LIKE 'Hey'",True,"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'",False,False,row count mismatch: predicted=0 reference=1
+32,Find the number of pets whose weight is heavier than 10.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the number of pets whose weight is heavier than 10.
+
+SQL:",328,SELECT count(*) FROM pets WHERE weight  >  10,SELECT count(*) FROM pets WHERE weight > 10,True,SELECT count(*) FROM pets WHERE weight  >  10,True,True,
+33,How many pets have a greater weight than 10?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+How many pets have a greater weight than 10?
+
+SQL:",326,SELECT count(*) FROM pets WHERE weight  >  10,SELECT count(*) FROM pets WHERE weight > 10,True,SELECT count(*) FROM pets WHERE weight  >  10,True,True,
+34,Find the weight of the youngest dog.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the weight of the youngest dog.
+
+SQL:",324,SELECT max(weight) FROM pets WHERE pettype  =  'youngest dog',SELECT max(weight) FROM pets WHERE pettype = 'youngest dog',True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,False,first mismatch at row 0: predicted=None reference=9.3
+35,How much does the youngest dog weigh?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+How much does the youngest dog weigh?
+
+SQL:",324,SELECT max(weight) FROM pets WHERE pettype  =  'Youngest',SELECT max(weight) FROM pets WHERE pettype = 'Youngest',True,SELECT weight FROM pets ORDER by pet_age LIMIT 1,False,False,first mismatch at row 0: predicted=None reference=9.3
+36,Find the maximum weight for each type of pet. List the maximum weight and pet type.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the maximum weight for each type of pet. List the maximum weight and pet type.
+
+SQL:",334,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype","SELECT max(weight) , pettype FROM pets GROUP by pettype",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",True,True,
+37,List the maximum weight and type for each type of pet.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+List the maximum weight and type for each type of pet.
+
+SQL:",328,"SELECT max(weight) ,  pettype FROM pets","SELECT max(weight) , pettype FROM pets",True,"SELECT max(weight) ,  pettype FROM pets GROUP by pettype",False,False,row count mismatch: predicted=1 reference=2
+38,Find the number of distinct type of pets.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the number of distinct type of pets.
+
+SQL:",325,SELECT count(DISTINCT pettype) FROM pets,SELECT count(DISTINCT pettype) FROM pets,True,SELECT count(DISTINCT pettype) FROM pets,True,True,
+39,How many different types of pet are there?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+How many different types of pet are there?
+
+SQL:",325,SELECT count(DISTINCT pettype) FROM pets,SELECT count(DISTINCT pettype) FROM pets,True,SELECT count(DISTINCT pettype) FROM pets,True,True,
+40,Find the first name of students who have cat or dog pet.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the first name of students who have cat or dog pet.
+
+SQL:",409,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t3.pet_age  =  1 AND t1.sex  =  'Cat' OR t1.sex  =  'Dog';,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t3.pet_age = 1 AND t1.sex = 'Cat' OR t1.sex = 'Dog';,True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,False,row count mismatch: predicted=0 reference=2
+41,What are the first names of every student who has a cat or dog as a pet?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What are the first names of every student who has a cat or dog as a pet?
+
+SQL:",414,SELECT t1.fname FROM student AS t1 JOIN pets AS t2 ON t1.stuid  =  t2.petid JOIN has_pet AS t3 ON t3.stuid  =  t2.petid JOIN student AS t4 ON t4.stuid  =  t3.stuid WHERE t4.fname  =  'Cat' OR t4.fname  =  'Dog',SELECT t1.fname FROM student AS t1 JOIN pets AS t2 ON t1.stuid = t2.petid JOIN has_pet AS t3 ON t3.stuid = t2.petid JOIN student AS t4 ON t4.stuid = t3.stuid WHERE t4.fname = 'Cat' OR t4.fname = 'Dog',True,SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',False,False,row count mismatch: predicted=0 reference=2
+42,Find the first name of students who have both cat and dog pets .,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the first name of students who have both cat and dog pets .
+
+SQL:",410,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t3.pet_age  =  1 AND t1.sex  =  'Cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t3.pet_age  =  1 AND t1.sex  =  'Dog',SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t3.pet_age = 1 AND t1.sex = 'Cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t3.pet_age = 1 AND t1.sex = 'Dog',True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,True,
+43,What are the students' first names who have both cats and dogs as pets?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What are the students' first names who have both cats and dogs as pets?
+
+SQL:",412,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t3.pettype  =  'dog',SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t3.pettype = 'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t3.pettype = 'dog',True,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',False,True,
+44,Find the first name and age of students who have a dog but do not have a cat as a pet.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the first name and age of students who have a dog but do not have a cat as a pet.
+
+SQL:",418,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN pets AS t2 ON t1.stuid  =  t2.petid JOIN has_pet AS t3 ON t3.stuid  =  t2.petid WHERE t1.sex  =  'F' AND t1.advisor  =  0 AND t2.pettype  =  'Dog' AND t3.pet_age  =  0","SELECT t1.fname , t1.age FROM student AS t1 JOIN pets AS t2 ON t1.stuid = t2.petid JOIN has_pet AS t3 ON t3.stuid = t2.petid WHERE t1.sex = 'F' AND t1.advisor = 0 AND t2.pettype = 'Dog' AND t3.pet_age = 0",True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,False,"column t3.pet_age does not exist
+LINE 1: ...'F' AND t1.advisor = 0 AND t2.pettype = 'Dog' AND t3.pet_age...
+                                                             ^
+HINT:  Perhaps you meant to reference the column ""t2.pet_age""."
+45,What is the first name of every student who has a dog but does not have a cat?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE student (
+    stuid REAL PRIMARY KEY,
+    lname TEXT,
+    fname TEXT,
+    age REAL,
+    sex TEXT,
+    major REAL,
+    advisor REAL,
+    city_code TEXT
+);
+
+CREATE TABLE has_pet (
+    stuid REAL,
+    petid REAL
+);
+
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What is the first name of every student who has a dog but does not have a cat?
+
+SQL:",415,SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t2.petid  =  t3.petid WHERE t1.sex  =  'F' AND t1.fname  =  'DOG' AND t1.lname  =  'NONE',SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid = t2.stuid JOIN pets AS t3 ON t2.petid = t3.petid WHERE t1.sex = 'F' AND t1.fname = 'DOG' AND t1.lname = 'NONE',True,"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')",False,False,row count mismatch: predicted=0 reference=2
+46,Find the type and weight of the youngest pet.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the type and weight of the youngest pet.
+
+SQL:",326,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1","SELECT pettype , weight FROM pets ORDER by pet_age LIMIT 1",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",True,True,
+47,"What type of pet is the youngest animal, and how much does it weigh?","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What type of pet is the youngest animal, and how much does it weigh?
+
+SQL:",332,"SELECT pettype ,  max(weight) FROM pets ORDER by pet_age DESC LIMIT 1","SELECT pettype , max(weight) FROM pets ORDER by pet_age DESC LIMIT 1",True,"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1",False,False,"syntax error at or near ""GROUP""
+LINE 1: ...x(weight) FROM pets ORDER by pet_age DESC LIMIT 1 GROUP BY p...
+                                                             ^"
+48,Find the id and weight of all pets whose age is older than 1.,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+Find the id and weight of all pets whose age is older than 1.
+
+SQL:",331,"SELECT petid ,  weight FROM pets WHERE pet_age  <  1","SELECT petid , weight FROM pets WHERE pet_age < 1",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,False,row count mismatch: predicted=0 reference=2
+49,What is the id and weight of every pet who is older than 1?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE pets (
+    petid REAL PRIMARY KEY,
+    pettype TEXT,
+    pet_age REAL,
+    weight REAL
+);
+
+Question:
+What is the id and weight of every pet who is older than 1?
+
+SQL:",331,"SELECT petid ,  weight FROM pets WHERE pet_age  <  1","SELECT petid , weight FROM pets WHERE pet_age < 1",True,"SELECT petid ,  weight FROM pets WHERE pet_age  >  1",False,False,row count mismatch: predicted=0 reference=2

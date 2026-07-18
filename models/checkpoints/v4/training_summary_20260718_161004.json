@@ -1,0 +1,50 @@
+{
+  "checkpoint_run": "v4",
+  "model_name": "Salesforce/codegen-350M-multi",
+  "started_at": "2026-07-18T08:36:09.536210+00:00",
+  "completed_at": "2026-07-18T16:10:04.913016+00:00",
+  "max_samples": null,
+  "epochs": null,
+  "baseline_results_run": null,
+  "tasks": [
+    {
+      "task": "text2sql",
+      "checkpoint_run": "v4",
+      "train_rows": 8040,
+      "eval_rows": 1035,
+      "train_loss": 0.08875239227655868,
+      "eval_loss": 0.24739854037761688,
+      "best_eval_loss": 0.24739854037761688,
+      "train_runtime_seconds": 8002.1725,
+      "adapter_path": "/kaggle/working/models/checkpoints/v4/text2sql",
+      "mlflow_run_id": null,
+      "metadata_path": "/kaggle/working/models/checkpoints/v4/text2sql/run_metadata.json"
+    },
+    {
+      "task": "sql2nosql",
+      "checkpoint_run": "v4",
+      "train_rows": 7998,
+      "eval_rows": 1035,
+      "train_loss": 0.03765587309077382,
+      "eval_loss": 0.03387756273150444,
+      "best_eval_loss": 0.03387756273150444,
+      "train_runtime_seconds": 8306.9573,
+      "adapter_path": "/kaggle/working/models/checkpoints/v4/sql2nosql",
+      "mlflow_run_id": null,
+      "metadata_path": "/kaggle/working/models/checkpoints/v4/sql2nosql/run_metadata.json"
+    },
+    {
+      "task": "nosql2doc",
+      "checkpoint_run": "v4",
+      "train_rows": 8040,
+      "eval_rows": 1035,
+      "train_loss": 0.5676120247802962,
+      "eval_loss": 0.9944186210632324,
+      "best_eval_loss": 0.9944186210632324,
+      "train_runtime_seconds": 10531.1003,
+      "adapter_path": "/kaggle/working/models/checkpoints/v4/nosql2doc",
+      "mlflow_run_id": null,
+      "metadata_path": "/kaggle/working/models/checkpoints/v4/nosql2doc/run_metadata.json"
+    }
+  ]
+}

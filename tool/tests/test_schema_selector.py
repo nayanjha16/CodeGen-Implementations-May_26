@@ -4,7 +4,12 @@ import numpy as np
 
 from tool.core.activity_logger import ActivityLogger
 from tool.core.schema_loader import TableSchema
-from tool.core.schema_selector import build_schema_ddl, select_tables_for_prompt
+from tool.core.schema_selector import (
+    build_schema_ddl,
+    extract_tables_from_sql,
+    select_tables_for_prompt,
+    select_tables_for_sql,
+)
 
 
 def _table(name: str, cols: list[str], fk: list[dict] | None = None) -> TableSchema:
@@ -14,6 +19,85 @@ def _table(name: str, cols: list[str], fk: list[dict] | None = None) -> TableSch
         columns=cols,
         foreign_keys=fk or [],
     )
+
+
+def test_extract_tables_from_sql():
+    sql = """
+    SELECT f.title, l.name
+    FROM film f
+    JOIN language l ON f.language_id = l.language_id
+    """
+    assert extract_tables_from_sql(sql) == ["film", "language"]
+
+
+def test_select_tables_for_sql_join_does_not_expand_bridge_tables():
+    tables = [
+        _table(
+            "film",
+            ["film_id", "language_id", "title"],
+            fk=[{"column": "language_id", "referred_table": "language", "referred_column": "language_id"}],
+        ),
+        _table("language", ["language_id", "name"]),
+        _table(
+            "film_actor",
+            ["actor_id", "film_id"],
+            fk=[
+                {"column": "actor_id", "referred_table": "actor", "referred_column": "actor_id"},
+                {"column": "film_id", "referred_table": "film", "referred_column": "film_id"},
+            ],
+        ),
+        _table("actor", ["actor_id", "first_name"]),
+    ]
+    sql = (
+        "SELECT t1.title, t2.name FROM film AS t1 "
+        "JOIN language AS t2 ON t1.language_id = t2.language_id"
+    )
+    result = select_tables_for_sql(sql, tables)
+
+    assert [t.name for t in result.selected] == ["film", "language"]
+    assert result.fk_expanded == []
+
+
+def test_select_tables_for_sql_uses_from_join_tables():
+    tables = [
+        _table(
+            "film_actor",
+            ["actor_id", "film_id"],
+            fk=[
+                {"column": "actor_id", "referred_table": "actor", "referred_column": "actor_id"},
+                {"column": "film_id", "referred_table": "film", "referred_column": "film_id"},
+            ],
+        ),
+        _table("actor", ["actor_id", "first_name"]),
+        _table("film", ["film_id", "title"]),
+    ]
+    logger = ActivityLogger()
+    result = select_tables_for_sql(
+        "SELECT fa.film_id FROM film_actor fa JOIN actor a ON fa.actor_id = a.actor_id",
+        tables,
+        logger=logger,
+    )
+
+    names = {t.name for t in result.selected}
+    assert result.method == "sql_parse"
+    assert {"film_actor", "actor"}.issubset(names)
+    assert any(e.event == "sql_tables_parsed" for e in logger.events)
+    assert any(e.event == "tables_selected" for e in logger.events)
+
+
+def test_select_tables_for_sql_single_table_skips_fk_expansion():
+    tables = [
+        _table(
+            "film",
+            ["film_id", "language_id"],
+            fk=[{"column": "language_id", "referred_table": "language", "referred_column": "language_id"}],
+        ),
+        _table("language", ["language_id", "name"]),
+    ]
+    result = select_tables_for_sql("SELECT COUNT(*) FROM film", tables)
+
+    assert [t.name for t in result.selected] == ["film"]
+    assert result.fk_expanded == []
 
 
 def test_full_schema_when_few_tables():

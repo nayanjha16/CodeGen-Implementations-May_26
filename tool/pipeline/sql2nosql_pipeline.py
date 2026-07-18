@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
 from typing import Any
 
 import pandas as pd
-from sqlalchemy.engine import Engine
 
 from src.documentation.prompt_builder import DocumentationPromptBuilder
 from src.sql2nosql.prompt_builder import NoSQLPromptBuilder
@@ -20,20 +18,9 @@ from tool.core.inference.fastapi_client import FastApiInferenceClient
 from tool.core.mongo_database import get_active_mongo_client
 from tool.core.mongo_executor import execute_mongo_query, validate_mongo_query
 from tool.core.safety_validator import SafetyValidator
-from tool.core.schema_loader import TableSchema, load_all_tables
-from tool.core.schema_selector import SchemaSelectionResult, build_schema_ddl, select_tables_for_prompt
-from tool.core.settings_store import AppSettings, DatabaseConnection, SettingsStore
-
-
-@dataclass
-class Sql2NoSqlPrepareResult:
-    """Connection + schema state after auto table selection, before user confirmation."""
-
-    engine: Engine
-    conn: DatabaseConnection
-    all_tables: list[TableSchema]
-    selection: SchemaSelectionResult
-    sql_query: str
+from tool.core.schema_loader import load_all_tables
+from tool.core.schema_selector import build_schema_ddl, select_tables_for_sql
+from tool.core.settings_store import AppSettings, SettingsStore
 
 
 class Sql2NoSqlPipeline:
@@ -45,8 +32,8 @@ class Sql2NoSqlPipeline:
         self.doc_prompt_builder = DocumentationPromptBuilder()
         self.validator = SafetyValidator()
 
-    def prepare(self, sql_query: str, *, logger: ActivityLogger) -> Sql2NoSqlPrepareResult | ExecuteResult:
-        """Connect, validate SQL, load schema, and suggest relevant tables."""
+    def execute(self, sql_query: str, *, logger: ActivityLogger) -> ExecuteResult:
+        """Run the full SQL-to-NoSQL pipeline for one SQL query."""
         sql_query = sql_query.strip()
         if not sql_query:
             return ExecuteResult(success=False, error="Please enter a SQL query.")
@@ -108,7 +95,7 @@ class Sql2NoSqlPipeline:
             )
             return ExecuteResult(success=False, error=str(exc))
 
-        logger.info(stage="render", event="render_start", message="Starting schema selection for SQL-to-NoSQL")
+        logger.info(stage="render", event="render_start", message="Starting SQL-to-NoSQL pipeline")
 
         try:
             logger.info(stage="schema", event="schema_load_start", message="Loading database schema")
@@ -120,48 +107,50 @@ class Sql2NoSqlPipeline:
                 details={"table_count": len(all_tables), "schema": conn.schema},
             )
 
-            selection = select_tables_for_prompt(
+            selection = select_tables_for_sql(
                 sql_query,
                 all_tables,
-                embedding_model=self.settings.schema_selection.embedding_model,
-                top_k=self.settings.schema_selection.top_k,
-                min_score=self.settings.schema_selection.min_score,
+                max_tables=self.settings.execution.schema_max_tables,
                 logger=logger,
             )
-            return Sql2NoSqlPrepareResult(
-                engine=engine,
-                conn=conn,
-                all_tables=all_tables,
-                selection=selection,
-                sql_query=sql_query,
+            selected_names = [t.name for t in selection.selected]
+            if not selected_names:
+                return ExecuteResult(
+                    success=False,
+                    generated_sql=sql_query,
+                    error="Could not determine tables from SQL query.",
+                )
+
+            return self._run_with_tables(
+                sql_query,
+                selected_names,
+                all_tables,
+                logger=logger,
             )
         except Exception as exc:
             logger.error(
                 stage="pipeline",
                 event="pipeline_failed",
-                message="Schema preparation failed",
+                message="SQL-to-NoSQL pipeline failed",
                 details={"error": str(exc)},
             )
-            return ExecuteResult(success=False, error=str(exc))
+            return ExecuteResult(success=False, generated_sql=sql_query, error=str(exc))
 
-    def execute_with_tables(
+    def _run_with_tables(
         self,
         sql_query: str,
-        prepare: Sql2NoSqlPrepareResult,
         selected_names: list[str],
+        all_tables: list,
         *,
         logger: ActivityLogger,
     ) -> ExecuteResult:
         """Generate NoSQL, execute on MongoDB, then generate documentation."""
-        sql_query = sql_query.strip()
-        if not selected_names:
-            return ExecuteResult(success=False, error="Select at least one table before running the query.")
-
-        table_by_name = {t.name: t for t in prepare.all_tables}
+        table_by_name = {t.name: t for t in all_tables}
         missing = [name for name in selected_names if name not in table_by_name]
         if missing:
             return ExecuteResult(
                 success=False,
+                generated_sql=sql_query,
                 error=f"Unknown tables: {', '.join(missing)}",
             )
 

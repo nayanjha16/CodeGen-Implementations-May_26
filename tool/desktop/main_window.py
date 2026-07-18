@@ -54,10 +54,7 @@ class MainWindow(ctk.CTk):
         self._run_locked = False
         self._last_query = ""
 
-        self._s2n_prepare_result = None
-        self._s2n_awaiting_table_confirm = False
         self._s2n_run_locked = False
-        self._s2n_last_query = ""
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -184,7 +181,7 @@ class MainWindow(ctk.CTk):
 
         left = ctk.CTkFrame(parent, fg_color="transparent")
         left.grid(row=0, column=0, sticky="nsew", padx=(4, 8), pady=4)
-        left.grid_rowconfigure(9, weight=1)
+        left.grid_rowconfigure(8, weight=1)
         left.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(left, text="SQL Query", font=ctk.CTkFont(size=14, weight="bold")).grid(
@@ -193,7 +190,6 @@ class MainWindow(ctk.CTk):
         self._s2n_sql_box = ctk.CTkTextbox(left, height=72)
         self._s2n_sql_box.grid(row=1, column=0, sticky="ew", pady=(0, 4))
         self._s2n_sql_box.insert("1.0", "SELECT COUNT(*) FROM film")
-        self._s2n_sql_box.bind("<KeyRelease>", lambda _e: self._on_s2n_query_changed())
 
         btn_row = ctk.CTkFrame(left, fg_color="transparent")
         btn_row.grid(row=2, column=0, sticky="w", pady=4)
@@ -202,28 +198,25 @@ class MainWindow(ctk.CTk):
         ctk.CTkButton(btn_row, text="Clear", command=self._on_sql2nosql_clear, width=80).pack(side="left")
         ctk.CTkLabel(btn_row, text="  Ctrl/Cmd+Return", text_color="gray").pack(side="left", padx=8)
 
-        self._s2n_table_selector = TableSelectorPanel(left)
-        self._s2n_table_selector.grid(row=3, column=0, sticky="ew", pady=(2, 2))
-
         ctk.CTkLabel(left, text="Generated NoSQL", font=ctk.CTkFont(size=14, weight="bold")).grid(
-            row=4, column=0, sticky="w", pady=(8, 4)
+            row=3, column=0, sticky="w", pady=(8, 4)
         )
         self._s2n_nosql_box = ctk.CTkTextbox(left, height=72)
-        self._s2n_nosql_box.grid(row=5, column=0, sticky="new", pady=(0, 4))
+        self._s2n_nosql_box.grid(row=4, column=0, sticky="new", pady=(0, 4))
         self._s2n_nosql_box.configure(state="disabled")
 
         self._s2n_validation_label = ctk.CTkLabel(left, text="", anchor="w")
-        self._s2n_validation_label.grid(row=6, column=0, sticky="ew", pady=(0, 4))
+        self._s2n_validation_label.grid(row=5, column=0, sticky="ew", pady=(0, 4))
 
         ctk.CTkLabel(left, text="Documentation", font=ctk.CTkFont(size=14, weight="bold")).grid(
-            row=7, column=0, sticky="w", pady=(8, 4)
+            row=6, column=0, sticky="w", pady=(8, 4)
         )
         self._s2n_doc_box = ctk.CTkTextbox(left, height=56)
-        self._s2n_doc_box.grid(row=8, column=0, sticky="new", pady=(0, 4))
+        self._s2n_doc_box.grid(row=7, column=0, sticky="new", pady=(0, 4))
         self._s2n_doc_box.configure(state="disabled")
 
         self._s2n_results = ResultsTable(left)
-        self._s2n_results.grid(row=9, column=0, sticky="nsew", pady=(4, 0))
+        self._s2n_results.grid(row=8, column=0, sticky="nsew", pady=(4, 0))
 
         self._s2n_activity = ActivityLogPanel(parent)
         self._s2n_activity.grid(row=0, column=1, sticky="nsew", padx=(4, 4), pady=4)
@@ -452,34 +445,18 @@ class MainWindow(ctk.CTk):
 
     # --- SQL-to-NoSQL ---
 
-    def _on_s2n_query_changed(self) -> None:
-        query = self._s2n_sql_box.get("1.0", "end").strip()
-        if self._s2n_run_locked:
-            return
-        if self._s2n_awaiting_table_confirm and self._s2n_prepare_result is not None:
-            if query == self._s2n_prepare_result.sql_query:
-                return
-        if query != self._s2n_last_query:
-            self._s2n_prepare_result = None
-            self._s2n_awaiting_table_confirm = False
-            self._s2n_execute_btn.configure(text="Execute")
-
     def _reset_sql2nosql_state(self) -> None:
-        self._s2n_prepare_result = None
-        self._s2n_awaiting_table_confirm = False
         self._s2n_run_locked = False
         self._s2n_execute_btn.configure(text="Execute", state="normal")
 
     def _on_sql2nosql_clear(self) -> None:
         self._s2n_sql_box.delete("1.0", "end")
-        self._s2n_last_query = ""
         self._set_readonly_text(self._s2n_nosql_box, "")
         self._set_readonly_text(self._s2n_doc_box, "")
         self._s2n_validation_label.configure(text="")
         self._set_status("")
         self._s2n_results.render(None)
         self._s2n_activity.clear()
-        self._s2n_table_selector.clear()
         self._reset_sql2nosql_state()
 
     def _on_sql2nosql_execute(self) -> None:
@@ -489,81 +466,17 @@ class MainWindow(ctk.CTk):
             return
         if self._s2n_run_locked:
             return
-        if self._s2n_awaiting_table_confirm and self._s2n_prepare_result is not None:
-            self._start_sql2nosql_run(sql_query)
-            return
 
-        self._s2n_last_query = sql_query
         self.app_state.logger.clear()
         self._s2n_activity.clear()
         self._set_readonly_text(self._s2n_nosql_box, "")
         self._set_readonly_text(self._s2n_doc_box, "")
         self._s2n_validation_label.configure(text="")
         self._s2n_results.render(None)
-        self._s2n_table_selector.clear()
-        self._s2n_prepare_result = None
-        self._s2n_awaiting_table_confirm = False
 
-        self._set_status("Loading schema and selecting tables…")
-        self._s2n_execute_btn.configure(state="disabled", text="Loading…")
-
-        def worker():
-            def on_event(event: ActivityEvent) -> None:
-                self.after(0, lambda e=event: self._on_sql2nosql_event(e))
-
-            self.app_state.logger.set_listener(on_event)
-            try:
-                self._sql2nosql_adapter.pipeline.settings = self.app_state.settings or self.app_state.load_settings()
-                result = self._sql2nosql_adapter.prepare(sql_query, logger=self.app_state.logger)
-                self.after(0, lambda: self._on_sql2nosql_prepare_done(sql_query, result))
-            except Exception as exc:
-                self.after(0, lambda: self._on_sql2nosql_error(str(exc)))
-            finally:
-                self.after(0, lambda: self.app_state.logger.set_listener(None))
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def _on_sql2nosql_prepare_done(self, sql_query: str, result) -> None:
-        from tool.adapters.base import ExecuteResult
-
-        if isinstance(result, ExecuteResult):
-            self._s2n_execute_btn.configure(state="normal", text="Execute")
-            self._set_status(result.error or "Preparation failed", error=True)
-            if result.validation_status and not result.validation_status.get("passed"):
-                self._s2n_validation_label.configure(text=result.validation_status.get("message", ""), text_color="#e74c3c")
-            if result.error:
-                messagebox.showerror("Prepare failed", result.error)
-            return
-
-        suggested = [t.name for t in result.selection.selected]
-        self._s2n_prepare_result = result
-        self._s2n_awaiting_table_confirm = True
-        self._s2n_last_query = result.sql_query
-        self._s2n_table_selector.set_tables(result.all_tables, suggested, result.selection.scores)
-        self._s2n_execute_btn.configure(state="normal", text="Run Query")
-        self._set_status(
-            f"{len(suggested)} tables ready ({', '.join(suggested[:4])}{'…' if len(suggested) > 4 else ''}) — click Run Query."
-        )
-
-    def _start_sql2nosql_run(self, sql_query: str) -> None:
-        if self._s2n_prepare_result is None:
-            self._set_status("Run Execute first to load schema tables.", error=True)
-            return
-
-        prepare = self._s2n_prepare_result
-        selected = self._s2n_table_selector.get_selected()
-        if not selected:
-            selected = [t.name for t in prepare.selection.selected]
-        if not selected:
-            self._set_status("Select at least one table before running.", error=True)
-            return
-
-        run_sql = prepare.sql_query
-        self._s2n_awaiting_table_confirm = False
         self._s2n_run_locked = True
-        self._s2n_table_selector.lock()
         self._s2n_execute_btn.configure(state="disabled", text="Running…")
-        self._set_status(f"Generating NoSQL using {len(selected)} tables…")
+        self._set_status("Running SQL-to-NoSQL pipeline…")
 
         def worker():
             def on_event(event: ActivityEvent) -> None:
@@ -572,12 +485,7 @@ class MainWindow(ctk.CTk):
             self.app_state.logger.set_listener(on_event)
             try:
                 self._sql2nosql_adapter.pipeline.settings = self.app_state.settings or self.app_state.load_settings()
-                result = self._sql2nosql_adapter.execute_with_tables(
-                    run_sql,
-                    prepare,
-                    selected,
-                    logger=self.app_state.logger,
-                )
+                result = self._sql2nosql_adapter.execute(sql_query, logger=self.app_state.logger)
                 self.after(0, lambda: self._on_sql2nosql_done(result))
             except Exception as exc:
                 self.after(0, lambda: self._on_sql2nosql_error(str(exc)))
@@ -610,7 +518,6 @@ class MainWindow(ctk.CTk):
     def _on_sql2nosql_done(self, result) -> None:
         self._s2n_execute_btn.configure(state="normal", text="Execute")
         self._s2n_run_locked = False
-        self._s2n_prepare_result = None
 
         if result.generated_nosql:
             self._set_readonly_text(self._s2n_nosql_box, result.generated_nosql)
@@ -639,7 +546,6 @@ class MainWindow(ctk.CTk):
     def _on_sql2nosql_error(self, error: str) -> None:
         self._s2n_execute_btn.configure(state="normal", text="Execute")
         self._s2n_run_locked = False
-        self._s2n_prepare_result = None
         self._set_status(error, error=True)
         messagebox.showerror("Execute failed", error)
 

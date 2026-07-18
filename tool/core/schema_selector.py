@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 import numpy as np
@@ -170,6 +171,119 @@ def _expand_fk_closure(
 def _prompt_table_cap(top_k: int) -> int:
     """Allow a few join partners beyond embedding top-K."""
     return max(top_k + 3, 4)
+
+
+def extract_tables_from_sql(sql: str) -> list[str]:
+    """Extract table names from FROM/JOIN clauses, preserving first-seen order."""
+    seen: dict[str, str] = {}
+    for match in re.finditer(
+        r"\b(?:FROM|JOIN)\s+([`\"[]?(?:\w+\.)?\w+[`\"\]]?)",
+        sql,
+        re.IGNORECASE,
+    ):
+        name = match.group(1).strip("`\"[]")
+        if "." in name:
+            name = name.split(".")[-1]
+        key = name.lower()
+        if key not in seen:
+            seen[key] = name
+    return list(seen.values())
+
+
+def select_tables_for_sql(
+    sql_query: str,
+    tables: list[TableSchema],
+    *,
+    max_tables: int | None = None,
+    logger: ActivityLogger | None = None,
+) -> SchemaSelectionResult:
+    """Select tables referenced in a SQL query.
+
+    Unlike prompt-based selection, this does not run FK/bridge expansion: the SQL
+    already names the tables needed for schema context.
+    """
+    if not tables:
+        return SchemaSelectionResult(selected=[], scores={}, method="empty", fk_expanded=[])
+
+    parsed_names = extract_tables_from_sql(sql_query)
+    if logger:
+        logger.info(
+            stage="schema",
+            event="sql_tables_parsed",
+            message="Extracted tables from SQL query",
+            details={"parsed": parsed_names},
+        )
+
+    table_by_lower = {t.name.lower(): t for t in tables}
+    selected: list[TableSchema] = []
+    scores: dict[str, float] = {}
+    unknown: list[str] = []
+
+    for name in parsed_names:
+        table = table_by_lower.get(name.lower())
+        if table is None:
+            unknown.append(name)
+            continue
+        if table.name in scores:
+            continue
+        selected.append(table)
+        scores[table.name] = 1.0
+
+    if unknown and logger:
+        logger.warning(
+            stage="schema",
+            event="sql_tables_unknown",
+            message="SQL references tables not found in database schema",
+            details={"unknown": unknown, "parsed": parsed_names},
+        )
+
+    if not selected:
+        if logger:
+            logger.warning(
+                stage="schema",
+                event="sql_tables_empty",
+                message="No tables matched from SQL query",
+                details={"parsed": parsed_names},
+            )
+        return SchemaSelectionResult(selected=[], scores={}, method="sql_parse", fk_expanded=[])
+
+    if max_tables is not None and len(selected) > max_tables:
+        trimmed = selected[:max_tables]
+        if logger:
+            logger.warning(
+                stage="schema",
+                event="sql_tables_trimmed",
+                message="SQL references more tables than allowed for prompt schema",
+                details={
+                    "selected": [t.name for t in trimmed],
+                    "dropped": [t.name for t in selected[max_tables:]],
+                    "max_tables": max_tables,
+                },
+            )
+        selected = trimmed
+        scores = {t.name: scores[t.name] for t in selected}
+
+    if logger:
+        logger.info(
+            stage="schema",
+            event="tables_selected",
+            message="Selected tables from SQL query",
+            details={
+                "method": "sql_parse",
+                "selected": [t.name for t in selected],
+                "scores": {k: round(v, 3) for k, v in scores.items()},
+                "selected_count": len(selected),
+                "total_tables": len(tables),
+                "fk_expanded": [],
+            },
+        )
+
+    return SchemaSelectionResult(
+        selected=selected,
+        scores=scores,
+        method="sql_parse",
+        fk_expanded=[],
+    )
 
 
 def select_tables_for_prompt(

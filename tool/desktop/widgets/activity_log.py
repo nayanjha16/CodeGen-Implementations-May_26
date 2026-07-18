@@ -103,7 +103,19 @@ class ActivityLogPanel(ctk.CTkFrame):
             preview = ", ".join(names[:4])
             if len(names) > 4:
                 preview += f", +{len(names) - 4} more"
+            method = details.get("method", "")
+            if method == "sql_parse":
+                return f"{icon} {ts}  Tables selected from SQL · {preview or event.message}"
             return f"{icon} {ts}  Tables selected · {preview or event.message}"
+        if event.event == "sql_tables_parsed":
+            parsed = details.get("parsed") or []
+            preview = ", ".join(parsed[:4])
+            if len(parsed) > 4:
+                preview += f", +{len(parsed) - 4} more"
+            return f"{icon} {ts}  Tables parsed from SQL · {preview or 'none'}"
+        if event.event == "sql_tables_unknown":
+            unknown = details.get("unknown") or []
+            return f"{icon} {ts}  Unknown SQL tables · {', '.join(unknown)}"
         if event.event == "fk_tables_expanded":
             added = details.get("added") or []
             return f"{icon} {ts}  FK tables added · {', '.join(added)}"

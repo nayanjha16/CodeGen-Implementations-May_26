@@ -11,6 +11,14 @@ from tool.core.settings_store import FastApiSettings
 from tool.core.sql_extractor import extract_sql
 
 
+def format_timeout_error(exc: Exception, timeout_sec: int) -> str:
+    """Include configured timeout when httpx reports a read timeout."""
+    message = str(exc)
+    if isinstance(exc, httpx.TimeoutException) or "read operation timed out" in message.lower():
+        return f"{message} (timeout: {timeout_sec} sec)"
+    return message
+
+
 class FastApiInferenceClient:
     """Call hf-deploy /v1/chat/completions and extract SQL from response."""
 
@@ -47,10 +55,13 @@ class FastApiInferenceClient:
                 details={"model": self.config.model, "intent": self.config.intent},
             )
 
-        with httpx.Client(timeout=self.config.timeout_sec) as client:
-            response = client.post(self._chat_url(), json=payload, headers=self._headers())
-            response.raise_for_status()
-            data = response.json()
+        try:
+            with httpx.Client(timeout=self.config.timeout_sec) as client:
+                response = client.post(self._chat_url(), json=payload, headers=self._headers())
+                response.raise_for_status()
+                data = response.json()
+        except httpx.TimeoutException as exc:
+            raise RuntimeError(format_timeout_error(exc, self.config.timeout_sec)) from exc
 
         content = data["choices"][0]["message"]["content"]
         sql = extract_sql(content)

@@ -2,9 +2,36 @@
 
 from unittest.mock import MagicMock, patch
 
+import httpx
+import pytest
+
 from tool.core.activity_logger import ActivityLogger
-from tool.core.inference.fastapi_client import FastApiInferenceClient
+from tool.core.inference.fastapi_client import FastApiInferenceClient, format_timeout_error
 from tool.core.settings_store import FastApiSettings
+
+
+def test_format_timeout_error_includes_seconds():
+    exc = httpx.ReadTimeout("The read operation timed out")
+    assert format_timeout_error(exc, 15) == "The read operation timed out (timeout: 15 sec)"
+
+
+def test_format_timeout_error_passthrough_for_other_errors():
+    assert format_timeout_error(RuntimeError("connection refused"), 15) == "connection refused"
+
+
+def test_generate_sql_raises_timeout_with_seconds():
+    cfg = FastApiSettings(base_url="http://localhost:8000/v1", model="codegen-text2sql", timeout_sec=15)
+    client = FastApiInferenceClient(cfg)
+
+    with patch("tool.core.inference.fastapi_client.httpx.Client") as mock_client_cls:
+        mock_client = MagicMock()
+        mock_client.__enter__ = MagicMock(return_value=mock_client)
+        mock_client.__exit__ = MagicMock(return_value=False)
+        mock_client.post.side_effect = httpx.ReadTimeout("The read operation timed out")
+        mock_client_cls.return_value = mock_client
+
+        with pytest.raises(RuntimeError, match=r"timeout: 15 sec"):
+            client.generate_sql("prompt text")
 
 
 def test_generate_sql_extracts_from_response():

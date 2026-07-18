@@ -11,6 +11,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
 from tool.core.activity_logger import ActivityLogger
+from tool.core.inference.fastapi_client import format_timeout_error
 from tool.core.settings_store import DatabaseConnection, FastApiSettings
 
 
@@ -115,12 +116,13 @@ def run_fastapi_test(
         return result
     except Exception as exc:
         latency = (time.perf_counter() - start) * 1000
-        result = TestResult(success=False, latency_ms=latency, error=str(exc))
+        error = format_timeout_error(exc, config.timeout_sec)
+        result = TestResult(success=False, latency_ms=latency, error=error)
         if logger:
             logger.warning(
                 stage="settings",
                 event="api_test_failed",
                 message="FastAPI health check failed",
-                details={"error": str(exc)},
+                details={"error": error, "timeout_sec": config.timeout_sec},
             )
         return result

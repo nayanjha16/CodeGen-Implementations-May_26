@@ -4,7 +4,7 @@ Base model and LoRA adapters under `models/`. Hyperparameters, datasets, trainin
 
 Sources: `configs/default.yaml`, `models/checkpoints/{v1,v2,v3,v4}/**/{adapter_config.json,run_metadata.json,training_args.bin,training_summary_*.json}`, `results/spider_gold_validation_*/metrics.json`.
 
-Comparison report: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md)
+Comparison reports: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md) · [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md)
 
 ---
 
@@ -40,6 +40,8 @@ Comparison report: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versio
 | Seed | 42 |
 | Max sequence | 2048 (prompt budget 1792 + target reserve 256) |
 | Training data source | Hugging Face [`care2achieve/tend`](https://huggingface.co/datasets/care2achieve/tend) configs `spider` + `bird` |
+| Eval decoding (v1–v4 greedy) | `decoding_strategy: greedy`, `do_sample: false` |
+| Eval decoding (v4 beam re-eval) | `decoding_strategy: beam`, `num_beams: 4`, `do_sample: false` (current `default.yaml`) |
 
 Config defaults live in `configs/default.yaml`. **v4 on Kaggle** did not use these batch defaults — see [Kaggle notebook overrides](#kaggle-notebook-overrides-v4) below.
 
@@ -219,7 +221,14 @@ The notebook also writes a Kaggle-specific `.env` (paths under `/kaggle/working/
 
 ### Gold validation metrics
 
-`results/spider_gold_validation_codegen-350M-multi_lora-v4_1807_2149/`
+Same v4 adapters; two eval runs differing only in `generation.decoding_strategy`:
+
+| Decoding | Results path | text2sql exec | sql2nosql exec | doc judge |
+|----------|--------------|---------------|----------------|-----------|
+| greedy | `results/spider_gold_validation_codegen-350M-multi_lora-v4_1807_2149/` | 0.60 | 0.88 | 7.79 |
+| beam | `results/spider_gold_validation_codegen-350M-multi_lora-v4_1807_2248/` | **0.64** | 0.82 | **8.54** |
+
+**Greedy (`2149`)**
 
 | Task | Execution acc | Exact match | Structural / Emb / Judge |
 |------|---------------|-------------|--------------------------|
@@ -227,9 +236,21 @@ The notebook also writes a Kaggle-specific `.env` (paths under `/kaggle/working/
 | sql2nosql | 0.88 | 0.80 | struct 0.98 |
 | documentation | — | 0.02 | emb 0.96, judge 7.79 |
 
+**Beam (`2248`)** — current `configs/default.yaml` default
+
+| Task | Execution acc | Exact match | Structural / Emb / Judge |
+|------|---------------|-------------|--------------------------|
+| text2sql | 0.64 | 0.44 | struct 0.95 |
+| sql2nosql | 0.82 | 0.66 | struct 0.97 |
+| documentation | — | 0.02 | emb 0.96, judge 8.54 |
+
+Beam improves text2sql (+4 pp execution, +4 pp exact match) and documentation judge (+0.75) but lowers sql2nosql execution (−6 pp) and exact match (−14 pp) vs greedy on the same adapters. Full tables: [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md).
+
 ---
 
 ## Metric progression (execution / judge)
+
+Greedy decoding unless noted. Version line uses greedy for apples-to-apples training comparisons.
 
 | Run | text2sql exec | sql2nosql exec | doc judge |
 |-----|---------------|----------------|-----------|
@@ -237,7 +258,8 @@ The notebook also writes a Kaggle-specific `.env` (paths under `/kaggle/working/
 | v1 | 20% | 4% | 1.51 |
 | v2 | 34% | 32% | 3.11 |
 | v3 | 54% | 74% | 6.45 |
-| **v4** | **60%** | **88%** | **7.79** |
+| **v4 (greedy)** | **60%** | **88%** | **7.79** |
+| v4 (beam) | 64% | 82% | 8.54 |
 
 ---
 
@@ -270,4 +292,5 @@ After each new checkpoint run:
 1. Copy hyperparameters from `adapter_config.json` + `training_args.bin` / CLI flags.
 2. Copy row counts and losses from `run_metadata.json` (and `training_summary_*.json`).
 3. Add Spider gold metrics from `results/spider_gold_validation_*_lora-vN_*/metrics.json`.
-4. Link the new section in the quick comparison table above.
+4. Note eval `generation.decoding_strategy` (greedy vs beam) when comparing runs on the same adapter.
+5. Link the new section in the quick comparison table above.

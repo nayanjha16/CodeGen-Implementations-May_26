@@ -1,0 +1,27 @@
+# RepoCoder Studio — one-off training job image.
+#
+# Builds the candidate corpus, validates it, builds the task dataset, and
+# LoRA-trains the student model, producing outputs/adapters/<final_adapter_name>/.
+# Not the inference image (see Dockerfile) — this one is run once via
+# `docker run --rm ...`, not served.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential default-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./requirements.txt
+COPY requirements-train.txt ./requirements-train.txt
+RUN pip install --no-cache-dir -r requirements-train.txt
+
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+
+ENV REPOCODER_PROJECT_ROOT=/data
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "scripts/run_training_pipeline.py"]

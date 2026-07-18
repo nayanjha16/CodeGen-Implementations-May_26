@@ -2498,6 +2498,15 @@ print(f"  - Training (-t)             : {'Enabled' if run_training else 'Disable
 print(f"  - Validation (-v)           : {'Enabled' if run_validation else 'Disabled'}")
 print(f"  - Number of records to cache: {args.num_records}")
 print(f"  - Purge Cached Dataset      : {'True' if purge_cache else 'False'}")
+# Print GPU information
+import os
+cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', 'Not set (all GPUs visible)')
+print(f"  - CUDA_VISIBLE_DEVICES    : {cuda_visible_devices}")
+if torch.cuda.is_available():
+    print(f"  - Active GPU              : {torch.cuda.current_device()} - {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    print(f"  - Total GPUs available    : {torch.cuda.device_count()}")
+else:
+    print("  - GPU: Not available (using CPU)")
 print("=" * 50)
 
 # Dataset split configuration (defined before conditional blocks so all phases can use them)
@@ -2514,7 +2523,9 @@ LORA_ADAPTER_PY_TO_CPP = "../model/Qwen_Python_to_CPP_LORA_Adapter"
 LORA_ADAPTER_NL_TO_PL = "../model/Qwen_NL_to_PL_LORA_Adapter"
 
 # Define model name for tokenizer (used in both training and validation)
-model_name_codegen = "Qwen/Qwen2.5-Coder-7B-Instruct"
+# Use the same model name as QwenModelBase to ensure consistency
+model_name_codegen = QwenModelBase._model_name
+print(f"PEFT Training and validation for: {model_name_codegen}")
 
 # --- BEGIN FIX: Ensure all singletons are fully re-initialized ---
 # This is crucial in interactive environments where class definitions might be re-run
@@ -2780,7 +2791,7 @@ if run_training:
         output_dir="./codegen_lora_results",
         per_device_train_batch_size=1, # Adjust based on GPU memory
         gradient_accumulation_steps=8, # Increase if batch size is small
-        num_train_epochs=3, # Number of training epochs
+        num_train_epochs=20, # Number of training epochs
         learning_rate=2e-4,
         logging_dir="./codegen_lora_logs",
         logging_steps=10,
@@ -2986,7 +2997,7 @@ if run_training:
         output_dir="./codegen_lora_results_py_to_cpp",
         per_device_train_batch_size=1, # Adjust based on GPU memory
         gradient_accumulation_steps=8, # Increase if batch size is small
-        num_train_epochs=3, # Number of training epochs
+        num_train_epochs=20, # Number of training epochs
         learning_rate=2e-4,
         logging_dir="./codegen_lora_logs_py_to_cpp",
         logging_steps=10,
@@ -3010,7 +3021,7 @@ if run_training:
     model_codegen_lora_py_to_cpp = get_peft_model(model_codegen_fresh, lora_config)
     print("\n"+"*"*30+"\nLORA PL1->PL2 adapted model summary:")
     model_codegen_lora_py_to_cpp.print_trainable_parameters()
-    print("\n"+"*"*30)    
+    print("\n"+"*"*30)
 
     # Initialize Trainer for the new training phase
     trainer_py_to_cpp = Trainer(
@@ -3239,7 +3250,8 @@ if run_validation:
             num_records=MAX_RECORDS_LORA_VALIDATION,
             num_tries=3,
             start_index=validation_start_index,
-            language_filter='python'  # Only process Python records for PL1->PL2
+            # Only process cpp records for PL1->PL2, to convert from cpp to python and then use Python as PL1 to convert to CPP as PL2
+            language_filter='cpp'  
         )
     except Exception as e:
         print(f"Exception in PL1->PL2 validation: {e}")

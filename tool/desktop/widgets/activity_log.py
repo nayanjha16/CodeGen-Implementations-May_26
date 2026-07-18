@@ -53,6 +53,7 @@ class ActivityLogPanel(ctk.CTkFrame):
         self._text = tk.Text(
             text_frame,
             wrap="word",
+            width=1,
             state="disabled",
             font=("Menlo", 11),
             bg="#2b2b2b" if ctk.get_appearance_mode() == "Dark" else "#f5f5f5",
@@ -112,6 +113,22 @@ class ActivityLogPanel(ctk.CTkFrame):
         if event.event == "prompt_body":
             length = len(details.get("prompt") or "")
             return f"{icon} {ts}  Prompt payload · {length} chars (enable Details for full text)"
+        if event.event == "doc_prompt_built":
+            return f"{icon} {ts}  Doc prompt built · {details.get('prompt_length', '?')} chars"
+        if event.event == "doc_prompt_body":
+            length = len(details.get("prompt") or "")
+            return f"{icon} {ts}  Doc prompt payload · {length} chars (enable Details for full text)"
+        if event.event == "nosql_generated":
+            length = details.get("nosql_length") or len(details.get("nosql") or "")
+            return f"{icon} {ts}  NoSQL generated · {length} chars"
+        if event.event == "documentation_start":
+            return f"{icon} {ts}  Generating documentation · {details.get('prompt_length', '?')} chars"
+        if event.event == "documentation_generated":
+            length = details.get("doc_length") or len(details.get("documentation") or "")
+            return f"{icon} {ts}  Documentation generated · {length} chars"
+        if event.event == "documentation_ready":
+            length = len(details.get("documentation") or "")
+            return f"{icon} {ts}  Documentation ready · {length} chars"
         if event.event == "sql_generated":
             length = details.get("sql_length") or len(details.get("sql") or "")
             return f"{icon} {ts}  SQL generated · {length} chars"

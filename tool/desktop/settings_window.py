@@ -8,12 +8,13 @@ from typing import Callable
 import customtkinter as ctk
 from tkinter import messagebox
 
-from tool.core.connection_tester import run_database_test, run_fastapi_test
+from tool.core.connection_tester import run_database_test, run_fastapi_test, run_mongo_test
 from tool.core.settings_store import (
     AppSettings,
     DatabaseConnection,
     ExecutionSettings,
     FastApiSettings,
+    MongoConnection,
     SchemaSelectionSettings,
     SettingsStore,
 )
@@ -35,17 +36,19 @@ class SettingsWindow(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             self,
-            text="Configure PostgreSQL and FastAPI inference",
+            text="Configure PostgreSQL, MongoDB, and FastAPI inference",
             font=ctk.CTkFont(size=13),
         ).grid(row=0, column=0, sticky="w", padx=16, pady=(12, 4))
 
         self.tabs = ctk.CTkTabview(self)
         self.tabs.grid(row=1, column=0, sticky="nsew", padx=16, pady=8)
         self.tabs.add("Database")
+        self.tabs.add("MongoDB")
         self.tabs.add("FastAPI")
         self.tabs.add("Schema")
 
         self._build_database_tab(self.tabs.tab("Database"))
+        self._build_mongo_tab(self.tabs.tab("MongoDB"))
         self._build_fastapi_tab(self.tabs.tab("FastAPI"))
         self._build_schema_tab(self.tabs.tab("Schema"))
 
@@ -172,6 +175,136 @@ class SettingsWindow(ctk.CTkToplevel):
 
     def _test_connection(self, conn: DatabaseConnection) -> None:
         result = run_database_test(conn, logger=self.app_state.logger)
+        if result.success:
+            messagebox.showinfo("Connection OK", f"Connected in {result.latency_ms:.0f} ms")
+        else:
+            messagebox.showerror("Connection failed", result.error or "Unknown error")
+
+    # --- MongoDB tab ---
+
+    def _build_mongo_tab(self, parent) -> None:
+        parent.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(parent, text="Active MongoDB connection").grid(row=0, column=0, sticky="w", padx=8, pady=(8, 2))
+        names = [c.name for c in self.settings.mongo_connections]
+        self._mongo_active_var = ctk.StringVar(value=self._active_mongo_name())
+        self._mongo_active_menu = ctk.CTkOptionMenu(
+            parent,
+            values=names or ["— none —"],
+            variable=self._mongo_active_var,
+            command=self._set_active_mongo_connection,
+        )
+        self._mongo_active_menu.grid(row=1, column=0, sticky="ew", padx=8, pady=(0, 8))
+
+        self._mongo_conn_list = ctk.CTkScrollableFrame(parent, label_text="MongoDB connections")
+        self._mongo_conn_list.grid(row=2, column=0, sticky="nsew", padx=8, pady=4)
+        parent.grid_rowconfigure(2, weight=1)
+        self._refresh_mongo_connection_list()
+
+        add = ctk.CTkFrame(parent)
+        add.grid(row=3, column=0, sticky="ew", padx=8, pady=8)
+        add.grid_columnconfigure((0, 1), weight=1)
+
+        self._mongo_new_name = ctk.CTkEntry(add, placeholder_text="Name")
+        self._mongo_new_host = ctk.CTkEntry(add, placeholder_text="Host (localhost)")
+        self._mongo_new_port = ctk.CTkEntry(add, placeholder_text="Port (27017)")
+        self._mongo_new_db = ctk.CTkEntry(add, placeholder_text="Database (dvd)")
+        self._mongo_new_user = ctk.CTkEntry(add, placeholder_text="Username")
+        self._mongo_new_pwd = ctk.CTkEntry(add, placeholder_text="Password", show="*")
+        self._mongo_new_auth = ctk.CTkEntry(add, placeholder_text="Auth source (admin)")
+
+        self._mongo_new_name.grid(row=0, column=0, padx=4, pady=4, sticky="ew")
+        self._mongo_new_host.grid(row=0, column=1, padx=4, pady=4, sticky="ew")
+        self._mongo_new_port.grid(row=1, column=0, padx=4, pady=4, sticky="ew")
+        self._mongo_new_db.grid(row=1, column=1, padx=4, pady=4, sticky="ew")
+        self._mongo_new_user.grid(row=2, column=0, padx=4, pady=4, sticky="ew")
+        self._mongo_new_pwd.grid(row=2, column=1, padx=4, pady=4, sticky="ew")
+        self._mongo_new_auth.grid(row=3, column=0, columnspan=2, padx=4, pady=4, sticky="ew")
+        ctk.CTkButton(add, text="Add MongoDB connection", command=self._add_mongo_connection).grid(
+            row=4, column=0, columnspan=2, padx=4, pady=8, sticky="ew"
+        )
+
+    def _active_mongo_name(self) -> str:
+        conn = self.settings.get_active_mongo_connection()
+        return conn.name if conn else "— none —"
+
+    def _set_active_mongo_connection(self, name: str) -> None:
+        if name == "— none —":
+            self.settings.active_mongo_connection_id = None
+        else:
+            for c in self.settings.mongo_connections:
+                if c.name == name:
+                    self.settings.active_mongo_connection_id = c.id
+                    break
+        self.store.save(self.settings)
+        self._notify_saved()
+
+    def _refresh_mongo_connection_list(self) -> None:
+        for w in self._mongo_conn_list.winfo_children():
+            w.destroy()
+        for conn in self.settings.mongo_connections:
+            row = ctk.CTkFrame(self._mongo_conn_list)
+            row.pack(fill="x", pady=4)
+            ctk.CTkLabel(
+                row,
+                text=f"{conn.name}  ·  {conn.host}:{conn.port}/{conn.database}",
+                anchor="w",
+            ).pack(side="left", fill="x", expand=True, padx=8, pady=6)
+            ctk.CTkButton(row, text="Test", width=60, command=lambda c=conn: self._test_mongo_connection(c)).pack(
+                side="right", padx=4, pady=4
+            )
+            ctk.CTkButton(
+                row,
+                text="Delete",
+                width=60,
+                fg_color="#8b0000",
+                command=lambda c=conn: self._delete_mongo_connection(c),
+            ).pack(side="right", padx=4, pady=4)
+
+        names = [c.name for c in self.settings.mongo_connections] or ["— none —"]
+        self._mongo_active_menu.configure(values=names)
+        self._mongo_active_var.set(self._active_mongo_name())
+
+    def _add_mongo_connection(self) -> None:
+        name = self._mongo_new_name.get().strip()
+        host = self._mongo_new_host.get().strip() or "localhost"
+        port_s = self._mongo_new_port.get().strip() or "27017"
+        database = self._mongo_new_db.get().strip()
+        if not name or not database:
+            messagebox.showwarning("Missing fields", "Name and database are required.")
+            return
+        conn = MongoConnection(
+            id=str(uuid.uuid4()),
+            name=name,
+            host=host,
+            port=int(port_s),
+            database=database,
+            username=self._mongo_new_user.get().strip() or "tend",
+            password=self._mongo_new_pwd.get(),
+            auth_source=self._mongo_new_auth.get().strip() or "admin",
+        )
+        self.store.add_mongo_connection(self.settings, conn)
+        self._refresh_mongo_connection_list()
+        self._notify_saved()
+        for entry in (
+            self._mongo_new_name,
+            self._mongo_new_host,
+            self._mongo_new_port,
+            self._mongo_new_db,
+            self._mongo_new_user,
+            self._mongo_new_pwd,
+            self._mongo_new_auth,
+        ):
+            entry.delete(0, "end")
+
+    def _delete_mongo_connection(self, conn: MongoConnection) -> None:
+        if messagebox.askyesno("Delete connection", f"Delete '{conn.name}'?"):
+            self.store.delete_mongo_connection(self.settings, conn.id)
+            self._refresh_mongo_connection_list()
+            self._notify_saved()
+
+    def _test_mongo_connection(self, conn: MongoConnection) -> None:
+        result = run_mongo_test(conn, logger=self.app_state.logger)
         if result.success:
             messagebox.showinfo("Connection OK", f"Connected in {result.latency_ms:.0f} ms")
         else:

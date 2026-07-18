@@ -116,7 +116,7 @@ def _build_sft_config(
 
     return SFTConfig(
         output_dir=str(output_dir),
-        num_train_epochs=float(epochs or training_cfg.get("epochs", 5)),
+        num_train_epochs=float(epochs or training_cfg.get("epochs", 10)),
         per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=int(training_cfg.get("per_device_eval_batch_size", 8)),
         gradient_accumulation_steps=int(training_cfg.get("gradient_accumulation_steps", 4)),
@@ -145,6 +145,23 @@ def _build_sft_config(
         use_cpu=is_cpu_device(device),
         dataloader_pin_memory=supports_dataloader_pin_memory(device),
     )
+
+
+def _build_callbacks(
+    training_cfg: dict[str, Any],
+    *,
+    skip_eval: bool = False,
+) -> list[Any]:
+    if skip_eval:
+        return []
+
+    patience = int(training_cfg.get("early_stopping_patience", 3))
+    if patience <= 0:
+        return []
+
+    from transformers import EarlyStoppingCallback
+
+    return [EarlyStoppingCallback(early_stopping_patience=patience)]
 
 
 def _write_run_metadata(
@@ -291,14 +308,17 @@ def train_lora(
         model = model.to(resolved_device)
 
     peft_config = build_lora_config(cfg)
+    skip_eval_run = skip_eval or eval_dataset is None
     sft_args = _build_sft_config(
         resolved_output,
         training_cfg,
         epochs=epochs,
         max_samples=max_samples,
         device=resolved_device,
-        skip_eval=skip_eval or eval_dataset is None,
+        skip_eval=skip_eval_run,
     )
+
+    callbacks = _build_callbacks(training_cfg, skip_eval=skip_eval_run)
 
     trainer = SFTTrainer(
         model=model,
@@ -307,14 +327,17 @@ def train_lora(
         eval_dataset=eval_dataset,
         processing_class=tokenizer,
         peft_config=peft_config,
+        callbacks=callbacks,
     )
 
+    patience = int(training_cfg.get("early_stopping_patience", 3))
     log_step(
         task,
-        "Starting SFT training (epochs=%s, batch=%s, grad_accum=%s)",
+        "Starting SFT training (epochs=%s, batch=%s, grad_accum=%s, early_stop_patience=%s)",
         sft_args.num_train_epochs,
         sft_args.per_device_train_batch_size,
         sft_args.gradient_accumulation_steps,
+        patience if not skip_eval_run and patience > 0 else "off",
     )
     train_output = trainer.train()
     trainer.save_model(str(resolved_output))

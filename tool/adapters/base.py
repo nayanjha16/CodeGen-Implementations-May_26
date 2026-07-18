@@ -14,6 +14,8 @@ from tool.core.activity_logger import ActivityLogger
 class ExecuteResult:
     success: bool
     generated_sql: str | None = None
+    generated_nosql: str | None = None
+    documentation: str | None = None
     validation_status: dict[str, Any] | None = None
     result_df: pd.DataFrame | None = None
     result_meta: dict[str, Any] = field(default_factory=dict)

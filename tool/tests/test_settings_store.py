@@ -1,6 +1,6 @@
 """Unit tests for SettingsStore."""
 
-from tool.core.settings_store import AppSettings, DatabaseConnection, SettingsStore
+from tool.core.settings_store import AppSettings, DatabaseConnection, MongoConnection, SettingsStore
 
 
 def test_settings_round_trip(settings_store: SettingsStore, sample_connection: DatabaseConnection):
@@ -29,3 +29,20 @@ def test_connection_sqlalchemy_url(sample_connection: DatabaseConnection):
     url = sample_connection.to_sqlalchemy_url()
     assert url.startswith("postgresql+psycopg://")
     assert "testdb" in url
+
+
+def test_mongo_connection_round_trip(settings_store: SettingsStore):
+    conn = MongoConnection(
+        id="mongo-test",
+        name="Test Mongo",
+        host="localhost",
+        port=27017,
+        database="dvd",
+        username="tend",
+        password="secret",
+    )
+    settings = AppSettings(mongo_connections=[conn], active_mongo_connection_id=conn.id)
+    settings_store.save(settings)
+    loaded = settings_store.load()
+    assert loaded.active_mongo_connection_id == conn.id
+    assert loaded.mongo_connections[0].database == "dvd"

@@ -51,6 +51,34 @@ class DatabaseConnection:
 
 
 @dataclass
+class MongoConnection:
+    id: str
+    name: str
+    host: str
+    port: int
+    database: str
+    username: str
+    password: str
+    auth_source: str = "admin"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> MongoConnection:
+        return cls(
+            id=data["id"],
+            name=data["name"],
+            host=data["host"],
+            port=int(data["port"]),
+            database=data["database"],
+            username=data["username"],
+            password=data.get("password", ""),
+            auth_source=data.get("auth_source", "admin"),
+        )
+
+
+@dataclass
 class FastApiSettings:
     base_url: str = "http://localhost:8000/v1"
     health_url: str = "http://localhost:8000/health"
@@ -101,6 +129,8 @@ class ExecutionSettings:
 class AppSettings:
     active_connection_id: str | None = None
     connections: list[DatabaseConnection] = field(default_factory=list)
+    active_mongo_connection_id: str | None = None
+    mongo_connections: list[MongoConnection] = field(default_factory=list)
     fastapi: FastApiSettings = field(default_factory=FastApiSettings)
     schema_selection: SchemaSelectionSettings = field(default_factory=SchemaSelectionSettings)
     execution: ExecutionSettings = field(default_factory=ExecutionSettings)
@@ -113,10 +143,20 @@ class AppSettings:
                 return conn
         return None
 
+    def get_active_mongo_connection(self) -> MongoConnection | None:
+        if not self.active_mongo_connection_id:
+            return None
+        for conn in self.mongo_connections:
+            if conn.id == self.active_mongo_connection_id:
+                return conn
+        return None
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "active_connection_id": self.active_connection_id,
             "connections": [c.to_dict() for c in self.connections],
+            "active_mongo_connection_id": self.active_mongo_connection_id,
+            "mongo_connections": [c.to_dict() for c in self.mongo_connections],
             "fastapi": self.fastapi.to_dict(),
             "schema_selection": self.schema_selection.to_dict(),
             "execution": self.execution.to_dict(),
@@ -127,6 +167,8 @@ class AppSettings:
         return cls(
             active_connection_id=data.get("active_connection_id"),
             connections=[DatabaseConnection.from_dict(c) for c in data.get("connections", [])],
+            active_mongo_connection_id=data.get("active_mongo_connection_id"),
+            mongo_connections=[MongoConnection.from_dict(c) for c in data.get("mongo_connections", [])],
             fastapi=FastApiSettings.from_dict(data.get("fastapi", {})),
             schema_selection=SchemaSelectionSettings.from_dict(data.get("schema_selection", {})),
             execution=ExecutionSettings.from_dict(data.get("execution", {})),
@@ -147,6 +189,23 @@ def _connection_from_database_url(url: str) -> DatabaseConnection | None:
         database=parsed.path.lstrip("/"),
         username=parsed.username or "postgres",
         password=parsed.password or "",
+    )
+
+
+def _mongo_connection_from_env() -> MongoConnection | None:
+    host = os.getenv("MONGO_HOST", "").strip()
+    if not host:
+        return None
+    database = os.getenv("MONGO_DATABASE", os.getenv("DVD_DATABASE", "dvd")).strip() or "dvd"
+    return MongoConnection(
+        id=str(uuid.uuid4()),
+        name="Default (from MONGO_*)",
+        host=host,
+        port=int(os.getenv("MONGO_PORT", "27017")),
+        database=database,
+        username=os.getenv("MONGO_USER", "tend"),
+        password=os.getenv("MONGO_PASSWORD", ""),
+        auth_source=os.getenv("MONGO_AUTH_SOURCE", "admin"),
     )
 
 
@@ -179,6 +238,11 @@ def _default_settings(tool_config: ToolConfig | None = None) -> AppSettings:
     if conn:
         settings.connections.append(conn)
         settings.active_connection_id = conn.id
+
+    mongo_conn = _mongo_connection_from_env()
+    if mongo_conn:
+        settings.mongo_connections.append(mongo_conn)
+        settings.active_mongo_connection_id = mongo_conn.id
     return settings
 
 
@@ -219,5 +283,21 @@ class SettingsStore:
         settings.connections = [c for c in settings.connections if c.id != conn_id]
         if settings.active_connection_id == conn_id:
             settings.active_connection_id = settings.connections[0].id if settings.connections else None
+        self.save(settings)
+        return settings
+
+    def add_mongo_connection(self, settings: AppSettings, conn: MongoConnection) -> AppSettings:
+        settings.mongo_connections.append(conn)
+        if not settings.active_mongo_connection_id:
+            settings.active_mongo_connection_id = conn.id
+        self.save(settings)
+        return settings
+
+    def delete_mongo_connection(self, settings: AppSettings, conn_id: str) -> AppSettings:
+        settings.mongo_connections = [c for c in settings.mongo_connections if c.id != conn_id]
+        if settings.active_mongo_connection_id == conn_id:
+            settings.active_mongo_connection_id = (
+                settings.mongo_connections[0].id if settings.mongo_connections else None
+            )
         self.save(settings)
         return settings

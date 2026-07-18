@@ -12,7 +12,7 @@ from sqlalchemy.engine import Engine
 
 from tool.core.activity_logger import ActivityLogger
 from tool.core.inference.fastapi_client import format_timeout_error
-from tool.core.settings_store import DatabaseConnection, FastApiSettings
+from tool.core.settings_store import DatabaseConnection, FastApiSettings, MongoConnection
 
 
 @dataclass
@@ -72,6 +72,44 @@ def run_database_test(
                 stage="settings",
                 event="connection_test_failed",
                 message="Database connection test failed",
+                details={"connection": conn.name, "error": str(exc)},
+            )
+        return result
+
+
+def run_mongo_test(
+    conn: MongoConnection,
+    *,
+    logger: ActivityLogger | None = None,
+) -> TestResult:
+    """Test MongoDB connectivity with a ping command."""
+    from tool.core.mongo_database import mongo_client_from_connection
+
+    start = time.perf_counter()
+    try:
+        client = mongo_client_from_connection(conn)
+        info = client.server_info()
+        client.admin.command("ping")
+        latency = (time.perf_counter() - start) * 1000
+        version = info.get("version")
+        result = TestResult(success=True, latency_ms=latency, server_version=version)
+        if logger:
+            logger.info(
+                stage="settings",
+                event="mongo_connection_test_passed",
+                message="MongoDB connection test passed",
+                details={"connection": conn.name, "latency_ms": round(latency, 1), "version": version},
+            )
+        client.close()
+        return result
+    except Exception as exc:
+        latency = (time.perf_counter() - start) * 1000
+        result = TestResult(success=False, latency_ms=latency, error=str(exc))
+        if logger:
+            logger.warning(
+                stage="settings",
+                event="mongo_connection_test_failed",
+                message="MongoDB connection test failed",
                 details={"connection": conn.name, "error": str(exc)},
             )
         return result

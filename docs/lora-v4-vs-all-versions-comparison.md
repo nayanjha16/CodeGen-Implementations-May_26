@@ -21,7 +21,16 @@ See also: [lora-v3-vs-all-versions-comparison.md](lora-v3-vs-all-versions-compar
 
 \*v3 text2sql best checkpoint is epoch 2 only; sql2nosql / nosql2doc completed 5 epochs.
 
-**LoRA v4** keeps the same full-scale TEND training regime as v3 (~8,040 train rows per task, 5 epochs, no `max_samples` cap) but applies the updated LoRA hyperparameters from `configs/default.yaml`:
+**LoRA v4** keeps the same full-scale TEND training regime as v3 (~8,040 train rows per task, 5 epochs, no `max_samples` cap) but applies the updated LoRA hyperparameters from `configs/default.yaml`. Training ran via [`notebooks/kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb), which **overwrites batch settings** in the working copy of `configs/default.yaml` before launch (Kaggle GPU memory):
+
+| Setting | Repo `default.yaml` | Kaggle notebook (v4 actual) |
+| ------- | ------------------- | --------------------------- |
+| `per_device_train_batch_size` | 8 | **2** |
+| `per_device_eval_batch_size` | 8 | **2** |
+| `gradient_accumulation_steps` | 4 | **8** |
+| Effective batch (1× GPU) | 32 | **16** |
+
+LoRA block from repo config (unchanged by the notebook):
 
 ```yaml
 lora:
@@ -36,7 +45,7 @@ lora:
     - fc_out
 ```
 
-All other training settings (learning rate `2e-4`, cosine schedule, effective batch size 32, fp32, weight decay 0.01) match v3. v4 wall-clock training time was ~7h 34m on Kaggle.
+Other training settings match v3: learning rate `2e-4`, cosine schedule, fp32, weight decay 0.01. Effective batch size is **16** on Kaggle (not 32 — see notebook overrides above). v4 wall-clock training time was ~7h 34m on Kaggle.
 
 ## Compared runs
 
@@ -181,7 +190,7 @@ Documentation quality continues to improve. LoRA v4 reaches a judge score of **7
 | LoRA v1     | 20%           | 4%             | 1.5       | 50 × 10 epochs, `r=16`       |
 | LoRA v2     | 34%           | 32%            | 3.1       | 500 × 5 epochs, `r=16`       |
 | LoRA v3     | 54%           | 74%            | 6.4       | ~8k × 5 epochs, `r=16`       |
-| **LoRA v4** | **60%**       | **88%**        | **7.8**   | ~8k × 5 epochs, **`r=32` + FFN targets** |
+| **LoRA v4** | **60%**       | **88%**        | **7.8**   | ~8k × 5 epochs, **`r=32` + FFN targets**, eff. batch **16** (Kaggle) |
 
 ---
 
@@ -191,17 +200,21 @@ Documentation quality continues to improve. LoRA v4 reaches a judge score of **7
 | ------- | ------- | ------- |
 | Train samples | ~8,040 / ~7,998 | same |
 | Epochs | 5 (text2sql best @ ep 2) | 5 (all tasks complete) |
+| Per-device batch | 8 | **2** (Kaggle notebook override) |
+| Grad accumulation | 4 | **8** (Kaggle notebook override) |
+| Effective batch | 32 | **16** |
 | LoRA rank (`r`) | 16 | **32** |
 | LoRA alpha | 32 | **64** |
 | Target modules | `qkv_proj`, `out_proj` | **`qkv_proj`, `out_proj`, `fc_in`, `fc_out`** |
 | Device | MPS (local) | CUDA (Kaggle) |
+| Training notebook | — | [`kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb) |
 | Training time | ~12.6 h (partial local runs) | ~7.5 h (single Kaggle session) |
 
 ---
 
 ## Takeaways
 
-- **LoRA capacity matters at full scale:** Doubling rank/alpha and adding FFN target modules (`fc_in`, `fc_out`) on the same ~8k-sample dataset yields consistent gains over v3 without changing epoch count or data volume.
+- **LoRA capacity matters at full scale:** Doubling rank/alpha and adding FFN target modules (`fc_in`, `fc_out`) on the same ~8k-sample dataset yields consistent gains over v3 without changing epoch count or data volume — even with half the effective batch size (16 vs 32) due to Kaggle GPU limits.
 - **Text2SQL:** Execution accuracy follows **12% → 20% → 34% → 54% → 60%**. v4 adds +6 pp over v3, suggesting wider adapters help the model generalize query patterns beyond what attention-only LoRA achieved.
 - **SQL2NoSQL:** v4 is the standout run. Execution accuracy **88%** and exact match **80%** show that structural learning (0.98 similarity) now reliably translates to correct MongoDB result sets — a +14 pp execution gain over v3.
 - **Documentation:** Judge score **7.8** indicates generated docs are approaching good quality; exact match remains at 2%, suggesting verbatim reproduction is still rare but semantic quality keeps improving.

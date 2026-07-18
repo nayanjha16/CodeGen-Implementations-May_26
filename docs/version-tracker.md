@@ -18,13 +18,13 @@ Comparison report: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versio
 | **v3** | LoRA | ~8,040 | 5* | `r=16`, attn only | Full TEND | `models/checkpoints/v3/` |
 | **v4** | LoRA | ~8,040 | 5 | **`r=32`, attn + FFN** | Full TEND | `models/checkpoints/v4/` |
 
-\*v3 text2sql best checkpoint is epoch 2 only; sql2nosql / nosql2doc completed 5 epochs. See [v3 notes](#v3--full-scale-lora).
+\*v3 text2sql best checkpoint is epoch 2 only; sql2nosql / nosql2doc completed 5 epochs. See [v3 notes](#v3--full-scale-lora). v4 batch settings were patched at runtime by the [Kaggle notebook](../notebooks/kaggle_train_lora.ipynb) — see [v4 notes](#v4--full-scale-lora-wider-adapters--ffn-targets).
 
 ---
 
 ## Shared settings
 
-### Unchanged across v1–v4
+### Unchanged across v1–v3 (repo `configs/default.yaml`)
 
 | Parameter | Value |
 |-----------|-------|
@@ -41,7 +41,7 @@ Comparison report: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versio
 | Max sequence | 2048 (prompt budget 1792 + target reserve 256) |
 | Training data source | Hugging Face [`care2achieve/tend`](https://huggingface.co/datasets/care2achieve/tend) configs `spider` + `bird` |
 
-Config defaults live in `configs/default.yaml`.
+Config defaults live in `configs/default.yaml`. **v4 on Kaggle** did not use these batch defaults — see [Kaggle notebook overrides](#kaggle-notebook-overrides-v4) below.
 
 ### LoRA config by version
 
@@ -51,7 +51,22 @@ Config defaults live in `configs/default.yaml`.
 | Alpha (`lora_alpha`) | 32 | **64** |
 | Target modules | `qkv_proj`, `out_proj` | **`qkv_proj`, `out_proj`, `fc_in`, `fc_out`** |
 | Adapter size (per task) | ~7.5 MB | **~40 MB** |
+| Per-device batch | 8 | **2** (Kaggle override) |
+| Grad accumulation | 4 | **8** (Kaggle override) |
+| Effective batch | 32 | **16** |
 | Device | MPS (local) | CUDA (Kaggle) |
+
+### Kaggle notebook overrides (v4)
+
+[`notebooks/kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb) patches the **working copy** of `configs/default.yaml` before training (repo file unchanged):
+
+| Setting | Repo default | Kaggle notebook |
+|---------|--------------|-----------------|
+| `per_device_train_batch_size` | 8 | **2** |
+| `per_device_eval_batch_size` | 8 | **2** |
+| `gradient_accumulation_steps` | 4 | **8** |
+
+The notebook also writes a Kaggle-specific `.env` (paths under `/kaggle/working/`), sets `CUDA_VISIBLE_DEVICES=0`, runs with `--device cuda:0 --no-mlflow`, and packages adapters as `{version}_adapters.zip` for download. Confirmed in v4 checkpoints: `train_batch_size: 2`, 503 optimizer steps per epoch (8040 ÷ 16).
 
 ---
 
@@ -187,9 +202,10 @@ Config defaults live in `configs/default.yaml`.
 | Eval rows | **1035** (TEND test spider+bird) |
 | Dataset | Full combined TEND train (`spider` + `bird`) |
 | LoRA | `r=32`, `lora_alpha=64`, targets: `qkv_proj`, `out_proj`, `fc_in`, `fc_out` |
+| Batch (actual) | per-device **2**, grad accum **8**, effective **16** (notebook override) |
 | Best checkpoints | text2sql `503` (epoch **1**), sql2nosql `1500` (epoch 3), nosql2doc `1006` (epoch 2) |
 | Log | `models/checkpoints/v4/train_all_lora.log` |
-| Where trained | Kaggle (CUDA) |
+| Where trained | Kaggle (CUDA) via [`kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb) |
 
 ### Per-task training
 
@@ -230,7 +246,7 @@ Config defaults live in `configs/default.yaml`.
 These levers were **already applied** in v1–v3:
 
 - Weight decay **0.01**
-- Effective batch size **32**
+- Effective batch size **32** (v1–v3 local runs)
 - v2/v3/v4 train **5 epochs** (v1 used 10)
 - Full TEND scale (~8k samples) since v3
 
@@ -239,7 +255,11 @@ These levers were **already applied** in v1–v3:
 - LoRA rank **16 → 32**
 - LoRA alpha **32 → 64**
 - Target modules expanded to include **`fc_in`** and **`fc_out`**
-- Training moved to **Kaggle CUDA** (faster, single-session run)
+- Training moved to **Kaggle CUDA** via [`kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb) (faster, single-session run)
+
+**Kaggle-only in v4** (notebook patches working `configs/default.yaml`; repo defaults unchanged):
+
+- Per-device batch **8 → 2**, grad accumulation **4 → 8** → effective batch **16** (half of v1–v3)
 
 ---
 

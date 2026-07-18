@@ -11,11 +11,16 @@ if str(ROOT) not in sys.path:
 
 from dotenv import load_dotenv
 
-from tool.config import TOOL_DIR
+from tool.config import TOOL_DIR, ToolConfig
 from tool.core.embedding_cache import configure_hf_cache
 
 load_dotenv(TOOL_DIR / ".env")
 configure_hf_cache()
+
+from tool.desktop.macos import set_dock_name
+
+_cfg = ToolConfig.load()
+set_dock_name(_cfg.app.title)
 
 from tool.desktop.main_window import run_desktop
 

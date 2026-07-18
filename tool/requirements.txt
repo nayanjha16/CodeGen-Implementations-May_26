@@ -7,3 +7,5 @@ pandas>=2.0.0
 sqlparse>=0.5.0
 pyyaml>=6.0
 python-dotenv>=1.0.0
+pyobjc>=10.0; sys_platform == "darwin"
+pyobjc-framework-Cocoa>=10.0; sys_platform == "darwin"

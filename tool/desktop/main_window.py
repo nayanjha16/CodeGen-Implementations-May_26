@@ -6,11 +6,13 @@ import threading
 from tkinter import messagebox
 
 import customtkinter as ctk
+from PIL import Image, ImageTk
 
 from tool.config import ToolConfig
 from tool.core.activity_logger import ActivityEvent
 from tool.desktop.app_state import AppState
 from tool.desktop.registry import build_adapters
+from tool.desktop.macos import set_dock_icon, set_tk_app_name
 from tool.desktop.settings_window import SettingsWindow
 from tool.desktop.widgets.activity_log import ActivityLogPanel
 from tool.desktop.widgets.results_table import ResultsTable
@@ -22,10 +24,15 @@ from tool.pipeline.text2sql_pipeline import Text2SqlPipeline
 class MainWindow(ctk.CTk):
     def __init__(self):
         super().__init__()
-        cfg = ToolConfig.load()
-        self.title(cfg.app.title)
+        self._cfg = ToolConfig.load()
+        self.title(self._cfg.app.title)
         self.geometry("1200x820")
         self.minsize(900, 640)
+        self._logo_photo = None
+        self._header_logo = None
+        self._apply_app_logo(self._cfg)
+        set_tk_app_name(self, self._cfg.app.title)
+        set_dock_icon(self._cfg.logo_file())
 
         ctk.set_appearance_mode("System")
         ctk.set_default_color_theme("blue")
@@ -52,18 +59,38 @@ class MainWindow(ctk.CTk):
         self.bind("<Control-Return>", lambda _e: self._on_execute())
         self.bind("<Command-Return>", lambda _e: self._on_execute())
 
+    def _apply_app_logo(self, cfg: ToolConfig) -> None:
+        logo_path = cfg.logo_file()
+        if not logo_path.exists():
+            return
+
+        logo_image = Image.open(logo_path)
+        self._logo_photo = ImageTk.PhotoImage(logo_image)
+        self.iconphoto(True, self._logo_photo)
+        self._header_logo = ctk.CTkImage(light_image=logo_image, dark_image=logo_image, size=(36, 40))
+
     def _build_header(self) -> None:
         header = ctk.CTkFrame(self, fg_color="transparent")
         header.grid(row=0, column=0, columnspan=2, sticky="ew", padx=12, pady=(12, 4))
-        header.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(header, text="AI SQL Assistant", font=ctk.CTkFont(size=20, weight="bold")).grid(
-            row=0, column=0, sticky="w"
-        )
+        title_col = 0
+        if self._header_logo is not None:
+            ctk.CTkLabel(header, text="", image=self._header_logo).grid(row=0, column=0, sticky="w", padx=(0, 10))
+            title_col = 1
+
+        header.grid_columnconfigure(title_col, weight=1)
+
+        ctk.CTkLabel(
+            header,
+            text=self._cfg.app.title,
+            font=ctk.CTkFont(size=20, weight="bold"),
+        ).grid(row=0, column=title_col, sticky="w")
 
         self._conn_label = ctk.CTkLabel(header, text="", font=ctk.CTkFont(size=12))
-        self._conn_label.grid(row=0, column=1, sticky="e", padx=(8, 12))
-        ctk.CTkButton(header, text="Settings", width=90, command=self._open_settings).grid(row=0, column=2, sticky="e")
+        self._conn_label.grid(row=0, column=title_col + 1, sticky="e", padx=(8, 12))
+        ctk.CTkButton(header, text="Settings", width=90, command=self._open_settings).grid(
+            row=0, column=title_col + 2, sticky="e"
+        )
 
         self._refresh_connection_label()
 

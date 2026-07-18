@@ -44,7 +44,8 @@ class ExecutionConfig:
 
 @dataclass
 class AppConfig:
-    title: str = "AI SQL Assistant"
+    title: str = "CodeGen"
+    logo_path: str = "logo.png"
     page_icon: str = "🗄️"
     layout: str = "wide"
 
@@ -55,6 +56,10 @@ class ToolConfig:
     fastapi: FastApiConfig = field(default_factory=FastApiConfig)
     schema_selection: SchemaSelectionConfig = field(default_factory=SchemaSelectionConfig)
     execution: ExecutionConfig = field(default_factory=ExecutionConfig)
+
+    def logo_file(self) -> Path:
+        path = Path(self.app.logo_path)
+        return path if path.is_absolute() else REPO_ROOT / path
 
     @classmethod
     def load(cls, config_path: Path | None = None) -> ToolConfig:
@@ -72,7 +77,8 @@ class ToolConfig:
 
         return cls(
             app=AppConfig(
-                title=app_raw.get("title", "AI SQL Assistant"),
+                title=app_raw.get("title", "CodeGen"),
+                logo_path=app_raw.get("logo_path", "logo.png"),
                 page_icon=app_raw.get("page_icon", "🗄️"),
                 layout=app_raw.get("layout", "wide"),
             ),

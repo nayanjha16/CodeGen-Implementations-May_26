@@ -6,16 +6,17 @@ Standalone **desktop application** for interactive Text-to-SQL against PostgreSQ
 
 | Requirement | Notes |
 |-------------|-------|
-| **Python 3.11+** | Same environment as the main repo |
+| **Python (ai conda)** | Use the repo's `ai` conda environment (`Python 3.11.x`) |
 | **PostgreSQL** | Sample DVD database (see [Database setup](#database-setup)) |
 | **hf-deploy API** | Local FastAPI server on port `8000` for SQL generation |
 | **Docker** (recommended) | For the bundled PostgreSQL setup script |
 | **`psql` or Docker** | Setup script uses local `psql` when available, otherwise `docker compose exec` |
 
-Install Python dependencies from the repo root:
+Install Python dependencies into the `ai` conda environment:
 
 ```bash
 cd /path/to/CodeGen-Implementations-May_26
+conda activate ai
 pip install -r tool/requirements.txt
 pip install -r hf-deploy/requirements.txt   # for the inference server
 ```
@@ -117,7 +118,11 @@ PYTHONPATH=hf-deploy uvicorn hf_deploy.api.app:app --host 0.0.0.0 --port 8000
 
 # 3. Desktop app
 cp tool/.env.example tool/.env   # optional; seeds DATABASE_URL + FastAPI defaults
+conda activate ai
 python tool/app.py
+
+# On macOS, prefer the launcher so Dock/menu show "CodeGen" instead of "Python 3.11":
+./tool/run.sh
 ```
 
 ## Features

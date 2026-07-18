@@ -165,6 +165,12 @@ def main() -> int:
             for stream in self._streams:
                 stream.flush()
 
+        def isatty(self) -> bool:
+            for stream in self._streams:
+                if hasattr(stream, "isatty") and stream.isatty():
+                    return True
+            return False
+
     stdout = sys.stdout
     stderr = sys.stderr
     sys.stdout = _Tee(stdout, log_handle)

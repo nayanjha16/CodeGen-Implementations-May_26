@@ -52,10 +52,12 @@ training:
 
 lora:
   enabled: true
-  r: 16
-  lora_alpha: 32
+  r: 32
+  lora_alpha: 64
   lora_dropout: 0.05
   bias: none
   target_modules:
     - qkv_proj
     - out_proj
+    - fc_in
+    - fc_out

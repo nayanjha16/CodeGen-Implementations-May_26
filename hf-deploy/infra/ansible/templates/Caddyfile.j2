@@ -1,9 +1,0 @@
-{% if api_domain | length > 0 %}
-{{ api_domain }} {
-	reverse_proxy {{ api_host }}:{{ api_port }}
-}
-{% else %}
-:80 {
-	reverse_proxy {{ api_host }}:{{ api_port }}
-}
-{% endif %}

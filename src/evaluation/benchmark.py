@@ -16,6 +16,7 @@ from src.sql2nosql.nosql_generator import NoSQLGenerator
 from src.text2sql.sql_generator import SQLGenerator
 from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_adapter_path, load_config
+from src.utils.logging import log_step, setup_logging, task_label
 from src.utils.seeds import set_seeds
 
 logger = logging.getLogger("codegen")
@@ -40,7 +41,7 @@ def load_task_model(
 
 
 class BenchmarkRunner:
-    """Run comprehensive benchmarks on text-to-SQL datasets."""
+    """Run independent benchmarks for text2sql, sql2nosql, and nosql2doc on gold rows."""
 
     def __init__(
         self,
@@ -55,16 +56,24 @@ class BenchmarkRunner:
         enable_mlflow: bool = True,
         adapter_run: str | None = None,
     ):
+        setup_logging()
         self.config = config or load_config()
         set_seeds(self.config)
         self.adapter_run = adapter_run
+        logger.info(
+            "BenchmarkRunner init: adapter_run=%s max_samples=%s",
+            adapter_run or "baseline",
+            self.config.get("evaluation", {}).get("max_samples", 100),
+        )
 
         if sql_generator is not None:
             self.sql_generator = sql_generator
         elif adapter_run:
+            logger.info("[%s] Loading model with LoRA adapter", task_label("text2sql"))
             text2sql_model = load_task_model("text2sql", self.config, adapter_run=adapter_run)
             self.sql_generator = SQLGenerator(model=text2sql_model, config=self.config)
         else:
+            logger.info("[%s] Loading base model (no adapter)", task_label("text2sql"))
             self.sql_generator = SQLGenerator(config=self.config)
 
         self.metrics = metrics or EvaluationMetrics()
@@ -73,27 +82,25 @@ class BenchmarkRunner:
         if nosql_generator is not None:
             self.nosql_generator = nosql_generator
         elif adapter_run:
+            logger.info("[%s] Loading model with LoRA adapter", task_label("sql2nosql"))
             sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
             self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
         else:
-            self.nosql_generator = NoSQLGenerator(
-                model=self.sql_generator.model,
-                config=self.config,
-            )
+            logger.info("[%s] Loading base model (no adapter)", task_label("sql2nosql"))
+            self.nosql_generator = NoSQLGenerator(config=self.config)
 
         if doc_generator is not None:
             self.doc_generator = doc_generator
         elif adapter_run:
+            logger.info("[%s] Loading model with LoRA adapter", task_label("nosql2doc"))
             nosql2doc_model = load_task_model("nosql2doc", self.config, adapter_run=adapter_run)
             self.doc_generator = DocumentationGenerator(
                 model=nosql2doc_model,
                 config=self.config,
             )
         else:
-            self.doc_generator = DocumentationGenerator(
-                model=self.sql_generator.model,
-                config=self.config,
-            )
+            logger.info("[%s] Loading base model (no adapter)", task_label("nosql2doc"))
+            self.doc_generator = DocumentationGenerator(config=self.config)
         self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
         self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
@@ -123,12 +130,12 @@ class BenchmarkRunner:
 
     def evaluate_sql2nosql(
         self,
-        gen_results: list[dict[str, Any]],
         samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Generate predicted MongoDB from reference SQL; derive reference MongoDB from the same SQL."""
+        """Generate MongoDB from gold SQL in each sample (independent of text2sql output)."""
         from src.text2sql.sql_validator import SQLValidator
 
+        log_step("sql2nosql", "Evaluating SQL-to-MongoDB on %d samples", len(samples))
         sql_validator = SQLValidator()
         pred_queries: list[str] = []
         ref_queries: list[str] = []
@@ -137,16 +144,13 @@ class BenchmarkRunner:
         nosql_results: list[dict[str, Any]] = []
 
         nosql_samples = []
-        for result, example in zip(gen_results, samples):
-            schema = result.get("schema", example.get("schema", ""))
-            ref_sql = result.get("ground_truth", example.get("sql", ""))
+        for example in samples:
+            ref_sql = example.get("sql", "")
             nosql_samples.append(
                 {
-                    "question": result.get("question", example.get("question", "")),
-                    "schema": schema,
-                    "nosql_schema": result.get(
-                        "nosql_schema", example.get("nosql_schema", "")
-                    ),
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "nosql_schema": example.get("nosql_schema", ""),
                     "sql": ref_sql,
                     "ground_truth_sql": ref_sql,
                 }
@@ -154,11 +158,8 @@ class BenchmarkRunner:
 
         nosql_gen_results = self.nosql_generator.generate_batch(nosql_samples)
 
-        for result, example, nosql_gen in zip(gen_results, samples, nosql_gen_results):
-            pred_sql = result.get("sql", "")
-            ref_sql = result.get("ground_truth", example.get("sql", ""))
-
-            pred_sql_valid = self._is_valid_select_sql(pred_sql, sql_validator)
+        for example, nosql_gen in zip(samples, nosql_gen_results):
+            ref_sql = example.get("sql", "")
             ref_sql_valid = self._is_valid_select_sql(ref_sql, sql_validator)
 
             pred_mongo = nosql_gen.get("mongodb_query", "")
@@ -208,10 +209,11 @@ class BenchmarkRunner:
 
             nosql_results.append(
                 {
-                    **result,
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "db_id": example.get("db_id", ""),
+                    "source_dataset": example.get("source_dataset", "spider"),
                     "reference_sql": ref_sql,
-                    "predicted_sql": pred_sql,
-                    "predicted_sql_valid": pred_sql_valid,
                     "reference_sql_valid": ref_sql_valid,
                     "nosql_schema": nosql_gen.get("nosql_schema", ""),
                     "nosql_prompt": nosql_gen.get("prompt", ""),
@@ -231,26 +233,35 @@ class BenchmarkRunner:
                 }
             )
 
+        execution_contexts = [
+            {
+                "db_id": example.get("db_id", ""),
+                "dataset": example.get("source_dataset", "spider") or "spider",
+            }
+            for example in samples
+        ]
+        reference_sql_queries = [example.get("sql", "") for example in samples]
         nosql_metrics = self.nosql_evaluator.evaluate_all(
             pred_queries,
             ref_queries,
-            structured_preds,
-            structured_refs,
+            reference_sql_queries=reference_sql_queries,
+            execution_contexts=execution_contexts,
         )
-        nosql_metrics["total_count"] = len(nosql_results)
-        nosql_metrics["scored_count"] = len(pred_queries)
-        nosql_metrics["translation_success_rate"] = (
-            sum(1 for r in nosql_results if r.get("mongodb_success")) / len(nosql_results)
-            if nosql_results
-            else 0.0
+        valid = sum(1 for r in nosql_results if r.get("mongodb_success"))
+        log_step(
+            "sql2nosql",
+            "Metrics complete: %d/%d valid MongoDB queries",
+            valid,
+            len(nosql_results),
         )
         return nosql_metrics, nosql_results
 
     def evaluate_documentation(
         self,
-        nosql_results: list[dict[str, Any]],
+        samples: list[dict[str, str]],
     ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-        """Generate documentation for MongoDB queries produced during sql2nosql."""
+        """Generate documentation from gold MongoDB queries (independent of sql2nosql output)."""
+        log_step("nosql2doc", "Evaluating NoSQL-to-Documentation on %d samples", len(samples))
         pred_docs: list[str] = []
         ref_docs: list[str] = []
         mongodb_queries: list[str] = []
@@ -259,28 +270,29 @@ class BenchmarkRunner:
         doc_results: list[dict[str, Any]] = []
 
         doc_samples = []
-        for result in nosql_results:
+        for example in samples:
+            gold_nosql = example.get("nosql_query", "").strip()
             doc_samples.append(
                 {
-                    "question": result.get("question", ""),
-                    "schema": result.get("schema", ""),
-                    "nosql_schema": result.get("nosql_schema", ""),
-                    "mongodb_query": result.get("predicted_mongodb_query", ""),
-                    "predicted_mongodb_query": result.get("predicted_mongodb_query", ""),
-                    "reference_mongodb_query": result.get("reference_mongodb_query", ""),
-                    "reference_sql": result.get("reference_sql", result.get("ground_truth", "")),
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "nosql_schema": example.get("nosql_schema", ""),
+                    "mongodb_query": gold_nosql,
+                    "nosql_query": gold_nosql,
+                    "reference_mongodb_query": gold_nosql,
+                    "reference_sql": example.get("sql", ""),
                 }
             )
 
         doc_gen_results = self.doc_generator.generate_batch(doc_samples)
 
-        for result, doc_gen in zip(nosql_results, doc_gen_results):
+        for example, doc_gen in zip(samples, doc_gen_results):
             mongodb_query = doc_gen.get("mongodb_query", "")
             predicted_doc = doc_gen.get("documentation", "")
-            reference_doc = result.get("reference_documentation", "").strip()
+            reference_doc = example.get("documentation", "").strip()
             if not reference_doc:
                 reference_doc = doc_gen.get("reference_documentation", "")
-            reference_mongodb = result.get("reference_mongodb_query", "")
+            reference_mongodb = example.get("nosql_query", "").strip()
 
             pred_warnings: list[str] = []
             if not mongodb_query.strip():
@@ -309,7 +321,11 @@ class BenchmarkRunner:
 
             doc_results.append(
                 {
-                    **result,
+                    "question": example.get("question", ""),
+                    "schema": example.get("schema", ""),
+                    "reference_sql": example.get("sql", ""),
+                    "reference_mongodb_query": reference_mongodb,
+                    "input_mongodb_query": mongodb_query,
                     "doc_prompt": doc_gen.get("prompt", ""),
                     "doc_raw_output": doc_gen.get("raw_output", ""),
                     "predicted_documentation": predicted_doc,
@@ -319,19 +335,14 @@ class BenchmarkRunner:
                 }
             )
 
-        doc_metrics = self.doc_evaluator.evaluate_all(
-            pred_docs,
-            ref_docs,
-            mongodb_queries=mongodb_queries,
-            structured_preds=structured_preds,
-            structured_refs=structured_refs,
-        )
-        doc_metrics["total_count"] = len(doc_results)
-        doc_metrics["scored_count"] = len(pred_docs)
-        doc_metrics["translation_success_rate"] = (
-            sum(1 for r in doc_results if r.get("documentation_success")) / len(doc_results)
-            if doc_results
-            else 0.0
+        doc_metrics = self.doc_evaluator.evaluate_all(pred_docs, ref_docs)
+        doc_metrics["judge_score"] = 0.0
+        valid = sum(1 for r in doc_results if r.get("documentation_success"))
+        log_step(
+            "nosql2doc",
+            "Metrics complete: %d/%d valid documentation outputs",
+            valid,
+            len(doc_results),
         )
         return doc_metrics, doc_results
 
@@ -343,12 +354,18 @@ class BenchmarkRunner:
     ) -> dict[str, Any]:
         """Evaluate on a list of standardized examples."""
         samples = examples[: self.max_samples]
-        logger.info("Evaluating %d samples from %s", len(samples), dataset_name)
+        logger.info(
+            "=== Evaluation pipeline: %d samples from %s ===",
+            len(samples),
+            dataset_name,
+        )
+        log_step("text2sql", "Starting Text-to-SQL evaluation")
 
         gen_results = self.sql_generator.generate_batch(samples)
         for result, example in zip(gen_results, samples):
             result.setdefault("schema", example.get("schema", ""))
             result.setdefault("db_id", example.get("db_id", ""))
+            result.setdefault("source_dataset", example.get("source_dataset", "spider"))
             if not result.get("prompt"):
                 result["prompt"] = self.sql_generator.build_prompt(
                     result.get("question", example.get("question", "")),
@@ -358,18 +375,31 @@ class BenchmarkRunner:
         predictions = [r["sql"] for r in gen_results]
         references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]
 
-        db_paths = []
-        if db_resolver:
-            for result, example in zip(gen_results, samples):
-                db_path = db_resolver(example.get("db_id", ""))
-                db_paths.append(db_path)
-                result["db_path"] = db_path
-        else:
-            db_paths = [None] * len(samples)
+        execution_contexts = [
+            {
+                "db_id": example.get("db_id", ""),
+                "dataset": example.get("source_dataset", "spider") or "spider",
+            }
+            for example in samples
+        ]
 
-        eval_metrics = self.metrics.evaluate_all(predictions, references, db_paths)
-        nosql_metrics, nosql_results = self.evaluate_sql2nosql(gen_results, samples)
-        doc_metrics, doc_results = self.evaluate_documentation(nosql_results)
+        log_step("text2sql", "Computing metrics (execution accuracy, exact match, structural similarity)")
+        eval_metrics = self.metrics.evaluate_all(
+            predictions,
+            references,
+            execution_contexts,
+        )
+        valid_sql = sum(1 for r in gen_results if r.get("sql_valid"))
+        log_step(
+            "text2sql",
+            "Metrics complete: %d/%d valid SQL queries",
+            valid_sql,
+            len(gen_results),
+        )
+
+        nosql_metrics, nosql_results = self.evaluate_sql2nosql(samples)
+        doc_metrics, doc_results = self.evaluate_documentation(samples)
+        logger.info("=== Evaluation pipeline complete ===")
 
         run_id = None
         if self.tracker:

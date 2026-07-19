@@ -1,0 +1,11 @@
+# Secrets / local deploy config - never commit
+.env
+deploy.env
+infra/cloudrun/deploy.env
+env.sh
+env.ps1
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/

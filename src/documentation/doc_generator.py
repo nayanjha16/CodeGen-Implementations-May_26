@@ -9,6 +9,7 @@ from src.documentation.evaluator import DocumentationEvaluator
 from src.documentation.prompt_builder import DocumentationPromptBuilder
 from src.documentation.reference_builder import ReferenceDocumentationBuilder
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
+from src.utils.logging import log_batch_done, log_batch_progress, log_batch_start
 from src.utils.schema_conversion import derive_mongo_schema_json
 
 DOC_MAX_NEW_TOKENS = 256
@@ -329,12 +330,14 @@ class DocumentationGenerator:
         decoding_strategy: str | None = None,
     ) -> list[dict[str, str]]:
         """Generate documentation for multiple MongoDB queries."""
+        total = len(examples)
+        log_batch_start("nosql2doc", total)
         results: list[dict[str, str]] = []
-        for example in examples:
+        for index, example in enumerate(examples, start=1):
             schema = example.get("schema", "")
             mongodb_query = example.get(
                 "mongodb_query",
-                example.get("predicted_mongodb_query", ""),
+                example.get("nosql_query", example.get("predicted_mongodb_query", "")),
             )
             nosql_schema = example.get("nosql_schema") or (
                 derive_mongo_schema_json(schema) if schema.strip() else ""
@@ -357,4 +360,7 @@ class DocumentationGenerator:
                 mongodb_query,
             )
             results.append(result)
+            log_batch_progress("nosql2doc", index, total)
+        valid = sum(1 for result in results if result.get("documentation_valid"))
+        log_batch_done("nosql2doc", total, valid=valid)
         return results

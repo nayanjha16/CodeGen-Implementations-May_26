@@ -8,6 +8,7 @@ from typing import Any
 from src.models.model_loader import CodeGenModel, is_seq2seq_model, load_model
 from src.sql2nosql.evaluator import NoSQLEvaluator
 from src.sql2nosql.prompt_builder import NoSQLPromptBuilder
+from src.utils.logging import log_batch_done, log_batch_progress, log_batch_start
 from src.utils.schema_conversion import derive_mongo_schema_json
 
 _MONGO_START_RE = re.compile(
@@ -179,8 +180,10 @@ class NoSQLGenerator:
         decoding_strategy: str | None = None,
     ) -> list[dict[str, str]]:
         """Generate MongoDB queries for multiple SQL examples."""
+        total = len(examples)
+        log_batch_start("sql2nosql", total)
         results = []
-        for example in examples:
+        for index, example in enumerate(examples, start=1):
             schema = example.get("schema", "")
             sql_query = example.get("sql", example.get("sql_query", ""))
             nosql_schema = example.get("nosql_schema") or derive_mongo_schema_json(schema)
@@ -199,4 +202,7 @@ class NoSQLGenerator:
                 result["mongodb_query"]
             )
             results.append(result)
+            log_batch_progress("sql2nosql", index, total)
+        valid = sum(1 for result in results if result.get("mongodb_valid"))
+        log_batch_done("sql2nosql", total, valid=valid)
         return results

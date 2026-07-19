@@ -1,0 +1,15 @@
+# Used by: gcloud builds submit --config cloudbuild.yaml
+# Substitute _IMAGE before submit (see infra/cloudrun/deploy.py).
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - Dockerfile
+      - -t
+      - ${_IMAGE}
+      - .
+
+images:
+  - ${_IMAGE}

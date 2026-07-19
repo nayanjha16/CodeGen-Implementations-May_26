@@ -13,7 +13,7 @@ from typing import Any
 
 logger = logging.getLogger("codegen")
 
-DEFAULT_TEND_REPO_PATH = "C:/Users/Bhavani/Documents/Codegen/TEND"
+DEFAULT_TEND_REPO_PATH = "/Volumes/Work/TEND"
 DEFAULT_EXECUTION_TIMEOUT_MS = 10_000
 
 
@@ -76,18 +76,9 @@ def _load_tend_modules() -> dict[str, Any]:
             "_sql_signature": importlib.import_module(
                 "src.database.execution.result_comparator"
             )._sql_signature,
-            "_mongo_signature": importlib.import_module(
-                "src.database.execution.result_comparator"
-            )._mongo_signature,
             "is_order_sensitive": importlib.import_module(
                 "src.database.execution.result_comparator"
             ).is_order_sensitive,
-            "SqlExecutionResult": importlib.import_module(
-                "src.database.postgres.executor"
-            ).SqlExecutionResult,
-            "MongoExecutionResult": importlib.import_module(
-                "src.database.mongodb.executor"
-            ).MongoExecutionResult,
         }
     finally:
         for key, value in saved_src_modules.items():
@@ -121,7 +112,6 @@ class _ExecutionSession:
         self._ComparisonResult = modules["ComparisonResult"]
         self._build_diff_summary = modules["_build_diff_summary"]
         self._sql_signature = modules["_sql_signature"]
-        self._mongo_signature = modules["_mongo_signature"]
         self._is_order_sensitive = modules["is_order_sensitive"]
         self._mongo = modules["mongo_client"](self._config.mongo)
         self._pg: dict[str, Any] = {}
@@ -265,16 +255,12 @@ class _ExecutionSession:
         pred_sig = self._sql_signature(pred_result, order_sensitive=order_sensitive)
         ref_sig = self._sql_signature(ref_result, order_sensitive=order_sensitive)
         match = pred_sig == ref_sig
-        from src.evaluation.gold_output_comparison import build_sql_vs_sql_diff_summary
-
         return self._ComparisonResult(
             match=match,
             order_sensitive=order_sensitive,
             sql_signature=pred_sig,
             mongo_signature=ref_sig,
-            diff_summary=None
-            if match
-            else build_sql_vs_sql_diff_summary(pred_sig, ref_sig),
+            diff_summary=None if match else self._build_diff_summary(pred_sig, ref_sig),
         )
 
 

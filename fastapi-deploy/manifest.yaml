@@ -1,0 +1,41 @@
+# FastAPI deployment manifest
+# Flip checkpoint_version to serve a different training run.
+
+base_model: Salesforce/codegen-350M-multi
+checkpoint_version: v2
+
+# Where the API loads adapters from:
+#   local - models/checkpoints/<version>/<task>/
+#   hub   - <org>/codegen-350M-*-lora (for Cloud Run / remote)
+adapter_source: local
+
+# Local checkpoint root (relative to repo root).
+# Best adapter = task root (trainer saves load_best_model_at_end there).
+checkpoints_root: models/checkpoints
+
+adapters:
+  text2sql: text2sql
+  sql2nosql: sql2nosql
+  nosql2doc: nosql2doc
+
+hub:
+  # Leave blank to use HF_ORG from the environment.
+  org: codegenstudio
+  repos:
+    text2sql: codegen-350M-text2sql-lora
+    sql2nosql: codegen-350M-sql2nosql-lora
+    nosql2doc: codegen-350M-nosql2doc-lora
+
+generation:
+  max_new_tokens: 256
+  documentation_max_new_tokens: 96
+  temperature: 0.2
+  top_p: 0.95
+  do_sample: false
+  decoding_strategy: greedy
+
+classifier:
+  # Below this score the API asks for clarification instead of routing.
+  confidence_threshold: 0.45
+  # Prefer regex rules when they match; otherwise fall back to embeddings.
+  prefer_rules: true

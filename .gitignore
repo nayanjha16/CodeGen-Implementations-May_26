@@ -11,6 +11,8 @@ venv/
 env/
 myvenv/
 *.pyc
+myenv/
+myvenv/
 
 # Data & models (downloaded content)
 models/base/*
@@ -20,7 +22,13 @@ models/checkpoints/*
 *.sqlite
 *.db
 data/cache/
+models/checkpoints*/
+!models/checkpoints/.gitkeep
 
+# Hugging Face
+hf-deploy/__pycache__
+hf-deploy/manifest.yaml
+hf-deploy/.env
 # MLflow
 mlruns/
 

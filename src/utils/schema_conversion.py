@@ -80,6 +80,65 @@ def _ddl_from_loader_schema(schema: str) -> str:
     return _ddl_from_table_lines(schema)
 
 
+_CONSTRAINT_PREFIXES = (
+    "PRIMARY KEY",
+    "FOREIGN KEY",
+    "UNIQUE",
+    "CHECK",
+    "CONSTRAINT",
+    "INDEX",
+    "KEY ",
+)
+
+
+def _split_sql_list_items(body: str) -> list[str]:
+    """Split comma-separated SQL DDL items, ignoring commas inside parentheses."""
+    items: list[str] = []
+    current: list[str] = []
+    depth = 0
+    for char in body:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth = max(0, depth - 1)
+        elif char == "," and depth == 0:
+            item = "".join(current).strip()
+            if item:
+                items.append(item)
+            current = []
+            continue
+        current.append(char)
+    tail = "".join(current).strip()
+    if tail:
+        items.append(tail)
+    return items
+
+
+def _is_table_constraint(line: str) -> bool:
+    upper = line.strip().upper()
+    return any(upper.startswith(prefix) for prefix in _CONSTRAINT_PREFIXES)
+
+
+def _parse_column_definition(col_line: str) -> tuple[str, str, bool] | None:
+    line = col_line.strip()
+    if not line or _is_table_constraint(line):
+        return None
+
+    is_pk = bool(re.search(r"\bPRIMARY\s+KEY\b", line, re.IGNORECASE))
+    line = re.sub(r"\bPRIMARY\s+KEY\b", "", line, flags=re.IGNORECASE).strip()
+    line = re.sub(r"\bNOT\s+NULL\b", "", line, flags=re.IGNORECASE).strip()
+    line = re.sub(r"\bNULL\b", "", line, flags=re.IGNORECASE).strip()
+    line = re.split(r"\bDEFAULT\b", line, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+
+    parts = line.split(None, 1)
+    if len(parts) < 2:
+        return None
+
+    col_name = parts[0].strip('"')
+    sql_type = parts[1].strip()
+    return col_name, _mongo_type(sql_type), is_pk
+
+
 def _parse_create_tables(sql_schema: str) -> dict[str, list[tuple[str, str, bool]]]:
     tables: dict[str, list[tuple[str, str, bool]]] = {}
     for match in re.finditer(
@@ -90,20 +149,10 @@ def _parse_create_tables(sql_schema: str) -> dict[str, list[tuple[str, str, bool
         table_name = match.group(1)
         body = match.group(2)
         columns: list[tuple[str, str, bool]] = []
-        for raw_col in body.split(","):
-            col_line = raw_col.strip()
-            if not col_line:
-                continue
-            is_pk = bool(re.search(r"\bPRIMARY\s+KEY\b", col_line, re.IGNORECASE))
-            col_line = re.sub(
-                r"\bPRIMARY\s+KEY\b", "", col_line, flags=re.IGNORECASE
-            ).strip()
-            parts = col_line.split()
-            if len(parts) < 2:
-                continue
-            col_name = " ".join(parts[:-1])
-            sql_type = parts[-1]
-            columns.append((col_name, _mongo_type(sql_type), is_pk))
+        for raw_col in _split_sql_list_items(body):
+            parsed = _parse_column_definition(raw_col)
+            if parsed:
+                columns.append(parsed)
         tables[table_name] = columns
     return tables
 

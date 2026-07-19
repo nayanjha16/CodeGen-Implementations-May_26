@@ -1,43 +1,30 @@
-# Stage Log — LoRA Fine-Tuning Stage 3
+# Stage 3 — UI Shell & Panels
 
-> **Feature:** `lora-finetuning`  
-> **Date:** 2026-06-25
+**Feature:** text2sql-ui-tool  
+**Date:** 2026-07-16
 
-## Implemented Tasks
+## Implemented tasks
 
-| ID | Task | Status |
-|----|------|--------|
-| T-01 | `lora_config.py` — `build_lora_config()` with verified `target_modules` | ✅ |
-| T-02 | `collator.py` — prompt/completion prep + TRL collator helper | ✅ |
-| T-03 | `lora_trainer.py` — `train_lora()` orchestrating PEFT + `SFTTrainer` | ✅ |
-| T-04 | `mlflow_utils.py` — training run logging | ✅ |
-| T-05 | `scripts/train_lora.py` CLI | ✅ |
-| T-06 | `tests/training/test_overfit_smoke.py` — 5 rows, 10 epochs | ✅ |
-| T-07 | Adapter output verification (`adapter_config.json`, `adapter_model.safetensors`, `run_metadata.json`) | ✅ |
+- T3.1 — `ui/shell.py` (header, connection label, tab routing, adapter registry)
+- T3.2 — `ui/activity_panel.py`
+- T3.3 — `ui/query_panel.py` (Execute / Clear)
+- T3.4 — `ui/sql_panel.py`
+- T3.5 — `ui/output_panel.py`
+- T3.6 — `ui/tabs/text2sql_tab.py` (wired to pipeline)
+- T3.7 — Settings page: DB connections CRUD + Test Connection
+- T3.8 — Settings page: FastAPI config + Test API
+- T3.9 — Settings page: schema selection + execution limits
+- T5.1–T5.3 (partial) — SQL-to-NoSQL stub tab, Documentation tab, adapter registry
 
-## Changed Files
+## Changed files
 
-| Path | Change |
-|------|--------|
-| `src/training/lora_config.py` | Created — PEFT `LoraConfig` builder |
-| `src/training/collator.py` | Created — TRL prompt/completion dataset prep |
-| `src/training/lora_trainer.py` | Created — training orchestration |
-| `src/training/mlflow_utils.py` | Created — MLflow training logger |
-| `src/training/tasks.py` | Fixed response templates to match runtime prompt suffixes |
-| `scripts/train_lora.py` | Created — train CLI |
-| `tests/training/test_overfit_smoke.py` | Created — overfit smoke test |
-
-## Assumptions
-
-- **TRL 1.6 API:** Uses `prompt`/`completion` columns + `completion_only_loss=True` (replaces deprecated `DataCollatorForCompletionOnlyLM`).
-- **Data source:** HF TEND spider+bird train/eval by default; optional `--train-csv` / `--eval-csv` for CSV/JSONL.
-- **Overfit smoke:** 5 spider rows, 10 epochs, `skip_eval=True` (~8s on MPS); train loss threshold `< 1.5`.
-- **Adapter path:** Defaults to `models/checkpoints/<task>/` via `get_adapter_path()`.
+- `tool/ui/**`, `tool/pages/settings.py`, `tool/app.py`
 
 ## Blockers
 
-None.
+- None
 
-## Next Stage
+## Assumptions
 
-Stage 4 — Adapter-aware model loading in `model_loader.py` + `test_adapter_load.py`.
+- Streamlit multipage: Settings auto-listed in sidebar
+- `streamlit run tool/app.py` verified (headless smoke test on port 8510)

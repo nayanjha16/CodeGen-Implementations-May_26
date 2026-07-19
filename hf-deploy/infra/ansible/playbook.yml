@@ -1,0 +1,145 @@
+---
+- name: Configure Oracle VM for hf-deploy API
+  hosts: oracle_api
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      ansible.builtin.apt:
+        name:
+          - git
+          - curl
+          - ca-certificates
+          - gnupg
+          - software-properties-common
+          - build-essential
+          - python3.11
+          - python3.11-venv
+          - python3.11-dev
+        state: present
+
+    - name: Ensure app directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ service_user }}"
+        group: "{{ service_group }}"
+        mode: "0755"
+      loop:
+        - "{{ repo_dest }}"
+        - /etc/hf-deploy
+
+    - name: Clone or update application repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dest }}"
+        version: "{{ repo_branch }}"
+        force: true
+      become_user: "{{ service_user }}"
+
+    - name: Create Python virtual environment
+      ansible.builtin.command:
+        cmd: python3.11 -m venv {{ venv_path }}
+        creates: "{{ venv_path }}/bin/python"
+
+    - name: Upgrade pip in virtual environment
+      ansible.builtin.pip:
+        name: pip
+        state: latest
+        virtualenv: "{{ venv_path }}"
+
+    - name: Install hf-deploy Python dependencies
+      ansible.builtin.pip:
+        requirements: "{{ hf_deploy_dir }}/requirements.txt"
+        virtualenv: "{{ venv_path }}"
+      environment:
+        PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+    - name: Deploy environment file
+      ansible.builtin.template:
+        src: hf-deploy.env.j2
+        dest: /etc/hf-deploy/hf-deploy.env
+        owner: root
+        group: root
+        mode: "0640"
+      notify: Restart hf-deploy
+
+    - name: Deploy systemd unit
+      ansible.builtin.template:
+        src: hf-deploy.service.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart hf-deploy
+
+    - name: Enable and start hf-deploy service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    - name: Install Caddy prerequisites
+      ansible.builtin.apt:
+        name:
+          - debian-keyring
+          - debian-archive-keyring
+          - apt-transport-https
+        state: present
+
+    - name: Add Caddy GPG key
+      ansible.builtin.shell: |
+        curl -1sLf '{{ caddy_gpg_url }}' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+
+    - name: Add Caddy apt source
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/caddy-stable.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] {{ caddy_repo_url }} any-version main
+        mode: "0644"
+
+    - name: Install Caddy
+      ansible.builtin.apt:
+        name: caddy
+        state: present
+        update_cache: true
+
+    - name: Deploy Caddyfile
+      ansible.builtin.template:
+        src: Caddyfile.j2
+        dest: /etc/caddy/Caddyfile
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload caddy
+
+    - name: Enable and start Caddy
+      ansible.builtin.systemd:
+        name: caddy
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart hf-deploy
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: restarted
+
+    - name: Reload caddy
+      ansible.builtin.systemd:
+        name: caddy
+        state: reloaded

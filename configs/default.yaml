@@ -40,7 +40,8 @@ training:
   max_target_tokens: 256        # reserve for completion; prompt budget = 1792
   learning_rate: 2.0e-4
   weight_decay: 0.01
-  epochs: 5
+  epochs: 10
+  early_stopping_patience: 3
   per_device_train_batch_size: 8
   per_device_eval_batch_size: 8
   gradient_accumulation_steps: 4  # effective batch size = 32
@@ -52,10 +53,12 @@ training:
 
 lora:
   enabled: true
-  r: 16
-  lora_alpha: 32
+  r: 32
+  lora_alpha: 64
   lora_dropout: 0.05
   bias: none
   target_modules:
     - qkv_proj
     - out_proj
+    - fc_in
+    - fc_out

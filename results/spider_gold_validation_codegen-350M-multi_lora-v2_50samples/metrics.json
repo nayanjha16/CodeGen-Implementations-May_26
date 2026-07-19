@@ -1,0 +1,24 @@
+{
+  "model": "Salesforce/codegen-350M-multi",
+  "adapter_run": "v2",
+  "run_type": "lora",
+  "judge_model": "gemma3:4b",
+  "database_execution": true,
+  "dataset": "spider_gold_validation",
+  "text2sql": {
+    "execution_accuracy": 0.6,
+    "exact_match": 0.4,
+    "structural_similarity": 0.9345782312925169
+  },
+  "sql2nosql": {
+    "execution_accuracy": 0.74,
+    "exact_match": 0.62,
+    "structural_similarity": 0.9331430645713766
+  },
+  "documentation": {
+    "exact_match": 0.02,
+    "embedding_similarity": 0.9585097634792328,
+    "judge_score": 8.412999999999998
+  },
+  "mlflow_run_id": null
+}

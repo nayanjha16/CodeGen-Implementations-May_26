@@ -73,6 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Disable MLflow logging.",
     )
+    return parser
 
 
 def main() -> int:

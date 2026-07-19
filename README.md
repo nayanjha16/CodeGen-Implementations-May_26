@@ -44,12 +44,12 @@ Pass@10 for text to python
 
 max_new_tokens=300, do_sample=True, temperature=0.7
 
----
+## pass@1 java to python fine tuned: 65.97%
 
 | **Metric**               | **Text → Python (Base)** | **Text → Python (Fine-Tuned)** | **Text → Java (Fine-Tuned)** | **Java → Python (Base)** | **Java → Python (Fine-Tuned)** | **Python → Java (Base)** | **Python → Java (Fine-Tuned)** |
 | :----------------------- | :----------------------: | :----------------------------: | :--------------------------: | :----------------------: | :----------------------------: | :----------------------: | :----------------------------: |
 | **Dataset**              |      Custom Dataset      |         Custom Dataset         |        Custom Dataset        |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
-| **Pass@1 (%)**           |         **0.60**         |           **53.01**            |          **49.70**           |         **0.90**         |               —                |         **0.00**         |               —                |
+| **Pass@1 (%)**           |         **0.60**         |           **53.01**            |          **49.70**           |         **0.90**         |          **65.97** —           |         **0.00**         |               —                |
 | **Compilation Rate (%)** |            —             |               —                |              —               |            —             |               —                |         **1.81**         |           **91.87**            |
 | **CodeBERT Similarity**  |        **0.6773**        |           **0.8516**           |          **0.9485**          |        **0.6186**        |           **0.9180**           |        **0.6514**        |           **0.8809**           |
 | **AST Similarity**       |        **0.0123**        |           **0.7038**           |          **0.7384**          |        **0.0455**        |           **0.6000**           |        **0.5660**        |           **0.7487**           |

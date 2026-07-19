@@ -228,6 +228,9 @@ Startup probe allows ~6 minutes for first model download. Cold starts after scal
 | Issue | Fix |
 |-------|-----|
 | Container failed to start | `gcloud run services logs read SERVICE --region REGION` |
+| `failed to load /entrypoint.sh: no such file or directory` | Windows CRLF in `entrypoint.sh` — pull latest `Dockerfile.cloudrun` (strips `\r` on build) and redeploy |
+| More gcloud detail in terminal | `export VERBOSE=1` then `./deploy.sh` |
+| Watch container startup live | `gcloud run services logs tail SERVICE --region REGION` (second terminal) |
 | OOM / exit 137 | Increase `--memory` to `8Gi` or `16Gi` |
 | Startup timeout | Increase startup probe `failureThreshold` in `deploy.sh` |
 | 403 on curl | Ensure `--allow-unauthenticated` or pass identity token |

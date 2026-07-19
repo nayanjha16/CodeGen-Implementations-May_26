@@ -13,7 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY hf_deploy ./hf_deploy
 COPY manifest.yaml .
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Windows checkouts often use CRLF; that breaks shebang with "no such file or directory".
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 ENV HF_DEPLOY_ADAPTER_SOURCE=hub
 ENV HF_ORG=care2achieve

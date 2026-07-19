@@ -24,3 +24,6 @@ $env:CLOUD_RUN_MAX_INSTANCES = "1"
 
 # Hugging Face (public adapters — token usually not required)
 $env:HF_ORG = "care2achieve"
+
+# Optional: VERBOSE=1 for gcloud debug output during deploy
+# $env:VERBOSE = "1"

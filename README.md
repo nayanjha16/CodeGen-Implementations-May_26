@@ -49,7 +49,7 @@ max_new_tokens=300, do_sample=True, temperature=0.7
 | **Metric**               | **Text → Python (Base)** | **Text → Python (Fine-Tuned)** | **Text → Java (Fine-Tuned)** | **Java → Python (Base)** | **Java → Python (Fine-Tuned)** | **Python → Java (Base)** | **Python → Java (Fine-Tuned)** |
 | :----------------------- | :----------------------: | :----------------------------: | :--------------------------: | :----------------------: | :----------------------------: | :----------------------: | :----------------------------: |
 | **Dataset**              |      Custom Dataset      |         Custom Dataset         |        Custom Dataset        |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
-| **Pass@1 (%)**           |         **0.60**         |           **53.01**            |          **49.70**           |         **0.90**         |          **65.97** —           |         **0.00**         |               —                |
+| **Pass@1 (%)**           |         **0.60**         |           **53.01**            |          **49.70**           |         **0.90**         |           **65.97**            |         **0.00**         |               —                |
 | **Compilation Rate (%)** |            —             |               —                |              —               |            —             |               —                |         **1.81**         |           **91.87**            |
 | **CodeBERT Similarity**  |        **0.6773**        |           **0.8516**           |          **0.9485**          |        **0.6186**        |           **0.9180**           |        **0.6514**        |           **0.8809**           |
 | **AST Similarity**       |        **0.0123**        |           **0.7038**           |          **0.7384**          |        **0.0455**        |           **0.6000**           |        **0.5660**        |           **0.7487**           |
@@ -58,6 +58,33 @@ max_new_tokens=300, do_sample=True, temperature=0.7
 | **ROUGE-2**              |        **0.0839**        |           **0.3279**           |          **0.7116**          |        **0.1145**        |           **0.4454**           |        **0.0810**        |           **0.4809**           |
 | **ROUGE-L**              |        **0.1701**        |           **0.5014**           |          **0.7813**          |        **0.1869**        |           **0.5794**           |        **0.1330**        |           **0.6052**           |
 | **Composite Score**      |        **0.2945**        |           **0.6530**           |          **0.8192**          |        **0.2904**        |           **0.6824**           |        **0.4193**        |           **0.7297**           |
+
+| **Metric**               | **Text → Python (Base)** | **Text → Python (Fine-Tuned)** | **Text → Java (Fine-Tuned)** | **Java → Python (Base)** | **Java → Python (Fine-Tuned)** | **Python → Java (Base)** | **Python → Java (Fine-Tuned)** |
+| :----------------------- | :----------------------: | :----------------------------: | :--------------------------: | :----------------------: | :----------------------------: | :----------------------: | :----------------------------: |
+| **Dataset**              |      Custom Dataset      |         Custom Dataset         |        Custom Dataset        |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
+| **Pass@1 (%)**           |         **0.60**         |           **53.01**            |          **49.70**           |         **0.90**         |           **65.97**            |         **0.00**         |           **55.72**            |
+| **Compilation Rate (%)** |            —             |               —                |              —               |            —             |               —                |         **1.81**         |           **94.28**            |
+| **CodeBERT Similarity**  |        **0.6773**        |           **0.8516**           |          **0.9485**          |        **0.6186**        |           **0.9180**           |        **0.6514**        |           **0.9219**           |
+| **AST Similarity**       |        **0.0123**        |           **0.7038**           |          **0.7384**          |        **0.0455**        |           **0.6000**           |        **0.5660**        |           **0.7593**           |
+| **BLEU Score**           |        **0.0557**        |           **0.2869**           |          **0.6961**          |        **0.0721**        |           **0.3929**           |        **0.0646**        |           **0.6881**           |
+| **ROUGE-1**              |        **0.1909**        |           **0.5473**           |          **0.8026**          |        **0.2153**        |           **0.6262**           |        **0.1932**        |           **0.7884**           |
+| **ROUGE-2**              |        **0.0839**        |           **0.3279**           |          **0.7116**          |        **0.1145**        |           **0.4454**           |        **0.0810**        |           **0.6774**           |
+| **ROUGE-L**              |        **0.1701**        |           **0.5014**           |          **0.7813**          |        **0.1869**        |           **0.5794**           |        **0.1330**        |           **0.7564**           |
+| **Composite Score**      |        **0.2945**        |           **0.6530**           |          **0.8192**          |        **0.2904**        |           **0.6824**           |        **0.4193**        |           **0.8074**           |
+
+| **Metric**                                            | **Weighted Average (332 samples)** |
+| ----------------------------------------------------- | :--------------------------------: |
+| **Finetuned Model Pass@1 (Generated Java)**           |             **55.72%**             |
+| **Finetuned Model Pass@1 (Original Java)**            |             **98.53%**             |
+| **Finetuned Model Compilation Rate (Generated Java)** |             **94.28%**             |
+| **Finetuned Model Compilation Rate (Original Java)**  |            **100.00%**             |
+| **Mean AST Similarity Score**                         |             **0.7593**             |
+| **Mean BLEU Score**                                   |             **0.6881**             |
+| **Mean ROUGE-1 Score**                                |             **0.7884**             |
+| **Mean ROUGE-2 Score**                                |             **0.6774**             |
+| **Mean ROUGE-L Score**                                |             **0.7564**             |
+| **Mean CodeBERT Similarity Score**                    |             **0.9219**             |
+| **Mean Composite Translation Score**                  |             **0.8074**             |
 
 Key Improvements for Text → Python
 | Metric | Base | Fine-Tuned | Improvement |

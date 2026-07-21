@@ -1,0 +1,60 @@
+# ============================================================================
+# Master configuration — CodeGen Capstone (Group 39, Batch 26)
+# All paths are resolved relative to `project_root`, which is auto-detected
+# by src/codegen_rag/utils/env_setup.py (Google Drive on Colab, or ./ locally)
+# ============================================================================
+
+project:
+  name: "codegen-rag-capstone"
+  seed: 42
+  drive_subdir: "CodeGen_Capstone"     # folder created under /content/drive/MyDrive/
+
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  data_interim: "data/interim"
+  checkpoints: "checkpoints"
+  logs: "logs"
+  results: "results"
+  faiss_index: "faiss_index"
+
+base_model:
+  name: "Salesforce/codegen-350M-multi"
+  revision: "main"
+  max_length: 512
+  device_map: "auto"
+
+upper_bound_llm:
+  # claude-sonnet-4-20250514 was retired from the API (404 not_found_error as
+  # of mid-2026); claude-3-5-sonnet-20241022 is stale for the same reason.
+  # Pinned to a dated snapshot (rather than a rolling alias) for reproducibility.
+  primary: "claude-sonnet-4-5-20250929"
+  fallback_order: ["gpt-5", "gpt-4o", "claude-haiku-4-5-20251001"]
+  max_tokens: 1024
+  temperature: 0.2
+
+new_language:
+  name: "rust"
+  file_extension: ".rs"
+  huggingface_filter: "Rust"
+
+logging:
+  level: "INFO"
+  log_to_file: true
+  tensorboard: true
+  wandb:
+    enabled: false          # flip true once WANDB_API_KEY is set
+    project: "codegen-rag-capstone"
+    entity: null
+
+checkpoints_program:
+  checkpoint_1:
+    tasks: ["program_synthesis", "documentation_generation", "commit_message_generation", "code_translation"]
+    finetune_scope: "subset"
+  checkpoint_2:
+    tasks: ["sql_generation"]
+    finetune_scope: "full"
+  checkpoint_3:
+    tasks: ["rag_pipeline"]
+  checkpoint_4:
+    tasks: ["deployment"]

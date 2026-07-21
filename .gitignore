@@ -1,0 +1,38 @@
+# Data & artifacts
+data/raw/
+data/processed/
+data/interim/
+checkpoints/
+models/*.bin
+models/*.safetensors
+faiss_index/
+logs/
+wandb/
+runs/
+results/*.png
+*.pt
+*.pth
+
+# Secrets
+.env
+*.key
+config/secrets.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Google Drive mount marker
+drive/

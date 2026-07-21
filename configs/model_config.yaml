@@ -1,0 +1,48 @@
+# ============================================================================
+# Model / generation configuration
+# ============================================================================
+
+generation:
+  program_synthesis:
+    max_new_tokens: 256
+    temperature: 0.2
+    top_p: 0.95
+    do_sample: true
+    num_return_sequences: 1
+    stop_sequences: ["\ndef ", "\nclass ", "\n\n\n"]
+
+  documentation_generation:
+    max_new_tokens: 160
+    temperature: 0.3
+    top_p: 0.9
+    do_sample: true
+
+  commit_message_generation:
+    max_new_tokens: 48
+    temperature: 0.4
+    top_p: 0.9
+    do_sample: true
+
+  code_translation:
+    max_new_tokens: 256
+    temperature: 0.2
+    top_p: 0.95
+    do_sample: true
+
+  sql_generation:
+    max_new_tokens: 160
+    temperature: 0.0
+    do_sample: false
+
+embeddings:
+  pooling: "mean_last_hidden"     # mean-pool the final hidden states for RAG
+  normalize: true
+  embedding_dim: 1024              # codegen-350M-multi hidden size
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: ["qkv_proj", "out_proj", "fc_in", "fc_out"]
+  bias: "none"
+  task_type: "CAUSAL_LM"

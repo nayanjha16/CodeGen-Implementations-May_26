@@ -1,0 +1,58 @@
+# ============================================================================
+# Dataset configuration
+# ============================================================================
+
+codocbench:
+  repo_url: "https://github.com/kunpai/codocbench"
+  clone_dir: "data/raw/codocbench"
+  languages: ["python", "java", "cpp"]
+  split_ratios: { train: 0.8, val: 0.1, test: 0.1 }
+
+spider:
+  # Spider is distributed via Google Drive / HF mirror; we use the HF mirror
+  # (xlangai/spider) to avoid manual Google-Drive downloads inside Colab.
+  hf_dataset: "xlangai/spider"
+  clone_dir: "data/raw/spider"
+  databases_dir: "data/raw/spider_databases"
+  # Official Spider test-suite databases archive (yale-lily). Update if the
+  # upstream host changes; the loader fails loudly (not silently) if this 404s.
+  databases_archive_url: "https://drive.usercontent.google.com/download?id=1mkCx2GOFIqNesD4y8TDAO1yX1QZORP5w&export=download"
+  split_ratios: { train: 0.8, val: 0.1, test: 0.1 }
+
+birdbench:
+  hf_dataset: "birdsql/bird_mini_dev"
+  hf_split: "mini_dev_sqlite"
+  fallback_url: "https://bird-bench.github.io/"
+  clone_dir: "data/raw/birdbench"
+  databases_dir: "data/raw/birdbench_databases"
+  databases_archive_url: "https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip"
+  split_ratios: { train: 0.8, val: 0.1, test: 0.1 }
+
+codeparrot:
+  hf_dataset: "codeparrot/github-code"
+  languages: ["Python", "Java", "C++"]
+  streaming: true
+  max_samples: 20000
+  clone_dir: "data/raw/codeparrot"
+
+rust_corpus:
+  hf_dataset: "codeparrot/github-code"
+  language_filter: "Rust"
+  min_samples: 500
+  max_samples: 5000          # Checkpoint 1 subset cap
+  max_samples_full: 20000    # Checkpoint 2 full-corpus cap
+  clone_dir: "data/raw/rust_corpus"
+  clone_dir_full: "data/raw/rust_corpus_full"
+  anti_forgetting_ratio: 0.15   # 15% source-language (Python) samples mixed in
+
+tokenizer:
+  pretrained: "Salesforce/codegen-350M-multi"
+  max_length: 512
+  padding: "max_length"
+  truncation: true
+
+preprocessing:
+  min_code_length_chars: 20
+  max_code_length_chars: 8000
+  strip_comments_for_intent: false
+  dedupe: true

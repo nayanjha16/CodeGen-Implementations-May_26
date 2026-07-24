@@ -11,8 +11,10 @@ venv/
 env/
 
 # Data & models (downloaded content)
-models/base/*
-!models/base/.gitkeep
+# Track LoRA adapters under models/checkpoints/; ignore everything else in models/.
+models/*
+!models/checkpoints/
+!models/checkpoints/**
 *.sqlite
 *.db
 

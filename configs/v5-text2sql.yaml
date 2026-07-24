@@ -1,0 +1,68 @@
+# LoRA v5 — text2sql-only ablation
+# Goal: fix v4 text2sql overfitting (best @ epoch 1) via lower LR + stronger regularization
+# Keep v4 LoRA capacity (r=32, α=64, attn+FFN). Train with:
+#   python scripts/train_all_lora.py --config configs/v5-text2sql.yaml \
+#     --tasks text2sql --version v5 --no-mlflow
+
+model:
+  max_length: 2048
+  device: "auto"
+
+generation:
+  max_new_tokens: 256
+  documentation_max_new_tokens: 96
+  temperature: 0.7
+  top_p: 0.95
+  num_beams: 4
+  do_sample: false
+  decoding_strategy: "greedy"
+  seq2seq_decoding_strategy: "beam"
+
+datasets:
+  tend: {}
+  spider_gold_validation: data/spider_gold_validation.jsonl
+
+evaluation:
+  batch_size: 8
+  max_samples: 50
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
+  experiment_name: "codegen-text2sql"
+
+seeds:
+  random: 42
+  numpy: 42
+  torch: 42
+
+training:
+  task_type: CAUSAL_LM
+  datasets: [spider, bird]
+  split: train
+  eval_datasets: [spider, bird]
+  eval_split: test
+  max_length: 2048
+  max_target_tokens: 256
+  learning_rate: 8.0e-5
+  weight_decay: 0.05
+  epochs: 5
+  early_stopping_patience: 2
+  # effective batch = 32 (restore v3-scale; if OOM on Kaggle use 2 × 16)
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 8
+  warmup_ratio: 0.10
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  fp16: false
+  bf16: false
+
+lora:
+  enabled: true
+  r: 32
+  lora_alpha: 64
+  lora_dropout: 0.10
+  bias: none
+  target_modules:
+    - qkv_proj
+    - out_proj
+    - fc_in
+    - fc_out

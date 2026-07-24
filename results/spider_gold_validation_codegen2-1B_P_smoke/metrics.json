@@ -1,0 +1,17 @@
+{
+  "model": "Salesforce/codegen2-1B_P",
+  "adapter_run": null,
+  "run_type": "baseline",
+  "tasks": [
+    "text2sql"
+  ],
+  "judge_model": null,
+  "database_execution": true,
+  "dataset": "spider_gold_validation",
+  "mlflow_run_id": null,
+  "text2sql": {
+    "execution_accuracy": 0.0,
+    "exact_match": 0.0,
+    "structural_similarity": 0.8095238095238094
+  }
+}

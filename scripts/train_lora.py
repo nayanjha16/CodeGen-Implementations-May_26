@@ -38,14 +38,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output-dir",
         default=None,
-        help="Adapter output directory (default: models/checkpoints/<run>/<task>/).",
+        help="Adapter output directory (default: models/checkpoints/<model>/<run>/<task>/).",
     )
     parser.add_argument(
         "--version",
         "--name",
         dest="run",
         default=None,
-        help="Checkpoint run folder under models/checkpoints/ (default: DDMM, e.g. 2506).",
+        help="Checkpoint run under models/checkpoints/<model>/ (default: DDMM, e.g. 2506).",
     )
     parser.add_argument(
         "--max-samples",

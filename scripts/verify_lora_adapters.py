@@ -36,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--name",
         dest="run",
         default=None,
-        help="Checkpoint run folder under models/checkpoints/ (default: DDMM or MODEL_ADAPTER_RUN).",
+        help="Checkpoint run under models/checkpoints/<model>/ (default: DDMM or MODEL_ADAPTER_RUN).",
     )
     return parser
 

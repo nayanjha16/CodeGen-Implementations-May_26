@@ -87,13 +87,22 @@ def _resolve_tokenizer(config: dict[str, Any], tokenizer: Any | None = None):
     if tokenizer is not None:
         return tokenizer
 
-    from transformers import AutoTokenizer
-
-    from src.models.model_loader import ensure_model_cached
+    from src.models.model_loader import (
+        ensure_model_cached,
+        hf_load_kwargs,
+        is_codegen2_model,
+        _load_codegen2_tokenizer,
+    )
 
     model_name = get_model_name(config)
     local_path = ensure_model_cached(model_name)
-    return AutoTokenizer.from_pretrained(local_path, local_files_only=True)
+    load_kwargs = hf_load_kwargs(model_name, config, local_files_only=True)
+    if is_codegen2_model(model_name):
+        return _load_codegen2_tokenizer(local_path, **load_kwargs)
+
+    from transformers import AutoTokenizer
+
+    return AutoTokenizer.from_pretrained(local_path, **load_kwargs)
 
 
 def _truncate_prompt_tokens(

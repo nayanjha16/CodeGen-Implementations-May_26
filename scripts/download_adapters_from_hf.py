@@ -12,7 +12,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.training.tasks import TRAINING_TASKS
-from src.utils.paths import get_models_checkpoints_dir
+from src.utils.config import get_model_name, load_config
+from src.utils.paths import get_model_checkpoints_dir
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -29,7 +30,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--version",
         dest="run",
         required=True,
-        help="Local checkpoint run folder under models/checkpoints/ (e.g. v3).",
+        help="Local checkpoint run under models/checkpoints/<model>/ (e.g. v3).",
+    )
+    parser.add_argument(
+        "--model-name",
+        default=None,
+        help="Base model id for local folder (default: MODEL_NAME / config).",
     )
     parser.add_argument(
         "--tasks",
@@ -52,8 +58,9 @@ def download_adapters(
     run: str,
     tasks: tuple[str, ...],
     token: str | None = None,
+    model_name: str | None = None,
 ) -> dict[str, Path]:
-    """Download each task adapter into models/checkpoints/<run>/<task>/."""
+    """Download each task adapter into models/checkpoints/<model>/<run>/<task>/."""
     from huggingface_hub import snapshot_download
 
     import os
@@ -61,7 +68,8 @@ def download_adapters(
     resolved_token = token or os.environ.get("HF_TOKEN") or os.environ.get(
         "HUGGING_FACE_HUB_TOKEN"
     )
-    run_dir = get_models_checkpoints_dir() / run
+    resolved_model = model_name or get_model_name(load_config())
+    run_dir = get_model_checkpoints_dir(resolved_model) / run
     run_dir.mkdir(parents=True, exist_ok=True)
 
     patterns = [f"{task}/*" for task in tasks]
@@ -99,6 +107,7 @@ def main() -> int:
         run=args.run,
         tasks=tuple(args.tasks),
         token=args.token,
+        model_name=args.model_name,
     )
     return 0
 

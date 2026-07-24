@@ -5,13 +5,13 @@ base_model: Salesforce/codegen-350M-multi
 checkpoint_version: v4
 
 # Where the API loads adapters from:
-#   local — models/checkpoints/<version>/<task>/
+#   local — models/checkpoints/<model_slug>/<version>/<task>/
 #   hub   — care2achieve/codegen-350M-*-lora (for Spaces / remote)
 adapter_source: local
 
 # Local checkpoint roots (relative to repo root).
 # Best adapter = task root (trainer saves load_best_model_at_end there).
-checkpoints_root: models/checkpoints
+checkpoints_root: models/checkpoints/Salesforce__codegen-350M-multi
 
 adapters:
   text2sql: text2sql

@@ -1,0 +1,38 @@
+2026-07-24 11:05:23,323 - codegen - INFO - Loaded spider gold validation (50 rows) from /Volumes/Work/CodeGen-Implementations-May_26/data/spider_gold_validation.jsonl
+Baseline Evaluation: Salesforce/codegen2-1B_P
+Tasks: text2sql
+Database execution available: True
+Dataset: spider_gold_validation (50 examples) | Max samples: 3
+Results folder: spider_gold_validation_codegen2-1B_P_smoke
+Model (Salesforce/codegen2-1B_P): cached at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
+Evaluation set: data/spider_gold_validation.jsonl
+2026-07-24 11:05:23,808 - codegen - INFO - BenchmarkRunner init: adapter_run=baseline tasks=text2sql max_samples=3
+2026-07-24 11:05:23,808 - codegen - INFO - [text2sql (Text-to-SQL)] Loading base model (no adapter)
+2026-07-24 11:05:23,809 - codegen - INFO - Loaded spider gold validation (50 rows) from /Volumes/Work/CodeGen-Implementations-May_26/data/spider_gold_validation.jsonl
+2026-07-24 11:05:23,809 - codegen - INFO - === Evaluation pipeline: 3 samples from spider_gold_validation ===
+2026-07-24 11:05:23,809 - codegen - INFO - [text2sql (Text-to-SQL)] Starting Text-to-SQL evaluation
+2026-07-24 11:05:23,809 - codegen - INFO - [text2sql (Text-to-SQL)] Starting generation (3 samples)
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
+2026-07-24 11:05:25,330 - codegen - INFO - Using cached model at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
+2026-07-24 11:05:25,330 - codegen - INFO - Loading model Salesforce/codegen2-1B_P from /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P on mps
+Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
+2026-07-24 11:05:25,400 - codegen - INFO - Using cached model at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
+Loading weights:   0%|          | 0/133 [00:00<?, ?it/s]Loading weights: 100%|██████████| 133/133 [00:00<00:00, 12421.89it/s]
+2026-07-24 11:06:03,351 - codegen - INFO - [text2sql (Text-to-SQL)] Completed 3 samples (0 valid)
+2026-07-24 11:06:03,352 - codegen - INFO - [text2sql (Text-to-SQL)] Computing metrics (execution accuracy, exact match, structural similarity)
+2026-07-24 11:06:03,396 - codegen - INFO - [text2sql (Text-to-SQL)] Metrics complete: 0/3 valid SQL queries
+2026-07-24 11:06:03,396 - codegen - INFO - === Evaluation pipeline complete ===
+
+============================================================
+  Text-to-SQL (spider_gold_validation)
+============================================================
+  execution_accuracy            : 0.0000
+  exact_match                   : 0.0000
+  structural_similarity         : 0.8095
+
+  MLflow run ID: None
+2026-07-24 11:06:03,442 - codegen - INFO - [text2sql (Text-to-SQL)] Exporting details CSV (3 rows)
+2026-07-24 11:06:03,658 - codegen - INFO - [text2sql (Text-to-SQL)] Details CSV saved: /Volumes/Work/CodeGen-Implementations-May_26/results/spider_gold_validation_codegen2-1B_P_smoke/text2sql_details.csv
+  Run saved: /Volumes/Work/CodeGen-Implementations-May_26/results/spider_gold_validation_codegen2-1B_P_smoke
+    metrics: /Volumes/Work/CodeGen-Implementations-May_26/results/spider_gold_validation_codegen2-1B_P_smoke/metrics.json
+    text2sql details: /Volumes/Work/CodeGen-Implementations-May_26/results/spider_gold_validation_codegen2-1B_P_smoke/text2sql_details.csv

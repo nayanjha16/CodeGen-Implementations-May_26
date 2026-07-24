@@ -24,6 +24,77 @@ def is_seq2seq_model(model_name: str) -> bool:
     return any(tag in lowered for tag in ("t5", "bart", "pegasus", "mbart"))
 
 
+def is_codegen2_model(model_name: str | None) -> bool:
+    """Return True for Salesforce CodeGen2 checkpoints (native CodeGen arch)."""
+    return "codegen2" in (model_name or "").lower()
+
+
+def requires_trust_remote_code(
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+) -> bool:
+    """Return True when HuggingFace custom model code must be trusted.
+
+    CodeGen2 publishes ``auto_map`` + ``trust_remote_code``, but its remote
+    ``configuration_codegen.py`` imports removed ``transformers.onnx`` APIs.
+    Load CodeGen2 via native ``CodeGenForCausalLM`` instead (see
+    ``ensure_model_cached``). Config may still set ``model.trust_remote_code``.
+    """
+    if is_codegen2_model(model_name):
+        return False
+    if config is not None:
+        model_cfg = config.get("model") or {}
+        if isinstance(model_cfg, dict) and model_cfg.get("trust_remote_code") is not None:
+            return bool(model_cfg.get("trust_remote_code"))
+    return False
+
+
+def hf_load_kwargs(
+    model_name: str | None = None,
+    config: dict[str, Any] | None = None,
+    *,
+    local_files_only: bool = False,
+) -> dict[str, Any]:
+    """Build common ``from_pretrained`` kwargs for this project's models."""
+    kwargs: dict[str, Any] = {}
+    if local_files_only:
+        kwargs["local_files_only"] = True
+    if requires_trust_remote_code(model_name, config):
+        kwargs["trust_remote_code"] = True
+    return kwargs
+
+
+def _strip_remote_code_from_config(cache_dir: Path) -> None:
+    """Remove auto_map / trust_remote_code so local Auto* loads use native CodeGen."""
+    import json
+
+    config_path = cache_dir / "config.json"
+    if not config_path.exists():
+        return
+    data = json.loads(config_path.read_text(encoding="utf-8"))
+    data.pop("auto_map", None)
+    data.pop("trust_remote_code", None)
+    config_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def _load_codegen2_tokenizer(source: str | Path, **load_kwargs: Any) -> Any:
+    """Load CodeGen2 tokenizer (GPT2 + added whitespace/infill tokens)."""
+    from transformers import GPT2Tokenizer
+
+    tokenizer = GPT2Tokenizer.from_pretrained(source, **load_kwargs)
+    # Hub tokenizer_config caps at 1024; model context is 2048.
+    if getattr(tokenizer, "model_max_length", 0) < 2048:
+        tokenizer.model_max_length = 2048
+    return tokenizer
+
+
+def _load_codegen2_model(source: str | Path, **load_kwargs: Any) -> Any:
+    """Load CodeGen2 weights with native transformers CodeGen (no remote code)."""
+    from transformers import CodeGenForCausalLM
+
+    return CodeGenForCausalLM.from_pretrained(source, **load_kwargs)
+
+
 def is_model_cached(path: Path) -> bool:
     """Return True when a complete HuggingFace model snapshot exists locally."""
     if not (path / "config.json").exists() or not (path / ".downloaded").exists():
@@ -50,6 +121,21 @@ def ensure_model_cached(
 
     from transformers import AutoModel, AutoModelForCausalLM, AutoModelForSeq2SeqLM, AutoTokenizer
 
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading model {model_name} to {cache_dir} ...")
+    logger.info("Downloading model %s to %s", model_name, cache_dir)
+
+    load_kwargs = hf_load_kwargs(model_name)
+    if is_codegen2_model(model_name):
+        # Remote CodeGen2 config imports removed transformers.onnx; use native CodeGen.
+        tokenizer = _load_codegen2_tokenizer(model_name, **load_kwargs)
+        model = _load_codegen2_model(model_name, **load_kwargs)
+        tokenizer.save_pretrained(cache_dir)
+        model.save_pretrained(cache_dir)
+        _strip_remote_code_from_config(cache_dir)
+        (cache_dir / ".downloaded").touch()
+        return cache_dir
+
     if causal:
         if is_seq2seq_model(model_name):
             model_cls = AutoModelForSeq2SeqLM
@@ -57,12 +143,9 @@ def ensure_model_cached(
             model_cls = AutoModelForCausalLM
     else:
         model_cls = AutoModel
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading model {model_name} to {cache_dir} ...")
-    logger.info("Downloading model %s to %s", model_name, cache_dir)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = model_cls.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, **load_kwargs)
+    model = model_cls.from_pretrained(model_name, **load_kwargs)
     tokenizer.save_pretrained(cache_dir)
     model.save_pretrained(cache_dir)
     (cache_dir / ".downloaded").touch()
@@ -80,7 +163,7 @@ def resolve_adapter_path(
     task: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> Path | None:
-    """Resolve a LoRA adapter directory under ``models/checkpoints/<task>/``.
+    """Resolve a LoRA adapter under ``models/checkpoints/<model>/<run>/<task>/``.
 
     Resolution order:
     1. Explicit ``adapter_path`` (absolute, project-relative, or checkpoint name)
@@ -155,8 +238,17 @@ def load_tokenizer(
     local_path = get_model_cache_dir(name)
     if not is_model_cached(local_path):
         ensure_model_cached(name)
-    load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
-    tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
+    load_kwargs = hf_load_kwargs(
+        name,
+        config,
+        local_files_only=is_model_cached(local_path),
+    )
+    if is_codegen2_model(name):
+        tokenizer = _load_codegen2_tokenizer(local_path, **load_kwargs)
+    else:
+        from transformers import AutoTokenizer
+
+        tokenizer = AutoTokenizer.from_pretrained(local_path, **load_kwargs)
     _tokenizer_cache[name] = tokenizer
     return tokenizer
 
@@ -248,8 +340,10 @@ class CodeGenModel:
         transformers_logging.set_verbosity_error()
 
         tokenizer_path = self._resolve_tokenizer_path()
-        load_kwargs = (
-            {"local_files_only": True} if is_model_cached(tokenizer_path) else {}
+        load_kwargs = hf_load_kwargs(
+            self.model_name,
+            self.config,
+            local_files_only=is_model_cached(tokenizer_path),
         )
         logger.info(
             "Loading model %s from %s on %s%s",
@@ -258,7 +352,10 @@ class CodeGenModel:
             self.device,
             f" with adapter {self.adapter_path}" if self.adapter_path else "",
         )
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, **load_kwargs)
+        if is_codegen2_model(self.model_name):
+            self.tokenizer = _load_codegen2_tokenizer(tokenizer_path, **load_kwargs)
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, **load_kwargs)
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
@@ -270,10 +367,13 @@ class CodeGenModel:
                 )
             from peft import PeftModel
 
-            base_model = AutoModelForCausalLM.from_pretrained(
-                tokenizer_path,
-                **load_kwargs,
-            )
+            if is_codegen2_model(self.model_name):
+                base_model = _load_codegen2_model(tokenizer_path, **load_kwargs)
+            else:
+                base_model = AutoModelForCausalLM.from_pretrained(
+                    tokenizer_path,
+                    **load_kwargs,
+                )
             self.model = PeftModel.from_pretrained(
                 base_model,
                 str(self.adapter_path),
@@ -281,9 +381,18 @@ class CodeGenModel:
             )
         else:
             local_path = self._resolve_local_path()
-            load_kwargs = {"local_files_only": True} if is_model_cached(local_path) else {}
-            model_cls = AutoModelForSeq2SeqLM if self._seq2seq else AutoModelForCausalLM
-            self.model = model_cls.from_pretrained(local_path, **load_kwargs)
+            load_kwargs = hf_load_kwargs(
+                self.model_name,
+                self.config,
+                local_files_only=is_model_cached(local_path),
+            )
+            if is_codegen2_model(self.model_name):
+                self.model = _load_codegen2_model(local_path, **load_kwargs)
+            else:
+                model_cls = (
+                    AutoModelForSeq2SeqLM if self._seq2seq else AutoModelForCausalLM
+                )
+                self.model = model_cls.from_pretrained(local_path, **load_kwargs)
 
         self.model.to(self.device)
         self.model.eval()
@@ -364,7 +473,7 @@ def load_model(
     """Create and optionally load a CodeGen model, with optional LoRA adapter.
 
     Args:
-        adapter: Task name whose adapter lives under ``models/checkpoints/<task>/``.
+        adapter: Task name whose adapter lives under ``models/checkpoints/<model>/<run>/<task>/``.
         adapter_path: Explicit adapter directory (overrides ``adapter`` / env).
         task: Alias for ``adapter``.
     """

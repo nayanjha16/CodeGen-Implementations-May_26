@@ -24,7 +24,12 @@ from src.training.tasks import TRAINING_TASKS
 from src.utils.config import get_model_name, load_config
 from src.utils.device import resolve_device
 from src.utils.logging import setup_logging
-from src.utils.paths import build_results_run_name, get_models_checkpoints_dir, resolve_adapter_run_name
+from src.utils.paths import (
+    build_results_run_name,
+    get_model_checkpoints_dir,
+    model_slug,
+    resolve_adapter_run_name,
+)
 
 DEFAULT_TASK_ORDER = ("text2sql", "sql2nosql", "nosql2doc")
 
@@ -50,7 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--checkpoint-suite",
         default=None,
-        help="Optional subdirectory under models/checkpoints/ for all task outputs.",
+        help="Optional run folder under models/checkpoints/<model>/ for all task outputs.",
     )
     parser.add_argument(
         "--run-baseline",
@@ -81,7 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--name",
         dest="run",
         default=None,
-        help="Checkpoint run folder under models/checkpoints/ (default: DDMM, e.g. 2506).",
+        help="Checkpoint run under models/checkpoints/<model>/ (default: DDMM, e.g. 2506).",
     )
     return parser
 
@@ -128,7 +133,7 @@ def main() -> int:
     config = load_config(config_path)
     model_name = get_model_name(config)
     run_name = resolve_adapter_run_name(args.run)
-    run_dir = get_models_checkpoints_dir() / run_name
+    run_dir = get_model_checkpoints_dir(model_name) / run_name
     started_at = datetime.now(timezone.utc).isoformat()
     device_request = args.device or config.get("model", {}).get("device", "auto")
     resolved_device = resolve_device(device_request)
@@ -138,7 +143,10 @@ def main() -> int:
         print(f"Device: {resolved_device} (requested: {device_request})")
         print(f"Checkpoint run: {run_name}")
         for task in args.tasks:
-            print(f"  would train: {task} -> models/checkpoints/{run_name}/{task}/")
+            print(
+                f"  would train: {task} -> "
+                f"models/checkpoints/{model_slug(model_name)}/{run_name}/{task}/"
+            )
         if args.run_baseline:
             baseline_samples = args.baseline_max_samples or _default_baseline_max_samples()
             print(

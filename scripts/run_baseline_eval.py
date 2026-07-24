@@ -107,9 +107,10 @@ def run_tend_baseline(
     adapter_run: str | None = None,
     device: str | None = None,
     tasks: list[str] | None = None,
+    config_path: str | None = None,
 ) -> dict:
     """Run baseline on TEND data (Spider gold validation by default)."""
-    config = load_config()
+    config = load_config(config_path)
     config["evaluation"]["max_samples"] = max_samples
     if device is not None:
         config.setdefault("model", {})["device"] = device
@@ -134,6 +135,11 @@ def main() -> None:
     setup_logging()
 
     parser = argparse.ArgumentParser(description="Baseline model evaluation")
+    parser.add_argument(
+        "--config",
+        default=None,
+        help="Path to YAML config (default: configs/default.yaml).",
+    )
     parser.add_argument(
         "--tend-config",
         choices=["spider", "bird"],
@@ -181,7 +187,7 @@ def main() -> None:
         "--adapter-run",
         dest="adapter_run",
         default=None,
-        help="LoRA checkpoint run under models/checkpoints/<run>/ (e.g. v1).",
+        help="LoRA checkpoint run under models/checkpoints/<model>/<run>/ (e.g. v1).",
     )
     parser.add_argument(
         "--tasks",
@@ -193,7 +199,7 @@ def main() -> None:
     args = parser.parse_args()
     selected_tasks = args.tasks or ["text2sql", "sql2nosql", "nosql2doc"]
 
-    config = load_config()
+    config = load_config(args.config)
     model_name = get_model_name(config)
     judge_model_name = get_judge_model(config)
     llm_provider = get_llm_provider(config)
@@ -253,6 +259,7 @@ def main() -> None:
         adapter_run=args.adapter_run,
         device=args.device,
         tasks=selected_tasks,
+        config_path=args.config,
     )
 
     if "text2sql" in selected_tasks:

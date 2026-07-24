@@ -100,13 +100,30 @@ def resolve_adapter_run_name(run: str | None = None, when: datetime | None = Non
     return _safe_run_name_segment(str(run), fallback=fallback)
 
 
+def get_model_checkpoints_dir(model_name: str) -> Path:
+    """Directory for a model's versioned LoRA runs: ``models/checkpoints/<model_slug>/``."""
+    return get_models_checkpoints_dir() / model_slug(model_name)
+
+
 def get_adapter_checkpoint_path(
-    task: str, run: str | None = None, when: datetime | None = None
+    task: str,
+    run: str | None = None,
+    when: datetime | None = None,
+    *,
+    model_name: str | None = None,
 ) -> Path:
-    """Resolve ``models/checkpoints/<run>/<task>/`` for LoRA adapter output."""
+    """Resolve ``models/checkpoints/<model_slug>/<run>/<task>/`` for LoRA adapter output."""
     normalized = task.strip().lower()
     run_name = resolve_adapter_run_name(run, when=when)
-    return get_models_checkpoints_dir() / run_name / normalized
+    if model_name is None:
+        _load_env()
+        model_name = os.environ.get("MODEL_NAME")
+    if not model_name:
+        raise ValueError(
+            "model_name is required to resolve adapter checkpoint paths "
+            "(pass model_name=... or set MODEL_NAME)."
+        )
+    return get_model_checkpoints_dir(model_name) / run_name / normalized
 
 
 def get_checkpoint_path(checkpoint_name: str) -> Path:

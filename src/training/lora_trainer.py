@@ -299,7 +299,17 @@ def train_lora(
     tokenizer = load_tokenizer(model_name, cfg)
     _ensure_tokenizer_pad_token(tokenizer)
 
-    model = AutoModelForCausalLM.from_pretrained(local_path, local_files_only=True)
+    from src.models.model_loader import (
+        hf_load_kwargs,
+        is_codegen2_model,
+        _load_codegen2_model,
+    )
+
+    load_kwargs = hf_load_kwargs(model_name, cfg, local_files_only=True)
+    if is_codegen2_model(model_name):
+        model = _load_codegen2_model(local_path, **load_kwargs)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(local_path, **load_kwargs)
     if tokenizer.pad_token_id is not None:
         model.config.pad_token_id = tokenizer.pad_token_id
     if tokenizer.bos_token_id is not None:

@@ -1,0 +1,109 @@
+index,question,prompt,input_token_count,raw_output,predicted_sql,predicted_sql_valid,ground_truth,exact_match,execution_match,execution_error
+0,How many singers do we have?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+How many singers do we have?
+
+SQL:",345,"(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,",,False,SELECT count(*) FROM singer,,,
+1,What is the total number of singers?,"Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+What is the total number of singers?
+
+SQL:",346,"(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,",,False,SELECT count(*) FROM singer,,,
+2,"Show name, country, age for all singers ordered by age from the oldest to the youngest.","Task: text2sql
+
+Translate the question into SQL.
+
+Rules:
+
+* Use only schema tables and columns.
+* Use a single table when the question only needs data from one table; avoid unnecessary JOINs.
+* JOIN when selected columns, filters, or aggregations require data from more than one table.
+* Follow FOREIGN KEY relationships in the schema for JOIN keys: child_table.fk_column = parent_table.referred_column.
+* For many-to-many links, JOIN through the association table that references both sides.
+* Apply each filter to the table and column that owns that attribute in the schema.
+* Prefer explicit INNER JOIN ... ON ...; use LEFT JOIN only when the question needs rows with missing optional related data.
+* Qualify column names with table names or aliases when the same name appears in multiple tables.
+* Use COUNT(*) for counts.
+* Use DISTINCT when uniqueness is required.
+* Use GROUP BY for aggregations by category.
+* Use ORDER BY for ranking or sorting.
+* Use LIMIT when the question asks for top, highest, lowest, first, or last.
+* Return exactly one SQL SELECT statement.
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    country TEXT,
+    song_name TEXT,
+    song_release_year TEXT,
+    age REAL,
+    is_male TEXT
+);
+
+Question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+SQL:",357,"(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,(,",,False,"SELECT name ,  country ,  age FROM singer ORDER by age DESC",,,

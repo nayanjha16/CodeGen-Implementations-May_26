@@ -1,0 +1,75 @@
+# LoRA v4 — Salesforce/codegen2-1B_P base (all three adapters)
+# Base model: https://huggingface.co/Salesforce/codegen2-1B_P
+# Train with:
+#   python scripts/train_all_lora.py --config configs/v4.yaml \
+#     --tasks text2sql sql2nosql nosql2doc --version v4 --no-mlflow
+#
+# Requires MODEL_NAME=Salesforce/codegen2-1B_P (set in .env / Kaggle notebook).
+# CodeGen2 Hub auto_map is broken on modern transformers (removed onnx APIs);
+# the loader uses native CodeGenForCausalLM and strips auto_map when caching.
+
+model:
+  name: Salesforce/codegen2-1B_P
+  trust_remote_code: false
+  max_length: 2048
+  device: "auto"
+
+generation:
+  max_new_tokens: 256
+  documentation_max_new_tokens: 96
+  temperature: 0.7
+  top_p: 0.95
+  num_beams: 4
+  do_sample: false
+  decoding_strategy: "greedy"
+  seq2seq_decoding_strategy: "beam"
+
+datasets:
+  tend: {}
+  spider_gold_validation: data/spider_gold_validation.jsonl
+
+evaluation:
+  batch_size: 8
+  max_samples: 50
+  mlflow_tracking_uri: "sqlite:///mlflow.db"
+  experiment_name: "codegen-text2sql"
+
+seeds:
+  random: 42
+  numpy: 42
+  torch: 42
+
+# Same LoRA capacity as historical 350M v4 (r=32, attn+FFN), full TEND scale.
+# Micro-batch reduced for ~1B params (Kaggle notebook may patch further).
+training:
+  task_type: CAUSAL_LM
+  datasets: [spider, bird]
+  split: train
+  eval_datasets: [spider, bird]
+  eval_split: test
+  max_length: 2048
+  max_target_tokens: 256
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  epochs: 5
+  early_stopping_patience: 3
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 32  # effective batch size = 32
+  warmup_ratio: 0.05
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  fp16: false
+  bf16: false
+
+lora:
+  enabled: true
+  r: 32
+  lora_alpha: 64
+  lora_dropout: 0.05
+  bias: none
+  target_modules:
+    - qkv_proj
+    - out_proj
+    - fc_in
+    - fc_out

@@ -54,7 +54,8 @@ def load_config(config_path: str | Path | None = None) -> dict[str, Any]:
         config: dict[str, Any] = yaml.safe_load(f) or {}
 
     model_cfg = _ensure_dict(config, "model")
-    model_cfg["name"] = os.environ.get("MODEL_NAME", model_cfg.get("name"))
+    # Dedicated run configs (e.g. v4.yaml) set model.name; otherwise use MODEL_NAME.
+    model_cfg["name"] = model_cfg.get("name") or os.environ.get("MODEL_NAME")
     model_cfg["base_dir"] = os.environ.get("MODELS_BASE_DIR", "models/base")
     model_cfg["checkpoints_dir"] = os.environ.get(
         "MODELS_CHECKPOINTS_DIR", "models/checkpoints"
@@ -237,13 +238,19 @@ def get_adapter_path(
     config: dict[str, Any] | None = None,
     *,
     run: str | None = None,
+    model_name: str | None = None,
 ) -> Path:
-    """Resolve the LoRA adapter directory under ``models/checkpoints/<run>/<task>/``."""
+    """Resolve adapter dir under ``models/checkpoints/<model_slug>/<run>/<task>/``."""
     from src.utils.paths import get_adapter_checkpoint_path
 
+    if config is None:
+        config = load_config()
     normalized = task.strip().lower()
     if normalized not in TRAINING_TASKS:
         allowed = ", ".join(sorted(TRAINING_TASKS))
         raise ValueError(f"Unknown training task '{task}'. Expected one of: {allowed}")
     resolved_run = run if run is not None else get_adapter_run(config)
-    return get_adapter_checkpoint_path(normalized, resolved_run)
+    resolved_model = model_name if model_name is not None else get_model_name(config)
+    return get_adapter_checkpoint_path(
+        normalized, resolved_run, model_name=resolved_model
+    )

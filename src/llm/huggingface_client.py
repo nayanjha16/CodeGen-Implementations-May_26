@@ -32,8 +32,13 @@ class HuggingFaceClient:
 
         transformers_logging.set_verbosity_error()
 
+        from src.models.model_loader import hf_load_kwargs
+
         cache_dir = ensure_model_cached(model_name)
-        load_kwargs = {"local_files_only": True} if is_model_cached(cache_dir) else {}
+        load_kwargs = hf_load_kwargs(
+            model_name,
+            local_files_only=is_model_cached(cache_dir),
+        )
         tokenizer = AutoTokenizer.from_pretrained(cache_dir, **load_kwargs)
         if tokenizer.pad_token_id is None:
             tokenizer.pad_token = tokenizer.eos_token

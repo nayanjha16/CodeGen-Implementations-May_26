@@ -29,16 +29,62 @@ def is_codegen2_model(model_name: str | None) -> bool:
     return "codegen2" in (model_name or "").lower()
 
 
+_CODEGEN2_MP_NUM = 8  # Hub CodeGen2 remote modeling; native transformers defaults to 4
+_codegen_attn_forward_patched = False
+
+
+def _ensure_codegen_attention_mp_num_hook() -> None:
+    """Make native CodeGenAttention honor ``attn._mp_num`` (CodeGen2 needs 8)."""
+    global _codegen_attn_forward_patched
+    if _codegen_attn_forward_patched:
+        return
+
+    import inspect
+    import textwrap
+
+    from transformers.models.codegen.modeling_codegen import CodeGenAttention
+    import transformers.models.codegen.modeling_codegen as codegen_modeling
+
+    src = inspect.getsource(CodeGenAttention.forward)
+    if "mp_num = 4" not in src:
+        raise RuntimeError(
+            "CodeGenAttention.forward no longer contains 'mp_num = 4'; "
+            "update the CodeGen2 compatibility hook."
+        )
+    src = src.replace(
+        "mp_num = 4",
+        "mp_num = getattr(self, '_mp_num', 4)",
+        1,
+    )
+    src = textwrap.dedent(src)
+    namespace = dict(vars(codegen_modeling))
+    exec(src, namespace)
+    CodeGenAttention.forward = namespace["forward"]
+    _codegen_attn_forward_patched = True
+    logger.info("Patched CodeGenAttention.forward to honor attn._mp_num")
+
+
+def _apply_codegen2_mp_num(model: Any) -> Any:
+    """Set CodeGen2 TPU shard factor (mp_num=8) on every attention block."""
+    _ensure_codegen_attention_mp_num_hook()
+    transformer = getattr(model, "transformer", None)
+    layers = getattr(transformer, "h", None) if transformer is not None else None
+    if layers is None:
+        raise RuntimeError("CodeGen2 model missing transformer.h layers")
+    for block in layers:
+        block.attn._mp_num = _CODEGEN2_MP_NUM
+    return model
+
+
 def requires_trust_remote_code(
     model_name: str | None = None,
     config: dict[str, Any] | None = None,
 ) -> bool:
     """Return True when HuggingFace custom model code must be trusted.
 
-    CodeGen2 publishes ``auto_map`` + ``trust_remote_code``, but its remote
-    ``configuration_codegen.py`` imports removed ``transformers.onnx`` APIs.
-    Load CodeGen2 via native ``CodeGenForCausalLM`` instead (see
-    ``ensure_model_cached``). Config may still set ``model.trust_remote_code``.
+    CodeGen2 Hub ``auto_map`` code is incompatible with modern transformers
+    (removed ``transformers.onnx``, removed ``get_head_mask``). We load via
+    native ``CodeGenForCausalLM`` and set attention ``_mp_num=8`` instead.
     """
     if is_codegen2_model(model_name):
         return False
@@ -89,10 +135,11 @@ def _load_codegen2_tokenizer(source: str | Path, **load_kwargs: Any) -> Any:
 
 
 def _load_codegen2_model(source: str | Path, **load_kwargs: Any) -> Any:
-    """Load CodeGen2 weights with native transformers CodeGen (no remote code)."""
+    """Load CodeGen2 with native CodeGen + mp_num=8 attention layout."""
     from transformers import CodeGenForCausalLM
 
-    return CodeGenForCausalLM.from_pretrained(source, **load_kwargs)
+    model = CodeGenForCausalLM.from_pretrained(source, **load_kwargs)
+    return _apply_codegen2_mp_num(model)
 
 
 def is_model_cached(path: Path) -> bool:

@@ -5,8 +5,8 @@
 #     --tasks text2sql sql2nosql nosql2doc --version v4 --no-mlflow
 #
 # Requires MODEL_NAME=Salesforce/codegen2-1B_P (set in .env / Kaggle notebook).
-# CodeGen2 Hub auto_map is broken on modern transformers (removed onnx APIs);
-# the loader uses native CodeGenForCausalLM and strips auto_map when caching.
+# CodeGen2 Hub auto_map is broken on modern transformers; loader uses native
+# CodeGenForCausalLM with attention mp_num=8 (CodeGen1 uses 4).
 
 model:
   name: Salesforce/codegen2-1B_P

@@ -106,6 +106,7 @@ def run_tend_baseline(
     use_gold_validation: bool = True,
     adapter_run: str | None = None,
     device: str | None = None,
+    tasks: list[str] | None = None,
 ) -> dict:
     """Run baseline on TEND data (Spider gold validation by default)."""
     config = load_config()
@@ -117,6 +118,7 @@ def run_tend_baseline(
         config=config,
         enable_mlflow=log_mlflow,
         adapter_run=adapter_run,
+        tasks=tasks,
     )
     return runner.run_tend(
         config=tend_config,
@@ -181,7 +183,15 @@ def main() -> None:
         default=None,
         help="LoRA checkpoint run under models/checkpoints/<run>/ (e.g. v1).",
     )
+    parser.add_argument(
+        "--tasks",
+        nargs="+",
+        choices=["text2sql", "sql2nosql", "nosql2doc"],
+        default=None,
+        help="Subset of tasks to evaluate (default: all three).",
+    )
     args = parser.parse_args()
+    selected_tasks = args.tasks or ["text2sql", "sql2nosql", "nosql2doc"]
 
     config = load_config()
     model_name = get_model_name(config)
@@ -204,11 +214,13 @@ def main() -> None:
     )
     eval_label = "LoRA Evaluation" if args.adapter_run else "Baseline Evaluation"
     print(f"{eval_label}: {model_name}")
+    print(f"Tasks: {', '.join(selected_tasks)}")
     if args.adapter_run:
         print(f"Adapter run: {args.adapter_run}")
-        for task in ("text2sql", "sql2nosql", "nosql2doc"):
+        for task in selected_tasks:
             print(f"  {task}: {get_adapter_path(task, config, run=args.adapter_run)}")
-    print(f"Documentation judge ({llm_provider}): {judge_model_name}")
+    if "nosql2doc" in selected_tasks:
+        print(f"Documentation judge ({llm_provider}): {judge_model_name}")
     print(f"Database execution available: {is_database_available()}")
     if use_gold_validation:
         print(
@@ -240,18 +252,20 @@ def main() -> None:
         use_gold_validation=use_gold_validation,
         adapter_run=args.adapter_run,
         device=args.device,
+        tasks=selected_tasks,
     )
 
-    print_metrics(
-        normalize_task_metrics(result["metrics"], task="text2sql"),
-        f"Text-to-SQL ({result['dataset']})",
-    )
-    if result.get("nosql_metrics"):
+    if "text2sql" in selected_tasks:
+        print_metrics(
+            normalize_task_metrics(result["metrics"], task="text2sql"),
+            f"Text-to-SQL ({result['dataset']})",
+        )
+    if "sql2nosql" in selected_tasks and result.get("nosql_metrics"):
         print_metrics(
             normalize_task_metrics(result["nosql_metrics"], task="sql2nosql"),
             f"SQL-to-MongoDB ({result['dataset']})",
         )
-    if result.get("doc_metrics"):
+    if "nosql2doc" in selected_tasks and result.get("doc_metrics"):
         print_metrics(
             normalize_task_metrics(result["doc_metrics"], task="documentation"),
             f"MongoDB Documentation ({result['dataset']})",
@@ -267,13 +281,14 @@ def main() -> None:
     text2sql_predictions = result.get("predictions", [])
     sql2nosql_predictions = result.get("nosql_predictions", [])
     documentation_predictions = result.get("doc_predictions", [])
-    _ensure_text2sql_prompts(
-        text2sql_predictions,
-        config=config,
-        model_name=model_name,
-    )
+    if "text2sql" in selected_tasks:
+        _ensure_text2sql_prompts(
+            text2sql_predictions,
+            config=config,
+            model_name=model_name,
+        )
 
-    use_judge = not args.no_judge
+    use_judge = (not args.no_judge) and ("nosql2doc" in selected_tasks)
     judge = create_judge(config) if use_judge else None
 
     judge_results: list[dict[str, object]] = []
@@ -286,59 +301,65 @@ def main() -> None:
             config=config,
         )
 
-    text2sql_metrics = normalize_task_metrics(result["metrics"], task="text2sql")
-    sql2nosql_metrics = normalize_task_metrics(result.get("nosql_metrics"), task="sql2nosql")
-    documentation_metrics = merge_judge_summary_into_metrics(
-        result.get("doc_metrics"),
-        judge_documentation_metrics if use_judge else None,
-        task="documentation",
-    )
-
-    with open(metrics_path, "w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "model": model_name,
-                "adapter_run": args.adapter_run,
-                "run_type": "lora" if args.adapter_run else "baseline",
-                "judge_model": judge_model_name if use_judge else None,
-                "database_execution": is_database_available(),
-                "dataset": result["dataset"],
-                "text2sql": text2sql_metrics,
-                "sql2nosql": sql2nosql_metrics,
-                "documentation": documentation_metrics,
-                "mlflow_run_id": result.get("mlflow_run_id"),
-            },
-            f,
-            indent=2,
+    payload: dict[str, object] = {
+        "model": model_name,
+        "adapter_run": args.adapter_run,
+        "run_type": "lora" if args.adapter_run else "baseline",
+        "tasks": selected_tasks,
+        "judge_model": judge_model_name if use_judge else None,
+        "database_execution": is_database_available(),
+        "dataset": result["dataset"],
+        "mlflow_run_id": result.get("mlflow_run_id"),
+    }
+    if "text2sql" in selected_tasks:
+        payload["text2sql"] = normalize_task_metrics(result["metrics"], task="text2sql")
+    if "sql2nosql" in selected_tasks:
+        payload["sql2nosql"] = normalize_task_metrics(
+            result.get("nosql_metrics"), task="sql2nosql"
+        )
+    if "nosql2doc" in selected_tasks:
+        payload["documentation"] = merge_judge_summary_into_metrics(
+            result.get("doc_metrics"),
+            judge_documentation_metrics if use_judge else None,
+            task="documentation",
         )
 
-    save_text2sql_details_csv(
-        text2sql_details_path,
-        text2sql_predictions,
-        model_name=model_name,
-        config=config,
-    )
-    save_sql2nosql_details_csv(
-        sql2nosql_details_path,
-        sql2nosql_predictions,
-        model_name=model_name,
-        config=config,
-    )
-    save_documentation_details_csv(
-        documentation_details_path,
-        documentation_predictions,
-        judge=judge,
-        use_judge=use_judge,
-        model_name=model_name,
-        config=config,
-        judge_results=judge_results if use_judge else None,
-    )
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+    if "text2sql" in selected_tasks:
+        save_text2sql_details_csv(
+            text2sql_details_path,
+            text2sql_predictions,
+            model_name=model_name,
+            config=config,
+        )
+    if "sql2nosql" in selected_tasks:
+        save_sql2nosql_details_csv(
+            sql2nosql_details_path,
+            sql2nosql_predictions,
+            model_name=model_name,
+            config=config,
+        )
+    if "nosql2doc" in selected_tasks:
+        save_documentation_details_csv(
+            documentation_details_path,
+            documentation_predictions,
+            judge=judge,
+            use_judge=use_judge,
+            model_name=model_name,
+            config=config,
+            judge_results=judge_results if use_judge else None,
+        )
 
     print(f"  Run saved: {run_dir}")
     print(f"    metrics: {metrics_path}")
-    print(f"    text2sql details: {text2sql_details_path}")
-    print(f"    sql2nosql details: {sql2nosql_details_path}")
-    print(f"    documentation details: {documentation_details_path}")
+    if "text2sql" in selected_tasks:
+        print(f"    text2sql details: {text2sql_details_path}")
+    if "sql2nosql" in selected_tasks:
+        print(f"    sql2nosql details: {sql2nosql_details_path}")
+    if "nosql2doc" in selected_tasks:
+        print(f"    documentation details: {documentation_details_path}")
     if args.mlflow:
         print("\nView MLflow UI: mlflow ui --backend-store-uri sqlite:///mlflow.db")
 

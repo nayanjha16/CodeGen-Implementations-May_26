@@ -1,10 +1,10 @@
 # LoRA Version Tracker
 
-Base model and LoRA adapters under `models/`. Hyperparameters, datasets, training scale, and Spider gold validation metrics for **baseline → v1 → v2 → v3 → v4**.
+Base model and LoRA adapters under `models/`. Hyperparameters, datasets, training scale, and Spider gold validation metrics for **baseline → v1 → v2 → v3 → v4 → v5**.
 
-Sources: `configs/default.yaml`, `models/checkpoints/{v1,v2,v3,v4}/**/{adapter_config.json,run_metadata.json,training_args.bin,training_summary_*.json}`, `results/spider_gold_validation_*/metrics.json`.
+Sources: `configs/default.yaml`, `configs/v5-text2sql.yaml`, `models/checkpoints/{v1,v2,v3,v4,v5}/**/{adapter_config.json,run_metadata.json,training_args.bin,training_summary_*.json}`, `results/spider_gold_validation_*/metrics.json`.
 
-Comparison reports: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md) · [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md)
+Comparison reports: [lora-v5-vs-all-versions-comparison.md](lora-v5-vs-all-versions-comparison.md) · [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md) · [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md)
 
 ---
 
@@ -17,8 +17,10 @@ Comparison reports: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versi
 | **v2** | LoRA | 500 | 5 | `r=16`, attn only | Mid | `models/checkpoints/v2/` |
 | **v3** | LoRA | ~8,040 | 5* | `r=16`, attn only | Full TEND | `models/checkpoints/v3/` |
 | **v4** | LoRA | ~8,040 | 5 | **`r=32`, attn + FFN** | Full TEND | `models/checkpoints/v4/` |
+| **v5** | LoRA | ~8,040 | 5† | same as v4; **lower LR + stronger reg** | Full TEND, **text2sql only** | `models/checkpoints/v5/` |
 
-\*v3 text2sql best checkpoint is epoch 2 only; sql2nosql / nosql2doc completed 5 epochs. See [v3 notes](#v3--full-scale-lora). v4 batch settings were patched at runtime by the [Kaggle notebook](../notebooks/kaggle_train_lora.ipynb) — see [v4 notes](#v4--full-scale-lora-wider-adapters--ffn-targets).
+\*v3 text2sql best checkpoint is epoch 2 only; sql2nosql / nosql2doc completed 5 epochs. See [v3 notes](#v3--full-scale-lora). v4 batch settings were patched at runtime by the [Kaggle notebook](../notebooks/kaggle_train_lora.ipynb) — see [v4 notes](#v4--full-scale-lora-wider-adapters--ffn-targets).  
+†v5 early-stopped after epoch 4; best checkpoint is epoch 2. See [v5 notes](#v5--text2sql-regularization-ablation).
 
 ---
 
@@ -47,16 +49,21 @@ Config defaults live in `configs/default.yaml`. **v4 on Kaggle** did not use the
 
 ### LoRA config by version
 
-| Parameter | v1–v3 | v4 |
-|-----------|-------|----|
-| Rank (`r`) | 16 | **32** |
-| Alpha (`lora_alpha`) | 32 | **64** |
-| Target modules | `qkv_proj`, `out_proj` | **`qkv_proj`, `out_proj`, `fc_in`, `fc_out`** |
-| Adapter size (per task) | ~7.5 MB | **~40 MB** |
-| Per-device batch | 8 | **2** (Kaggle override) |
-| Grad accumulation | 4 | **8** (Kaggle override) |
-| Effective batch | 32 | **16** |
-| Device | MPS (local) | CUDA (Kaggle) |
+| Parameter | v1–v3 | v4 | v5 |
+|-----------|-------|----|----|
+| Rank (`r`) | 16 | **32** | 32 |
+| Alpha (`lora_alpha`) | 32 | **64** | 64 |
+| Target modules | `qkv_proj`, `out_proj` | **`qkv_proj`, `out_proj`, `fc_in`, `fc_out`** | same as v4 |
+| `lora_dropout` | 0.05 | 0.05 | **0.10** |
+| Learning rate | `2e-4` | `2e-4` | **`8e-5`** |
+| Weight decay | 0.01 | 0.01 | **0.05** |
+| Warmup ratio | 0.05 | 0.05 | **0.10** |
+| Tasks | all 3 | all 3 | **text2sql only** |
+| Adapter size (per task) | ~7.5 MB | **~40 MB** | ~40 MB |
+| Per-device batch | 8 | **2** (Kaggle override) | **2** (Kaggle override) |
+| Grad accumulation | 4 | **8** (Kaggle override) | **16** (Kaggle override) |
+| Effective batch | 32 | **16** | **32** |
+| Device | MPS (local) | CUDA (Kaggle) | CUDA (Kaggle) |
 
 ### Kaggle notebook overrides (v4)
 
@@ -248,6 +255,43 @@ Beam improves text2sql (+4 pp execution, +4 pp exact match) and documentation ju
 
 ---
 
+## v5 — text2sql regularization ablation
+
+| Field | Value |
+|-------|-------|
+| Path | `models/checkpoints/v5/` |
+| Started | 2026-07-24 02:29 UTC → finished 04:20 UTC (~1h 51m wall clock) |
+| Summary | `training_summary_20260724_042053.json` |
+| Config | [`configs/v5-text2sql.yaml`](../configs/v5-text2sql.yaml) |
+| `max_samples` | **none** (full pool) |
+| Epochs | **5** planned; early-stopped after epoch **4** (`patience=2`) |
+| Tasks | **text2sql only** |
+| Train / eval rows | **8040** / **1035** |
+| LoRA | `r=32`, `lora_alpha=64`, `lora_dropout=0.10`, targets: attn + FFN |
+| Optimization | LR **`8e-5`**, weight decay **`0.05`**, warmup **`0.10`** |
+| Batch (actual) | per-device **2**, grad accum **16**, effective **32** (notebook override) |
+| Best checkpoint | text2sql `504` (epoch **2**) |
+| Log | `models/checkpoints/v5/train_all_lora.log` |
+| Where trained | Kaggle (CUDA) via [`kaggle_train_lora.ipynb`](../notebooks/kaggle_train_lora.ipynb) |
+
+### Per-task training
+
+| Task | Train loss | Best eval loss | Runtime (s) |
+|------|------------|----------------|-------------|
+| text2sql | 0.180 | **0.251** @ ep2 | 6,530 (~1h 49m) |
+
+### Gold validation metrics
+
+`results/spider_gold_validation_codegen-350M-multi_lora-v5_2407_greedy/` (greedy only)
+
+| Task | Execution acc | Exact match | Structural / Emb / Judge |
+|------|---------------|-------------|--------------------------|
+| text2sql | 0.48 | 0.40 | struct 0.92 |
+
+sql2nosql / documentation were not retrained; keep v4 adapters for those tasks. Full comparison: [lora-v5-vs-all-versions-comparison.md](lora-v5-vs-all-versions-comparison.md).
+
+---
+
 ## Metric progression (execution / judge)
 
 Greedy decoding unless noted. Version line uses greedy for apples-to-apples training comparisons.
@@ -260,6 +304,7 @@ Greedy decoding unless noted. Version line uses greedy for apples-to-apples trai
 | v3 | 54% | 74% | 6.45 |
 | **v4 (greedy)** | **60%** | **88%** | **7.79** |
 | v4 (beam) | 64% | 82% | 8.54 |
+| v5 (greedy) | 48% | — (not trained) | — (not trained) |
 
 ---
 
@@ -282,6 +327,22 @@ These levers were **already applied** in v1–v3:
 **Kaggle-only in v4** (notebook patches working `configs/default.yaml`; repo defaults unchanged):
 
 - Per-device batch **8 → 2**, grad accumulation **4 → 8** → effective batch **16** (half of v1–v3)
+
+---
+
+## What changed in v5 vs v4
+
+v5 keeps v4 LoRA capacity and full TEND text2sql data, but changes optimization / regularization:
+
+- Learning rate **`2e-4` → `8e-5`**
+- Weight decay **`0.01` → `0.05`**
+- LoRA dropout **`0.05` → `0.10`**
+- Warmup ratio **`0.05` → `0.10`**
+- Early stopping patience **3 → 2**
+- Tasks: **text2sql only** (no sql2nosql / nosql2doc)
+- Kaggle effective batch restored to **32** (2 × 16) vs v4’s 16
+
+Result: best checkpoint moved from epoch 1 → 2 (overfit signature improved), but Spider gold text2sql execution fell **60% → 48%**. Keep v4 text2sql for deployment.
 
 ---
 

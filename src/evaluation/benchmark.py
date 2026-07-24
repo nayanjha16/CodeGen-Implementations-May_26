@@ -43,6 +43,8 @@ def load_task_model(
 class BenchmarkRunner:
     """Run independent benchmarks for text2sql, sql2nosql, and nosql2doc on gold rows."""
 
+    ALL_TASKS = ("text2sql", "sql2nosql", "nosql2doc")
+
     def __init__(
         self,
         config: dict[str, Any] | None = None,
@@ -55,52 +57,69 @@ class BenchmarkRunner:
         tracker: MLflowTracker | None = None,
         enable_mlflow: bool = True,
         adapter_run: str | None = None,
+        tasks: list[str] | tuple[str, ...] | None = None,
     ):
         setup_logging()
         self.config = config or load_config()
         set_seeds(self.config)
         self.adapter_run = adapter_run
+        selected = tuple(tasks) if tasks else self.ALL_TASKS
+        unknown = [t for t in selected if t not in self.ALL_TASKS]
+        if unknown:
+            raise ValueError(
+                f"Unknown eval task(s): {unknown}. Expected one of: {list(self.ALL_TASKS)}"
+            )
+        if not selected:
+            raise ValueError("At least one eval task is required")
+        self.tasks = selected
         logger.info(
-            "BenchmarkRunner init: adapter_run=%s max_samples=%s",
+            "BenchmarkRunner init: adapter_run=%s tasks=%s max_samples=%s",
             adapter_run or "baseline",
+            ",".join(self.tasks),
             self.config.get("evaluation", {}).get("max_samples", 100),
         )
 
-        if sql_generator is not None:
-            self.sql_generator = sql_generator
-        elif adapter_run:
-            logger.info("[%s] Loading model with LoRA adapter", task_label("text2sql"))
-            text2sql_model = load_task_model("text2sql", self.config, adapter_run=adapter_run)
-            self.sql_generator = SQLGenerator(model=text2sql_model, config=self.config)
-        else:
-            logger.info("[%s] Loading base model (no adapter)", task_label("text2sql"))
-            self.sql_generator = SQLGenerator(config=self.config)
+        self.sql_generator = None
+        if "text2sql" in self.tasks:
+            if sql_generator is not None:
+                self.sql_generator = sql_generator
+            elif adapter_run:
+                logger.info("[%s] Loading model with LoRA adapter", task_label("text2sql"))
+                text2sql_model = load_task_model("text2sql", self.config, adapter_run=adapter_run)
+                self.sql_generator = SQLGenerator(model=text2sql_model, config=self.config)
+            else:
+                logger.info("[%s] Loading base model (no adapter)", task_label("text2sql"))
+                self.sql_generator = SQLGenerator(config=self.config)
 
         self.metrics = metrics or EvaluationMetrics()
         self.nosql_evaluator = nosql_evaluator or NoSQLEvaluator()
 
-        if nosql_generator is not None:
-            self.nosql_generator = nosql_generator
-        elif adapter_run:
-            logger.info("[%s] Loading model with LoRA adapter", task_label("sql2nosql"))
-            sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
-            self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
-        else:
-            logger.info("[%s] Loading base model (no adapter)", task_label("sql2nosql"))
-            self.nosql_generator = NoSQLGenerator(config=self.config)
+        self.nosql_generator = None
+        if "sql2nosql" in self.tasks:
+            if nosql_generator is not None:
+                self.nosql_generator = nosql_generator
+            elif adapter_run:
+                logger.info("[%s] Loading model with LoRA adapter", task_label("sql2nosql"))
+                sql2nosql_model = load_task_model("sql2nosql", self.config, adapter_run=adapter_run)
+                self.nosql_generator = NoSQLGenerator(model=sql2nosql_model, config=self.config)
+            else:
+                logger.info("[%s] Loading base model (no adapter)", task_label("sql2nosql"))
+                self.nosql_generator = NoSQLGenerator(config=self.config)
 
-        if doc_generator is not None:
-            self.doc_generator = doc_generator
-        elif adapter_run:
-            logger.info("[%s] Loading model with LoRA adapter", task_label("nosql2doc"))
-            nosql2doc_model = load_task_model("nosql2doc", self.config, adapter_run=adapter_run)
-            self.doc_generator = DocumentationGenerator(
-                model=nosql2doc_model,
-                config=self.config,
-            )
-        else:
-            logger.info("[%s] Loading base model (no adapter)", task_label("nosql2doc"))
-            self.doc_generator = DocumentationGenerator(config=self.config)
+        self.doc_generator = None
+        if "nosql2doc" in self.tasks:
+            if doc_generator is not None:
+                self.doc_generator = doc_generator
+            elif adapter_run:
+                logger.info("[%s] Loading model with LoRA adapter", task_label("nosql2doc"))
+                nosql2doc_model = load_task_model("nosql2doc", self.config, adapter_run=adapter_run)
+                self.doc_generator = DocumentationGenerator(
+                    model=nosql2doc_model,
+                    config=self.config,
+                )
+            else:
+                logger.info("[%s] Loading base model (no adapter)", task_label("nosql2doc"))
+                self.doc_generator = DocumentationGenerator(config=self.config)
         self.doc_evaluator = doc_evaluator or DocumentationEvaluator()
         self.reference_doc_builder = ReferenceDocumentationBuilder()
         eval_cfg = self.config.get("evaluation", {})
@@ -361,55 +380,69 @@ class BenchmarkRunner:
             len(samples),
             dataset_name,
         )
-        log_step("text2sql", "Starting Text-to-SQL evaluation")
+        eval_metrics: dict[str, Any] = {}
+        gen_results: list[dict[str, Any]] = []
+        if "text2sql" in self.tasks:
+            log_step("text2sql", "Starting Text-to-SQL evaluation")
 
-        gen_results = self.sql_generator.generate_batch(samples)
-        for result, example in zip(gen_results, samples):
-            result.setdefault("schema", example.get("schema", ""))
-            result.setdefault("db_id", example.get("db_id", ""))
-            result.setdefault("source_dataset", example.get("source_dataset", "spider"))
-            result.setdefault("sql_output", example.get("sql_output", ""))
-            result.setdefault("ground_truth", example.get("sql", ""))
-            if not result.get("prompt"):
-                result["prompt"] = self.sql_generator.build_prompt(
-                    result.get("question", example.get("question", "")),
-                    result.get("schema", ""),
-                )
+            gen_results = self.sql_generator.generate_batch(samples)
+            for result, example in zip(gen_results, samples):
+                result.setdefault("schema", example.get("schema", ""))
+                result.setdefault("db_id", example.get("db_id", ""))
+                result.setdefault("source_dataset", example.get("source_dataset", "spider"))
+                result.setdefault("sql_output", example.get("sql_output", ""))
+                result.setdefault("ground_truth", example.get("sql", ""))
+                if not result.get("prompt"):
+                    result["prompt"] = self.sql_generator.build_prompt(
+                        result.get("question", example.get("question", "")),
+                        result.get("schema", ""),
+                    )
 
-        predictions = [r["sql"] for r in gen_results]
-        references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]
+            predictions = [r["sql"] for r in gen_results]
+            references = [r.get("ground_truth", ex["sql"]) for r, ex in zip(gen_results, samples)]
 
-        execution_contexts = [
-            {
-                "db_id": example.get("db_id", ""),
-                "dataset": example.get("source_dataset", "spider") or "spider",
-                "sql_output": example.get("sql_output", ""),
-            }
-            for example in samples
-        ]
+            execution_contexts = [
+                {
+                    "db_id": example.get("db_id", ""),
+                    "dataset": example.get("source_dataset", "spider") or "spider",
+                    "sql_output": example.get("sql_output", ""),
+                }
+                for example in samples
+            ]
 
-        log_step("text2sql", "Computing metrics (execution accuracy, exact match, structural similarity)")
-        eval_metrics = self.metrics.evaluate_all(
-            predictions,
-            references,
-            execution_contexts,
-        )
-        valid_sql = sum(1 for r in gen_results if r.get("sql_valid"))
-        log_step(
-            "text2sql",
-            "Metrics complete: %d/%d valid SQL queries",
-            valid_sql,
-            len(gen_results),
-        )
+            log_step(
+                "text2sql",
+                "Computing metrics (execution accuracy, exact match, structural similarity)",
+            )
+            eval_metrics = self.metrics.evaluate_all(
+                predictions,
+                references,
+                execution_contexts,
+            )
+            valid_sql = sum(1 for r in gen_results if r.get("sql_valid"))
+            log_step(
+                "text2sql",
+                "Metrics complete: %d/%d valid SQL queries",
+                valid_sql,
+                len(gen_results),
+            )
 
-        nosql_metrics, nosql_results = self.evaluate_sql2nosql(samples)
-        doc_metrics, doc_results = self.evaluate_documentation(samples)
+        nosql_metrics: dict[str, Any] = {}
+        nosql_results: list[dict[str, Any]] = []
+        if "sql2nosql" in self.tasks:
+            nosql_metrics, nosql_results = self.evaluate_sql2nosql(samples)
+
+        doc_metrics: dict[str, Any] = {}
+        doc_results: list[dict[str, Any]] = []
+        if "nosql2doc" in self.tasks:
+            doc_metrics, doc_results = self.evaluate_documentation(samples)
         logger.info("=== Evaluation pipeline complete ===")
 
         run_id = None
         if self.tracker:
             extra_params: dict[str, Any] = {
                 "max_samples": len(samples),
+                "tasks": ",".join(self.tasks),
                 "decoding_strategy": self.config.get("generation", {}).get(
                     "decoding_strategy", "greedy"
                 ),
@@ -417,14 +450,19 @@ class BenchmarkRunner:
             if self.adapter_run:
                 extra_params["run_type"] = "lora"
                 extra_params["adapter_run"] = self.adapter_run
-                for task in ("text2sql", "sql2nosql", "nosql2doc"):
+                for task in self.tasks:
                     extra_params[f"adapter_path_{task}"] = str(
                         get_adapter_path(task, self.config, run=self.adapter_run)
                     )
+            prompt_template = (
+                self.sql_generator.prompt_builder.get_template_name()
+                if self.sql_generator is not None
+                else "n/a"
+            )
             run_id = self.tracker.log_evaluation(
                 model_name=self.config.get("model", {}).get("name", "codegen"),
                 dataset=dataset_name,
-                prompt_template=self.sql_generator.prompt_builder.get_template_name(),
+                prompt_template=prompt_template,
                 metrics=eval_metrics,
                 nosql_metrics=nosql_metrics,
                 extra_params=extra_params,

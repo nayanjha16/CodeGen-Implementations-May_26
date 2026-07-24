@@ -1,0 +1,24 @@
+{
+  "checkpoint_run": "v5",
+  "model_name": "Salesforce/codegen-350M-multi",
+  "started_at": "2026-07-24T02:29:35.962001+00:00",
+  "completed_at": "2026-07-24T04:20:53.591018+00:00",
+  "max_samples": null,
+  "epochs": null,
+  "baseline_results_run": null,
+  "tasks": [
+    {
+      "task": "text2sql",
+      "checkpoint_run": "v5",
+      "train_rows": 8040,
+      "eval_rows": 1035,
+      "train_loss": 0.1801298132077569,
+      "eval_loss": 0.2508592903614044,
+      "best_eval_loss": 0.2508592903614044,
+      "train_runtime_seconds": 6530.2362,
+      "adapter_path": "/kaggle/working/models/checkpoints/v5/text2sql",
+      "mlflow_run_id": null,
+      "metadata_path": "/kaggle/working/models/checkpoints/v5/text2sql/run_metadata.json"
+    }
+  ]
+}

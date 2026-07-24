@@ -1,23 +1,0 @@
-2026-07-24 10:59:21,829 - codegen - INFO - Loaded spider gold validation (50 rows) from /Volumes/Work/CodeGen-Implementations-May_26/data/spider_gold_validation.jsonl
-Baseline Evaluation: Salesforce/codegen2-1B_P
-Tasks: text2sql, sql2nosql, nosql2doc
-Documentation judge (ollama): qwen3:8b
-Database execution available: True
-Dataset: spider_gold_validation (50 examples) | Max samples: 50
-Results folder: spider_gold_validation_codegen2-1B_P_baseline
-Model (Salesforce/codegen2-1B_P): cached at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
-Evaluation set: data/spider_gold_validation.jsonl
-2026-07-24 10:59:22,296 - codegen - INFO - BenchmarkRunner init: adapter_run=baseline tasks=text2sql,sql2nosql,nosql2doc max_samples=50
-2026-07-24 10:59:22,296 - codegen - INFO - [text2sql (Text-to-SQL)] Loading base model (no adapter)
-2026-07-24 10:59:22,297 - codegen - INFO - [sql2nosql (SQL-to-MongoDB)] Loading base model (no adapter)
-2026-07-24 10:59:22,297 - codegen - INFO - [nosql2doc (NoSQL-to-Documentation)] Loading base model (no adapter)
-2026-07-24 10:59:22,299 - codegen - INFO - Loaded spider gold validation (50 rows) from /Volumes/Work/CodeGen-Implementations-May_26/data/spider_gold_validation.jsonl
-2026-07-24 10:59:22,299 - codegen - INFO - === Evaluation pipeline: 50 samples from spider_gold_validation ===
-2026-07-24 10:59:22,299 - codegen - INFO - [text2sql (Text-to-SQL)] Starting Text-to-SQL evaluation
-2026-07-24 10:59:22,299 - codegen - INFO - [text2sql (Text-to-SQL)] Starting generation (50 samples)
-Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
-2026-07-24 10:59:23,779 - codegen - INFO - Using cached model at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
-2026-07-24 10:59:23,779 - codegen - INFO - Loading model Salesforce/codegen2-1B_P from /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P on mps
-Using cached model: /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
-2026-07-24 10:59:23,861 - codegen - INFO - Using cached model at /Volumes/Work/CodeGen-Implementations-May_26/models/base/Salesforce__codegen2-1B_P
-Loading weights:   0%|          | 0/133 [00:00<?, ?it/s]Loading weights: 100%|██████████| 133/133 [00:00<00:00, 18117.06it/s]

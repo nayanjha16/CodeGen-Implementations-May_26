@@ -51,7 +51,7 @@ training:
   max_target_tokens: 256
   learning_rate: 2.0e-4
   weight_decay: 0.01
-  epochs: 5
+  epochs: 10
   early_stopping_patience: 3
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1

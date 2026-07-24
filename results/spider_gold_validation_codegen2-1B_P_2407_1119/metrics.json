@@ -1,0 +1,29 @@
+{
+  "model": "Salesforce/codegen2-1B_P",
+  "adapter_run": null,
+  "run_type": "baseline",
+  "tasks": [
+    "text2sql",
+    "sql2nosql",
+    "nosql2doc"
+  ],
+  "judge_model": "qwen3:8b",
+  "database_execution": true,
+  "dataset": "spider_gold_validation",
+  "mlflow_run_id": null,
+  "text2sql": {
+    "execution_accuracy": 0.24,
+    "exact_match": 0.02,
+    "structural_similarity": 0.75399433106576
+  },
+  "sql2nosql": {
+    "execution_accuracy": 0.08,
+    "exact_match": 0.04,
+    "structural_similarity": 0.4482760123759003
+  },
+  "documentation": {
+    "exact_match": 0.0,
+    "embedding_similarity": 0.5943609178066254,
+    "judge_score": 0.0
+  }
+}

@@ -172,8 +172,11 @@ def main() -> None:
         "--output",
         default=None,
         help=(
-            "Run folder name under results/; default auto-generates "
-            "tend_<config>_<split>_<model>_<DDMM>_<HHMM>"
+            "Optional results folder name. Default auto-generates "
+            "<dataset>_<model>_<DDMM>_<HHMM> (e.g. "
+            "spider_gold_validation_codegen-350M-multi_0607_1841). "
+            "Eval does not write .log files; training logs live under "
+            "models/checkpoints/<model>/<run>/."
         ),
     )
     parser.add_argument(

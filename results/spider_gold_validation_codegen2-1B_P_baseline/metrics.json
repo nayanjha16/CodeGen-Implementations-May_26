@@ -7,19 +7,19 @@
     "sql2nosql",
     "nosql2doc"
   ],
-  "judge_model": "qwen3:8b",
+  "judge_model": null,
   "database_execution": true,
   "dataset": "spider_gold_validation",
   "mlflow_run_id": null,
   "text2sql": {
     "execution_accuracy": 0.24,
     "exact_match": 0.02,
-    "structural_similarity": 0.75399433106576
+    "structural_similarity": 0.7539943310657597
   },
   "sql2nosql": {
     "execution_accuracy": 0.08,
     "exact_match": 0.04,
-    "structural_similarity": 0.4482760123759003
+    "structural_similarity": 0.44827601237590026
   },
   "documentation": {
     "exact_match": 0.0,

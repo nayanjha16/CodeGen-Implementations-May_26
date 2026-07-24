@@ -1,8 +1,8 @@
-# LoRA v4 — Salesforce/codegen2-1B_P base (all three adapters)
+# LoRA v1 — Salesforce/codegen2-1B_P base (all three adapters)
 # Base model: https://huggingface.co/Salesforce/codegen2-1B_P
 # Train with:
-#   python scripts/train_all_lora.py --config configs/v4.yaml \
-#     --tasks text2sql sql2nosql nosql2doc --version v4 --no-mlflow
+#   python scripts/train_all_lora.py --config configs/v1.yaml \
+#     --tasks text2sql sql2nosql nosql2doc --version v1 --no-mlflow
 #
 # Requires MODEL_NAME=Salesforce/codegen2-1B_P (set in .env / Kaggle notebook).
 # CodeGen2 Hub auto_map is broken on modern transformers; loader uses native
@@ -39,8 +39,8 @@ seeds:
   numpy: 42
   torch: 42
 
-# Same LoRA capacity as historical 350M v4 (r=32, attn+FFN), full TEND scale.
-# Micro-batch reduced for ~1B params (Kaggle notebook may patch further).
+# First LoRA run on codegen2-1B_P: r=16 / α=32, attn+FFN, full TEND scale.
+# Micro-batch 1 × accum 32 = effective batch 32 (~1B params on Kaggle).
 training:
   task_type: CAUSAL_LM
   datasets: [spider, bird]

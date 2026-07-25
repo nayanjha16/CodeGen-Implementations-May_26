@@ -92,11 +92,38 @@ def _header_html() -> str:
 </div>"""
 
 
+def _model_label() -> str:
+    """A clean display name for the subject model.
+
+    `base_model` may be a Hub id (`Qwen/Qwen2.5-Coder-1.5B`) or a local cache
+    path (`.../models/Qwen--Qwen2.5-Coder-1.5B/snapshots/master`). Both should
+    read as `Qwen2.5-Coder-1.5B`, not `master`. Override with RUSTGEN_MODEL_LABEL.
+    """
+    if CONFIG.model_label:
+        return CONFIG.model_label
+    parts = [p for p in CONFIG.base_model.rstrip("/").split("/") if p]
+    # HF/ModelScope cache dirs name the model `<namespace>--<name>`.
+    for seg in reversed(parts):
+        if "--" in seg:
+            return seg.split("--")[-1]
+    skip = {"snapshots", "blobs", "refs", "master", "main"}
+
+    def _is_revision(s: str) -> bool:
+        return len(s) >= 7 and all(c in "0123456789abcdef" for c in s.lower())
+
+    for seg in reversed(parts):
+        if seg not in skip and not _is_revision(seg):
+            return seg
+    return parts[-1] if parts else CONFIG.base_model
+
+
 def backend_status() -> str:
     if CONFIG.backend == "mock":
         return "⚠ **mock backend** — model not yet loaded (set `RUSTGEN_BACKEND=hf`)"
-    adapter = CONFIG.adapter_path or "no adapter"
-    return f"**Backend:** `{CONFIG.base_model}` + `{adapter}`"
+    label = _model_label()
+    if CONFIG.adapter_path:
+        return f"**Model:** `{label}` + adapter `{CONFIG.adapter_path}`"
+    return f"**Model:** `{label}` (vanilla weights) + compile-guided cascade"
 
 
 def verify_compiles(code: str, tests: str | None = None) -> str:
@@ -163,8 +190,7 @@ def _pipeline_line(route: str, verify: str, cascade_trail: str) -> str:
         icon = "⚠️"
     else:
         icon = "❌"
-    model = CONFIG.base_model.rstrip("/").split("/")[-1]
-    line = f"**Pipeline:**  {route} → {model} → Rust → rustc {icon}"
+    line = f"**Pipeline:**  {route} → {_model_label()} → Rust → rustc {icon}"
     if cascade_trail:
         line += f"  \n**Compile-gated cascade:** {cascade_trail}"
     return line
@@ -325,7 +351,10 @@ def build_demo() -> gr.Blocks:
                     placeholder="fn count_even(nums: Vec<isize>) -> isize")
                 with gr.Accordion("Generated tests (model-written)", open=False):
                     tests_out = gr.Code(language=RUST_LANG, label="assert_eq! checks")
-                go = gr.Button("Translate to Rust", variant="primary", size="lg")
+                with gr.Row():
+                    go = gr.Button("Translate to Rust", variant="primary",
+                                   size="lg", scale=3)
+                    clear = gr.Button("Clear", size="lg", scale=1)
                 with gr.Accordion("Options", open=False):
                     use_pivot = gr.Checkbox(
                         label=f"Draft Python with {CONFIG.pivot_model.split('/')[-1]} "
@@ -346,8 +375,9 @@ def build_demo() -> gr.Blocks:
                 pipeline_out = gr.Markdown("")
                 rust_out = gr.Code(language=RUST_LANG, label="Rust")
                 verify_out = gr.Textbox(label="Verification (rustc)", lines=2)
-                with gr.Accordion("Retrieved examples (RAG)", open=False):
-                    retrieved_out = gr.Code(language=RUST_LANG, label="RAG context")
+                with gr.Accordion("Retrieved examples (cascade)", open=False):
+                    retrieved_out = gr.Code(language=RUST_LANG,
+                                            label="what each cascade attempt retrieved")
 
         drafted_state = gr.State({})   # what the model drafted last run
 
@@ -388,6 +418,16 @@ def build_demo() -> gr.Blocks:
         go.click(clear_panels, None, panels).then(
             translate, inputs + [drafted_state],
             panels + [python_code, signature, drafted_state])
+
+        # Full reset — the only thing that wipes the INPUT boxes (description,
+        # Python, signature), including pasted content the auto-clear leaves
+        # alone. Also drops the remembered drafts so nothing leaks to the next
+        # ask. This is the reliable "start fresh" between demo prompts.
+        def reset_all():
+            return "", "", "", {}, "", "", "", "", ""
+
+        clear.click(reset_all, None,
+                    [description, python_code, signature, drafted_state] + panels)
 
         # Every row below was battery-tested against the 350M fine-tune on
         # 2026-07-11 (all compiled on the FIRST, RAG-free attempt, so the

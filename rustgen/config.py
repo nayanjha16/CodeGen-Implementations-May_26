@@ -23,6 +23,7 @@ class Config:
     # RUSTGEN_BASE_MODEL=Salesforce/codegen-350M-multi + an adapter_path.
     base_model: str = "Qwen/Qwen2.5-Coder-1.5B"
     adapter_path: str | None = None  # e.g. "models/lora-v1" once trained
+    model_label: str = ""            # display name; "" = derive from base_model
     pivot_model: str = "Qwen/Qwen2.5-Coder-1.5B-Instruct"  # drafts Python for English→Rust
     rag_enabled: bool = False
     rag_backend: str = "mock"        # "mock" | "tfidf"

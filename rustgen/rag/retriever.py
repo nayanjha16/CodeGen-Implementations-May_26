@@ -50,12 +50,24 @@ class TfidfRetriever(Retriever):
                 '{"content": "<rust code>"} per line there (produced by the data '
                 "notebooks), or use rag_backend='mock'."
             )
+        # Index `retrieval_text` (doc comment + signature) when the corpus
+        # provides it — the query at inference is a doc comment + signature
+        # too, and Step 6 measured retrieval on that matched pair. Older
+        # translation-style corpora fall back to indexing the full content.
+        self._docs, texts = [], []
         with path.open() as handle:
-            self._docs = [json.loads(line)["content"] for line in handle if line.strip()]
+            for line in handle:
+                if not line.strip():
+                    continue
+                doc = json.loads(line)
+                self._docs.append(doc["content"])
+                texts.append(doc.get("retrieval_text", doc["content"]))
         if not self._docs:
             raise ValueError(f"RAG corpus at {corpus_path} is empty")
-        self._vectorizer = TfidfVectorizer()
-        self._matrix = self._vectorizer.fit_transform(self._docs)
+        # Step 6 sweep settings: character 3-5-grams.
+        self._vectorizer = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5),
+                                           max_features=50000)
+        self._matrix = self._vectorizer.fit_transform(texts)
 
     def retrieve(self, query: str, k: int) -> list[str]:
         from sklearn.metrics.pairwise import cosine_similarity

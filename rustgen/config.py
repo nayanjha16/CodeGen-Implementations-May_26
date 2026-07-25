@@ -18,14 +18,17 @@ _TRUTHY = {"1", "true", "yes", "on"}
 @dataclass
 class Config:
     backend: str = "mock"            # "mock" | "hf"
-    base_model: str = "Salesforce/codegen-350M-multi"
+    # The Step 5 pivot: vanilla Qwen2.5-Coder-1.5B base (37.8% on humaneval-rs;
+    # 44.9% with the Step 6 compile-gated cascade). The 350M era lives on as
+    # RUSTGEN_BASE_MODEL=Salesforce/codegen-350M-multi + an adapter_path.
+    base_model: str = "Qwen/Qwen2.5-Coder-1.5B"
     adapter_path: str | None = None  # e.g. "models/lora-v1" once trained
     pivot_model: str = "Qwen/Qwen2.5-Coder-1.5B-Instruct"  # drafts Python for English→Rust
     rag_enabled: bool = False
     rag_backend: str = "mock"        # "mock" | "tfidf"
-    rag_corpus_path: str = "data/rust_corpus.jsonl"
+    rag_corpus_path: str = "data/rust_corpus_qwen.jsonl"   # completion-style (Step 6)
     rag_k: int = 3
-    max_new_tokens: int = 256
+    max_new_tokens: int = 512        # what Steps 5/6 measured with
     device: str = "auto"
 
     @classmethod

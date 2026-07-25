@@ -40,7 +40,11 @@ class HFTranslator(Translator):
         self._device = device
 
         self._tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
-        model = AutoModelForCausalLM.from_pretrained(self.config.base_model)
+        # fp16 on GPU/MPS halves memory — Qwen-1.5B plus the pivot drafter fit
+        # a 16 GB Mac that way, and it matches the precision Steps 5/6 measured.
+        # CPU stays fp32: half precision there is slow and poorly supported.
+        dtype = torch.float16 if device != "cpu" else None
+        model = AutoModelForCausalLM.from_pretrained(self.config.base_model, dtype=dtype)
         if self.config.adapter_path:
             from peft import PeftModel
 
@@ -61,6 +65,8 @@ class HFTranslator(Translator):
                 max_new_tokens=self.config.max_new_tokens,
                 do_sample=False,
                 pad_token_id=self._tokenizer.eos_token_id,
+                stop_strings=["\n}"],           # the function's closing brace —
+                tokenizer=self._tokenizer,      # same early-stop Steps 5/6 used
             )
         new_tokens = output[0][inputs["input_ids"].shape[1]:]
         completion = self._tokenizer.decode(new_tokens, skip_special_tokens=True)

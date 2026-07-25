@@ -1,9 +1,11 @@
 """Gradio demo. Launch with: python -m rustgen.app.demo
 
 One pipeline, one form: give an English description, optionally paste Python
-(leave the box empty and the Qwen drafter writes it), and the fine-tuned
-350M model produces Rust that rustc then verifies. The route actually taken
-(pasted Python / drafted Python / direct) is displayed with every answer.
+(leave the box empty and the Qwen drafter writes it), and Qwen2.5-Coder-1.5B
+produces Rust that rustc then verifies. On compile failure the Step 6 cascade
+kicks in (nearest idiom exemplar + k=2 retrieved examples, then k=4 — the
+measured 37.8% → 44.9% policy). The route actually taken (pasted Python /
+drafted Python / direct) is displayed with every answer.
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ if os.path.isdir(_CARGO_BIN) and _CARGO_BIN not in os.environ.get("PATH", ""):
 from rustgen.config import Config
 from rustgen.eval.harness import run_rust
 from rustgen.rag import get_retriever
+from rustgen.rag.prompt import retrieval_query
 from rustgen.translator import get_translator
 from rustgen.translator.base import TranslationTask
 from rustgen.translator.pivot import PythonDrafter
@@ -76,13 +79,14 @@ def _header_html() -> str:
   <div>
     <h1>RustGen</h1>
     <p class="rg-tag">English or Python in — execution-verified Rust out.
-    One pipeline: <em>(optional) Qwen drafts the Python</em> → our Rust-fine-tuned
-    codegen-350M translates → <code>rustc</code> verifies.</p>
+    One pipeline: <em>(optional) Qwen-Instruct drafts the Python</em> →
+    Qwen2.5-Coder-1.5B writes the Rust → <code>rustc</code> verifies, retrying
+    with idiom + retrieved examples on compile failure.</p>
     <div class="rg-badges">
       <span>HumanEval-Rust</span>
-      <span>vanilla 1.3%</span>
-      <span>fine-tuned 7.1%</span>
-      <span class="rg-hot">+ compile-gated RAG 10.3%</span>
+      <span>350M era best 10.3%</span>
+      <span>Qwen vanilla 37.8%</span>
+      <span class="rg-hot">compile-gated cascade 44.9%</span>
     </div>
   </div>
 </div>"""
@@ -159,7 +163,8 @@ def _pipeline_line(route: str, verify: str, cascade_trail: str) -> str:
         icon = "⚠️"
     else:
         icon = "❌"
-    line = f"**Pipeline:**  {route} → fine-tuned codegen-350M → Rust → rustc {icon}"
+    model = CONFIG.base_model.rstrip("/").split("/")[-1]
+    line = f"**Pipeline:**  {route} → {model} → Rust → rustc {icon}"
     if cascade_trail:
         line += f"  \n**Compile-gated cascade:** {cascade_trail}"
     return line
@@ -171,6 +176,15 @@ def _quick_compiles(code: str) -> bool | None:
         return None
     try:
         return run_rust(code, "fn main() {}").passed
+    except Exception:
+        return None
+
+
+def _nearest_idiom_or_none(query: str) -> str | None:
+    """The Step 6 idiom exemplar for this query; never take the demo down."""
+    try:
+        from rustgen.rag.idioms import nearest_idiom
+        return nearest_idiom(query)
     except Exception:
         return None
 
@@ -221,26 +235,33 @@ def translate(description: str, python_code: str, signature: str,
         signature=signature or None,
     )
 
-    # Retrieval query: the Python source when we have it — code-to-code
-    # similarity is the signal the RAG index is built for.
-    query = python or description
+    # Retrieval query: the task's doc comment + signature — the same query
+    # shape the Step 6 sweep measured (the completion-style corpus indexes
+    # each exemplar's doc comment + signature to match).
+    query = retrieval_query(task)
 
-    def examples_for(k: int) -> list[str]:
-        return RETRIEVER.retrieve(query, k) if k > 0 else []
+    def examples_for(k: int, with_idiom: bool) -> list[str]:
+        examples = RETRIEVER.retrieve(query, k) if k > 0 else []
+        if with_idiom:
+            idiom = _nearest_idiom_or_none(query)
+            if idiom:
+                examples = [idiom] + examples
+        return examples
 
-    # Attempt plan — the measured Step 4 policy (7.1% → 10.3%): lead WITHOUT
-    # retrieval (the fine-tune's strongest configuration), and only on compile
-    # failure retry with retrieved examples, k=1 then k=4. Compile success is
-    # the only gating signal — never the tests.
-    plan = [0] + ([1, 4] if use_cascade else [])
+    # Attempt plan — the measured Step 6 policy (37.8% → 44.9%): lead WITHOUT
+    # retrieval (the strongest single configuration), and only on compile
+    # failure retry with the nearest idiom exemplar + k=2 retrieved examples,
+    # then k=4. Compile success is the only gating signal — never the tests.
+    plan = [("RAG off", 0, False)]
+    if use_cascade:
+        plan += [("idiom + k=2", 2, True), ("RAG k=4", 4, False)]
 
     trail, rust, chosen_examples = [], "", []
     attempt_log = []  # (label, compiled_ok, examples) for the retrieved panel
-    for attempt_k in plan:
-        task.context_examples = examples_for(attempt_k)
+    for label, attempt_k, with_idiom in plan:
+        task.context_examples = examples_for(attempt_k, with_idiom)
         candidate = TRANSLATOR.generate(task)
         ok = _quick_compiles(candidate)
-        label = f"RAG k={attempt_k}" if attempt_k else "RAG off"
         attempt_log.append((label, ok, task.context_examples))
         if ok is None:  # rustc unavailable: no gate to cascade on
             rust, chosen_examples = candidate, task.context_examples
@@ -317,9 +338,9 @@ def build_demo() -> gr.Blocks:
                         label="Generate tests and run them (model-written)",
                         value=True)
                     use_cascade = gr.Checkbox(
-                        label="RAG via compile-gated cascade: when compilation fails, "
-                              "retry with retrieved examples (k=1, then k=4) — "
-                              "our measured 7.1% → 10.3% policy",
+                        label="Compile-gated cascade: when compilation fails, retry "
+                              "with the nearest idiom exemplar + k=2 retrieved "
+                              "examples, then k=4 — our measured 37.8% → 44.9% policy",
                         value=True)
             with gr.Column(scale=6):
                 pipeline_out = gr.Markdown("")
@@ -368,12 +389,13 @@ def build_demo() -> gr.Blocks:
             translate, inputs + [drafted_state],
             panels + [python_code, signature, drafted_state])
 
-        # Every row below was battery-tested against the fine-tuned model on
-        # 2026-07-11: all compile with correct logic on the FIRST (RAG-free)
-        # attempt, so the cascade stays quiet. is_not_prime keeps test-gen OFF
-        # (Qwen's test rightly flags the n=1 edge case that the MBPP reference
-        # itself gets wrong). The last row is the full pivot: empty Python box,
-        # Qwen drafts Python + signature, tests pass 3/3.
+        # Every row below was battery-tested against the 350M fine-tune on
+        # 2026-07-11 (all compiled on the FIRST, RAG-free attempt, so the
+        # cascade stays quiet); re-validate once against the Qwen backend
+        # before presenting. is_not_prime keeps test-gen OFF (Qwen's test
+        # rightly flags the n=1 edge case that the MBPP reference itself gets
+        # wrong). The last row is the full pivot: empty Python box, Qwen
+        # drafts Python + signature, tests pass 3/3.
         examples = gr.Examples(
             examples=[
                 ["Identify non-prime numbers.",

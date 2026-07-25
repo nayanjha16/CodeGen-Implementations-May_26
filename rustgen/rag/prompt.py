@@ -33,6 +33,20 @@ def normalize_signature(signature: str) -> str:
     return sig if sig.endswith("{") else sig + " {"
 
 
+def retrieval_query(task: TranslationTask) -> str:
+    """What the retriever sees for a task: `///` doc comment + signature.
+
+    This is the query shape the Step 6 sweep measured — at completion time the
+    model has no Python, so retrieval must live with the same information. The
+    completion-style corpus indexes each exemplar's doc comment + signature to
+    match (see build_corpus).
+    """
+    lines = [f"/// {line}" for line in task.description.strip().splitlines()]
+    if task.signature:
+        lines.append(normalize_signature(task.signature))
+    return "\n".join(lines) + "\n"
+
+
 def build_prompt(task: TranslationTask, examples: list[str]) -> str:
     """Example blocks first, then: Python-as-comment, `///` description, signature."""
     parts = [example.strip() for example in examples]

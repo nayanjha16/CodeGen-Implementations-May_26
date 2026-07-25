@@ -1,0 +1,639 @@
+tag,task,problem_id,metric,value,passed,prediction
+qlora_nl2py,nl2py,HumanEval/79,pass@1,1.0,True,"def decimal_to_binary(decimal):
+    """"""You will be given a number in decimal form and your task is to convert it to
+    binary format. The function should return a string, with each character representing a binary
+    number. Each character in the string will be '0' or '1'.
+    
+    There will be an extra couple of characters 'db' at the beginning and at the end of the string.
+    The extra characters are there to help with the format.
+    
+    Examples:
+    decimal_to_binary(15)   # returns ""db1111db""
+    decimal_to_binary(32)   # returns ""db100000db""
+    """"""
+    if decimal == 0:
+        return ""db0db""
+    binary = """"
+    while decimal > 0:
+        binary = str(decimal % 2) + binary
+        decimal //= 2
+    return ""db"" + binary + ""db""
+"
+qlora_nl2py,nl2py,HumanEval/40,pass@1,1.0,True,"def triples_sum_to_zero(l: list):
+    """"""triples_sum_to_zero takes a list of integers as an input.
+    it returns True if there are three distinct elements in the list that
+    sum to zero, and False otherwise.
+
+    >>> triples_sum_to_zero([1, 3, 5, 0])
+    False
+    >>> triples_sum_to_zero([1, 3, -2, 1])
+    True
+    >>> triples_sum_to_zero([1, 2, 3, 7])
+    False
+    >>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])
+    True
+    >>> triples_sum_to_zero([1])
+    False
+    """"""
+    for i in range(len(l)):
+        for j in range(i + 1, len(l)):
+            for k in range(j + 1, len(l)):
+                if l[i] + l[j] + l[k] == 0:
+                    return True
+    return False
+"
+qlora_nl2py,nl2py,HumanEval/127,pass@1,0.0,False,"def intersection(interval1, interval2):
+    """"""
+    You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intevals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return ""YES"",
+    otherwise, return ""NO"".
+    
+    If the two intervals don't intersect, return ""NO"".
+
+    >>> intersection((1, 2), (2, 3))
+    ""NO""
+    >>> intersection((-1, 1), (0, 4))
+    ""NO""
+    >>> intersection((-3, -1), (-5, 5))
+    ""YES""
+    >>> intersection((1, 5), (6, 10))
+    ""NO""
+    >>> intersection((3, 7), (5, 9))
+    ""YES""
+    """"""
+    start = max(interval1[0], interval2[0])
+    end = min(interval1[1], interval2[1])
+
+    if start > end:
+        return ""NO""
+    inter_length = end - start
+    if inter_length == 1:
+        return ""NO""
+    for i in range(2, inter_length):
+        if inter_length % i == 0:
+            return ""NO""
+    return ""YES""
+"
+qlora_nl2py,nl2py,HumanEval/97,pass@1,1.0,True,"def multiply(a, b):
+    """"""Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """"""
+    return abs((a % 10) * (b % 10))
+"
+qlora_nl2py,nl2py,HumanEval/11,pass@1,1.0,True,"def string_xor(a: str, b: str) -> str:
+    """""" Input are two strings a and b consisting only of 1s and 0s.
+    Perform binary XOR on these inputs and return result also as a string.
+    >>> string_xor('010', '110')
+    '100'
+    """"""
+    return ''.join(['1' if x != y else '0' for x, y in zip(a, b)])
+"
+qlora_nl2py,nl2py,HumanEval/85,pass@1,1.0,True,"def add(lst):
+    """"""Given a non-empty list of integers lst. add the even elements that are at odd indices.
+    
+    Examples:
+        add([4, 2, 6, 7]) ==> 2
+    """"""
+    return sum(ele for idx, ele in enumerate(lst) if idx % 2 == 1 and ele % 2 == 0)
+"
+qlora_nl2py,nl2py,HumanEval/13,pass@1,1.0,True,"def greatest_common_divisor(a: int, b: int) -> int:
+    """""" Return a greatest common divisor of two integers a and b
+    >>> greatest_common_divisor(3, 5)
+    1
+    >>> greatest_common_divisor(25, 15)
+    5
+    """"""
+    if b == 0:
+        return a
+    return greatest_common_divisor(b, a % b)
+"
+qlora_nl2py,nl2py,HumanEval/60,pass@1,1.0,True,"def sum_to_n(n: int):
+    """"""sum_to_n is a function that sums numbers from 1 to n.
+    >>> sum_to_n(30)
+    465
+    >>> sum_to_n(100)
+    5050
+    >>> sum_to_n(5)
+    15
+    >>> sum_to_n(10)
+    55
+    >>> sum_to_n(1)
+    1
+    """"""
+    return (n * (n + 1)) // 2
+"
+qlora_nl2py,nl2py,HumanEval/42,pass@1,1.0,True,"def incr_list(l: list):
+    """"""Return list with elements incremented by 1.
+    >>> incr_list([1, 2, 3])
+    [2, 3, 4]
+    >>> incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123])
+    [6, 4, 6, 3, 4, 4, 10, 1, 124]
+    """"""
+    return [(x + 1) for x in l]
+"
+qlora_nl2py,nl2py,HumanEval/158,pass@1,0.0,False,"def find_max(words):
+    """"""Write a function that accepts a list of strings.
+    The list contains different words. Return the word with maximum number
+    of unique characters. If multiple strings have maximum number of unique
+    characters, return the one which comes first in lexicographical order.
+
+    find_max([""name"", ""of"", ""string""]) == ""string""
+    find_max([""name"", ""enam"", ""game""]) == ""enam""
+    find_max([""aaaaaaa"", ""bb"" ,""cc""]) == """"aaaaaaa""
+    """"""
+    max_word = ''
+    for word in words:
+        if len(set(word)) > len(set(max_word)):
+            max_word = word
+    return max_word
+"
+qlora_nl2py,nl2py,HumanEval/64,pass@1,1.0,True,"def vowels_count(s):
+    """"""
+    Write a function vowels_count which takes a string representing
+    a word as input and returns the number of vowels in the string.
+    Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a
+    vowel, but only when it is at the end of the given word.
+
+    Example:
+    >>> vowels_count(""abcde"")
+    2
+    >>> vowels_count(""ACEDY"")
+    3
+    """"""
+    s = s.lower()
+    return sum([1 for c in s if c in ""aeiou""]) + (s[-1] == 'y')
+"
+qlora_nl2py,nl2py,HumanEval/131,pass@1,1.0,True,"def digits(n):
+    """"""Given a positive integer n, return the product of the odd digits.
+    Return 0 if all digits are even.
+    For example:
+    digits(1)  == 1
+    digits(4)  == 0
+    digits(235) == 15
+    """"""
+    prod = 1
+    has_odd = False
+    for c in str(n):
+        d = int(c)
+        if d % 2 == 0:
+            continue
+        has_odd = True
+        prod *= d
+    if not has_odd:
+        return 0
+    return prod
+"
+qlora_nl2py,nl2py,HumanEval/148,pass@1,1.0,True,"def bf(planet1, planet2):
+    """"""There are eight planets in our solar system: the closerst to the Sun 
+    is Mercury, the next one is Venus, then Earth, Mars, Jupiter, Saturn, 
+    Uranus, Neptune.
+    Write a function that takes two planet names as strings planet1 and planet2. 
+    The function should return a tuple containing all planets whose orbits are 
+    located between the orbit of planet1 and the orbit of planet2, sorted by 
+    the proximity to the sun. 
+    The function should return an empty tuple if planet1 or planet2
+    are not correct planet names. 
+    Examples
+    bf(""Jupiter"", ""Neptune"") ==> (""Saturn"", ""Uranus"")
+    bf(""Earth"", ""Mercury"") ==> (""Venus"")
+    bf(""Mercury"", ""Uranus"") ==> (""Venus"", ""Earth"", ""Mars"", ""Jupiter"", ""Saturn"")
+    """"""
+    planets = [""Mercury"", ""Venus"", ""Earth"", ""Mars"", ""Jupiter"", ""Saturn"", ""Uranus"", ""Neptune""]
+    try:
+        ind1 = planets.index(planet1)
+        ind2 = planets.index(planet2)
+    except ValueError:
+        return ()
+    if ind1 > ind2:
+        ind1, ind2 = ind2, ind1
+    return tuple(planets[ind1+1:ind2])
+"
+qlora_nl2py,nl2py,HumanEval/107,pass@1,1.0,True,"def even_odd_palindrome(n):
+    """"""
+    Given a positive integer n, return a tuple that has the number of even and odd
+    integer palindromes that fall within the range(1, n), inclusive.
+
+    Example 1:
+
+        Input: 3
+        Output: (1, 2)
+        Explanation:
+        Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.
+
+    Example 2:
+
+        Input: 12
+        Output: (4, 6)
+        Explanation:
+        Integer palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.
+
+    Note:
+        1. 1 <= n <= 10^3
+        2. returned tuple has the number of even and odd integer palindromes respectively.
+    """"""
+    even_count = 0
+    odd_count = 0
+
+    for num in range(1,n+1):
+        if str(num) == str(num)[::-1]:
+            if num % 2 == 0:
+                even_count += 1
+            else:
+                odd_count += 1
+    return (even_count,odd_count)
+"
+qlora_nl2py,nl2py,HumanEval/119,pass@1,0.0,False,"def match_parens(lst):
+    """"""You are given a list of two strings, both strings consist of open
+    parentheses '(' or close parentheses ')' only.
+    Your job is to check if it is possible to concatenate the two strings in
+    some order, that the resulting string will be good.
+    A string S is considered to be good if and only if all parentheses in S
+    are balanced. For example: the string '(())()' is good, while the string
+    '())' is not.
+    Return 'Yes' if there's a way to make a good string, and return 'No' otherwise.
+
+    Examples:
+    match_parens(['()(', ')']) == 'Yes'
+    match_parens([')', ')']) == 'No'
+    """"""
+    sum1 = 0
+    for i in lst[0]:
+        if i == ""("":
+            sum1 += 1
+        else:
+            sum1 -= 1
+        if sum1 < 0:
+            break
+    if sum1 > 0:
+        sum1 = 0
+        for i in lst[1]:
+            if i == ""("":
+                sum1 += 1
+            else:
+                sum1 -= 1
+            if sum1 < 0:
+                break
+        if sum1 == 0:
+            return ""Yes""
+    return ""No""
+"
+qlora_nl2py,nl2py,HumanEval/100,pass@1,0.0,False,"def make_a_pile(n):
+    """"""Given a positive integer n, you have to make a pile of n levels of stones.
+    The first level has n stones.
+    The number of stones in the next level is:
+        - the next odd number if n is odd.
+        - the next even number if n is even.
+    Return the number of stones in each level in a list, where element at index
+    i represents the number of stones in the level (i+1).
+    
+    Examples:
+    >>> make_a_pile(3)
+    [3, 5, 7]
+    """"""
+    result = []
+    for i in range(n):
+        result.append(i * 2 + 1 + 2 * i % 2)
+    return result
+"
+qlora_nl2py,nl2py,HumanEval/130,pass@1,0.0,False,"def tri(n):
+    """"""Everyone knows Fibonacci sequence, it was studied deeply by mathematicians in 
+    the last couple centuries. However, what people don't know is Tribonacci sequence.
+    Tribonacci sequence is defined by the recurrence:
+    tri(1) = 3
+    tri(n) = 1 + n / 2, if n is even.
+    tri(n) =  tri(n - 1) + tri(n - 2) + tri(n + 1), if n is odd.
+    For example:
+    tri(2) = 1 + (2 / 2) = 2
+    tri(4) = 3
+    tri(3) = tri(2) + tri(1) + tri(4)
+           = 2 + 3 + 3 = 8 
+    You are given a non-negative integer number n, you have to a return a list of the 
+    first n + 1 numbers of the Tribonacci sequence.
+    Examples:
+    tri(3) = [1, 3, 2, 8]
+    """"""
+    result = []
+    if n >= 0: result.append(1)
+    if n >= 1: result.append(3)
+    if n >= 2: result.append(2)
+    for i in range(3,n+1):
+        if i % 2 == 0:
+            result.append(i//2 + 1)
+        else:
+            result.append(result[i-1] + result[i-2] + result[i+1])
+    return result
+"
+qlora_nl2py,nl2py,HumanEval/125,pass@1,0.0,False,"def split_words(txt):
+    """"""Given a string of words, return a list of words split on whitespace, if no whitespaces exists in the text you
+    should split on commas ',' if no commas exists you should return the number of lower-case letters with odd order in the
+    alphabet, ord('a') = 0, ord('b') = 1, ... ord('z') = 25
+    Examples
+    split_words(""Hello world!"") ➞ [""Hello"", ""world!""]
+    split_words(""Hello,world!"") ➞ [""Hello"", ""world!""]
+    split_words(""abcdef"") == 3
+    """"""
+    if ' ' in txt:
+        return txt.split()
+    elif ',' in txt:
+        return txt.split(',')
+    else:
+        return sum(1 for c in txt if c.islower() and (ord(c) - ord('a')) % 2 == 0)
+"
+qlora_nl2py,nl2py,HumanEval/69,pass@1,1.0,True,"def search(lst):
+    """"""You are given a non-empty list of positive integers. Return the greatest integer that is greater than 
+    zero, and has a frequency greater than or equal to the value of the integer.
+    If no such a value exist, return -1.
+    Examples:
+        search([4, 1, 2, 2, 3, 1]) == 2
+        search([1, 2, 2, 3, 3, 3, 4, 4, 4]) == 3
+        search([5, 5, 4, 4, 4]) == -1
+    """"""
+    freq = {}
+    for i in lst:
+        if i not in freq:
+            freq[i] = 0
+        freq[i] += 1
+    res = max((key for key, value in freq.items() if key <= value), default=-1)
+    return res
+"
+qlora_nl2py,nl2py,HumanEval/12,pass@1,1.0,True,"from typing import List, Optional
+
+
+def longest(strings: List[str]) -> Optional[str]:
+    """""" Out of list of strings, return the longest one. Return the first one in case of multiple
+    strings of the same length. Return None in case the input list is empty.
+    >>> longest([])
+    
+    >>> longest(['a', 'b', 'c'])
+    'a'
+    >>> longest(['a', 'bb', 'ccc'])
+    'ccc'
+    """"""
+    if not strings:
+        return None
+
+    longest = max(strings, key=len)
+    return longest
+"
+qlora_nl2py,nl2py,HumanEval/1,pass@1,1.0,True,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """""" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """"""
+    paren_string = paren_string.replace(' ', '')
+    result = []
+    current_depth = 0
+    current_group = ''
+    for c in paren_string:
+        if c == '(':
+            current_depth += 1
+            current_group += c
+        elif c == ')':
+            current_depth -= 1
+            current_group += c
+            if current_depth == 0:
+                result.append(current_group)
+                current_group = ''
+
+    return result
+"
+qlora_nl2py,nl2py,HumanEval/98,pass@1,0.0,False,"def count_upper(s):
+    """"""Given a string s, count the number of uppercase vowels in even indices.
+
+    For example:
+    count_upper('aBCdEf') returns 1
+    count_upper('abcdefg') returns 0
+    count_upper('dBBE') returns 0
+    """"""
+    return sum(1 for i in range(1,len(s)+1,2) if s[i-1] in ""AEIOU""]
+"
+qlora_nl2py,nl2py,HumanEval/6,pass@1,1.0,True,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """""" Input to this function is a string represented multiple groups for nested parentheses separated by spaces.
+    For each of the group, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three.
+
+    >>> parse_nested_parens('(()()) ((())) () ((())()())')
+    [2, 3, 1, 3]
+    """"""
+    result = []
+    for paren_group in paren_string.split():
+        depth = 0
+        max_depth = 0
+        for c in paren_group:
+            if c == '(':
+                depth += 1
+                if depth > max_depth:
+                    max_depth = depth
+            elif c == ')':
+                depth -= 1
+        result.append(max_depth)
+    return result
+"
+qlora_nl2py,nl2py,HumanEval/31,pass@1,1.0,True,"def is_prime(n):
+    """"""Return true if a given number is prime, and false otherwise.
+    >>> is_prime(6)
+    False
+    >>> is_prime(101)
+    True
+    >>> is_prime(11)
+    True
+    >>> is_prime(13441)
+    True
+    >>> is_prime(61)
+    True
+    >>> is_prime(4)
+    False
+    >>> is_prime(1)
+    False
+    """"""
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+"
+qlora_nl2py,nl2py,HumanEval/139,pass@1,0.0,False,"def special_factorial(n):
+    """"""
+    The Brazilian factorial is defined as:
+    brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!
+    where n > 0
+    
+    For example:
+    >>> special_factorial(4)
+    288
+    """"""
+    fact = 1
+    for i in range(1,n+1):
+        fact *= i*(i-1)*special_factorial(i-2)
+    return fact
+"
+qlora_nl2py,nl2py,HumanEval/29,pass@1,1.0,True,"from typing import List
+
+
+def filter_by_prefix(strings: List[str], prefix: str) -> List[str]:
+    """""" Filter an input list of strings only for ones that start with a given prefix.
+    >>> filter_by_prefix([], 'a')
+    []
+    >>> filter_by_prefix(['abc', 'bcd', 'cde', 'array'], 'a')
+    ['abc', 'array']
+    """"""
+    return [s for s in strings if s.startswith(prefix)]
+"
+qlora_nl2py,nl2py,HumanEval/99,pass@1,1.0,True,"def closest_integer(value):
+    """"""
+    Create a function that takes a value (string) representing a number
+    and returns the closest integer to it. If the number is equidistant
+    from two integers, round it away from zero.
+
+    Examples
+    >>> closest_integer(""10"")
+    10
+    >>> closest_integer(""15.3"")
+    15
+
+    Note:
+    Rounding away from zero means that if the given number is equidistant
+    from two integers, the one you should return is the one that is the
+    farthest from zero. For example closest_integer(""14.5"") should
+    return 15 and closest_integer(""-14.5"") should return -15.
+    """"""
+    val = float(value)
+    if val > 0:
+        return int(val + 0.5)
+    else:
+        return int(val - 0.5)
+"
+qlora_nl2py,nl2py,HumanEval/82,pass@1,0.0,False,"def prime_length(string):
+    """"""Write a function that takes a string and returns True if the string
+    length is a prime number or False otherwise
+    Examples
+    prime_length('Hello') == True
+    prime_length('abcdcba') == True
+    prime_length('kittens') == True
+    prime_length('orange') == False
+    """"""
+    def is_prime(num):
+        for i in range(2,num):
+            if num % i == 0:
+                return False
+        return True
+    return is_prime(len(string))
+"
+qlora_nl2py,nl2py,HumanEval/134,pass@1,0.0,False,"import re
+def check_if_last_char_is_a_letter(txt):
+    txt=txt.strip()
+    if len(txt)==0:
+        return False
+    if re.search(r""\s"",txt[-1]):
+        return False
+    if not txt[-1].isalpha():
+        return False
+    return True
+"
+qlora_nl2py,nl2py,HumanEval/15,pass@1,1.0,True,"def string_sequence(n: int) -> str:
+    """""" Return a string containing space-delimited numbers starting from 0 upto n inclusive.
+    >>> string_sequence(0)
+    '0'
+    >>> string_sequence(5)
+    '0 1 2 3 4 5'
+    """"""
+    return "" "".join([str(i) for i in range(n + 1)])
+"
+qlora_nl2py,nl2py,HumanEval/39,pass@1,0.0,False,"def prime_fib(n: int):
+    """"""prime_fib returns n-th number that is a Fibonacci number and it's also prime.
+    >>> prime_fib(1)
+    2
+    >>> prime_fib(2)
+    3
+    >>> prime_fib(3)
+    5
+    >>> prime_fib(4)
+    13
+    >>> prime_fib(5)
+    89
+    """"""
+    def is_prime(num):
+        for j in range(2,num):
+            if (num % j) == 0:
+                return False
+        return True
+
+    fib = [0,1]
+    i = 2
+    while True:
+        next_fib = fib[i-1] + fib[i-2]
+        fib.append(next_fib)
+        if is_prime(next_fib):
+            i += 1
+            if i == n+1:
+                return next_fib
+"
+qlora_nl2py,nl2py,HumanEval/126,pass@1,0.0,False,"def is_sorted(lst):
+    """"""Given a list of numbers, return whether or not they are sorted
+    in ascending order. If list has more than 1 duplicate of the same
+    number, return False. Assume no negative numbers and only integers.
+
+    Examples
+    is_sorted([5]) ➞ True
+    is_sorted([1, 2, 3, 4, 5]) ➞ True
+    is_sorted([1, 3, 2, 4, 5]) ➞ False
+    is_sorted([1, 2, 3, 4, 5, 6]) ➞ True
+    is_sorted([1, 2, 3, 4, 5, 6, 7]) ➞ True
+    is_sorted([1, 3, 2, 4, 5, 6, 7]) ➞ False
+    is_sorted([1, 2, 2, 3, 3, 4]) ➞ True
+    is_sorted([1, 2, 2, 2, 3, 4]) ➞ False
+    """"""
+    for i in range(len(lst) - 1):
+        if lst[i] > lst[i + 1]:
+            return False
+    return True
+"
+qlora_nl2py,nl2py,HumanEval/96,pass@1,1.0,True,"def count_up_to(n):
+    """"""Implement a function that takes an non-negative integer and returns an array of the first n
+    integers that are prime numbers and less than n.
+    for example:
+    count_up_to(5) => [2,3]
+    count_up_to(11) => [2,3,5,7]
+    count_up_to(0) => []
+    count_up_to(20) => [2,3,5,7,11,13,17,19]
+    count_up_to(1) => []
+    count_up_to(18) => [2,3,5,7,11,13,17]
+    """"""
+    def is_prime(num):
+        if num <= 1:
+            return False
+        for i in range(2,num):
+            if (num % i) == 0:
+                return False
+        return True
+
+    result = []
+    for num in range(n):
+        if is_prime(num):
+            result.append(num)
+    return result
+"

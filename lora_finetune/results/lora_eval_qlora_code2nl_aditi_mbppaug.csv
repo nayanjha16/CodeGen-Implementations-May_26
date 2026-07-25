@@ -1,0 +1,284 @@
+tag,task,problem_id,metric,value,passed,prediction
+qlora_code2nl,code2nl,HumanEval/79,rougeL_f1,0.319327731092437,,"Given a positive integer of decimal format, return its binary representation as a string,
+with ""db"" prefixed and suffixed to the binary number.
+For example:
+>>> decimal_to_binary(5)
+'db101db'
+>>> decimal_to_binary(8)
+'db1000db'"
+qlora_code2nl,code2nl,HumanEval/40,rougeL_f1,0.6315789473684211,,"Given an array of integers, return True if there is a triplet (a, b, c)
+such that a + b + c = 0, and false otherwise.
+
+For example:
+triples_sum_to_zero([1, 3, 5, 0]) ==> False
+triples_sum_to_zero([1, 3, -2, 1]) ==> True
+triples_sum_to_zero([1, 2, 3]) ==> False
+triples_sum_to_zero([5]) ==> False"
+qlora_code2nl,code2nl,HumanEval/127,rougeL_f1,0.28030303030303033,,"Given two lists of intervals, find out if there's any overlap between them.
+Each list contains pairs of integers that represent an interval.
+The first integer is the start point of the interval,
+and the second integer is the end point of the interval.
+An interval overlaps with another interval if they have at least one point in common.
+For example, the following intervals overlap:
+[(1, 5), (4, 8)] and [(3, 6)]
+Your task is to check if any two given intervals overlap.
+If they do, you should return ""YES"".
+Otherwise you should return ""NO"".
+
+Note: The order of the elements in the input doesn't matter.
+
+Example:
+>>> intersection([(1, 5), (4, 8)], [(3, 6)])
+'YES'
+>>> intersection([(1, 5), (7, 9)], [(3, 6)])
+'NO'"
+qlora_code2nl,code2nl,HumanEval/97,rougeL_f1,0.5348837209302325,,"Given two integers a and b, return the product of their last digits.
+Note: your solution should not use any loop or list comprehension.
+>>> multiply(148, 412)
+7
+>>> multiply(19, 28)
+72
+>>> multiply(2020, 1851)
+0
+>>> multiply(14, -15)
+-6"
+qlora_code2nl,code2nl,HumanEval/11,rougeL_f1,0.3174603174603175,,"The function takes two strings of equal length as input and returns a string that is the result of XORing the corresponding characters of the input strings.
+>>> string_xor('hello', 'world')
+'11010'"
+qlora_code2nl,code2nl,HumanEval/85,rougeL_f1,0.5079365079365079,,"Given a list of integers, return the sum of all even elements that are located at odd indices.
+For example:
+add([5, 8, 7, 1]) ==> 0
+add([3, 3, 3, 3, 3]) ==> 9
+add([30, 13, 24, 321]) ==> 57"
+qlora_code2nl,code2nl,HumanEval/13,rougeL_f1,0.5365853658536586,,"Given two positive integers a and b, find their greatest common divisor.
+>>> greatest_common_divisor(8, 12)
+4"
+qlora_code2nl,code2nl,HumanEval/60,rougeL_f1,0.3823529411764707,,"Given a positive integer n, return the sum of all positive integers less than or equal to n.
+For example:
+>>> sum_to_n(3)
+6
+>>> sum_to_n(5)
+15"
+qlora_code2nl,code2nl,HumanEval/42,rougeL_f1,0.2962962962962963,,"Given a list of integers, return a new list where each element has been incremented by 1.
+>>> incr_list([])
+[]"
+qlora_code2nl,code2nl,HumanEval/158,rougeL_f1,0.6095238095238096,,"Given a list of words, find the word with the most unique characters.
+Return that word. In case of a tie, return the one that is lexicographically smallest.
+>>> find_max([""name"", ""of"", ""string""])
+""string""
+>>> find_max([""name"", ""enam"", ""game""])
+""enam""
+>>> find_max([""aaaaaaa"", ""bb"", ""cc""])
+""aaaaaaa"""
+qlora_code2nl,code2nl,HumanEval/64,rougeL_f1,0.3902439024390244,,"Given a string s consisting of lowercase and uppercase letters,
+return the number of vowels that appear in s. Additionally, you need to count
+the number of occurrences of the letter ""y"" in s, treating it as a vowel,
+regardless of case. The result should be returned as an integer.
+Example:
+vowels_count('abcde') == 2
+vowels_count('ACEDY') == 3
+vowels_count('rhythm') == 0"
+qlora_code2nl,code2nl,HumanEval/131,rougeL_f1,0.676470588235294,,"Given an integer n, return the product of all odd digits in n,
+or 0 if there are no odd digits.
+For example:
+>>> digits(1) # case 1
+1
+>>> digits(4) # case 2
+0
+>>> digits(235) # case 3
+15"
+qlora_code2nl,code2nl,HumanEval/148,rougeL_f1,0.3151515151515151,,"Given two planets, return a list of planets that are located between them in the solar system,
+ordered from closest to farthest from the Sun.
+If either planet name is incorrect, return an empty list.
+The order of the planets is: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.
+>>> bf('Mercury', 'Earth')
+['Venus']
+>>> bf('Earth', 'Jupiter')
+['Mars', 'Jupiter']
+>>> bf('Mercury', 'Pluto')
+[]"
+qlora_code2nl,code2nl,HumanEval/107,rougeL_f1,0.42,,"Given a positive integer n, return a tuple that contains the count of even,
+and odd palindromic numbers from 1 to n inclusively, and their sum.
+A number is said to be palindrome if it remains same after reversing the digits, 
+for example 121.
+Examples:
+>>> even_odd_palindrome(3)
+(1, 1)
+Explanation:
+From 1 to 3, there are 1 even palindromes (2) and 2 odd palindromes (1, 3).
+>>> even_odd_palindrome(12)
+(4, 6)
+Explanation:
+From 1 to 12, there are 4 even palindromes (2, 4, 6, 8) and 6 odd palindromes (1, 3, 5, 7, 9, 11)."
+qlora_code2nl,code2nl,HumanEval/119,rougeL_f1,0.32061068702290074,,"Given a list of strings consisting mainly of '(' and ')' parentheses,
+return ""Yes"" if every opening parenthesis has a corresponding closing one,
+in the correct order, otherwise return ""No"".
+>>> match_parens(['()(', ')'])
+'Yes'
+>>> match_parens([')', ')'])
+'No'
+>>> match_parens(['(', '('])
+'No'"
+qlora_code2nl,code2nl,HumanEval/100,rougeL_f1,0.26666666666666666,,"Create a pile of stones from 1 to n.
+A move consists of removing two adjacent stones,
+and then placing one stone at the point between them.
+The player who removes the last stone wins.
+Determine if you can win given number of stones.
+>>> make_a_pile(3)
+False
+>>> make_a_pile(4)
+True"
+qlora_code2nl,code2nl,HumanEval/130,rougeL_f1,0.2094240837696335,,"Given a positive integer n, this function returns a list of length n+1 
+containing the first n+1 terms of the Triangular Numbers sequence.
+The Triangular Numbers sequence is defined as follows: the first term T_0 is equal to 0,
+and each subsequent term is the sum of all previous terms plus its index number.
+For example:
+>>> tri(0)
+[0]
+>>> tri(1)
+[0, 1]
+>>> tri(2)
+[0, 1, 3]
+>>> tri(3)
+[0, 1, 3, 6]"
+qlora_code2nl,code2nl,HumanEval/125,rougeL_f1,0.3018867924528302,,"Given a string `txt`, return the number of words in the given string.
+A word is defined as a sequence of alphabetic characters separated by non-alphabetic
+characters. The words are case-sensitive.
+If there are three or more alphabetic characters in a row, they should be considered as a single word,
+even if they have whitespaces before or after them.
+>>> split_words('Hello world!')
+2
+>>> split_words('Hello, world!')
+2
+>>> split_words('abcdef')
+3
+>>> split_words('a b c d e f')
+6
+>>> split_words('a') == 0
+True"
+qlora_code2nl,code2nl,HumanEval/69,rougeL_f1,0.3888888888888889,,"Given an array of integers, find the most frequent integer.
+If there are multiple items with the same highest frequency,
+return any one of them.
+Return None if the list is empty.
+
+For example:
+>>> search([4, 1, 2, 2, 3]) == 2
+>>> search([1, 2, 2, 3, 3, 3]) == 2 or search([1, 2, 2, 3, 3, 3]) == 3
+>>> search([]) == None"
+qlora_code2nl,code2nl,HumanEval/12,rougeL_f1,0.5274725274725275,,"Given a list of strings, return the longest string in the list.
+If there are multiple strings with the same maximum length,
+return the first one that was encountered.
+If the input list is empty, return None.
+
+>>> longest([])
+None
+>>> longest(['a', 'bb', 'ccc'])
+'ccc'
+>>> longest(['hello', 'world', '!', 'algorithms'])
+'algorithms'"
+qlora_code2nl,code2nl,HumanEval/1,rougeL_f1,0.2935779816513761,,"Given a string of parentheses, separated by spaces, this function takes each group
+of parentheses and separates them into separate groups based on their depth.
+The depth of a group is defined as the maximum number of nested parentheses that
+enclose a set of balanced parentheses.
+For example:
+>>> separate_paren_groups(""(()) () ((()))"")
+['(())', '()', '((()))']
+>>> separate_paren_groups(""()"")
+[]"
+qlora_code2nl,code2nl,HumanEval/98,rougeL_f1,0.631578947368421,,"Given a string s of lowercase letters, return the number of uppercase letters in s.
+>>> count_upper('abC')
+1
+>>> count_upper('abcdefG')
+0
+>>> count_upper('ABCDEFg')
+6"
+qlora_code2nl,code2nl,HumanEval/6,rougeL_f1,0.3010752688172043,,"Given a string of parentheses, find the maximum number of balanced parentheses groups.
+A group is defined as a set of parentheses that are not nested within another set of parentheses.
+>>> parse_nested_parens('')
+[]
+>>> parse_nested_parens('()')
+[1]
+>>> parse_nested_parens('(())')
+[2]
+>>> parse_nested_parens('()()')
+[2]"
+qlora_code2nl,code2nl,HumanEval/31,rougeL_f1,0.4,,"Check if given number is prime or not
+>>> is_prime(7)
+True
+>>> is_prime(15)
+False"
+qlora_code2nl,code2nl,HumanEval/139,rougeL_f1,0.19230769230769232,,"Given positive integer n, compute n! * n!
+>>> special_factorial(3)
+648"
+qlora_code2nl,code2nl,HumanEval/29,rougeL_f1,0.5714285714285715,,"Filter given list of strings only for those that start with given prefix,
+and return result as a new list.
+>>> filter_by_prefix([], 'a')
+[]
+>>> filter_by_prefix(['apple', 'banana', 'apricot', 'avocado'], 'ap')
+['apple', 'apricot']"
+qlora_code2nl,code2nl,HumanEval/99,rougeL_f1,0.3421052631578948,,"Given a string representing a positive integer, find the closest integer that is
+equal to, smaller than, or larger than the given integer, respectively.
+The returned integer should be of the same decimal point precision as the input integer.
+If the input number is not a valid integer, raise ValueError.
+>>> closest_integer('10')
+9
+>>> closest_integer('15.3')
+15
+>>> closest_integer('14.5')
+15"
+qlora_code2nl,code2nl,HumanEval/82,rougeL_f1,0.5301204819277109,,"Given a string s, return True if every letter that appears in the string 
+appears the same number of times. Return False otherwise.
+For example:
+prime_length('aabbcc') is True
+prime_length('aabbccc') is False
+prime_length('abcdefgh') is True
+prime_length('xyxyz') is False"
+qlora_code2nl,code2nl,HumanEval/134,rougeL_f1,0.6503067484662576,,"Create a function that returns true if the last character of a string is an alphabetic letter 
+and false otherwise.
+The function shouldn't be case sensitive.
+Examples:
+check_if_last_char_is_a_letter(""Hello"") ➞ True
+check_if_last_char_is_a_letter(""a"") ➞ True
+check_if_last_char_is_a_letter(""a1"") ➞ False
+check_if_last_char_is_a_letter(""Z"") ➞ True
+check_if_last_char_is_a_letter(""ab c"") ➞ False
+check_if_last_char_is_a_letter("" apples "") ➞ False"
+qlora_code2nl,code2nl,HumanEval/15,rougeL_f1,0.3508771929824561,,"Create a string that consists of numbers from 1 to n written out in English,
+separated by spaces.
+For example:
+string_sequence(1) == ""one""
+string_sequence(4) == ""one two three four"""
+qlora_code2nl,code2nl,HumanEval/39,rougeL_f1,0.2835820895522388,,"The Fibonacci numbers are the numbers in the following integer sequence:
+0, 1, 1, 2, 3, 5, 8, 13, ...
+By definition, the first two numbers in the sequence are 0 and 1, and each subsequent number is the sum of the previous two.
+It has been known since the middle ages that the Fibonacci numbers are an important series of numbers with many interesting properties.
+Your task is to find the n-th number in the Fibonacci sequence.
+>>> prime_fib(1)
+0
+>>> prime_fib(2)
+1
+>>> prime_fib(3)
+1
+>>> prime_fib(4)
+2
+>>> prime_fib(5)
+3"
+qlora_code2nl,code2nl,HumanEval/126,rougeL_f1,0.3453237410071942,,"Given a list of integers, return True if the list is sorted in non-decreasing order,
+and False otherwise.
+>>> is_sorted([1, 2, 4, 20])
+True
+>>> is_sorted([1, 20, 4, 10])
+False
+>>> is_sorted([])
+True"
+qlora_code2nl,code2nl,HumanEval/96,rougeL_f1,0.6666666666666667,,"Given a positive integer n, return a list of all prime numbers less than or equal to n.
+>>> count_up_to(7)
+[2, 3, 5]
+>>> count_up_to(11)
+[2, 3, 5, 7]
+>>> count_up_to(0)
+[]
+>>> count_up_to(20)
+[2, 3, 5, 7, 11, 13, 17, 19]
+>>> count_up_to(1)
+[]"

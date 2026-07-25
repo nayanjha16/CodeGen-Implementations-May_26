@@ -1,0 +1,1749 @@
+tag,task,problem_id,metric,value,passed,prediction
+zero_shot,nl2py,HumanEval/79,pass@1,1.0,True,"def decimal_to_binary(decimal):
+    if decimal == 0:
+        return ""db0db""
+    
+    binary_str = """"
+    while decimal > 0:
+        remainder = decimal % 2
+        binary_str = str(remainder) + binary_str
+        decimal //= 2
+    
+    return f""db{binary_str}db""
+"
+zero_shot,nl2py,HumanEval/40,pass@1,1.0,True,"def triples_sum_to_zero(l: list):
+    l.sort()
+    for i in range(len(l) - 2):
+        left = i + 1
+        right = len(l) - 1
+        while left < right:
+            current_sum = l[i] + l[left] + l[right]
+            if current_sum == 0:
+                return True
+            elif current_sum < 0:
+                left += 1
+            else:
+                right -= 1
+    return False
+"
+zero_shot,nl2py,HumanEval/127,pass@1,0.0,False,"from math import sqrt
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def intersection(interval1, interval2):
+    start_max = max(interval1[0], interval2[0])
+    end_min = min(interval1[1], interval2[1])
+    
+    if start_max > end_min:
+        return ""NO""
+    
+    intersection_length = end_min - start_max + 1
+    
+    if is_prime(intersection_length):
+        return ""YES""
+    else:
+        return ""NO""
+"
+zero_shot,nl2py,HumanEval/97,pass@1,1.0,True,"def multiply(a, b):
+    # Extract the unit digit of each number
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    # Return the product of the unit digits
+    return unit_digit_a * unit_digit_b
+"
+zero_shot,nl2py,HumanEval/11,pass@1,1.0,True,"def string_xor(a: str, b: str) -> str:
+    return ''.join(str(int(x) ^ int(y)) for x, y in zip(a, b))
+"
+zero_shot,nl2py,HumanEval/85,pass@1,1.0,True,"def add(lst):
+    return sum(lst[i] for i in range(1, len(lst), 2) if lst[i] % 2 == 0)
+"
+zero_shot,nl2py,HumanEval/13,pass@1,1.0,True,"def greatest_common_divisor(a: int, b: int) -> int:
+    while b != 0:
+        a, b = b, a % b
+    return a
+"
+zero_shot,nl2py,HumanEval/60,pass@1,1.0,True,"def sum_to_n(n: int) -> int:
+    return n * (n + 1) // 2
+"
+zero_shot,nl2py,HumanEval/42,pass@1,1.0,True,"def incr_list(l: list) -> list:
+    return [x + 1 for x in l]
+"
+zero_shot,nl2py,HumanEval/158,pass@1,1.0,True,"from collections import Counter
+
+def find_max(words):
+    max_unique = 0
+    result = """"
+    
+    for word in words:
+        unique_chars = len(Counter(word))
+        
+        if unique_chars > max_unique or (unique_chars == max_unique and word < result):
+            max_unique = unique_chars
+            result = word
+    
+    return result
+"
+zero_shot,nl2py,HumanEval/64,pass@1,0.0,False,"def vowels_count(s):
+    count = 0
+    for char in s.lower():
+        if char in ""aeiou"":
+            count += 1
+    if s.endswith('y'):
+        count += 1
+    return count
+"
+zero_shot,nl2py,HumanEval/131,pass@1,1.0,True,"def digits(n):
+    product = 1
+    has_odd = False
+    
+    while n > 0:
+        digit = n % 10
+        if digit % 2 != 0:
+            product *= digit
+            has_odd = True
+        n //= 10
+    
+    return product if has_odd else 0
+"
+zero_shot,nl2py,HumanEval/148,pass@1,0.0,False,"def bf(planet1, planet2):
+    planets = [""Mercury"", ""Venus"", ""Earth"", ""Mars"", ""Jupiter"", ""Saturn"", ""Uranus"", ""Neptune""]
+    index1 = planets.index(planet1)
+    index2 = planets.index(planet2)
+    
+    if index1 == -1 or index2 == -1:
+        return ()
+    
+    if index1 > index2:
+        index1, index2 = index2, index1
+    
+    return planets[index1 + 1:index2]
+"
+zero_shot,nl2py,HumanEval/107,pass@1,1.0,True,"def even_odd_palindrome(n):
+    def is_palindrome(num):
+        return str(num) == str(num)[::-1]
+
+    even_count = 0
+    odd_count = 0
+
+    for i in range(1, n + 1):
+        if is_palindrome(i):
+            if i % 2 == 0:
+                even_count += 1
+            else:
+                odd_count += 1
+
+    return (even_count, odd_count)
+"
+zero_shot,nl2py,HumanEval/119,pass@1,0.0,False,"def match_parens(lst):
+    left_count = 0
+    right_count = 0
+
+    for s in lst:
+        for char in s:
+            if char == '(':
+                left_count += 1
+            else:
+                right_count += 1
+
+    return 'Yes' if left_count == right_count else 'No'
+"
+zero_shot,nl2py,HumanEval/100,pass@1,1.0,True,"def make_a_pile(n):
+    return [n + 2 * i for i in range(n)]
+"
+zero_shot,nl2py,HumanEval/130,pass@1,0.0,False,"def tri(n):
+    if n == 0:
+        return []
+    elif n == 1:
+        return [3]
+    elif n == 2:
+        return [3, 2]
+    
+    result = [3, 3, 2]
+    for i in range(3, n + 1):
+        if i % 2 == 0:
+            result.append(result[i-1] + result[i//2])
+        else:
+            result.append(result[i-1] + result[i-2] + result[i+1])
+    return result
+"
+zero_shot,nl2py,HumanEval/125,pass@1,0.0,False,"def split_words(txt):
+    if ' ' in txt:
+        return txt.split()
+    elif ',' in txt:
+        return txt.split(',')
+    else:
+        return sum(1 for char in txt if char.islower() and (ord(char) - ord('a')) % 2 == 0)
+"
+zero_shot,nl2py,HumanEval/69,pass@1,0.0,False,"from collections import Counter
+
+def search(lst):
+    count = Counter(lst)
+    for num, freq in count.items():
+        if num <= freq:
+            return num
+    return -1
+"
+zero_shot,nl2py,HumanEval/12,pass@1,1.0,True,"from typing import List, Optional
+
+def longest(strings: List[str]) -> Optional[str]:
+    if not strings:
+        return None
+    
+    max_length = 0
+    longest_string = """"
+    
+    for string in strings:
+        if len(string) > max_length:
+            max_length = len(string)
+            longest_string = string
+            
+    return longest_string
+"
+zero_shot,nl2py,HumanEval/1,pass@1,1.0,True,"from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    result = []
+    current_group = ''
+    depth = 0
+    
+    for char in paren_string.replace(' ', ''):
+        if char == '(':
+            depth += 1
+            current_group += char
+        elif char == ')':
+            depth -= 1
+            current_group += char
+            
+            if depth == 0:
+                result.append(current_group)
+                current_group = ''
+    
+    return result
+"
+zero_shot,nl2py,HumanEval/98,pass@1,1.0,True,"def count_upper(s):
+    return sum(1 for i, char in enumerate(s) if i % 2 == 0 and char in 'AEIOU')
+"
+zero_shot,nl2py,HumanEval/6,pass@1,0.0,False,"from typing import List
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    max_depths = []
+    current_depth = 0
+    
+    for char in paren_string:
+        if char == '(':
+            current_depth += 1
+            max_depths.append(current_depth)
+        elif char == ')':
+            current_depth -= 1
+    
+    return max_depths
+"
+zero_shot,nl2py,HumanEval/31,pass@1,1.0,True,"def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+"
+zero_shot,nl2py,HumanEval/139,pass@1,0.0,False,"def special_factorial(n):
+    if n <= 0:
+        raise ValueError(""Input must be greater than 0"")
+    
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    
+    return result
+"
+zero_shot,nl2py,HumanEval/29,pass@1,1.0,True,"from typing import List
+
+def filter_by_prefix(strings: List[str], prefix: str) -> List[str]:
+    return [s for s in strings if s.startswith(prefix)]
+"
+zero_shot,nl2py,HumanEval/99,pass@1,1.0,True,"def closest_integer(value):
+    num = float(value)
+    if num > 0:
+        return int(num + 0.5)
+    else:
+        return int(num - 0.5)
+"
+zero_shot,nl2py,HumanEval/82,pass@1,1.0,True,"def prime_length(string):
+    length = len(string)
+    
+    # Check if the length is less than 2 (not prime)
+    if length < 2:
+        return False
+    
+    # Check for factors from 2 to the square root of the length
+    for i in range(2, int(length**0.5) + 1):
+        if length % i == 0:
+            return False
+    
+    return True
+"
+zero_shot,nl2py,HumanEval/134,pass@1,0.0,False,"def check_if_last_char_is_a_letter(txt):
+    return txt[-1].isalpha() and (not txt.endswith(' ') or len(txt) == 1)
+"
+zero_shot,nl2py,HumanEval/15,pass@1,1.0,True,"def string_sequence(n: int) -> str:
+    return ' '.join(map(str, range(n + 1)))
+"
+zero_shot,nl2py,HumanEval/39,pass@1,0.0,False,"from math import sqrt
+
+def prime_fib(n: int) -> int:
+    def is_prime(num: int) -> bool:
+        if num <= 1:
+            return False
+        for i in range(2, int(sqrt(num)) + 1):
+            if num % i == 0:
+                return False
+        return True
+
+    fib_sequence = [0, 1]
+    while len(fib_sequence) < n:
+        next_fib = fib_sequence[-1] + fib_sequence[-2]
+        fib_sequence.append(next_fib)
+
+    for fib_num in reversed(fib_sequence):
+        if is_prime(fib_num):
+            return fib_num
+"
+zero_shot,nl2py,HumanEval/126,pass@1,0.0,False,"def is_sorted(lst):
+    for i in range(len(lst) - 1):
+        if lst[i] > lst[i + 1]:
+            return False
+        elif lst.count(lst[i]) > 1:
+            return False
+    return True
+"
+zero_shot,nl2py,HumanEval/96,pass@1,1.0,True,"def count_up_to(n):
+    if n < 2:
+        return []
+    
+    primes = []
+    for num in range(2, n):
+        is_prime = True
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                is_prime = False
+                break
+        if is_prime:
+            primes.append(num)
+    
+    return primes
+"
+zero_shot,nl2java,HumanEval/79,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String decimalToBinary(int decimal) {
+        StringBuilder binary = new StringBuilder(""db"");
+        while (decimal > 0) {
+            binary.insert(0, decimal % 2);
+            decimal /= 2;
+        }
+        binary.append(""db"");
+        return binary.toString();
+    }
+}
+"
+zero_shot,nl2java,HumanEval/40,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean triplesSumToZero(List<Integer> l) {
+        Collections.sort(l);
+        for (int i = 0; i < l.size() - 2; i++) {
+            int left = i + 1;
+            int right = l.size() - 1;
+            while (left < right) {
+                int sum = l.get(i) + l.get(left) + l.get(right);
+                if (sum == 0) {
+                    return true;
+                } else if (sum < 0) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+        return false;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/127,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String intersection(List<Integer> interval1, List<Integer> interval2) {
+        int start = Math.max(interval1.get(0), interval2.get(0));
+        int end = Math.min(interval1.get(1), interval2.get(1));
+
+        if (start > end) {
+            return ""NO"";
+        }
+
+        int intersectionLength = end - start + 1;
+        if (isPrime(intersectionLength)) {
+            return ""YES"";
+        } else {
+            return ""NO"";
+        }
+    }
+
+    private boolean isPrime(int num) {
+        if (num <= 1) {
+            return false;
+        }
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/97,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int multiply(int a, int b) {
+        // Extract the last digit of each number
+        int lastDigitA = Math.abs(a) % 10;
+        int lastDigitB = Math.abs(b) % 10;
+
+        // Return the product of the last digits
+        return lastDigitA * lastDigitB;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/11,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String stringXor(String a, String b) {
+        StringBuilder result = new StringBuilder();
+        
+        for (int i = 0; i < a.length(); i++) {
+            char bitA = a.charAt(i);
+            char bitB = b.charAt(i);
+            
+            if (bitA == '1' && bitB == '1') {
+                result.append('0');
+            } else if (bitA == '0' && bitB == '0') {
+                result.append('0');
+            } else {
+                result.append('1');
+            }
+        }
+        
+        return result.toString();
+    }
+}
+"
+zero_shot,nl2java,HumanEval/85,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int add(List<Integer> lst) {
+        int sum = 0;
+        for (int i = 1; i < lst.size(); i += 2) {
+            if (lst.get(i) % 2 == 0) {
+                sum += lst.get(i);
+            }
+        }
+        return sum;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/13,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int greatestCommonDivisor(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/60,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int sumToN(int n) {
+        return (n * (n + 1)) / 2;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/42,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+import java.util.stream.Collectors;
+
+class Solution {
+    public List<Integer> incrList(List<Integer> l) {
+        return l.stream().map(i -> i + 1).collect(Collectors.toList());
+    }
+}
+"
+zero_shot,nl2java,HumanEval/158,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String findMax(List<String> words) {
+        if (words == null || words.isEmpty()) {
+            return """";
+        }
+
+        Map<String, Integer> charCountMap = new HashMap<>();
+        for (String word : words) {
+            int count = 0;
+            Set<Character> uniqueChars = new HashSet<>();
+            for (char c : word.toCharArray()) {
+                uniqueChars.add(c);
+                count++;
+            }
+            charCountMap.put(word, count);
+        }
+
+        String maxWord = """";
+        int maxUniqueChars = 0;
+
+        for (Map.Entry<String, Integer> entry : charCountMap.entrySet()) {
+            if (entry.getValue() > maxUniqueChars || (entry.getValue() == maxUniqueChars && entry.getKey().compareTo(maxWord) < 0)) {
+                maxWord = entry.getKey();
+                maxUniqueChars = entry.getValue();
+            }
+        }
+
+        return maxWord;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/64,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int vowelsCount(String s) {
+        int count = 0;
+        for (char c : s.toLowerCase().toCharArray()) {
+            if (""aeiou"".indexOf(c) != -1) {
+                count++;
+            }
+        }
+        // Check if 'y' is at the end of the word
+        if (s.length() > 0 && s.charAt(s.length() - 1) == 'y') {
+            count++;
+        }
+        return count;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/131,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int digits(int n) {
+        int product = 1;
+        boolean hasOddDigit = false;
+
+        while (n > 0) {
+            int digit = n % 10;
+            if (digit % 2 != 0) {
+                product *= digit;
+                hasOddDigit = true;
+            }
+            n /= 10;
+        }
+
+        return hasOddDigit ? product : 0;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/148,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<String> bf(String planet1, String planet2) {
+        List<String> planets = Arrays.asList(""Mercury"", ""Venus"", ""Earth"", ""Mars"", ""Jupiter"", ""Saturn"", ""Uranus"", ""Neptune"");
+        int index1 = planets.indexOf(planet1);
+        int index2 = planets.indexOf(planet2);
+
+        if (index1 == -1 || index2 == -1) {
+            return new ArrayList<>();
+        }
+
+        if (index1 > index2) {
+            int temp = index1;
+            index1 = index2;
+            index2 = temp;
+        }
+
+        return planets.subList(index1 + 1, index2);
+    }
+}
+"
+zero_shot,nl2java,HumanEval/107,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<Integer> evenOddPalindrome(int n) {
+        int evenCount = 0;
+        int oddCount = 0;
+
+        for (int i = 1; i <= n; i++) {
+            if (isPalindrome(i)) {
+                if (i % 2 == 0) {
+                    evenCount++;
+                } else {
+                    oddCount++;
+                }
+            }
+        }
+
+        return Arrays.asList(evenCount, oddCount);
+    }
+
+    private boolean isPalindrome(int num) {
+        String str = Integer.toString(num);
+        int left = 0;
+        int right = str.length() - 1;
+
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/119,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String matchParens(List<String> lst) {
+        int balance = 0;
+        
+        for (String s : lst) {
+            for (char c : s.toCharArray()) {
+                if (c == '(') balance++;
+                else balance--;
+                
+                if (balance < 0) break; // Early exit if unbalanced
+            }
+            
+            if (balance != 0) return ""No""; // Check balance after processing each string
+        }
+        
+        return ""Yes"";
+    }
+}
+"
+zero_shot,nl2java,HumanEval/100,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<Integer> makeAPile(int n) {
+        List<Integer> result = new ArrayList<>();
+        int currentStones = n;
+        
+        while (currentStones > 0) {
+            result.add(currentStones);
+            // Determine the next number of stones based on whether the current number is odd or even
+            currentStones += (currentStones % 2 == 0) ? 1 : 2;
+        }
+        
+        return result;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/130,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<Integer> tri(int n) {
+        List<Integer> result = new ArrayList<>();
+        if (n == 0) {
+            return result;
+        }
+        result.add(3);
+        if (n == 1) {
+            return result;
+        }
+        result.add(3);
+        if (n == 2) {
+            return result;
+        }
+        int a = 3, b = 3, c = 8;
+        for (int i = 3; i <= n; i++) {
+            if (i % 2 == 0) {
+                result.add(a + b / 2);
+            } else {
+                result.add(a + b + c);
+            }
+            a = b;
+            b = c;
+            c = a + b + c;
+        }
+        return result;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/125,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<String> splitWords(String txt) {
+        if (txt.contains("" "")) {
+            return Arrays.asList(txt.split("" ""));
+        } else if (txt.contains("","")) {
+            return Arrays.asList(txt.split("",""));
+        } else {
+            int count = 0;
+            for (char c : txt.toCharArray()) {
+                if ((c >= 'a' && c <= 'z') && (c - 'a') % 2 != 0) {
+                    count++;
+                }
+            }
+            return Collections.singletonList(Integer.toString(count));
+        }
+    }
+}
+"
+zero_shot,nl2java,HumanEval/69,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int search(List<Integer> lst) {
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        
+        // Count the frequency of each element in the list
+        for (int num : lst) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+        
+        // Find the greatest integer that meets the criteria
+        for (Map.Entry<Integer, Integer> entry : freqMap.entrySet()) {
+            if (entry.getKey() <= entry.getValue()) {
+                return entry.getKey();
+            }
+        }
+        
+        // If no such integer exists, return -1
+        return -1;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/12,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public Optional<String> longest(List<String> strings) {
+        if (strings.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String longest = strings.get(0);
+        for (String str : strings) {
+            if (str.length() > longest.length()) {
+                longest = str;
+            }
+        }
+        return Optional.of(longest);
+    }
+}
+"
+zero_shot,nl2java,HumanEval/1,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<String> separateParenGroups(String paren_string) {
+        List<String> result = new ArrayList<>();
+        Stack<Character> stack = new Stack<>();
+
+        for (char c : paren_string.toCharArray()) {
+            if (c == '(') {
+                stack.push(c);
+            } else if (c == ')') {
+                if (!stack.isEmpty() && stack.peek() == '(') {
+                    stack.pop();
+                    if (stack.isEmpty()) {
+                        result.add("""");
+                    }
+                }
+            }
+        }
+
+        while (!stack.isEmpty()) {
+            result.add("""");
+            stack.pop();
+        }
+
+        return result;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/98,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int countUpper(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i += 2) {
+            if (""AEIOU"".indexOf(s.charAt(i)) != -1) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/6,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public List<Integer> parseNestedParens(String paren_string) {
+        List<Integer> result = new ArrayList<>();
+        int maxDepth = 0;
+        int currentDepth = 0;
+
+        for (char c : paren_string.toCharArray()) {
+            if (c == '(') {
+                currentDepth++;
+                if (currentDepth > maxDepth) {
+                    maxDepth = currentDepth;
+                }
+            } else if (c == ')') {
+                currentDepth--;
+            }
+        }
+
+        result.add(maxDepth);
+        return result;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/31,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean isPrime(int n) {
+        if (n <= 1) return false;
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) return false;
+        }
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/139,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public long specialFactorial(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException(""Input must be greater than 0"");
+        }
+        
+        long result = 1;
+        for (int i = 1; i <= n; i++) {
+            result *= i;
+        }
+        
+        return result;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/29,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+import java.util.stream.Collectors;
+
+class Solution {
+    public List<String> filterByPrefix(List<String> strings, String prefix) {
+        return strings.stream()
+                      .filter(s -> s.startsWith(prefix))
+                      .collect(Collectors.toList());
+    }
+}
+"
+zero_shot,nl2java,HumanEval/99,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int countUpper(String value) {
+        // Convert the string to an integer
+        int num = Integer.parseInt(value);
+        
+        // Check if the number is positive or negative
+        if (num > 0) {
+            // Count the number of uppercase letters in the string
+            int upperCount = 0;
+            for (char c : value.toCharArray()) {
+                if (Character.isUpperCase(c)) {
+                    upperCount++;
+                }
+            }
+            return upperCount;
+        } else {
+            // If the number is negative, convert it to its absolute value,
+            // then count the number of uppercase letters in the string
+            int absNum = Math.abs(num);
+            int upperCount = 0;
+            for (char c : String.valueOf(absNum).toCharArray()) {
+                if (Character.isUpperCase(c)) {
+                    upperCount++;
+                }
+            }
+            // Since we're counting the number of uppercase letters in the absolute value,
+            // we need to multiply the result by -1 to get the correct sign
+            return -upperCount;
+        }
+    }
+}
+"
+zero_shot,nl2java,HumanEval/82,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean primeLength(String string) {
+        int length = string.length();
+        
+        // Check if the length is less than 2 (not prime)
+        if (length < 2) {
+            return false;
+        }
+        
+        // Check for factors from 2 to the square root of the length
+        for (int i = 2; i <= Math.sqrt(length); i++) {
+            if (length % i == 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/134,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean checkIfLastCharIsALetter(String txt) {
+        // Check if the string is empty or null
+        if (txt == null || txt.isEmpty()) {
+            return false;
+        }
+        
+        // Get the last character of the string
+        char lastChar = txt.charAt(txt.length() - 1);
+        
+        // Check if the last character is an alphabetical letter
+        if (!Character.isLetter(lastChar)) {
+            return false;
+        }
+        
+        // Check if the last character is not part of a word
+        int index = txt.lastIndexOf(' ');
+        if (index != -1 && index == txt.length() - 1) {
+            return false;
+        }
+        
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/15,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public String stringSequence(int n) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i <= n; i++) {
+            result.append(i);
+            if (i < n) {
+                result.append("" "");
+            }
+        }
+        return result.toString();
+    }
+}
+"
+zero_shot,nl2java,HumanEval/39,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int primeFib(int n) {
+        List<Integer> fibNumbers = new ArrayList<>();
+        int a = 0, b = 1;
+        
+        while (fibNumbers.size() < n) {
+            if (isPrime(fibNumbers.get(fibNumbers.size() - 1))) {
+                fibNumbers.add(b);
+            }
+            int temp = a + b;
+            a = b;
+            b = temp;
+        }
+        
+        return fibNumbers.get(n - 1);
+    }
+
+    private boolean isPrime(int num) {
+        if (num <= 1) return false;
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) return false;
+        }
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/126,pass@1,0.0,False,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean isSorted(List<Integer> lst) {
+        for (int i = 0; i < lst.size() - 1; i++) {
+            if (lst.get(i) > lst.get(i + 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,nl2java,HumanEval/96,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> countUpTo(int n) {
+        if (n <= 1) return new ArrayList<>();
+        
+        List<Integer> primes = new ArrayList<>();
+        for (int i = 2; i < n; i++) {
+            if (isPrime(i)) {
+                primes.add(i);
+            }
+        }
+        return primes;
+    }
+
+    private boolean isPrime(int num) {
+        if (num <= 1) return false;
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) return false;
+        }
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/79,pass@1,1.0,True,"public class Solution {
+    public String decimalToBinary(int decimal) {
+        return ""db"" + Integer.toBinaryString(decimal) + ""db"";
+    }
+}
+"
+zero_shot,py2java,HumanEval/40,pass@1,1.0,True,"import java.util.List;
+
+class Solution {
+    public boolean triplesSumToZero(List<Integer> l) {
+        for (int i = 0; i < l.size(); i++) {
+            for (int j = i + 1; j < l.size(); j++) {
+                for (int k = j + 1; k < l.size(); k++) {
+                    if (l.get(i) + l.get(j) + l.get(k) == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+}
+"
+zero_shot,py2java,HumanEval/127,pass@1,1.0,True,"import java.util.List;
+
+class Solution {
+    public String intersection(List<Integer> interval1, List<Integer> interval2) {
+        int l = Math.max(interval1.get(0), interval2.get(0));
+        int r = Math.min(interval1.get(1), interval2.get(1));
+        int length = r - l;
+        if (length > 0 && isPrime(length)) {
+            return ""YES"";
+        }
+        return ""NO"";
+    }
+
+    private boolean isPrime(int num) {
+        if (num == 1 || num == 0) {
+            return false;
+        }
+        if (num == 2) {
+            return true;
+        }
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/97,pass@1,1.0,True,"public class Solution {
+    public int multiply(int a, int b) {
+        return Math.abs(a % 10) * Math.abs(b % 10);
+    }
+}
+"
+zero_shot,py2java,HumanEval/11,pass@1,1.0,True,"import java.util.List;
+
+public class Solution {
+    public String stringXor(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        
+        for (int i = 0; i < a.length(); i++) {
+            char c1 = a.charAt(i);
+            char c2 = b.charAt(i);
+            
+            if (c1 == c2) {
+                sb.append('0');
+            } else {
+                sb.append('1');
+            }
+        }
+        
+        return sb.toString();
+    }
+}
+"
+zero_shot,py2java,HumanEval/85,pass@1,1.0,True,"import java.util.List;
+
+public class Solution {
+    public int add(List<Integer> lst) {
+        int sum = 0;
+        for (int i = 1; i < lst.size(); i += 2) {
+            if (lst.get(i) % 2 == 0) {
+                sum += lst.get(i);
+            }
+        }
+        return sum;
+    }
+}
+"
+zero_shot,py2java,HumanEval/13,pass@1,1.0,True,"public class Solution {
+    public int greatestCommonDivisor(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+}
+"
+zero_shot,py2java,HumanEval/60,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public int sumToN(int n) {
+        return (n * (n + 1)) / 2;
+    }
+}
+"
+zero_shot,py2java,HumanEval/42,pass@1,1.0,True,"import java.util.*;
+
+class Solution {
+    public List<Integer> incrList(List<Integer> l) {
+        return l.stream().map(e -> e + 1).collect(Collectors.toList());
+    }
+}
+"
+zero_shot,py2java,HumanEval/158,pass@1,0.0,False,"import java.util.List;
+import java.util.Collections;
+
+public class Solution {
+    public String findMax(List<String> words) {
+        Collections.sort(words, new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                if (s1.length() != s2.length()) {
+                    return Integer.compare(s2.length(), s1.length());
+                } else {
+                    return s1.compareTo(s2);
+                }
+            }
+        });
+        
+        for (String word : words) {
+            Set<Character> set = new HashSet<>();
+            for (char c : word.toCharArray()) {
+                set.add(c);
+            }
+            
+            if (set.size() == word.length()) {
+                return word;
+            }
+        }
+        
+        return """";
+    }
+}
+"
+zero_shot,py2java,HumanEval/64,pass@1,1.0,True,"public class Solution {
+    public int vowelsCount(String s) {
+        String vowels = ""aeiouAEIOU"";
+        int n_vowels = 0;
+        
+        for (char c : s.toCharArray()) {
+            if (vowels.indexOf(c) != -1) {
+                n_vowels++;
+            }
+        }
+        
+        if (s.charAt(s.length() - 1) == 'y' || s.charAt(s.length() - 1) == 'Y') {
+            n_vowels++;
+        }
+        
+        return n_vowels;
+    }
+}
+"
+zero_shot,py2java,HumanEval/131,pass@1,1.0,True,"public class Solution {
+    public int digits(int n) {
+        int product = 1;
+        int oddCount = 0;
+        String numStr = Integer.toString(n);
+        
+        for (char c : numStr.toCharArray()) {
+            int digit = Character.getNumericValue(c);
+            if (digit % 2 != 0) {
+                product *= digit;
+                oddCount++;
+            }
+        }
+        
+        if (oddCount == 0) {
+            return 0;
+        } else {
+            return product;
+        }
+    }
+}
+"
+zero_shot,py2java,HumanEval/148,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<String> bf(String planet1, String planet2) {
+        List<String> planetNames = new ArrayList<>();
+        planetNames.add(""Mercury"");
+        planetNames.add(""Venus"");
+        planetNames.add(""Earth"");
+        planetNames.add(""Mars"");
+        planetNames.add(""Jupiter"");
+        planetNames.add(""Saturn"");
+        planetNames.add(""Uranus"");
+        planetNames.add(""Neptune"");
+
+        if (!planetNames.contains(planet1) || !planetNames.contains(planet2) || planet1.equals(planet2)) {
+            return new ArrayList<>();
+        }
+
+        int planet1Index = planetNames.indexOf(planet1);
+        int planet2Index = planetNames.indexOf(planet2);
+
+        if (planet1Index < planet2Index) {
+            return new ArrayList<>(planetNames.subList(planet1Index + 1, planet2Index));
+        } else {
+            return new ArrayList<>(planetNames.subList(planet2Index + 1, planet1Index));
+        }
+    }
+}
+"
+zero_shot,py2java,HumanEval/107,pass@1,0.0,False,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> evenOddPalindrome(int n) {
+        List<Integer> result = new ArrayList<>();
+        
+        for (int i = 1; i <= n; i++) {
+            if (i % 2 != 0 && isPalindrome(i)) {
+                result.add(i);
+            }
+        }
+
+        int evenCount = 0;
+        int oddCount = 0;
+        for (Integer num : result) {
+            if (num % 2 == 0) {
+                evenCount++;
+            } else {
+                oddCount++;
+            }
+        }
+
+        result.add(evenCount);
+        result.add(oddCount);
+
+        return result;
+    }
+
+    private boolean isPalindrome(int num) {
+        String s = Integer.toString(num);
+        int left = 0;
+        int right = s.length() - 1;
+
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/119,pass@1,0.0,False,"import java.util.List;
+
+class Solution {
+    public String matchParens(List<String> lst) {
+        // Helper function to check if a string has balanced parentheses
+        boolean check(String s) {
+            int val = 0;
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == '(')
+                    val++;
+                else
+                    val--;
+                if (val < 0)
+                    return false;
+            }
+            return val == 0;
+        }
+
+        // Concatenate the two strings in both possible orders and check if they are good
+        return ""Yes"" 
+            ? (check(lst.get(0) + lst.get(1)) || check(lst.get(1) + lst.get(0)))
+            : ""No"";
+    }
+}
+"
+zero_shot,py2java,HumanEval/100,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> makeAPile(int n) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            result.add(n + 2 * i);
+        }
+        return result;
+    }
+}
+"
+zero_shot,py2java,HumanEval/130,pass@1,0.0,False,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> tri(int n) {
+        if (n == 0) {
+            List<Integer> result = new ArrayList<>();
+            result.add(1);
+            return result;
+        }
+        
+        List<Integer> myTri = new ArrayList<>();
+        myTri.add(1);
+        myTri.add(3);
+        
+        for (int i = 2; i <= n; i++) {
+            if (i % 2 == 0) {
+                myTri.add((double)i / 2 + 1);
+            } else {
+                myTri.add(myTri.get(i - 1) + myTri.get(i - 2) + ((double)(i + 3)) / 2);
+            }
+        }
+        
+        return myTri;
+    }
+}
+"
+zero_shot,py2java,HumanEval/125,pass@1,0.0,False,"import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    public List<String> splitWords(String txt) {
+        if (txt.contains("" "")) {
+            return Arrays.asList(txt.split("" ""));
+        } else if (txt.contains("","")) {
+            return Arrays.asList(txt.replace("","", "" "").split("" ""));
+        } else {
+            int count = 0;
+            for (char c : txt.toCharArray()) {
+                if (Character.isLowerCase(c) && (c - 'a') % 2 == 0) {
+                    count++;
+                }
+            }
+            return new ArrayList<>(Collections.nCopies(count, """"));
+        }
+    }
+}
+"
+zero_shot,py2java,HumanEval/69,pass@1,0.0,False,"import java.util.List;
+import java.util.ArrayList;
+
+class Solution {
+    public int search(List<Integer> lst) {
+        // Initialize an array to store the frequency of each element
+        int[] frq = new int[lst.size() + 1];
+        
+        // Populate the frequency array
+        for(int i : lst){
+            frq[i]++;
+        }
+        
+        // Find the largest integer whose frequency is greater than or equal to its value
+        int ans = -1;
+        for(int i = 1; i < frq.length; i++){
+            if(frq[i] >= i){
+                ans = i;
+            }
+        }
+        
+        return ans;
+    }
+}
+"
+zero_shot,py2java,HumanEval/12,pass@1,1.0,True,"import java.util.List;
+import java.util.Optional;
+
+public class Solution {
+    public Optional<String> longest(List<String> strings) {
+        if (strings.isEmpty()) {
+            return Optional.empty();
+        }
+
+        int maxLength = 0;
+        String longestString = null;
+
+        for (String str : strings) {
+            if (str.length() > maxLength) {
+                maxLength = str.length();
+                longestString = str;
+            }
+        }
+
+        return Optional.ofNullable(longestString);
+    }
+}
+"
+zero_shot,py2java,HumanEval/1,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    public List<String> separateParenGroups(String paren_string) {
+        List<String> result = new ArrayList<>();
+        StringBuilder currentString = new StringBuilder();
+        int currentDepth = 0;
+
+        for (char c : paren_string.toCharArray()) {
+            if (c == '(') {
+                currentDepth++;
+                currentString.append(c);
+            } else if (c == ')') {
+                currentDepth--;
+                currentString.append(c);
+
+                if (currentDepth == 0) {
+                    result.add(currentString.toString());
+                    currentString.setLength(0); // Clear the StringBuilder
+                }
+            }
+        }
+
+        return result;
+    }
+}
+"
+zero_shot,py2java,HumanEval/98,pass@1,1.0,True,"public class Solution {
+    public int countUpper(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i += 2) {
+            char c = s.charAt(i);
+            if (""AEIOU"".indexOf(c) != -1) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+"
+zero_shot,py2java,HumanEval/6,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    public List<Integer> parseNestedParens(String paren_string) {
+        List<Integer> result = new ArrayList<>();
+        
+        String[] groups = paren_string.split("" "");
+        
+        for (String group : groups) {
+            int maxDepth = 0;
+            int currentDepth = 0;
+            
+            for (char c : group.toCharArray()) {
+                if (c == '(') {
+                    currentDepth++;
+                    maxDepth = Math.max(maxDepth, currentDepth);
+                } else if (c == ')') {
+                    currentDepth--;
+                }
+            }
+            
+            result.add(maxDepth);
+        }
+        
+        return result;
+    }
+}
+"
+zero_shot,py2java,HumanEval/31,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public boolean isPrime(int n) {
+        if (n < 2) {
+            return false;
+        }
+        for (int k = 2; k * k <= n; k++) {
+            if (n % k == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/139,pass@1,1.0,True,"import java.util.*;
+import java.lang.*;
+
+class Solution {
+    public long specialFactorial(int n) {
+        long fact_i = 1;
+        long special_fact = 1;
+        for (int i = 1; i <= n; i++) {
+            fact_i *= i;
+            special_fact *= fact_i;
+        }
+        return special_fact;
+    }
+}
+"
+zero_shot,py2java,HumanEval/29,pass@1,1.0,True,"import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Solution {
+    public List<String> filterByPrefix(List<String> strings, String prefix) {
+        return strings.stream()
+                      .filter(s -> s.startsWith(prefix))
+                      .collect(Collectors.toList());
+    }
+}
+"
+zero_shot,py2java,HumanEval/99,pass@1,0.0,False,"import java.util.*;
+
+class Solution {
+    public int countUpper(String value) {
+        // Your implementation here
+    }
+}
+"
+zero_shot,py2java,HumanEval/82,pass@1,1.0,True,"import java.util.*;
+
+class Solution {
+    public boolean primeLength(String string) {
+        int l = string.length();
+        if (l <= 1) {
+            return false;
+        }
+        for (int i = 2; i * i <= l; i++) {
+            if (l % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/134,pass@1,0.0,False,"import java.util.*;
+
+class Solution {
+    public boolean checkIfLastCharIsALetter(String txt) {
+        String[] words = txt.split("" "");
+        if(words.length > 0){
+            String lastWord = words[words.length - 1];
+            if(lastWord.length() == 1 && Character.isLetter(lastWord.charAt(0))){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+"
+zero_shot,py2java,HumanEval/15,pass@1,1.0,True,"import java.util.*;
+
+class Solution {
+    public String stringSequence(int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= n; i++) {
+            sb.append(i);
+            if (i < n) {
+                sb.append("" "");
+            }
+        }
+        return sb.toString();
+    }
+}
+"
+zero_shot,py2java,HumanEval/39,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+public class Solution {
+    public int primeFib(int n) {
+        List<Integer> fibList = new ArrayList<>();
+        fibList.add(0);
+        fibList.add(1);
+
+        while (true) {
+            int nextFib = fibList.get(fibList.size() - 1) + fibList.get(fibList.size() - 2);
+            fibList.add(nextFib);
+
+            if (isPrime(nextFib)) {
+                n--;
+            }
+
+            if (n == 0) {
+                return nextFib;
+            }
+        }
+    }
+
+    private boolean isPrime(int num) {
+        if (num <= 1) {
+            return false;
+        }
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/126,pass@1,0.0,False,"import java.util.List;
+
+class Solution {
+    public boolean isSorted(List<Integer> lst) {
+        Map<Integer, Integer> countDigit = new HashMap<>();
+        
+        // Count occurrences of each digit
+        for (int i : lst) {
+            countDigit.put(i, countDigit.getOrDefault(i, 0) + 1);
+        }
+        
+        // Check for duplicates
+        if (countDigit.containsValue(2)) {
+            return false;
+        }
+        
+        // Check if the list is sorted
+        for (int i = 1; i < lst.size(); i++) {
+            if (lst.get(i - 1) > lst.get(i)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+"
+zero_shot,py2java,HumanEval/96,pass@1,1.0,True,"import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> countUpTo(int n) {
+        List<Integer> primes = new ArrayList<>();
+        for (int i = 2; i < n; i++) {
+            boolean isPrime = true;
+            for (int j = 2; j <= Math.sqrt(i); j++) {
+                if (i % j == 0) {
+                    isPrime = false;
+                    break;
+                }
+            }
+            if (isPrime) {
+                primes.add(i);
+            }
+        }
+        return primes;
+    }
+}
+"
+zero_shot,code2nl,HumanEval/79,rougeL_f1,0.22580645161290322,,"The `decimal_to_binary` function takes an integer as input and returns its binary representation as a string prefixed and suffixed with 'db'. The function uses Python's built-in `bin()` function to convert the decimal number to binary, which returns a string that starts with '0b'. The `[2:]` slice is used to remove the '0b' prefix from the binary string. Finally, the function concatenates 'db' at both ends of the binary string to form the final result. Edge cases include negative numbers, non-integer inputs, and inputs that do not fit within the range of a standard 32-bit signed integer."
+zero_shot,code2nl,HumanEval/40,rougeL_f1,0.35294117647058826,,"The `triples_sum_to_zero` function takes a list of integers as input and returns `True` if there exist three distinct elements within the list that sum to zero, otherwise it returns `False`. The function iterates through all possible triplets of elements in the list using nested loops, checking if their sum equals zero. If such a triplet is found, the function immediately returns `True`. If no such triplet exists after checking all possibilities, the function returns `False`. This function handles edge cases where the list might be empty or contain duplicate elements, ensuring robustness."
+zero_shot,code2nl,HumanEval/127,rougeL_f1,0.26229508196721313,,"The `intersection` function takes two intervals as input, each represented as a tuple of two integers. It first defines a helper function `is_prime` to check if a number is prime. Then, it calculates the maximum start point (`l`) and minimum end point (`r`) between the two intervals. The length of the intersection is calculated as `r - l`. If the length is greater than 0 and the length is a prime number, the function returns `'YES'`, indicating that there is an intersection with a prime length. Otherwise, it returns `'NO'`. This function handles edge cases where one or both intervals do not intersect at all."
+zero_shot,code2nl,HumanEval/97,rougeL_f1,0.22222222222222224,,"The `multiply` function takes two integers as input, calculates their absolute values modulo 10, multiplies these results, and returns the product. It handles both positive and negative numbers correctly. Edge cases include multiplying zero by any number, which results in zero, and multiplying one by any number, which also results in that number."
+zero_shot,code2nl,HumanEval/11,rougeL_f1,0.23728813559322032,,"The `string_xor` function takes two strings `a` and `b` as input and returns their XOR result as a new string. The XOR operation is performed character by character between corresponding characters of the input strings. If the characters are the same, the result is '0'; otherwise, it is '1'. The function handles edge cases where the input strings are not of equal length by padding the shorter string with zeros on the left to match the length of the longer string before performing the XOR operation."
+zero_shot,code2nl,HumanEval/85,rougeL_f1,0.21359223300970873,,"The `add` function takes a list of integers as input and returns the sum of all even numbers located at odd indices in the list. If there are no such numbers, it returns 0. The function iterates over the list using a step of 2 starting from index 1, checking if each number is even (`lst[i] % 2 == 0`). If it is, the number is added to the sum. If no even numbers are found, the function returns 0."
+zero_shot,code2nl,HumanEval/13,rougeL_f1,0.1978021978021978,,"The `greatest_common_divisor` function takes two integers as input and returns their greatest common divisor (GCD). It uses the Euclidean algorithm to find the GCD. The function works by repeatedly replacing the pair of numbers with their remainders until one of the numbers becomes zero. The non-zero number at this point is the GCD. Edge cases include negative inputs, where the function will raise a ValueError."
+zero_shot,code2nl,HumanEval/60,rougeL_f1,0.2882882882882883,,"The `sum_to_n` function takes an integer `n` as input and returns the sum of all integers from 0 to `n`. It uses the built-in `range` function to generate a sequence of numbers from 0 to `n`, inclusive, and then calculates their sum using the `sum` function. The function handles positive integers and zero gracefully, returning 0 for zero and the sum of all integers up to `n` for positive integers."
+zero_shot,code2nl,HumanEval/42,rougeL_f1,0.15555555555555553,,"The `incr_list` function takes a list of integers as input and returns a new list where each element is incremented by one. It handles any list of integers, including empty lists and lists with negative numbers. If the input is not a list or contains non-integer elements, the function will raise a TypeError."
+zero_shot,code2nl,HumanEval/158,rougeL_f1,0.3375,,"The `find_max` function takes a list of strings as input and returns the string with the highest number of unique characters. If there are multiple strings with the same number of unique characters, it returns the lexicographically smallest one. The function first sorts the list of words based on two criteria: the negative length of the set of unique characters in each word (to ensure lexicographical order for ties), and then the original word itself. This ensures that the function correctly identifies the string with the most unique characters while maintaining the lexicographical order for those with the same count."
+zero_shot,code2nl,HumanEval/64,rougeL_f1,0.3857142857142857,,"The `vowels_count` function takes a string `s` as input and returns the number of vowels in the string. It counts all lowercase and uppercase vowels ('a', 'e', 'i', 'o', 'u') present in the string. If the last character of the string is 'y' or 'Y', it adds one to the count because 'y' can be considered a vowel in some contexts. The function handles edge cases such as empty strings and strings with non-alphabetic characters by ignoring them."
+zero_shot,code2nl,HumanEval/131,rougeL_f1,0.25210084033613445,,"The `digits` function takes an integer `n` as input and returns the product of all odd digits in `n`. If there are no odd digits, it returns 0. The function works by converting the integer to a string, iterating over each character, converting it back to an integer, checking if it is odd, and multiplying it to the product if it is. It also counts the number of odd digits encountered. If no odd digits are found, it returns 0; otherwise, it returns the product of all odd digits."
+zero_shot,code2nl,HumanEval/148,rougeL_f1,0.2899999999999999,,"The `bf` function takes two strings representing planet names as input and returns a tuple of planet names that are located between them in the solar system, excluding the start and end planets themselves. If either of the input planets is not valid (not one of the eight planets in our solar system), or if they are the same, the function returns an empty tuple. The function uses the `index` method to find the indices of the input planets in the `planet_names` list, then slices the list to get the desired range of planet names."
+zero_shot,code2nl,HumanEval/107,rougeL_f1,0.23346303501945523,,"The `even_odd_palindrome` function takes an integer `n` as input and returns a tuple containing two integers: the count of even palindromic numbers less than or equal to `n`, and the count of odd palindromic numbers less than or equal to `n`. The function uses a helper function `is_palindrome` to check if a number is a palindrome. It iterates through all numbers from 1 to `n`, checks if each number is even or odd, and then checks if it is a palindrome using the `is_palindrome` function. If the number is both even and a palindrome, it increments the `even_palindrome_count`; if the number is both odd and a palindrome, it increments the `odd_palindrome_count`. Finally, it returns a tuple with the counts of even and odd palindromic numbers. Edge cases include negative inputs, non-integer inputs, and inputs that are too large to be checked within the function's constraints."
+zero_shot,code2nl,HumanEval/119,rougeL_f1,0.2872340425531915,,"The `match_parens` function takes a list of two strings as input. It checks if the parentheses in each string are balanced. The function returns `'Yes'` if at least one pair of parentheses is balanced, otherwise it returns `'No'`. The function uses a helper function `check` to determine if a given string has balanced parentheses. The function first concatenates the two strings in both possible orders and then checks if either concatenated string has balanced parentheses using the `check` function. If either string has balanced parentheses, the function returns `'Yes'`; otherwise, it returns `'No'`."
+zero_shot,code2nl,HumanEval/100,rougeL_f1,0.18439716312056736,,"The `make_a_pile` function takes an integer `n` as input and returns a list of integers where each element is `n + 2 * i`, for `i` ranging from 0 to `n-1`. The function handles positive integers and zero, but does not handle negative inputs. If `n` is less than or equal to 0, the function will raise a ValueError."
+zero_shot,code2nl,HumanEval/130,rougeL_f1,0.1650485436893204,,"The `tri` function takes an integer `n` as input and returns a list of integers representing the first `n` numbers in the triangular number sequence. The function starts with the base case where `n` is 0, returning `[1]`. For odd values of `n`, it calculates each subsequent number using the formula `(i + 3) / 2` to ensure the sequence remains symmetric. For even values of `n`, it uses the average of the two preceding numbers to maintain the triangular property. The function handles edge cases such as negative inputs by raising a ValueError."
+zero_shot,code2nl,HumanEval/125,rougeL_f1,0.22641509433962265,,"The `split_words` function takes a string as input and returns a list of words. If the input contains spaces, it splits the string into words using the space character as the delimiter. If the input contains commas, it first replaces all commas with spaces and then splits the resulting string into words. If neither spaces nor commas are present, it counts the number of lowercase letters that are even and returns this count. The function handles edge cases such as empty strings or strings without any recognized delimiters."
+zero_shot,code2nl,HumanEval/69,rougeL_f1,0.2541436464088398,,"The `search` function takes a list of integers as input and returns the smallest integer that appears at least as many times as its value. If no such integer exists, it returns -1. The function works by first creating a frequency array `frq` where each index represents an integer from 0 to the maximum value in the input list. It then iterates through the input list, updating the frequency array accordingly. Finally, it iterates through the frequency array again to find the smallest integer that meets the criteria. If no such integer is found, it returns -1."
+zero_shot,code2nl,HumanEval/12,rougeL_f1,0.19555555555555557,,"The `longest` function takes a list of strings as input and returns the longest string in the list. If the input list is empty, it returns `None`. The function works by first checking if the input list is empty using the condition `if not strings`. If the list is empty, it immediately returns `None`.
+
+If the list is not empty, the function calculates the maximum length of all strings in the list using a generator expression `(len(x) for x in strings)` and then finds the maximum value using the built-in `max()` function. This maximum length is stored in the variable `maxlen`.
+
+Next, the function iterates over each string in the input list using a for loop. For each string, it checks if its length is equal to `maxlen`. If it is, the function returns that string immediately.
+
+In summary, the `longest` function takes a list of strings as input and returns the longest string in the list. It handles the case where the input list is empty by returning `None`, and it correctly identifies the longest string among non-empty lists."
+zero_shot,code2nl,HumanEval/1,rougeL_f1,0.23943661971830987,,"The `separate_paren_groups` function takes a string of parentheses as input and returns a list of strings, where each string represents a group of balanced parentheses. The function iterates through each character in the input string, tracking the depth of nested parentheses using a counter. When the depth reaches zero, it indicates the end of a group of parentheses, which is then added to the result list. The function handles edge cases such as empty strings or strings with unbalanced parentheses by returning an empty list."
+zero_shot,code2nl,HumanEval/98,rougeL_f1,0.19130434782608696,,"The `count_upper` function takes a string `s` as input and returns the number of uppercase letters in the string. It iterates over every second character in the string (starting from index 0) and checks if the character is an uppercase letter using the condition `if s[i] in 'AEIOU'`. If the condition is true, it increments the `count` variable. The function finally returns the total count of uppercase letters found in the string. Edge cases include empty strings or strings with no uppercase letters."
+zero_shot,code2nl,HumanEval/6,rougeL_f1,0.23287671232876714,,"The `parse_nested_parens` function takes a string of space-separated parentheses as input and returns a list of integers representing the maximum depth of nested parentheses at each position in the input string. The function works by splitting the input string into individual groups of parentheses using spaces as delimiters. For each group, it calls the `parse_paren_group` helper function to calculate the maximum depth of nesting within that group. The result is a list of these maximum depths. If the input string contains any characters other than parentheses or spaces, the function will raise an error."
+zero_shot,code2nl,HumanEval/31,rougeL_f1,0.2054794520547945,,"The `is_prime` function takes an integer `n` as input and returns `True` if `n` is a prime number, otherwise `False`. It first checks if `n` is less than 2, in which case it immediately returns `False` because numbers less than 2 are not prime. Then, it iterates from 2 to `n-1`, checking if `n` is divisible by any of these numbers. If `n` is divisible by any of them, it returns `False`. If the loop completes without finding any divisors, it returns `True`, indicating that `n` is a prime number. The function handles edge cases such as negative numbers and zero by returning `False` immediately."
+zero_shot,code2nl,HumanEval/139,rougeL_f1,0.2518518518518518,,"The `special_factorial` function takes an integer `n` as input and returns the factorial of `n` multiplied by the factorial of `n-1`. The function initializes two variables, `fact_i` and `special_fact`, to 1. It then iterates from 1 to `n`, multiplying `fact_i` by each number in this range. After the loop, it multiplies `special_fact` by `fact_i` to get the final result. The function handles edge cases where `n` is less than or equal to 0 by returning 1, since the factorial of non-positive integers is defined as 1."
+zero_shot,code2nl,HumanEval/29,rougeL_f1,0.2545454545454546,,The `filter_by_prefix` function takes two parameters: a list of strings (`strings`) and a prefix string (`prefix`). It returns a new list containing only the strings from the original list that start with the specified prefix. The function uses a list comprehension to iterate over each string in the input list and includes it in the output list if it starts with the given prefix. Edge cases include an empty list or a prefix that is not a valid string.
+zero_shot,code2nl,HumanEval/99,rougeL_f1,0.2688172043010753,,"The `closest_integer` function takes a string representing a floating-point number as input and returns the nearest integer to that number. It handles both positive and negative numbers, rounding them to the nearest whole number. If the input is a decimal with exactly one digit after the decimal point, it removes trailing zeros until there's at least one non-zero digit left. If the input ends in "".5"", it rounds up for positive numbers and down for negative numbers. For inputs that are empty strings or contain only digits without a decimal point, it returns 0."
+zero_shot,code2nl,HumanEval/82,rougeL_f1,0.27672955974842767,,"The `prime_length` function takes a string as input and returns `True` if the length of the string is a prime number, otherwise it returns `False`. The function first checks if the string is empty or has only one character, in which case it immediately returns `False` because strings with lengths less than 2 cannot be prime. It then iterates from 2 to the length of the string minus 1, checking if the string's length is divisible by any number in this range. If it finds such a divisor, it returns `False`, indicating that the string's length is not prime. If the loop completes without finding any divisors, it returns `True`, indicating that the string's length is prime."
+zero_shot,code2nl,HumanEval/134,rougeL_f1,0.26737967914438504,,"The `check_if_last_char_is_a_letter` function takes a string `txt` as input and returns `True` if the last character of the string is a letter, otherwise it returns `False`. The function splits the input string into words using spaces as delimiters, retrieves the last word, checks its length to ensure it's exactly one character, and then verifies that this character is within the ASCII range for lowercase letters (97 to 122). If all conditions are met, the function returns `True`; otherwise, it returns `False`. Edge cases include empty strings or strings with multiple words where the last word is not a single letter."
+zero_shot,code2nl,HumanEval/15,rougeL_f1,0.1836734693877551,,"The `string_sequence` function takes an integer `n` as input and returns a string that is a space-separated sequence of numbers from 1 to `n`. If `n` is less than or equal to 0, the function raises a ValueError with the message ""Input must be a positive integer"". The function uses list comprehension to generate the sequence of numbers and then joins them into a single string using the `join` method."
+zero_shot,code2nl,HumanEval/39,rougeL_f1,0.19875776397515527,,"The `prime_fib` function takes an integer `n` as input and returns the `n`-th Fibonacci number that is also a prime number. The function uses a helper function `is_prime` to check if a number is prime. It initializes a list `f` with the first two Fibonacci numbers, 0 and 1. Then, it enters a loop where it appends the sum of the last two numbers in the list to the list. If the appended number is prime, it decrements `n`. Once `n` reaches 0, the function returns the last number in the list, which is the `n`-th prime Fibonacci number. Edge cases include negative inputs, non-integer inputs, and inputs that do not result in any prime Fibonacci numbers within the limit."
+zero_shot,code2nl,HumanEval/126,rougeL_f1,0.20952380952380953,,"The `is_sorted` function takes a list of integers as input and returns `True` if the list is sorted in ascending order, otherwise it returns `False`. The function first counts the occurrences of each integer in the list using a dictionary. If any integer appears more than twice, the list is not sorted, so the function returns `False`. If all integers appear at most twice, the function then checks if the list is sorted in ascending order by comparing each element with its predecessor. If any element is greater than its predecessor, the list is not sorted, so the function returns `False`. Otherwise, the function returns `True`."
+zero_shot,code2nl,HumanEval/96,rougeL_f1,0.21761658031088082,,"The `count_up_to` function takes an integer `n` as input and returns a list of all prime numbers less than or equal to `n`. It iterates through each number from 2 up to `n-1`, checking if each number is prime by testing divisibility from 2 up to the square root of the number. If a number is found to be divisible by any number other than 1 and itself, it is not prime. The function collects all prime numbers found during this process and returns them as a list. Edge cases include negative inputs, where the function will raise a ValueError, and inputs that are too large to be processed within the constraints of the function's implementation."

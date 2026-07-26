@@ -4,7 +4,7 @@
 
 **Version:** 1.0
 **Project:** AI Database Agent with MCP Tool Calling
-**Author:** Naresh Reddy
+**Author:**  K.Bhavani
 **Purpose:** IIIT Hyderabad AIML Capstone Project
 
 ---

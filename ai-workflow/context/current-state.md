@@ -1,46 +1,44 @@
-# Current State — CodeGen Studio
+# Current State — AI Database Agent
 
-> Updated after **text2sql-ui-tool Stages 0–4 complete** (2026-07-16).
+> Updated: 2026-07-26
 
-## Active Initiative — AI SQL Assistant (Desktop) — 2026-07-16
+## Active initiative: AI Database Agent (`agent/`)
 
-- **Phase**: Implementation — **Stages 0–4 complete**
-- **Spec**: `tool/docs/AI_Text_to_SQL_UI_Specification.md` (v1.1, desktop UI)
-- **Plan**: `ai-workflow/planning/feature-plans/text2sql-ui-tool-plan.md`
-- **UI**: CustomTkinter desktop app (`python tool/app.py`)
-- **Reuse:** `src/text2sql/` for prompts/validation; inference via **hf-deploy FastAPI**
+| Field | Value |
+|-------|-------|
+| **Phase** | Implementation — Stages 1–8 complete |
+| **Spec** | `agent/doc/agent.md` |
+| **Default demo** | Chinook (`AGENT_DEMO_DB_ID=chinook` in `agent/.env`) |
+| **Next** | Stage 9 — CLI demo polish |
 
-### Implementation stages
+### Implementation status
 
-| Stage | Work | Status |
-|-------|------|--------|
-| 0 | Scaffold | ✅ |
-| 1 | Core services | ✅ |
-| 2 | FastAPI pipeline + adapters | ✅ |
-| 3 | Desktop UI + Settings dialog | ✅ |
-| 4 | Tests + polish | ✅ |
-| 5 | Stub extensibility | ✅ (registry + stub tabs in desktop) |
+| Component | Status |
+|-----------|--------|
+| Config + DB layer | ✅ |
+| CodeGen HTTP client | ✅ |
+| Three tools (schema, codegen, execution) | ✅ |
+| SQL validation + retry | ✅ |
+| LangGraph orchestrator + CLI | ✅ |
+| MCP server (stdio) | ✅ |
+| Integration / E2E tests | ✅ Stage 8 |
+
+### Demo DB health
+
+Both Chinook and Northwind verified via `python agent/scripts/verify_demo_databases.py`.
 
 ### Run
 
-```bash
-cd /Volumes/Work/CodeGen-Implementations-May_26
-pip install -r tool/requirements.txt
-python tool/app.py
-pytest tool/tests/ -q
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+python -m agent.main "How many customers are in the database?"
+python -m agent.mcp.server   # MCP stdio
 ```
-
-### Latest artifacts
-
-- Stage logs: `stage-0.md` … `stage-4.md`, `stage-3b-desktop.md`
-- Report: `generated-code-reports/stage-4-report.md`
 
 ---
 
-## LoRA Fine-Tuning Initiative
+## Infrastructure
 
-- **Phase**: Stage 6 eval integration next
-
-## Validation Status
-
-- text2sql-ui-tool: pytest 26/26 ✅
+- CodeGen API: `https://codegen-api-161349047936.asia-south2.run.app` (LoRA v3)
+- Ollama orchestrator: `gemma3:4b` local
+- TEND Docker: Postgres + Mongo on localhost

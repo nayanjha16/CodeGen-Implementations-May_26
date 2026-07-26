@@ -1,112 +1,148 @@
-# Requirements Analysis — PEFT / LoRA for text2sql, sql2nosql, nosql2doc
+# Requirements Analysis — AI Database Agent (`database-agent`)
 
-> Focus: what exists today vs. what must be built to fine-tune the three tasks with LoRA.
+> **Research date:** 2026-07-19  
+> **Sources:** `agent/doc/agent.md`, `fastapi-deploy/`, `src/`, `ai-workflow/planning/feature-plans/text2sql-ui-tool-plan.md`
 
-## 1. Implemented Features (verified in code)
+## 1. Functional Requirements (from spec)
 
-### Generation / inference (all three tasks)
-- [x] **text2sql**: `PromptBuilder` + `SQLGenerator` (greedy/beam, SQL extraction, stop
-  strings). Validation (`SQLValidator`) and SQLite execution (`SQLExecutor`).
-- [x] **sql2nosql**: `NoSQLPromptBuilder` + `NoSQLGenerator` (model-based) and
-  `SQLToNoSQLTranslator` (rule-based reference). `NoSQLEvaluator`.
-- [x] **nosql2doc**: `DocumentationPromptBuilder` + `DocumentationGenerator` (output
-  sanitizing, reference fallback). `DocumentationEvaluator`, `ReferenceDocumentationBuilder`.
-- [x] Model wrapper supports **causal LM and seq2seq (T5)** via `is_seq2seq_model()`.
-- [x] Device auto-resolution **cuda > mps > cpu** (`resolve_device`).
+| ID | Requirement | Description | Status | Evidence / gap |
+|----|-------------|-------------|--------|----------------|
+| **FR-1** | User query | Accept NL question; determine intent (e.g. Text2SQL) | ❌ Missing | No agent; FastAPI classifier is task-routing not user-facing intent |
+| **FR-2** | Schema extraction | Call Schema Tool; return relevant tables/columns/relationships only | ❌ Missing | No schema tool; `schema_conversion.py` formats static text only |
+| **FR-3** | Query generation | Call Capstone FastAPI with question + schema | ⚠️ Partial | Cloud Run `/v1/chat/completions` works; no agent client; routes differ from spec |
+| **FR-4** | Query execution | Call Execution Tool; return rows | ⚠️ Partial | TEND execution in eval only; no `{query}→{rows}` agent API |
+| **FR-5** | Error recovery | On execution failure, retry via FastAPI with error (max 3) | ❌ Missing | No retry loop anywhere |
+| **FR-6** | NL response | Summarize results for user | ❌ Missing | No orchestrator LLM |
 
-### Model & checkpoint management
-- [x] Local model caching (`ensure_model_cached`, `.downloaded` marker).
-- [x] `MODEL_CHECKPOINT` env var → `resolve_model_path()` loads a checkpoint dir from
-  `models/checkpoints/` instead of the base model (assumes a *full* HF model dir).
-- [x] Six base models already cached: codegen-350M-multi, Qwen2.5-Coder-0.5B,
-  Qwen2.5-0.5B-Instruct, starcoder2-3b, t5-base, t5-large.
+## 2. Supported Capabilities (from spec §5)
 
-### Dataset
-- [x] **TEND dataset builder** produces aligned columns for all three tasks in one CSV
-  (`data/TEND/spider_<split>_<ts>.csv`), with structural + Qwen-semantic quality flags.
-- [x] Spider/BIRD loaders, preprocessing, statistics.
+| Capability | Spec flow | Implementation status |
+|------------|-----------|---------------------|
+| Text → SQL | Question → SQL | ✅ Model + API (`text2sql` intent); ❌ agent orchestration |
+| SQL → MongoDB | SQL → Mongo aggregation | ✅ Model + API (`sql2nosql`); ❌ agent orchestration |
+| SQL documentation | SQL → business explanation | ⚠️ Spec says SQL docs; API has `nosql2doc` (Mongo query docs) |
+| Explain SQL | SQL → step-by-step | ❌ Not in API or `src/` |
+| Query validation | Syntax, tables, joins, unsafe queries | ⚠️ `SQLValidator` in `src/text2sql/sql_validator.py` (local); not exposed as agent tool |
 
-### Evaluation
-- [x] Full metric suite + `BenchmarkRunner` that scores text2sql, sql2nosql, and
-  documentation in one pass; per-run JSON under `results/`; MLflow tracking.
+## 3. Agent Responsibilities (from spec §6)
 
-## 2. Missing / To-Build for LoRA (the actual work)
+| Responsibility | Required | Status |
+|----------------|----------|--------|
+| Intent detection | Agent-level (user goal) | ❌ |
+| Planning | Multi-step tool plan | ❌ |
+| Tool selection | MCP tools | ❌ |
+| Tool orchestration | Ordered calls + state | ❌ |
+| Retry | Max 3 on execution failure | ❌ |
+| Response formatting | NL summary | ❌ |
+| **Never generate SQL** | Orchestrator must not write SQL | N/A until agent exists |
 
-- [ ] **`peft` dependency** — not in `requirements.txt`/`environment.yml`. Add `peft`;
-  optionally `trl` (for `SFTTrainer`) and `bitsandbytes` (CUDA QLoRA only).
-- [ ] **No training code at all** — no `Trainer`, `TrainingArguments`, `train.py`, or
-  `src/training/` package. Must build from scratch.
-- [ ] **SFT dataset builder** — convert TEND CSV rows → `(prompt, target)` per task using
-  the existing prompt builders; tokenize; mask prompt tokens in labels for causal LMs.
-- [ ] **LoRA training loop** — `LoraConfig` (rank/alpha/dropout/target_modules per model
-  family), `get_peft_model`, train, save adapter to `models/checkpoints/`.
-- [ ] **Adapter-aware loading** — extend `CodeGenModel.load()` to detect
-  `adapter_config.json` and wrap base with `PeftModel.from_pretrained` (or
-  `merge_and_unload`). Current loader only handles full model dirs.
-- [ ] **Per-task config** — `configs/default.yaml` needs a `training:`/`lora:` section and
-  a way to select task (text2sql / sql2nosql / nosql2doc) + target column.
-- [ ] **Full-size training data** — regenerate the complete Spider train split through
-  `run_all_tend.py` (current CSVs are 10+10 rows only).
-- [ ] **Train/val/test discipline** — define held-out evaluation that is not used for
-  training; today only one timestamped CSV per split exists.
-- [ ] **Adapter composition strategy** — three separate adapters vs. one multi-task adapter
-  vs. shared base; decision not made.
+## 4. MCP Tools (from spec §7)
 
-## 3. Inferred / Implicit Requirements
+| Tool | Input | Output | Status |
+|------|-------|--------|--------|
+| **Schema Extraction** | `{ "question": "..." }` | `{ tables, columns, relationships }` | ❌ Missing |
+| **Capstone FastAPI** | Spec: per-route JSON | SQL / NoSQL / doc text | ⚠️ Service exists; tool wrapper missing |
+| **Execution** | `{ "query": "..." }` | `{ "rows": [] }` | ❌ Missing agent-facing tool |
 
-- **Prompt parity**: training must use the *same* prompt builders as inference, or the
-  fine-tuned model sees a distribution shift at eval time. This is the single most
-  important consistency requirement.
-- **Reproducibility**: seeds + config-driven hyperparameters; log every run to MLflow with
-  task, base model, LoRA config, and metrics for baseline-vs-LoRA comparison.
-- **Resource-aware**: small base models + LoRA chosen specifically so training fits on
-  modest hardware (MPS/CPU or a single small GPU). Avoid CUDA-only paths as hard deps.
-- **Swappable adapters**: keep base models untouched in `models/base/`; store adapters
-  separately so multiple task adapters coexist.
-- **Offline-friendly**: base models already cached; training should not require new
-  downloads beyond `peft`/`trl` wheels.
-- **Apples-to-apples eval**: fine-tuned models scored by the existing `BenchmarkRunner` on
-  the same metrics/datasets as the baseline.
+### Capstone API endpoints — spec vs implemented
 
-## 4. Constraints
+| Spec endpoint | Implemented | Mapping |
+|---------------|-------------|---------|
+| `POST /generate/sql` | ❌ | Use `POST /v1/chat/completions` + `intent: "text2sql"` or `model: "codegen-text2sql"` |
+| `POST /generate/nosql` | ❌ | Same with `sql2nosql` |
+| `POST /generate/documentation` | ❌ | Same with `nosql2doc` |
+| `POST /generate/explanation` | ❌ | **Gap** — defer or add new adapter/task |
+| `GET /health` | ✅ `/health` | Ready |
 
-- **Python 3.11**; `PYTHONPATH` must include project root for `src.*` / `TEND.*` imports.
-- **Hardware**: macOS dev host → **MPS**. `bitsandbytes`/4-bit QLoRA is **CUDA-only**;
-  plan plain LoRA (fp16/fp32) for portability, QLoRA only as a CUDA-optional path.
-- **Mixed architectures**: causal vs seq2seq need different `task_type`, target modules,
-  and label construction.
-- **Tokenizer pad token**: causal tokenizers may lack a pad token (`pad_token = eos_token`
-  is already set in `load()`); training collator must respect this.
-- **Data volume**: only 10+10 TEND rows exist now; Spider train is ~7k examples — must be
-  regenerated (Qwen doc generation is slow on CPU/MPS).
-- **License**: research/academic; Spider, BIRD, and base-model licenses apply.
+## 5. Implemented Features (reusable, not agent)
 
-## 5. Acceptance-style Expectations (for the LoRA deliverable)
+| Feature | Location | Agent reuse |
+|---------|----------|-------------|
+| LoRA multi-adapter inference | `codegen_api/adapters/router.py` | Via HTTP only |
+| Intent classification (task) | `codegen_api/classifier/` | Agent should pass explicit `intent` to avoid `clarify` |
+| OpenAI-compatible API | `codegen_api/api/app.py` | Capstone tool transport |
+| Prompt `Task:` prefix | `codegen_api/prompt/builder.py` | Automatic when using API |
+| SQL generation (local) | `src/text2sql/sql_generator.py` | Do **not** use in agent — use API |
+| SQL validation | `src/text2sql/sql_validator.py` | Execution tool pre-check |
+| SQLite execution (eval) | `src/text2sql/sql_executor.py` | Different from Postgres agent path |
+| TEND Postgres/Mongo execution | `src/evaluation/database_execution.py` | Execution tool backend candidate |
+| Schema text conversion | `src/utils/schema_conversion.py` | Schema tool output formatting |
+| Gold validation dataset | `data/spider_gold_validation.jsonl` | Demo schemas + questions |
+| Cloud Run deployment | `fastapi-deploy/` | Production Capstone API URL |
+| Classifier tests | `fastapi-deploy/tests/test_classifier.py` | Unrelated to agent tests |
 
-- A `peft`-based training script trains a LoRA adapter for a chosen task and base model,
-  saving `adapter_config.json` + adapter weights under `models/checkpoints/<name>/`.
-- `CodeGenModel` (or `load_model`) can load base + adapter and generate.
-- `BenchmarkRunner` produces a `results/<run>/metrics.json` for the fine-tuned model that
-  is directly comparable to the cached baseline runs in `results/`.
-- LoRA run shows **measurable improvement** over baseline on at least the primary metric
-  per task (e.g. text2sql execution accuracy / exact match; sql2nosql structural
-  equivalence / token-F1; documentation ROUGE-L / BERTScore vs the rule-based reference).
-- Training is reproducible (seeded) and logged to MLflow.
+## 6. Missing Features (must build for MVP)
 
-## 6. Baseline Numbers to Beat — **chosen model: `Salesforce/codegen-350M-multi`**
+### MVP (capstone demo — Text2SQL path)
 
-> **Finalized base model (2026-06-21): `Salesforce/codegen-350M-multi`** (causal LM).
-> Baseline below from `results/spider_codegen-350M-multi_2006_1620` (10-sample Spider
-> validation, greedy).
+1. **Agent config** — API URL, DB connection, max retries, orchestrator LLM keys
+2. **Schema tool v1** — Return relevant subset (keyword/table match or embedding — TBD in planning)
+3. **FastAPI client tool** — HTTP wrapper around `/v1/chat/completions` + SQL extraction
+4. **Execution tool** — Run read-only SQL against Postgres; return rows + errors
+5. **LangGraph agent** — Tool-calling graph: schema → generate → execute → retry → summarize
+6. **MCP server** — Expose the three tools (can be thin wrapper over Python functions)
+7. **Entry point** — CLI or small FastAPI for demo (`agent/main.py`)
+8. **Tests** — Unit tests per tool + one E2E scenario from `agent.md`
 
-| Task | exact_match | exec_acc | token_f1 | rouge_l | bertscore | struct_equiv | qwen_correct |
-|------|-------------|----------|----------|---------|-----------|--------------|--------------|
-| text2sql | 0.0 | 0.0 | 0.0 | 0.27 | 0.54 | 0.0 | 0.20 |
-| sql2nosql | 0.0 | 0.0 | 0.07 | 0.07 | 0.04 | 0.20 | 0.20 |
-| documentation | 0.0 | — | 0.03 | 0.02 | 0.03 | 0.0 | 0.0 |
+### Post-MVP (spec §5 / Phase 2+)
 
-The 350M baseline is weak across all three tasks (esp. sql2nosql and documentation), so
-there is **large headroom** for LoRA gains. For reference, Qwen2.5-Coder-0.5B scored
-higher zero-shot (text2sql rouge_l 0.60 / bertscore 0.89; sql2nosql token_f1 0.85), but
-codegen-350M-multi was selected as the training base. Re-establish a full-dataset baseline
-before/after training for a fair comparison.
+| Feature | Priority |
+|---------|----------|
+| SQL → Mongo agent path | High (second demo) |
+| Mongo documentation path | Medium |
+| Explain SQL | Low (not in current API) |
+| Vector schema search (spec Phase 3) | Future |
+| Conversation memory (Phase 4) | Future |
+| Human approval before execute (Phase 5) | Future |
+| Query optimization (Phase 6) | Future |
+| Multi-database (Phase 2) | Future |
+
+## 7. Inferred Requirements (not explicit in spec)
+
+| ID | Requirement | Rationale |
+|----|-------------|-----------|
+| IR-1 | Agent must pass **explicit `intent`** to Cloud Run | Avoid low-confidence `clarify` responses |
+| IR-2 | Schema must be embedded in user message for API | API has no separate schema field |
+| IR-3 | Read-only SQL enforcement before execution | Safety for demo DB |
+| IR-4 | Configurable `CODEGEN_API_URL` | Local vs Cloud Run |
+| IR-5 | Structured logging per agent step | Capstone demo + debugging |
+| IR-6 | Timeouts on HTTP and DB calls | Cloud Run cold start + hung queries |
+| IR-7 | Windows-compatible `TEND_REPO_PATH` | User on Windows; default path is macOS |
+| IR-8 | Do not bundle torch/transformers in agent | Inference only via HTTP |
+
+## 8. Constraints
+
+| Constraint | Impact |
+|------------|--------|
+| Capstone timeline | MVP = text2sql path first |
+| Cloud Run cold start | First request slow; health ping before demo |
+| Small model (350M) | Quality limits; retry loop helps FR-5 |
+| No `tool/` on disk | Cannot import planned UI modules; rebuild schema/client |
+| Agent must use MCP (spec) | MCP server required for grading narrative |
+| Orchestrator needs tool-calling LLM | Additional API cost vs local-only stack |
+| v1 eval at n=5 only | Agent quality separate from v1 metrics |
+| v3 full eval later | Do not block agent on n=50 re-run |
+
+## 9. Requirements Traceability Matrix (planning input)
+
+| Spec section | Planning epic |
+|--------------|---------------|
+| FR-1–FR-6 | Agent core + LangGraph |
+| §7 Tool 1 | Schema tool |
+| §7 Tool 2 | FastAPI client tool |
+| §7 Tool 3 | Execution tool |
+| §8 Workflow | Planner graph edges |
+| §10 FastAPI | Adapter layer decision |
+| §11 Agent prompt | `agent/prompts.py` |
+| §12 Structure | Repo layout under `agent/`, `tools/`, `mcp/` |
+
+## 10. Acceptance Criteria (draft for planning)
+
+**MVP done when:**
+
+1. User can ask a NL question via CLI against a configured Postgres database.
+2. Agent calls schema tool → Capstone API (Cloud Run) → execution tool without generating SQL in the orchestrator.
+3. On invalid SQL, agent retries at least once with error feedback, up to 3 attempts.
+4. User receives a natural-language answer referencing query results.
+5. Three tools are registered on an MCP server and invocable externally.
+6. pytest covers tools and at least one mocked E2E agent path.

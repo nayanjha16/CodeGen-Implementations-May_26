@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Database Agent</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">DB</div>
+        <div>
+          <h1>Database Agent</h1>
+          <p>Text2SQL · SQL2NoSQL · Docs</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <label for="db-id">Database</label>
+        <select id="db-id">
+          <option value="chinook">Chinook</option>
+          <option value="northwind">Northwind</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <label for="intent">Task</label>
+        <select id="intent">
+          <option value="auto">Auto-detect</option>
+          <option value="text2sql">Text → SQL</option>
+          <option value="sql2nosql">SQL → MongoDB</option>
+          <option value="nosql2doc">Documentation</option>
+          <option value="explain_sql">Explain SQL</option>
+          <option value="validate_sql">Validate SQL</option>
+        </select>
+      </div>
+
+      <div class="panel sql-panel hidden" id="sql-panel">
+        <label for="sql-input">SQL input</label>
+        <textarea id="sql-input" rows="6" placeholder="Paste SQL for conversion or validation…"></textarea>
+      </div>
+
+      <div class="examples">
+        <h2>Example questions</h2>
+        <div id="example-list" class="example-list"></div>
+      </div>
+
+      <div class="status" id="status-bar">
+        <span class="dot"></span>
+        <span id="status-text">Checking services…</span>
+      </div>
+    </aside>
+
+    <main class="chat">
+      <header class="chat-header">
+        <div>
+          <h2>Ask your database</h2>
+          <p class="muted">Powered by CodeGen LoRA v3 + LangGraph orchestrator</p>
+        </div>
+        <button type="button" id="clear-btn" class="ghost-btn">Clear chat</button>
+      </header>
+
+      <section id="messages" class="messages" aria-live="polite">
+        <article class="message assistant welcome">
+          <div class="avatar">AI</div>
+          <div class="bubble">
+            <p>Hi! Ask a natural language question about Chinook or Northwind.</p>
+            <p class="muted">Try: <em>Which artist has the most albums?</em></p>
+            <p class="muted">Note: each answer takes about 30–90 seconds while the agent calls CodeGen and Ollama.</p>
+          </div>
+        </article>
+      </section>
+
+      <form id="chat-form" class="composer">
+        <textarea
+          id="message-input"
+          rows="2"
+          placeholder="Type your question…"
+          required
+        ></textarea>
+        <button type="submit" id="send-btn">
+          <span class="btn-label">Send</span>
+          <span class="spinner hidden" id="send-spinner"></span>
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    window.AGENT_UI = {
+      defaultDbId: {{ default_db_id | tojson }},
+      databaseProfile: {{ database_profile | tojson }},
+    };
+  </script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

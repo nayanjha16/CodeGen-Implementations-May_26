@@ -1,0 +1,147 @@
+# Chinook demo questions
+# Database: chinook (11 tables: Artist, Album, Track, Customer, Invoice, ...)
+# Use with AGENT_DB_PROFILE=standalone and agent/.env (AGENT_DEMO_DB_ID=chinook)
+#
+# Task tags:
+#   [text2sql]  — natural language question
+#   [sql2nosql] — paste the SQL block into agent (--intent sql2nosql --sql '...')
+#   [doc]       — ask agent to document the SQL or Mongo query
+#
+# Recommended for demos: start with CAPSTONE DEMO SET (multi-table), then SQL2NOSQL joins.
+
+================================================================================
+CAPSTONE DEMO SET — multi-table (recommended)
+================================================================================
+
+D1. List album titles with artist names.
+D2. List the top 5 tracks by unit price with album title and artist name.
+D3. Which artist has the most albums?
+D4. Total invoice amount by customer country.
+D5. Which customer has the highest total spending (sum of invoice totals)?
+D6. How many tracks are in each genre?
+D7. List all invoices from 2010 with customer first and last name.
+D8. Show track name with genre name and media type name.
+
+================================================================================
+TEXT2SQL — Joins (2–3 tables)
+================================================================================
+
+9. List album titles with artist names.
+10. Show track name, album title, and artist name for all tracks.
+11. Which artist has the most albums?
+12. Show invoice id, invoice date, and customer first and last name.
+13. Total number of tracks per genre.
+14. Which customer has spent the most (sum of invoice totals)?
+15. List tracks with genre name and media type name.
+16. Show playlist name and number of tracks in each playlist.
+17. Which employee reports to another employee? Show both names.
+18. List the top 5 tracks by unit price with album and artist name.
+
+================================================================================
+TEXT2SQL — Aggregations (multi-table)
+================================================================================
+
+19. Total invoice amount by country.
+20. Average track length by genre.
+21. Total sales per artist (albums, tracks, and invoice lines).
+22. Top 5 customers by total invoice amount.
+23. Number of invoices per year with customer country.
+24. Average unit price of tracks by genre.
+
+================================================================================
+TEXT2SQL — Single table (warm-up only)
+================================================================================
+
+1. How many customers are in the database?
+2. List all artist names.
+3. How many tracks are there?
+4. List the top 10 tracks by unit price.
+5. Customers from Brazil.
+
+================================================================================
+TEXT2SQL — Filters (often multi-table)
+================================================================================
+
+25. Tracks longer than 300000 milliseconds with genre name.
+26. Invoices from 2009 with customer name.
+27. Albums by the artist AC/DC with album titles.
+28. Tracks with unit price greater than 1.00 and their genre.
+
+================================================================================
+SQL2NOSQL — Multi-table SQL (recommended)
+================================================================================
+
+-- 2 tables: artist + album counts
+SELECT ar."Name" AS artist, COUNT(al."AlbumId") AS album_count
+FROM "Artist" ar
+JOIN "Album" al ON ar."ArtistId" = al."ArtistId"
+GROUP BY ar."Name"
+ORDER BY album_count DESC
+LIMIT 5;
+
+-- 2 tables: genre + track counts
+SELECT g."Name" AS genre, COUNT(t."TrackId") AS track_count
+FROM "Genre" g
+JOIN "Track" t ON g."GenreId" = t."GenreId"
+GROUP BY g."Name"
+ORDER BY track_count DESC;
+
+-- 2 tables: customer spending
+SELECT c."FirstName", c."LastName", SUM(i."Total") AS total_spent
+FROM "Customer" c
+JOIN "Invoice" i ON c."CustomerId" = i."CustomerId"
+GROUP BY c."FirstName", c."LastName"
+ORDER BY total_spent DESC
+LIMIT 5;
+
+-- 3 tables: track + album + artist
+SELECT ar."Name" AS artist, al."Title" AS album, t."Name" AS track, t."UnitPrice"
+FROM "Track" t
+JOIN "Album" al ON t."AlbumId" = al."AlbumId"
+JOIN "Artist" ar ON al."ArtistId" = ar."ArtistId"
+ORDER BY t."UnitPrice" DESC
+LIMIT 5;
+
+-- 3 tables: invoice lines with track and customer
+SELECT c."FirstName", c."LastName", t."Name" AS track, il."Quantity", il."UnitPrice"
+FROM "InvoiceLine" il
+JOIN "Track" t ON il."TrackId" = t."TrackId"
+JOIN "Invoice" inv ON il."InvoiceId" = inv."InvoiceId"
+JOIN "Customer" c ON inv."CustomerId" = c."CustomerId"
+LIMIT 10;
+
+================================================================================
+SQL2NOSQL — Single table (warm-up only)
+================================================================================
+
+SELECT COUNT(*) FROM "Customer";
+
+SELECT "FirstName", "LastName", "City", "Country" FROM "Customer" LIMIT 10;
+
+================================================================================
+DOCUMENTATION — Multi-table examples
+================================================================================
+
+Document this SQL:
+SELECT ar."Name" AS artist, COUNT(al."AlbumId") AS album_count
+FROM "Artist" ar
+JOIN "Album" al ON ar."ArtistId" = al."ArtistId"
+GROUP BY ar."Name"
+ORDER BY album_count DESC
+LIMIT 5;
+
+Explain this query step by step:
+SELECT c."FirstName", c."LastName", SUM(i."Total") AS total_spent
+FROM "Customer" c
+JOIN "Invoice" i ON c."CustomerId" = i."CustomerId"
+GROUP BY c."FirstName", c."LastName"
+ORDER BY total_spent DESC
+LIMIT 5;
+
+Document this Mongo query:
+db.track.aggregate([
+  { $lookup: { from: "album", localField: "AlbumId", foreignField: "AlbumId", as: "album" } },
+  { $unwind: "$album" },
+  { $sort: { UnitPrice: -1 } },
+  { $limit: 5 }
+])

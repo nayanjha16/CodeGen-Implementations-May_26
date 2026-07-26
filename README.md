@@ -12,19 +12,26 @@ Natural language  →  SQL  →  MongoDB  →  Documentation
 
 **Base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configure in `.env`)
 
-## Results snapshot (n=50)
+## Results snapshot
 
-Spider gold validation set · 50 examples · semantic judge `gemma3:4b` · LoRA v1 vs base model only
+### LoRA v1 (n=5 smoke eval)
+
+Spider gold validation · **5 examples** · semantic judge `gemma3:4b` · smoke-trained v1 adapters
 
 | Task | Judge correct rate (baseline → LoRA v1) |
 | ---- | --------------------------------------- |
-| Text-to-SQL | 4% → 20% (+16 pp) |
-| SQL-to-MongoDB | 30% → 62% (+32 pp) |
-| Documentation | 24% → 56% (+32 pp) |
+| Text-to-SQL | 0% → **40%** |
+| SQL-to-MongoDB | 40% → **100%** |
+| Documentation | 20% → **100%** |
 
 LoRA v1 adapters were smoke-trained (50 training rows, 5 epochs per task).  
-Full report: [baseline-vs-lora-v1-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/baseline-vs-lora-v1-comparison.md)  
-Execution accuracy is 0% on both runs until Spider SQLite databases are wired.
+Report: [baseline-vs-lora-v1-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v1/baseline-vs-lora-v1-comparison.md)
+
+Full **n=50** eval is reserved for **LoRA v3** (when adapters are ready) — not re-run for v1 to save time.
+
+### LoRA v2 (n=50, execution accuracy)
+
+Report: [baseline-vs-lora-v2-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md)
 
 ---
 
@@ -85,19 +92,25 @@ Question + SQL schema
 | ----- | ---- | ----------- |
 | **1. Setup** | Python env, deps, `.env`, `PYTHONPATH` | See [Quick Start](#quick-start) |
 | **2. Pre-flight** | Verify LoRA targets, dataset, prompts | `inspect_lora_modules.py`, `test_tend_loader.py`, `test_prompt_parity` |
-| **3. Baseline eval** | Score **base model** (no adapter) on gold validation | `run_baseline_eval.py --max-samples 50` |
+| **3. Baseline eval** | Score **base model** (no adapter) | `run_baseline_eval.py --max-samples 5` (v1 smoke) or `--max-samples 50` (v2/v3) |
 | **4. LoRA training** | Fine-tune one adapter per task | `train_lora.py --version v1` or `train_all_lora.py --version v1` |
-| **5. Fine-tuned eval** | Score **base + adapters** on same set | `run_baseline_eval.py --max-samples 50 --adapter-run v1` |
+| **5. Fine-tuned eval** | Score **base + adapters** on same set | v1: `--max-samples 5 --adapter-run v1` · v2/v3: `--max-samples 50 --adapter-run v2` |
 | **6. Compare** | Baseline vs LoRA metrics | Compare `results/*/metrics.json` or see comparison report under LoRA run folder |
 
 **Typical outputs**
 
 ```
-results/spider_gold_validation_codegen-350M-multi_baseline_50samples/
+results/spider_gold_validation_codegen-350M-multi_baseline-v1/
   metrics.json, text2sql_details.csv, sql2nosql_details.csv, documentation_details.csv
 
-results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/
+results/spider_gold_validation_codegen-350M-multi_lora-v1/
   metrics.json, *_details.csv, baseline-vs-lora-v1-comparison.md
+
+results/spider_gold_validation_codegen-350M-multi_baseline-v2/
+  metrics.json, *_details.csv
+
+results/spider_gold_validation_codegen-350M-multi_lora-v2/
+  metrics.json, *_details.csv, baseline-vs-lora-v2-comparison.md
 ```
 
 **Smoke-first on CPU:** use `--max-samples 5` before full 50-sample runs (~2–3 hours each with judge on CPU).
@@ -237,8 +250,10 @@ python -m unittest tests.training.test_prompt_parity -v   # fast; skip slow trai
 python scripts/build_sft_dataset.py             # SFT builder smoke
 
 # --- Phase 3: Baseline evaluation (base model, no adapter) ---
-python scripts/run_baseline_eval.py --max-samples 5 --output spider_gold_validation_codegen-350M-multi_baseline_5samples
-python scripts/run_baseline_eval.py --max-samples 50 --output spider_gold_validation_codegen-350M-multi_baseline_50samples
+# v1 smoke (n=5)
+python scripts/run_baseline_eval.py --max-samples 5 --output spider_gold_validation_codegen-350M-multi_baseline-v1
+# v2 full (n=50) — run when comparing v2 adapters
+python scripts/run_baseline_eval.py --max-samples 50 --output spider_gold_validation_codegen-350M-multi_baseline-v2
 
 # --- Phase 4: LoRA training ---
 # Smoke (one task)
@@ -247,11 +262,13 @@ python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-ml
 python scripts/train_all_lora.py --no-mlflow --device cpu --version v1
 python scripts/verify_lora_adapters.py --version v1
 
-# --- Phase 5: Fine-tuned evaluation (per-task adapters from run v1) ---
-python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1_50samples
+# --- Phase 5: Fine-tuned evaluation (v1 smoke, n=5) ---
+python scripts/run_baseline_eval.py --max-samples 5 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1
 
 # --- Phase 6: Compare ---
-# See results/spider_gold_validation_codegen-350M-multi_lora-v1_50samples/baseline-vs-lora-v1-comparison.md
+# v1 (n=5): results/spider_gold_validation_codegen-350M-multi_lora-v1/baseline-vs-lora-v1-comparison.md
+# v2 (n=50): results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md
+# v3 (n=50): run after v3 adapters are trained — use baseline-v3 / lora-v3 output names
 ```
 
 Use `--no-judge` to skip the semantic judge (faster; no Ollama required). Without Ollama, the judge falls back to a cached Hugging Face model (e.g. `google/gemma-3-4b-it` for `gemma3:4b`).
@@ -506,11 +523,11 @@ results/<run_name>/
 Use `--adapter-run` to load **per-task adapters** from `models/checkpoints/<run>/`:
 
 ```powershell
-# Fine-tuned eval (text2sql + sql2nosql + nosql2doc adapters from run v1)
-python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1
+# v1 smoke eval (n=5)
+python scripts/run_baseline_eval.py --max-samples 5 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1
 
-# Named output folder
-python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1_50samples
+# v2 full eval (n=50)
+python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v2 --output spider_gold_validation_codegen-350M-multi_lora-v2
 ```
 
 The benchmark loads `models/checkpoints/v1/text2sql/`, `.../sql2nosql/`, and `.../nosql2doc/` on top of the cached base model in `models/base/`.

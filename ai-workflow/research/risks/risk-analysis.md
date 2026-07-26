@@ -1,108 +1,111 @@
-# Risk Analysis — PEFT / LoRA Initiative
+# Risk Analysis — AI Database Agent (`database-agent`)
 
-Severity legend: **High** (blocking/correctness), **Medium** (reliability/quality),
-**Low** (polish/maintainability).
+> **Research date:** 2026-07-19  
+> **Feature:** `database-agent`
 
-## 1. Data Risks
+## 1. Architectural Risks
 
-### [High] Training data is essentially empty
-`data/TEND/` holds only **10 train + 10 validation rows** (smoke-test output). LoRA on 10
-examples will overfit instantly and learn nothing generalizable.
-- **Mitigation**: regenerate the **full Spider train split (~7k)** and a real validation
-  split via `python scripts/run_all_tend.py`. Budget time — Qwen documentation generation
-  is slow on CPU/MPS. Consider `--no-doc`/`--no-eval` for the SQL tasks and a separate doc
-  pass, or generate docs only for the subset used for nosql2doc.
+| Risk | Severity | Description | Mitigation (planning) |
+|------|----------|-------------|------------------------|
+| **A-1 API contract mismatch** | High | Spec documents `/generate/*`; deployed API is OpenAI `/v1/chat/completions` | Adapter in `fastapi_tool.py`; document mapping; optional thin shim routes later |
+| **A-2 Dual intent systems** | Medium | Agent detects user intent; FastAPI has its own classifier | Agent passes `intent` override on every Capstone call |
+| **A-3 Orchestrator vs fine-tuned model confusion** | High | Reviewers may think FastAPI classifier = "the agent" | Clear architecture diagram; agent never calls `sql_generator.py` locally |
+| **A-4 MCP ceremony without value** | Low | MCP layer adds complexity if only LangGraph uses tools | Thin MCP server delegating to same Python functions |
+| **A-5 Monolith creep** | Medium | Putting inference back into agent process | Enforce HTTP-only inference rule (IR-8) |
 
-### [Medium] Documentation targets are model-generated, not gold
-The `documentation` column is produced by **Qwen2.5-0.5B-Instruct**, not human-authored.
-Training a model to imitate a 0.5B model's output caps quality at the teacher and can
-amplify its errors/hallucinations. The Qwen semantic judge is the *same* family — circular.
-- **Mitigation**: treat doc supervision as **distillation**; sample-audit targets; consider
-  a stronger teacher or the rule-based `ReferenceDocumentationBuilder` as an alternative
-  reference. Report metrics against both teacher and rule-based reference.
+## 2. Integration Risks
 
-### [Medium] sql2nosql / nosql2doc targets inherit rule-based converter limits
-`nosql_query` comes from `SQLToNoSQLTranslator` (sql-mongo-converter), which warns/omits
-JOIN, HAVING, UNION, subqueries, and aggregation accumulators. The LoRA model will learn
-those gaps as "correct."
-- **Mitigation**: filter training rows on `conversion_success` / `metadata` validity flags;
-  document covered SQL subset; exclude rows with conversion warnings for the sql2nosql
-  target if precision matters.
+| Risk | Severity | Description | Mitigation |
+|------|----------|-------------|------------|
+| **I-1 Cloud Run cold start** | High | 1–3+ min model load on first request | Warm `/health` before demo; document in runbook |
+| **I-2 Cloud Run scale-to-zero** | Medium | Demo fails if service asleep | Option 1 from `fastapi-deploy/README.md` (auto sleep OK with warm-up) |
+| **I-3 TEND dependency** | High | `database_execution.py` imports external TEND repo; default path macOS | Set `TEND_REPO_PATH` on Windows; or direct psycopg in execution tool |
+| **I-4 Missing `tool/` codebase** | High | text2sql-ui-tool modules documented but not on disk | Re-implement schema loader/client in `tools/`; don't assume `tool/` imports |
+| **I-5 SQL extraction from LLM output** | Medium | Model may return prose + SQL | Reuse extraction patterns from `sql_generator.py` / API post-processing |
+| **I-6 nosql2doc vs SQL documentation** | Medium | Spec capability doesn't match adapter task | MVP text2sql only; document naming mismatch for doc path |
 
-### [Medium] Train/eval leakage and split hygiene
-Only one timestamped CSV exists per split. If training and evaluation draw from the same
-generated file (or overlapping Spider DBs), metrics will be optimistic.
-- **Mitigation**: define fixed train/validation/test CSVs; ensure `db_id` disjointness or
-  at least row disjointness; seed and freeze the split.
+## 3. Security & Safety Risks
 
-## 2. Technical / Correctness Risks
+| Risk | Severity | Description | Mitigation |
+|------|----------|-------------|------------|
+| **S-1 Arbitrary SQL execution** | Critical | Agent executes generated SQL against real DB | Read-only gate (SELECT/WITH only); row limits |
+| **S-2 Prompt injection via user question** | Medium | User text flows to model and logs | Sanitize logs; system prompt boundaries |
+| **S-3 Cloud Run public URL** | Medium | Unauthenticated inference endpoint | Accept for capstone; API key optional later |
+| **S-4 Secrets in config** | Medium | DB passwords, OpenAI keys | `.env` gitignored; `config/settings.py` pattern |
+| **S-5 Error messages leak schema** | Low | Retry loop sends DB errors to model | Accept for self-correction; truncate in user-facing summary |
 
-### [High] No training infrastructure exists
-There is no `Trainer`, no dataset/collator, no `peft` dependency. Everything is new code
-on an untested path.
-- **Mitigation**: build incrementally — dataset builder → tiny overfit test (1 batch) →
-  full run. Reuse HF `Trainer`/`trl.SFTTrainer` rather than hand-rolling loops.
+## 4. Operational Risks
 
-### [High] Causal vs seq2seq divergence
-Six candidate base models span both families. LoRA `task_type`, target modules, label
-masking, and the generation path all differ. A config that works for Qwen will silently
-mistrain T5 (or vice versa).
-- **Mitigation**: branch on `is_seq2seq_model()`; maintain per-family `target_modules`
-  defaults; validate target modules exist via `model.named_modules()` before training.
+| Risk | Severity | Description | Mitigation |
+|------|----------|-------------|------------|
+| **O-1 Orchestrator LLM cost** | Medium | Every agent turn + retries = multiple LLM calls | Use cheap model; cache schema; limit retries to 3 |
+| **O-2 Dual LLM stack** | Medium | Orchestrator (GPT) + CodeGen (Cloud Run) | Required by architecture; budget accordingly |
+| **O-3 No agent monitoring** | Low | Spec mentions LangSmith optional | Structured logs minimum for capstone |
+| **O-4 Dependency sprawl** | Medium | LangGraph + MCP + httpx + psycopg new deps | Separate `agent/requirements.txt` or section in root |
 
-### [Medium] Adapter-aware loading not implemented
-`resolve_model_path()`/`CodeGenModel.load()` assume a **full** model dir (`config.json` +
-weights). A LoRA checkpoint is just `adapter_config.json` + adapter weights and will fail
-to load as-is.
-- **Mitigation**: detect `adapter_config.json` and load via `PeftModel.from_pretrained`,
-  or `merge_and_unload()` and save a merged full model for the existing path.
+## 5. Technical Debt & Existing Gaps
 
-### [Medium] Prompt drift between training and inference
-If the trainer constructs prompts differently from the runtime `PromptBuilder`s, the
-fine-tuned model underperforms at eval despite low training loss.
-- **Mitigation**: import and call the exact prompt builders in the dataset builder; add a
-  test asserting train prompt == eval prompt for a sample.
+| Item | Location | Impact on agent |
+|------|----------|-----------------|
+| Stale research docs | Older `project-summary` LoRA-only narrative | **Resolved** — research updated 2026-07-19 |
+| text2sql-ui-tool without `tool/` | ai-workflow says complete | Cannot reuse; reimplement or restore from backup |
+| hf-deploy removed | — | Use `fastapi-deploy` only |
+| Classifier `clarify` at low confidence | `codegen_api` | Agent must force intent |
+| v2 baseline metrics incomplete EX in JSON | `baseline-v2/metrics.json` | Unrelated to agent; don't block |
+| TEND default path | `database_execution.py` | Breaks on Windows without env |
 
-### [Medium] Tokenization / truncation of long schemas
-SQL DDL schemas are long; with `max_length=2048` and `truncation_side="left"`, the target
-(SQL/Mongo/doc) at the *end* of a concatenated causal sequence can be truncated away,
-producing empty/garbage labels.
-- **Mitigation**: compute prompt+target lengths; truncate the *schema* region, never the
-  target; log/skip examples exceeding the budget.
+## 6. Scalability Concerns
 
-### [Low] Stop-string / extraction logic assumes base behavior
-`SQLGenerator`/`DocumentationGenerator` post-process raw output with regex heuristics tuned
-to base models. A fine-tuned model's cleaner output should still pass, but edge cases differ.
-- **Mitigation**: re-validate extraction on fine-tuned outputs.
+| Concern | Notes |
+|---------|-------|
+| Schema tool v1 keyword search | Won't scale to large warehouses; OK for capstone |
+| Full schema in prompt | Token limits; schema tool subset is required |
+| Synchronous agent loop | OK for demo; async/streaming later |
+| Single Cloud Run instance | `max-instances=1` in deploy config |
 
-## 3. Resource / Performance Risks
+## 7. Missing Validations
 
-- **[High] bitsandbytes / QLoRA is CUDA-only** — unavailable on the macOS/MPS dev host.
-  Do not make 4-bit a hard dependency.
-  - **Mitigation**: default to plain LoRA (fp16/bf16/fp32); gate QLoRA behind a CUDA check.
-- **[Medium] MPS/CPU training is slow and memory-bound** — starcoder2-3b LoRA may not fit
-  or will be very slow on a laptop.
-  - **Mitigation**: start with 0.35–0.5B models (codegen-350M, Qwen2.5-Coder-0.5B); reserve
-    3B for CUDA.
-- **[Medium] Qwen doc-generation cost** to build the dataset dominates wall-clock for the
-  nosql2doc track.
-  - **Mitigation**: cache generated CSVs; generate docs once and reuse.
-- **[Low] MPS dtype quirks** — some ops unsupported in fp16 on MPS; may need fp32.
+| Validation | Needed for |
+|------------|------------|
+| Agent never emits raw SQL without tool call | FR-6 / spec §6 |
+| Retry count enforced | FR-5 |
+| Read-only SQL enforcement | Safety |
+| Schema tool returns non-empty subset | FR-2 |
+| Capstone tool handles API 5xx / timeout | Resilience |
+| E2E with mocked Cloud Run + mocked DB | CI without GPU/network |
 
-## 4. Process / Reproducibility Risks
+## 8. Risk Priority for Planning
 
-- **[Medium] Stale research/docs** — the prior research described FastAPI/Streamlit/
-  `query_engine` that no longer exist; planning off stale docs wastes effort. (Addressed:
-  these deliverables refreshed to current state.)
-- **[Medium] MLflow store consistency** — `configs/default.yaml` uses
-  `sqlite:///mlflow.db`; ensure training and eval log to the *same* store for comparison.
-- **[Low] `.gitignore`** excludes models/data artifacts; adapters under
-  `models/checkpoints/` may be ignored — confirm intended versioning/sharing strategy.
+**Must address in plan (P0):**
 
-## 5. Summary of Top Risks to Address First
+- A-1 API adapter strategy
+- I-1 Cloud Run warm-up
+- I-3 Execution backend (TEND vs direct psycopg)
+- S-1 Read-only SQL
+- I-4 Rebuild schema + client tools
 
-1. Regenerate full TEND training data (data volume). **[High]**
-2. Build training infra with HF `Trainer`/`trl`; overfit-test first. **[High]**
-3. Handle causal vs seq2seq branching correctly. **[High]**
-4. Implement adapter-aware loading. **[Medium]**
-5. Guarantee prompt parity train↔inference. **[Medium]**
+**Address in implementation (P1):**
+
+- A-2 Explicit intent override
+- I-5 SQL extraction
+- O-1 Orchestrator model choice
+
+**Document only (P2):**
+
+- I-6 nosql2doc naming
+- A-4 MCP thin wrapper
+
+## 9. Risk Acceptance (capstone scope)
+
+Accept for MVP:
+
+- No human-in-the-loop approval before SQL execution
+- No conversation memory
+- Keyword-based schema tool (not vector search)
+- Single Postgres database
+- Public Cloud Run endpoint
+
+Not acceptable:
+
+- Agent generating SQL directly in orchestrator prompt without tool
+- Unrestricted DML/DDL execution

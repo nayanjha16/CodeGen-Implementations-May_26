@@ -52,18 +52,122 @@ fastapi-deploy/
 
 ---
 
-## Adapters are already on the Hub
+## Adapters on the Hugging Face Hub
 
-All three v2 adapters are public on Hugging Face under **`codegenstudio`**:
+Cloud Run loads adapters from **`codegenstudio`** at container startup (no
+weights baked into the Docker image). Hub repo names are **fixed**; publishing a
+new training run **updates the same repos** with new weights.
 
-| Task | Repo | Version |
-| --- | --- | --- |
-| text2sql | `codegenstudio/codegen-350M-text2sql-lora` | v2 |
-| sql2nosql | `codegenstudio/codegen-350M-sql2nosql-lora` | v2 |
-| nosql2doc | `codegenstudio/codegen-350M-nosql2doc-lora` | v2 |
+| Task | Hub repo |
+| --- | --- |
+| text2sql | `codegenstudio/codegen-350M-text2sql-lora` |
+| sql2nosql | `codegenstudio/codegen-350M-sql2nosql-lora` |
+| nosql2doc | `codegenstudio/codegen-350M-nosql2doc-lora` |
 
-So Cloud Run needs **no baking or publishing** — the container pulls these at
-startup. To publish a new version later, see [Publish adapters](#publish-adapters).
+The active checkpoint version (e.g. v2, v3) is tracked in `manifest.yaml`
+(`checkpoint_version`) and shown in `/health`. After you fine-tune a new version,
+follow [After fine-tuning: publish and redeploy](#after-fine-tuning-publish-and-redeploy).
+
+---
+
+## Understanding the API
+
+### Root URL (`GET /`) — landing page, not chat
+
+Opening the Cloud Run URL in a browser (e.g. `https://codegen-api-….run.app/`)
+returns a small JSON index — **this is normal**:
+
+```json
+{
+  "model": "codegen-multi-adapter",
+  "docs": "/docs",
+  "health": "/health",
+  "openai_base_url": "/v1",
+  "chat": "/v1/chat/completions"
+}
+```
+
+| Path | Purpose |
+| --- | --- |
+| `/docs` | Swagger UI — try `POST /v1/chat/completions` in the browser |
+| `/health` | Service status, loaded adapters, `checkpoint_version` |
+| `/v1/chat/completions` | **Inference** — must be called with `POST` + JSON body |
+
+### OpenAI-compatible chat (`POST /v1/chat/completions`)
+
+This API uses the **OpenAI Chat Completions** shape (not custom routes like
+`/generate/sql` from the agent spec). Any OpenAI client — Cursor, Python SDK,
+the future Database Agent — uses base URL `<service-url>/v1`.
+
+**Request flow:**
+
+```
+Client POST /v1/chat/completions
+    → read latest user message from messages[]
+    → classifier picks task (or intent override)
+    → hot-swap LoRA adapter (text2sql | sql2nosql | nosql2doc)
+    → return OpenAI-style choices[].message.content
+```
+
+**Classifier routing** (when `intent` is not set):
+
+1. `Task: <intent>` tag at the start of the message (training format)
+2. Regex keyword rules (e.g. “write sql”, “convert to mongo”)
+3. Embedding similarity fallback
+4. If confidence is too low → **clarify** message asking the user to specify the task
+
+**Agent / production tip:** pass `"intent": "text2sql"` (or `"model": "codegen-text2sql"`)
+so routing is deterministic and the classifier never returns clarify.
+
+### Schema goes inside the user message
+
+There is **no separate `schema` JSON field**. Put schema, question, and SQL/NoSQL
+context in `messages[].content`, same as training and eval:
+
+```text
+Task: text2sql
+
+Schema:
+CREATE TABLE singer (
+    singer_id REAL PRIMARY KEY,
+    name TEXT,
+    ...
+);
+
+Question:
+How many singers do we have?
+```
+
+The API adds the `Task:` prefix automatically when you pass `"intent": "text2sql"`.
+
+### Example request (Cloud Run or local)
+
+**bash:**
+
+```bash
+curl -X POST "https://codegen-api-161349047936.asia-south2.run.app/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "codegen-text2sql",
+    "intent": "text2sql",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Schema:\nCREATE TABLE singer (singer_id REAL PRIMARY KEY, name TEXT);\n\nQuestion: How many singers do we have?"
+      }
+    ]
+  }'
+```
+
+**PowerShell:**
+
+```powershell
+curl.exe -X POST "https://codegen-api-161349047936.asia-south2.run.app/v1/chat/completions" `
+  -H "Content-Type: application/json" `
+  -d '{\"model\":\"codegen-text2sql\",\"intent\":\"text2sql\",\"messages\":[{\"role\":\"user\",\"content\":\"Schema:\nCREATE TABLE singer (...);\n\nQuestion: How many singers?\"}]}'
+```
+
+The response includes `codegen_routing` (intent, confidence, adapter id) for debugging.
 
 ---
 
@@ -125,8 +229,9 @@ Pass `"intent": "text2sql"` to skip the classifier.
 
 ## Deploy to Google Cloud Run
 
-HTTPS is included automatically (`*.run.app`). The container pulls v2 adapters
-from the Hub, so nothing else is needed. **One deploy script works on every OS.**
+HTTPS is included automatically (`*.run.app`). The container pulls adapters from
+the Hub at startup — see [After fine-tuning: publish and redeploy](#after-fine-tuning-publish-and-redeploy)
+when you promote a new checkpoint version. **One deploy script works on every OS.**
 
 ### 0. One-time prerequisites
 
@@ -197,7 +302,7 @@ Live URL (also saved in `deploy.env` as `CLOUD_RUN_SERVICE_URL`):
 **What you do:** Nothing. Leave the service deployed.
 
 **Tradeoff:** The first request after idle is a **cold start** — the container
-must load the base model and v2 adapters from Hugging Face. Expect **1–3+ minutes**
+must load the base model and Hub adapters from Hugging Face. Expect **1–3+ minutes**
 before `/health` returns `"status":"ok"`. Send chat requests only after health
 is OK.
 
@@ -284,28 +389,137 @@ gcloud run services add-iam-policy-binding codegen-api `
 
 ---
 
-## Publish adapters
+## After fine-tuning: publish and redeploy
 
-The publish script is version-agnostic — pass any `--version`:
+Use this checklist whenever you finish a new LoRA training run (e.g. v3, v4)
+and want Cloud Run to serve it. **Run your eval first** (e.g. 50-sample gold
+validation) and only publish when you are satisfied with metrics.
+
+### End-to-end workflow
+
+| Step | What | Why |
+| --- | --- | --- |
+| **0** | Fine-tune → `models/checkpoints/<version>/<task>/` | Adapters must exist locally |
+| **1** | Eval locally (`run_baseline_eval.py --adapter-run <version> --max-samples 50`) | Confirm quality before overwriting Hub |
+| **2** | Dry-run publish | Verify paths and Hub repo mapping |
+| **3** | Publish to Hub | Updates `codegenstudio/codegen-350M-*-lora` weights |
+| **4** | Set `checkpoint_version` in `manifest.yaml` | `/health` and docs show correct version |
+| **5** | Redeploy Cloud Run | New revision pulls updated Hub adapters at startup |
+| **6** | Verify `/health` + test `/docs` | Confirm `"checkpoint_version"` and a sample SQL call |
+
+### Step 0 — Local checkpoints
+
+After training, each task should have adapter files under:
+
+```text
+models/checkpoints/<version>/text2sql/adapter_config.json
+models/checkpoints/<version>/sql2nosql/adapter_config.json
+models/checkpoints/<version>/nosql2doc/adapter_config.json
+```
+
+Example eval before publish (from repo root):
+
+```powershell
+python scripts/run_baseline_eval.py --adapter-run v3 --max-samples 50
+```
+
+Compare `results/.../metrics.json` against the previous version (baseline-v2,
+lora-v2, etc.) before pushing to Hub.
+
+### Step 2 — Dry-run (no upload)
+
+**bash:**
 
 ```bash
-# Preview (no upload)
-PYTHONPATH=fastapi-deploy python fastapi-deploy/publish/push_adapters.py --dry-run
+PYTHONPATH=fastapi-deploy python fastapi-deploy/publish/push_adapters.py --version v3 --dry-run
+```
 
-# Publish any version
+**Windows PowerShell:**
+
+```powershell
+cd C:\Users\Bhavani\Documents\Codegen\Latest\CodeGen-Implementations-May_26
+$env:PYTHONPATH = "fastapi-deploy"
+python fastapi-deploy/publish/push_adapters.py --version v3 --dry-run
+```
+
+Expected output maps each task folder → `codegenstudio/codegen-350M-<task>-lora`.
+
+### Step 3 — Publish to Hugging Face Hub
+
+Auth once: `hf auth login` (or set `HF_TOKEN` / pass `--token`).
+
+**bash:**
+
+```bash
 PYTHONPATH=fastapi-deploy python fastapi-deploy/publish/push_adapters.py --version v3
 ```
 
-Windows PowerShell:
+**Windows PowerShell:**
 
 ```powershell
 $env:PYTHONPATH = "fastapi-deploy"
 python fastapi-deploy/publish/push_adapters.py --version v3
 ```
 
-Auth once with `hf auth login`, or set `HF_TOKEN` / pass `--token`. After
-publishing a new version, set `CODEGEN_CHECKPOINT_VERSION=<version>` (or edit
-`manifest.yaml`) and redeploy.
+This uploads `models/checkpoints/v3/<task>/` into the **same Hub repo names** used
+by Cloud Run. Previous weights in those repos are replaced.
+
+### Step 4 — Update manifest
+
+Edit `fastapi-deploy/manifest.yaml`:
+
+```yaml
+checkpoint_version: v3   # was v2
+```
+
+Optional env override at deploy time: `CODEGEN_CHECKPOINT_VERSION=v3`.
+
+### Step 5 — Redeploy Cloud Run
+
+From repo root (same on Windows, macOS, Linux):
+
+```powershell
+python fastapi-deploy/infra/cloudrun/deploy.py
+```
+
+The script rebuilds the image (includes updated `manifest.yaml`), deploys to
+Cloud Run, and prints the HTTPS URL. Update `CLOUD_RUN_SERVICE_URL` in
+`infra/cloudrun/deploy.env` if the URL changes.
+
+Cloud Run container env (set by `deploy.py` / Dockerfile):
+
+- `CODEGEN_ADAPTER_SOURCE=hub` — pull adapters from Hugging Face, not local disk
+- `HF_ORG=codegenstudio`
+- `CODEGEN_EAGER_LOAD=true` — load model + adapters at startup
+
+**Cold start:** first request after idle may take **1–3+ minutes** while the
+container downloads the base model and Hub adapters. Hit `/health` until
+`"status":"ok"` and `"loaded": true` before sending chat requests.
+
+### Step 6 — Verify
+
+1. **Health:** `<url>/health` → `"checkpoint_version": "v3"`, adapters list Hub ids
+2. **Docs:** `<url>/docs` → try `POST /v1/chat/completions` with `"intent": "text2sql"`
+3. **Optional:** re-run a small smoke eval pointing at the Cloud URL (agent tool will use this later)
+
+### Quick reference (copy-paste)
+
+Replace `v3` with your new version tag:
+
+```powershell
+# From repo root — after eval looks good
+$env:PYTHONPATH = "fastapi-deploy"
+python fastapi-deploy/publish/push_adapters.py --version v3 --dry-run
+python fastapi-deploy/publish/push_adapters.py --version v3
+# Edit manifest.yaml: checkpoint_version: v3
+python fastapi-deploy/infra/cloudrun/deploy.py
+curl.exe "<your-cloud-run-url>/health"
+```
+
+### Publish adapters (script reference)
+
+`publish/push_adapters.py` is version-agnostic — pass any `--version` that exists
+under `models/checkpoints/`. Flags: `--org`, `--token`, `--private`, `--dry-run`.
 
 ---
 

@@ -1,167 +1,229 @@
-# Open Questions — PEFT / LoRA Initiative
+# Open Questions — AI Database Agent (`database-agent`)
 
-Resolve before/early in planning. Each notes why it matters and the current assumption.
+> **Research date:** 2026-07-19  
+> **Status:** Unresolved — Planning phase must decide or defer explicitly
+
+## 1. Architecture & API
+
+### Q-1: Capstone API contract — shim or adapter?
+
+**Question:** Should we add `/generate/sql`, `/generate/nosql`, etc. to `codegen_api`, or only build an HTTP client that maps to existing `/v1/chat/completions`?
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **A. Client adapter only** | No deploy change; faster MVP | Spec diagram differs from implementation |
+| **B. Add `/generate/*` routes** | Spec-compliant | Duplicate logic; redeploy Cloud Run |
+| **C. Both** | Best of both | Maintenance burden |
+
+**Recommendation for planning:** **Option A** for MVP; optional B later if capstone grading requires exact paths.
 
 ---
 
-## ✅ Resolved Decisions (2026-06-21)
+### Q-2: Where does the agent package live?
 
-| # | Decision | Choice |
-|---|----------|--------|
-| Base model | Training base | **`Salesforce/codegen-350M-multi`** (causal LM) |
-| Q1 | Adapter strategy | **One LoRA adapter per task** (text2sql / sql2nosql / nosql2doc) |
-| Q3 | LoRA vs QLoRA | **Plain LoRA only** (no QLoRA / bitsandbytes) |
-| Q4 | Full FT vs LoRA | **LoRA only — no full fine-tuning** |
-| Q5 | Training corpus | **Full Spider train + held-out validation; BIRD later** |
-| Q6 | Quality-flag filter | **Train only on rows where `overall_correct == True`** |
-| Q10/Q11 | Hyperparameters & target modules | **Finalized — see config block below** |
-| Q12 | Sequence-length budget | **Reserve target first: `max_length=2048`, `max_target_tokens=256` → prompt budget = 1792** |
-| Q14 | Adapter storage & loading | **Do NOT merge — keep adapters separate, load by task intent** |
-| Q18 | Primary metric per task | **LLM judge + AST/structural gates** — headline `qwen_correct_rate`; see per-task detail below |
-| Q21 | Target training hardware | **Auto-detect at runtime** — CUDA → MPS → CPU via `resolve_device()`; must run on any machine |
-| Q22 | Dependency additions | **`peft` + `trl`** in `requirements.txt` (installed via `environment.yml`); no `bitsandbytes` |
+**Question:** Follow spec `database-agent/` at repo root, or nest under existing `agent/`?
 
-### Q18 — Primary success metric (per task)
+| Option | Notes |
+|--------|-------|
+| `agent/` + `tools/` + `mcp/` at repo root | Matches spec §12; `agent/doc/` already exists |
+| Separate top-level `database-agent/` | Spec folder name; duplicates `agent/` |
 
-Composite evaluation via existing `QwenEvaluator` + syntax/structural checks (not EM, exec acc,
-ROUGE-L, or BERTScore as pass/fail criteria):
+**Recommendation:** Extend **`agent/`** (add Python packages alongside `agent/doc/`) plus top-level `tools/` and `mcp/` — avoids two agent folders.
 
-| Task | Headline metric | LLM judge field | AST / structural gates |
-|------|-----------------|-----------------|------------------------|
-| text2sql | `qwen_correct_rate` | `sql_correct` (Qwen) | `SQLValidator` syntax + completeness; exact-match short-circuit; table-mismatch rejection |
-| sql2nosql | `qwen_correct_rate` | `query_correct` (Qwen) | MongoDB shell syntax validity; parsed `structural_equivalence` (filter/projection/collection) as diagnostic |
-| nosql2doc | `qwen_correct_rate` | `doc_correct` (Qwen) | Empty/invalid output rejection; doc structural validity checks |
+---
 
-Secondary metrics (BLEU, ROUGE-L, BERTScore, token-F1, exec acc) remain logged for analysis
-but do **not** define run success.
+### Q-3: MCP first or LangGraph tools first?
 
-### Q21 — Target training hardware
+**Question:** Implement LangGraph with native Python tools first, then wrap in MCP — or MCP from day one?
 
-**No fixed hardware target.** Training and inference pick the best available backend at
-runtime and must remain runnable on any machine:
+**Recommendation:** LangGraph native tools **first** (Stage 4), MCP wrapper **second** (Stage 5) — reduces debug surface.
 
-1. **`device: auto`** (default in `configs/default.yaml`) → `src/utils/device.resolve_device()`
-2. **Priority:** CUDA (if available) → MPS (Apple Silicon) → CPU (universal fallback)
-3. **Override:** optional config / CLI `--device cuda|mps|cpu` for forced runs or debugging
-4. **Precision:** keep fp32 (no bf16/fp16 flags in training config) for cross-device compatibility;
-   CUDA may still benefit from larger effective batch sizes; CPU runs may need a smaller
-   `per_device_train_batch_size` if OOM — tune at runtime, not baked into the plan
+---
 
-LoRA on `codegen-350M-multi` is feasible on all three backends; wall-clock varies by device.
+## 2. Orchestrator LLM
 
-### Finalized `configs/default.yaml` block
+### Q-4: Which LLM powers the agent?
 
-```yaml
-model:
-  name: Salesforce/codegen-350M-multi
+**Question:** Spec says "GPT-5.5 (or compatible)". What is available to the student?
 
-training:
-  task_type: CAUSAL_LM
+| Option | Cost | Tool calling | Offline |
+|--------|------|--------------|---------|
+| OpenAI API (gpt-4o-mini / gpt-4.1) | Paid | ✅ Strong | ❌ |
+| Azure OpenAI | Paid | ✅ | ❌ |
+| Ollama local (llama3, etc.) | Free | ⚠️ Weaker | ✅ |
+| No orchestrator — deterministic FSM | Free | N/A | ✅ |
 
-  learning_rate: 2e-4
-  weight_decay: 0.01
+**Impact:** FR-6 (NL summary) and tool selection quality depend on this.
 
-  epochs: 5
+**Planning must decide:** Budget vs demo reliability.
 
-  per_device_train_batch_size: 8
-  per_device_eval_batch_size: 8
+---
 
-  gradient_accumulation_steps: 4   # effective batch size = 32
+### Q-5: Is a local FSM acceptable for capstone if labeled "agent"?
 
-  warmup_ratio: 0.05
+**Question:** Could a deterministic state machine (without LLM orchestrator) satisfy grading if MCP + tools + retry exist?
 
-  lr_scheduler_type: cosine
+**Note:** Spec emphasizes LangGraph and tool calling — likely needs at least one LLM for planning/summary.
 
-  max_grad_norm: 1.0
+---
 
-  fp16: false
-  bf16: false                      # full-precision (fp32) — MPS/CPU friendly
+## 3. Schema Tool
 
-lora:
-  enabled: true
+### Q-6: Schema source for MVP?
 
-  r: 16
-  lora_alpha: 32
-  lora_dropout: 0.05
+| Option | Description |
+|--------|-------------|
+| **A. Live Postgres introspection** | `information_schema` via SQLAlchemy/psycopg |
+| **B. TEND / Spider gold JSONL** | Static schema from `data/spider_gold_validation.jsonl` per `db_id` |
+| **C. Hybrid** | Live PG when connected; fallback to file |
 
-  bias: none
+**Recommendation:** **C** for capstone — demo works offline with gold file; live PG when configured.
 
-  target_modules:
-    - qkv_proj
-    - out_proj
+---
 
-evaluation:
-  max_new_tokens: 256
+### Q-7: Schema selection algorithm v1?
+
+| Option | Complexity | Quality |
+|--------|------------|---------|
+| Keyword overlap (table names in question) | Low | OK for Spider |
+| Embedding similarity (planned in ui-tool) | Medium | Better |
+| LLM-based table picker (orchestrator sub-call) | Medium | Flexible; extra cost |
+
+**Recommendation:** Keyword + FK expansion for MVP; embedding in Phase 2 enhancement.
+
+---
+
+## 4. Execution Tool
+
+### Q-8: Execution backend?
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **A. Wrap `database_execution.py` / TEND** | Proven eval path | External repo; Windows path |
+| **B. Direct psycopg + pymongo** | Self-contained agent | Duplicate TEND logic |
+| **C. Reuse `sql_executor.py` SQLite** | Simple | Not Postgres — wrong for capstone demo |
+
+**Recommendation:** **B** for agent MVP (direct psycopg read-only); keep TEND for eval only.
+
+---
+
+### Q-9: Which database for live demo?
+
+**Question:** User's Postgres instance, TEND catalog DB, or SQLite Spider files?
+
+**Needs user input:** Connection string / `db_id` for capstone demo.
+
+---
+
+## 5. Retry & Error Recovery
+
+### Q-10: What gets sent to Capstone API on retry?
+
+**Question:** Format for FR-5 error feedback prompt?
+
+Draft:
+
+```
+Previous SQL: <sql>
+Database error: <error>
+Schema: <subset>
+Task: text2sql
+Generate corrected SQL only.
 ```
 
-> **Verify before first run:** confirm `qkv_proj` and `out_proj` are the actual attention
-> module names in `CodeGenForCausalLM` via `model.named_modules()`. If LoRA reports zero
-> trainable params, the names are wrong.
+**Planning must specify** exact prompt template in `agent/prompts.py`.
 
 ---
 
-## Still Open
+### Q-11: Retry on validation failure vs execution failure?
 
-## 1. Scope & Strategy
+**Question:** Retry only on DB error, or also on `SQLValidator` syntax failure before execution?
 
-*(All resolved — see table above.)*
+**Recommendation:** Both — syntax fail before DB; counts toward max 3.
 
-## 2. Data
+---
 
-6. ~~**Filter on quality flags?**~~ **RESOLVED:** keep only rows where
-   **`overall_correct == True`** (Qwen judged both schema and query equivalence correct).
-   This is the single training filter; it implicitly requires `conversion_success` too.
-   *Caveat: tighter filter = fewer rows, and `overall_correct` is a 0.5B-model judgment —
-   monitor surviving row count after regenerating the full Spider train split.*
-7. **Documentation supervision source** — train against the Qwen-generated `documentation`
-   column (distillation) or the rule-based `ReferenceDocumentationBuilder` output, or both?
-8. **Train/validation/test split definition** — how to guarantee disjointness (row-level
-   vs `db_id`-level) and freeze it for reproducible comparison? (Spider train → train;
-   Spider dev/validation → held-out eval.)
-9. **Dataset size target** — full ~7k, or a curated high-quality subset? Trade-off between
-   coverage and generation cost/quality (Qwen doc generation is the bottleneck).
+## 6. Capabilities & Scope
 
-## 3. Training Configuration
+### Q-12: MVP scope — text2sql only or all three tasks?
 
-12. ~~**Sequence length budget**~~ **RESOLVED — reserve target space first:**
-    `max_length = 2048`, `max_target_tokens = 256` → **prompt budget = 2048 − 256 =
-    1792 tokens**. Truncate the *prompt* (schema region) to ≤1792 tokens; never truncate
-    the target. Skip/log any example whose target exceeds 256 tokens.
-13. **Loss masking** — confirm prompt tokens masked to `-100` so loss is computed on the
-    target completion only.
+**Question:** Implement full pipeline (text2sql → sql2nosql → doc) in agent for capstone?
 
-## 4. Integration & Tooling
+**Recommendation:** **MVP = text2sql only**; stub intent routing for other tasks in graph; Phase 2 adds sql2nosql path.
 
-14. ~~**Adapter storage & loading**~~ **RESOLVED — do NOT merge.** Keep each task's LoRA
-    adapter separate under `models/checkpoints/<task>/` (`adapter_config.json` +
-    `adapter_model.safetensors`) and **load by intent (task)** via
-    `PeftModel.from_pretrained(base, adapter_dir)`. Requires an adapter-aware path in
-    `model_loader` that detects `adapter_config.json` and wraps the cached base model
-    (see Q17). Preserves swappability; base model stays untouched in `models/base/`.
-15. **CLI / entry point** — new `scripts/train_lora.py` and `src/training/` package; args
-    for task, data path, output adapter dir (base model + hyperparameters come from config).
-16. **Trainer choice** — HF `Trainer` (manual collator) vs `trl.SFTTrainer` (adds `trl`
-    dep, handles packing/masking).
-17. **Eval integration** — reuse `BenchmarkRunner` with the fine-tuned model; need a way to
-    point it at a per-task adapter (likely an adapter-aware path in `model_loader`).
+---
 
-## 5. Success Criteria
+### Q-13: Explain SQL — in or out?
 
-18. ~~**Primary metric per task**~~ **RESOLVED:** **LLM judge + AST/structural gates** —
-    headline metric is **`qwen_correct_rate`** per task (see resolved table above). Reuses
-    `src/evaluation/qwen_evaluator.py` and existing evaluators; EM / exec acc / ROUGE-L /
-    BERTScore are secondary diagnostics only.
-19. **Minimum acceptable lift** over baseline to call a run successful?
-20. **Comparison protocol** — same eval set, same decoding strategy, logged to the same
-    MLflow store as the baseline runs in `results/`.
+**Question:** Spec lists `/generate/explanation` — not in API or adapters.
 
-## 6. Environment
+**Recommendation:** **Out of MVP**; document as future adapter or orchestrator-only explanation without fine-tuned model.
 
-21. ~~**Target training hardware**~~ **RESOLVED:** **auto-detect CUDA → MPS → CPU** via
-    existing `resolve_device()` (`device: auto` in config); optional override; must run on
-    any machine (see Q21 detail above).
-22. ~~**Dependency additions**~~ **RESOLVED:** add **`peft>=0.11.0`** and **`trl>=0.9.0`**
-    to `requirements.txt` (pulled in by `environment.yml` pip install). **`bitsandbytes`**
-    not added — plain LoRA only (Q3).
-23. **Adapter versioning** — should trained adapters be committed/shared, or treated as
-    regenerable artifacts (current `.gitignore` ignores most of `models/`)?
+---
+
+### Q-14: SQL documentation vs nosql2doc naming?
+
+**Question:** Does capstone require SQL doc generation or Mongo query doc?
+
+**Current API:** Only `nosql2doc` adapter.
+
+**Needs alignment** with supervisor / spec interpretation.
+
+---
+
+## 7. Dependencies & Environment
+
+### Q-15: Separate requirements file for agent?
+
+**Question:** Add `agent/requirements.txt` (langgraph, mcp, httpx, openai) vs extend root `requirements.txt`?
+
+**Recommendation:** `agent/requirements.txt` + document install in agent README — keeps ML env separate.
+
+---
+
+### Q-16: Can `tool/` be restored from another machine?
+
+**Question:** text2sql-ui-tool code exists elsewhere but not in this checkout — restore or rewrite?
+
+**Action:** User to confirm if `tool/` exists on Mac/backup before planning reimplementation effort.
+
+---
+
+## 8. Edge Cases
+
+| ID | Edge case | Planning note |
+|----|-----------|---------------|
+| E-1 | Cloud Run returns `clarify` message | Force `intent` on request |
+| E-2 | Empty schema subset | Agent asks user to clarify |
+| E-3 | Zero-row result | NL summary must say "no results" |
+| E-4 | Large result sets | Row cap + truncation in summary |
+| E-5 | Concurrent tool calls | Sequential for MVP |
+| E-6 | Invalid JSON from orchestrator tool args | Validate with Pydantic |
+| E-7 | Mongo path without SQL intermediate | Multi-step graph state |
+
+---
+
+## 9. Decisions Required Before Implementation
+
+| Priority | Question ID | Decision maker |
+|----------|-------------|----------------|
+| P0 | Q-1 | Planning (API adapter) |
+| P0 | Q-4 | User + planning (orchestrator LLM) |
+| P0 | Q-8, Q-9 | User (DB + execution backend) |
+| P0 | Q-12 | Planning (MVP scope) |
+| P1 | Q-2, Q-3 | Planning (repo layout) |
+| P1 | Q-6, Q-7 | Planning (schema tool) |
+| P1 | Q-10, Q-11 | Planning (retry prompts) |
+| P2 | Q-13, Q-14 | User / supervisor |
+| P2 | Q-16 | User (restore tool/) |
+
+---
+
+## 10. Planning Output Expectations
+
+Each open question should appear in `planning/feature-plans/database-agent-plan.md` as either:
+
+- **Decision** (chosen option + rationale), or  
+- **Deferred** (post-MVP with tracking ID)
+
+No implementation until `planning/approvals/database-agent-approval.md` is approved.

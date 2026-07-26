@@ -4,7 +4,7 @@ Base model and LoRA adapters under `models/`. Hyperparameters, datasets, trainin
 
 Sources: `configs/default.yaml`, `models/checkpoints/{v1,v2,v3,v4}/**/{adapter_config.json,run_metadata.json,training_args.bin,training_summary_*.json}`, `results/spider_gold_validation_*/metrics.json`.
 
-Comparison reports: [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md) · [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md)
+Comparison reports: [lora-v1-v3-vs-baseline-comparison.md](lora-v1-v3-vs-baseline-comparison.md) · [lora-v4-vs-all-versions-comparison.md](lora-v4-vs-all-versions-comparison.md) · [lora-v4-beam-decoding-comparison.md](lora-v4-beam-decoding-comparison.md)
 
 ---
 
@@ -179,7 +179,30 @@ The notebook also writes a Kaggle-specific `.env` (paths under `/kaggle/working/
 | sql2nosql | 0.074 | **0.045** | ~19,823 s (~5.5 h) | Complete |
 | nosql2doc | 0.991 | **1.067** | ~25,454 s (~7.1 h) | Complete |
 
-### Gold validation metrics
+### Gold validation metrics (latest — 2026-07-25, n=50, DB execution + judge)
+
+`results/spider_gold_validation_codegen-350M-multi_lora-v3/` · baseline: `..._baseline-v3/`
+
+| Task | Execution acc | Exact match | Structural / Emb / Judge |
+|------|---------------|-------------|--------------------------|
+| text2sql | **0.66** | **0.48** | struct 0.95 |
+| sql2nosql | **0.86** | **0.78** | struct 0.98 |
+| documentation | — | — | emb 0.96, judge **8.82** |
+
+Comparison: [lora-v1-v3-vs-baseline-comparison.md](lora-v1-v3-vs-baseline-comparison.md)
+
+### Production — Hub + Cloud Run (2026-07-25)
+
+| Step | Status | Detail |
+|------|--------|--------|
+| Hugging Face publish | **Done** | `codegenstudio/codegen-350M-{text2sql,sql2nosql,nosql2doc}-lora` (v3 weights) |
+| `manifest.yaml` | **v3** | `fastapi-deploy/manifest.yaml` → `checkpoint_version: v3` |
+| Cloud Run deploy | **Done** | Revision `codegen-api-00002-h9r`, region `asia-south2` |
+| Health check | **OK** | `loaded: true`, `adapter_source: hub`, `checkpoint_version: v3` |
+
+**Service URL:** https://codegen-api-161349047936.asia-south2.run.app
+
+### Gold validation metrics (earlier run)
 
 `results/spider_gold_validation_codegen-350M-multi_lora-v3_0907_1321/`
 

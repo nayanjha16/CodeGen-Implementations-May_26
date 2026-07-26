@@ -3,7 +3,6 @@
 > **Purpose:** Everything you need to build the final defense / demo presentation.  
 > **Not a summary** — copy talking points, tables, diagrams, and demo scripts into slides.  
 > **Final model version for results:** **LoRA v4** (`checkpoint_version: v4` in `hf-deploy/manifest.yaml`).  
-> **Update placeholders** marked `TODO:` (team names, demo video URL, Cloud Run URL if shown live).
 
 **This document is self-contained** — all capstone context, architecture, methodology, dataset details, v4 results, deployment guides, and Q&A prep are included below. External links are limited to public web resources (Hugging Face, PyPI, Ollama, etc.).
 
@@ -55,10 +54,9 @@ All team members contributed across every project task (dataset, training, evalu
 
 **On slide:** list names only — no roles or per-person task split.
 
-- Institution / program / course name — **TODO**
-- Date — **TODO**
-- Mentors / advisors (if required) — **TODO**
-- Repo / org: `care2achieve` (HF org for models + dataset)
+- Institution — **International Institute of Information Technology Hyderabad (IIITH)**
+- Program - **PG Certification in Artificial Intelligence and Machine Learning**
+- Date — **8th and 9th August 2026**
 
 
 
@@ -350,7 +348,7 @@ flowchart LR
 | **OpenAI-compatible API**   | `POST /v1/chat/completions`, `GET /v1/models` | Cursor Settings → custom model base URL works today       |
 | **Stateless inference**     | Server only sees the prompt                   | Extension owns workspace; model never scans the repo      |
 | **Intent routing**          | Rules + embeddings → adapter                  | User speaks naturally (“write SQL…”, “convert to Mongo…”) |
-| **Schema in prompt (MVP)**  | Client injects schema                         | Extension / tool retrieves schema locally, then calls API |
+| **Schema in prompt (MVP)**  | Client injects schema via **RAG** (retrieve top-K tables → DDL → prompt) | Extension / tool runs local retrieval, then calls API |
 | **Multi-adapter, one base** | `set_adapter` hot-swap                        | One endpoint, three skills, small download footprint      |
 
 
@@ -408,7 +406,7 @@ Response (+ routing metadata: intent, confidence, method)
 
 **Talking line for judges:**  
 
-> “We already ship the **server contract** Cursor and VS Code need. The desktop tool proves schema retrieval + execute loop today; the VS Code extension is the same pattern inside the editor.”
+> “We already ship the **server contract** Cursor and VS Code need. The desktop tool proves **RAG-based schema injection** (retrieve top-K tables → inject DDL into prompt) + execute loop today; the VS Code extension is the same pattern inside the editor.”
 
 
 
@@ -420,7 +418,7 @@ Put these bullets on the slide — judges care about **impact**, not only metric
 | Reason                     | Explanation                                                                                                                   |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | **Close the loop**         | Research metrics ≠ usefulness. The tool **generates → validates (SELECT-only) → executes** on real PostgreSQL and shows rows. |
-| **Schema realism**         | Uses embedding-based **table selection** + Pagila/DVD schema — closer to how an IDE would inject schema.                      |
+| **Schema realism**         | Uses **RAG** — embedding-based top-K **table retrieval** + DDL injection into the prompt (Pagila/DVD schema) — same pattern an IDE extension would use. |
 | **Product path**           | Shows the same API Cursor would call; tool is a **reference client**.                                                         |
 | **Demoability**            | Live UI + activity log (`schema_loaded` → `sql_generated` → `rows_retrieved`) beats a CSV of scores.                          |
 | **Safety**                 | Validation blocks non-SELECT SQL before execution — important for a student / enterprise story.                               |
@@ -795,7 +793,7 @@ Second chart: Documentation judge 0.1 → 7.8.
 - Gold validation set is **50** examples (speed/reproducibility); full TEND test (~1.6k) is available via `--full-split`
 - Documentation **exact match** remains low (2%) — judge/embeddings are the right lens
 - 350M model still below frontier LLMs on hard Spider/BIRD queries
-- Schema must be supplied in the prompt (MVP) — IDE extension would automate retrieval
+- Schema must be supplied in the prompt (MVP) — the desktop tool already automates this via **RAG** (top-K table retrieval + DDL injection); Cursor/VS Code would run the same client-side step
 - Cloud Run cold starts + model load latency for first request
 
 
@@ -946,7 +944,7 @@ Response includes `codegen_routing` (`intent`, `confidence`, `method`: rules vs 
 | UI            | CustomTkinter native desktop (no browser)                                                                       |
 | Inference     | Calls hf-deploy FastAPI (local or Cloud Run) — **does not** load LoRA in-process                                |
 | Database      | PostgreSQL **dvd** (Pagila rental schema) via `tool/scripts/setup_dvd_database.sh`                              |
-| Flow          | NL question → schema/table selection (embeddings) → prompt → SQL → **validate SELECT** → execute → results grid |
+| Flow          | NL question → **RAG** (embed top-K tables → inject DDL into prompt) → SQL → **validate SELECT** → execute → results grid |
 | Extensibility | Stub tabs for SQL→NoSQL and Documentation                                                                       |
 | Demo queries  | Listed below (single-table + join examples)                                                                     |
 
@@ -969,6 +967,16 @@ Desktop AI SQL Assistant
 ```
 
 Uses the same prompt-building and syntax-validation logic as the research Text2SQL pipeline.
+
+### RAG schema injection (`tool/`)
+
+The desktop tool does **not** paste the full database schema into every prompt. It runs a lightweight **Retrieval-Augmented Generation (RAG)** step locally before calling the model:
+
+1. **Retrieve** — Introspect PostgreSQL (`schema_loaded`), embed each table’s metadata with `BAAI/bge-small-en-v1.5`, and rank tables by cosine similarity to the user question (`tables_selected`; top-K + FK bridge expansion for joins).
+2. **Augment** — Build DDL for only the retrieved tables (`build_schema_ddl`) and inject it into the Text2SQL prompt via `PromptBuilder` (`prompt_built`).
+3. **Generate** — Send the augmented prompt to hf-deploy FastAPI; the server stays stateless and never sees the full repo or database.
+
+This keeps prompts within context limits on large schemas (e.g. Pagila/DVD) while giving the model the tables it actually needs.
 
 ### Demo query bank (DVD / Pagila schema)
 
@@ -1013,7 +1021,7 @@ Three columns:
 
 ## Speaker notes (Slide 5)
 
-> “Research adapters are not enough. We published three LoRA repos and the TEND dataset on Hugging Face. The serving layer is an OpenAI-compatible FastAPI app on **Google Cloud Run** with intent-based adapter hot-swap — Cursor can use it as a custom model. The **desktop tool** is our product proof: it pulls schema, calls the same API, validates SQL, and runs it on PostgreSQL so users see real answer rows.”
+> “Research adapters are not enough. We published three LoRA repos and the TEND dataset on Hugging Face. The serving layer is an OpenAI-compatible FastAPI app on **Google Cloud Run** with intent-based adapter hot-swap — Cursor can use it as a custom model. The **desktop tool** is our product proof: it uses **RAG** to retrieve only the relevant tables and inject their DDL into the prompt, calls the same API, validates SQL, and runs it on PostgreSQL so users see real answer rows.”
 
 ---
 
@@ -1026,7 +1034,7 @@ Three columns:
 ## On-screen content
 
 - Title: **Demo — AI SQL Assistant + Multi-Adapter API**
-- Embedded or linked video (YouTube / Drive / local file) — **TODO: paste URL**
+- Embedded or linked video (YouTube / Drive / local file) — **https://youtu.be/pcQ7tf6djOs**
 - Optional QR code to video or Cloud Run health endpoint
 - 3–5 still frames as backup if video fails
 
@@ -1104,8 +1112,8 @@ Keep open:
 | text2sql adapter    | [https://huggingface.co/care2achieve/codegen-350M-text2sql-lora](https://huggingface.co/care2achieve/codegen-350M-text2sql-lora)   |
 | sql2nosql adapter   | [https://huggingface.co/care2achieve/codegen-350M-sql2nosql-lora](https://huggingface.co/care2achieve/codegen-350M-sql2nosql-lora) |
 | nosql2doc adapter   | [https://huggingface.co/care2achieve/codegen-350M-nosql2doc-lora](https://huggingface.co/care2achieve/codegen-350M-nosql2doc-lora) |
-| CodeGen repo / tool | **TODO**                                                                                                                           |
-| Demo video          | **TODO**                                                                                                                           |
+| CodeGen repo / tool | **https://github.com/nayanjha16/CodeGen-Implementations-May_26/blob/Group-43**                                                                                                                           |
+| Demo video          | **https://youtu.be/pcQ7tf6djOs**                                                                                                                           |
 
 
 **Questions?**
@@ -1172,7 +1180,7 @@ Most student Text-to-SQL projects stop at a notebook + BLEU. We shipped a **data
 | 3   | **Independent gold evaluation + exec metrics** | Frozen 50-row gold + PG/Mongo exec | Fair version comparison; correctness beyond string match                       |
 | 4   | **OpenAI-compatible multi-adapter gateway**    | Cloud Run API service              | Cursor / any SDK can call it today                                             |
 | 5   | **Published Hub artifacts**                    | 3× LoRA repos + dataset            | Reusable outside our laptop                                                    |
-| 6   | **Product client**                             | Desktop AI SQL Assistant           | Schema select → generate → validate → **execute** on live PostgreSQL           |
+| 6   | **Product client**                             | Desktop AI SQL Assistant           | **RAG** (top-K table retrieval → DDL in prompt) → generate → validate → **execute** on live PostgreSQL |
 | 7   | **IDE path designed**                          | Cursor now; VS Code extension spec | Local-first schema, stateless model                                            |
 
 
@@ -1596,7 +1604,7 @@ Mature teams show **error analysis**. It builds trust and sets up future work.
 | ---------------------------- | ---------------------------------------------- | --------------------------------------- |
 | 350M parameter ceiling       | Hard Spider/BIRD queries still miss            | Larger code LM base; keep LoRA recipe   |
 | 50-example headline bench    | Wide confidence intervals                      | Also report `--full-split` in follow-up |
-| Schema-in-prompt MVP         | Server doesn’t see the repo                    | Tool / VS Code local schema retrieval   |
+| Schema-in-prompt MVP         | Server doesn’t see the repo                    | Tool / VS Code **RAG**: retrieve top-K tables → inject DDL into prompt |
 | Doc exact match ~2%          | Verbatim docs rare                             | Judge + embeddings; accept paraphrase   |
 | Cold start on Cloud Run      | First request slow                             | Min instances / warmup / local cache    |
 | Beam vs greedy tradeoff      | One decoding ≠ best for all tasks              | Per-task decoding policy                |
@@ -1838,7 +1846,7 @@ User question
 | Text2SQL · SQL2NoSQL · Doc | Task-specific prompt, generate, validate     |
 | Evaluation engine          | Metrics, semantic judge, experiment tracking |
 | Multi-adapter API gateway  | Intent classifier, adapter router, Cloud Run |
-| Desktop AI SQL Assistant   | Schema retrieval, safe execute, desktop UI   |
+| Desktop AI SQL Assistant   | **RAG** schema injection (top-K tables → prompt), safe execute, desktop UI |
 | TEND dataset factory       | Execution-validated dataset generation       |
 
 
@@ -1846,7 +1854,7 @@ User question
 
 ## Speaker notes (A8)
 
-> “Training freezes the base and writes three adapters. Eval never chains predictions. Serving classifies intent and hot-swaps adapters in one process. The tool is just a careful client that adds schema and execution.”
+> “Training freezes the base and writes three adapters. Eval never chains predictions. Serving classifies intent and hot-swaps adapters in one process. The tool is just a careful client that adds **RAG** — retrieve relevant tables, inject DDL into the prompt — and execution.”
 
 ---
 
@@ -1886,7 +1894,7 @@ Point Cursor’s OpenAI-compatible base URL at Cloud Run or `localhost:8000/v1`,
 
 ### Why build a separate tool instead of only Cursor?
 
-Cursor proves API compatibility; the tool proves **schema retrieval + safe execute + UX** without requiring every judge to configure Cursor.
+Cursor proves API compatibility; the tool proves **RAG schema injection + safe execute + UX** without requiring every judge to configure Cursor.
 
 ### What is the relationship between TEND and CodeGen repos?
 
@@ -1902,7 +1910,6 @@ Ship VS Code extension (local index + remote inference); full-split eval dashboa
 
 # Slide-building checklist
 
-- [ ] Fill **TODO** team / date / video / repo links on slides 1, 6, 7  
 - [ ] Use **v4 numbers only** as “final results” (mention v1–v3 as progression)  
 - [ ] Export 1 architecture diagram + 1 results chart as high-res images  
 - [ ] Record demo video with backup stills  
@@ -2547,7 +2554,9 @@ python tool/app.py
 
 ### Flow
 
-NL question → embedding-based table selection → prompt build → FastAPI generate → **SELECT-only validation** → execute on PostgreSQL → results grid + activity log.
+NL question → **RAG** (embedding-based top-K table retrieval → DDL injection into prompt) → FastAPI generate → **SELECT-only validation** → execute on PostgreSQL → results grid + activity log.
+
+**RAG step (client-side, `tool/core/schema_selector.py`):** embed table metadata with `BAAI/bge-small-en-v1.5`, rank by cosine similarity to the question, expand FK/bridge tables for joins when needed, then inject selected DDL into the prompt before inference.
 
 ### Activity Log Stages
 
@@ -2859,4 +2868,3 @@ CodeGen **evaluation** uses `qwen3:8b` semantic judge for documentation scoring 
 
 ---
 
-*End of detailed presentation guide. This file is self-contained — update TODOs (team, date, video URL), then copy each SLIDE / APPENDIX section into PowerPoint / Google Slides / Keynote.*

@@ -1,7 +1,7 @@
 # Stage 1 — Config + database layer
 
 **Date:** 2026-07-25  
-**Plan:** [implementation-plan.md](../../planning/feature-plans/agent/implementation-plan.md) Stage 1
+**Plan:** [database-agent-plan.md](../../planning/feature-plans/database-agent-plan.md)
 
 ## Implemented
 

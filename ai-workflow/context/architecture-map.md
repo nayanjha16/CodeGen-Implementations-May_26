@@ -1,24 +1,26 @@
 # Architecture Map (Context Sync)
 
-> Synced from `ai-workflow/research/architecture/architecture-map.md` on 2026-07-19  
-> **Active initiative:** `database-agent`
+> Synced from `ai-workflow/research/architecture/architecture-map.md` on 2026-07-26  
+> **Active initiative:** `database-agent` — **COMPLETE**
 
 ## Target flow
 
 `User → Agent (LangGraph) → [Schema | Capstone API | Execution] tools → NL answer`
 
-## Implemented today
+## Implemented
 
-- **Capstone API:** `fastapi-deploy/codegen_api` → Cloud Run  
-  URL: `https://codegen-api-161349047936.asia-south2.run.app`
-- **Eval / training:** `src/` pipeline (not wired to agent)
+- **Agent:** `agent/` — LangGraph, MCP, CLI, Web UI (88 tests)
+- **Capstone API:** `fastapi-deploy/codegen_api` → Cloud Run (LoRA v3)
+- **Eval / training:** `src/` pipeline (unchanged; agent imports prompts at runtime)
 
-## Missing
+## Entry points
 
-- `agent/` Python modules, `tools/`, `mcp/`, retry loop, orchestrator LLM
+- CLI: `python -m agent.main`
+- MCP: `python -m agent.mcp.server`
+- Web: `python -m agent.web`
 
-## Key gap
+## Resolved
 
-Spec uses `/generate/*`; deployed API uses `/v1/chat/completions` — adapter required.
+- API contract: **client adapter** to `/v1/chat/completions` + `intent` (see `database-agent-approval.md`)
 
 See full map: [research/architecture/architecture-map.md](../research/architecture/architecture-map.md)

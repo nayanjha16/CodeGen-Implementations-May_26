@@ -12,7 +12,7 @@
 
 - `agent/requirements.txt`
 - `agent/README.md`
-- `ai-workflow/planning/feature-plans/agent/status.md`
+- `ai-workflow/context/current-state.md`
 
 ## Validation
 

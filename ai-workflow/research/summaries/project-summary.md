@@ -1,9 +1,9 @@
 # Executive Summary — AI Database Agent (`database-agent`)
 
-> **Research date:** 2026-07-19  
+> **Research date:** 2026-07-19 · **Implementation complete:** 2026-07-26  
 > **Feature slug:** `database-agent`  
 > **Primary spec:** `agent/doc/agent.md` (v1.0, IIIT Hyderabad AIML Capstone)  
-> **Research phase:** Complete — ready for Planning
+> **Research phase:** Complete · **Planning:** Complete · **Implementation:** Complete (Stages 1–10)
 
 ## Project Purpose
 
@@ -18,7 +18,7 @@ This sits on top of an existing **CodeGen Studio** research repo that already pr
 - **Deployed inference API** (`fastapi-deploy/codegen_api`) on Google Cloud Run
 - TEND-backed execution comparison for eval (`src/evaluation/database_execution.py`)
 
-The **agent layer is greenfield** — only the specification exists under `agent/doc/agent.md`.
+The **agent layer is implemented** under `agent/` — LangGraph orchestrator, MCP server, three tools, CLI, and Web UI. See `ai-workflow/context/current-state.md`.
 
 ## Business / Capstone Goals
 
@@ -43,19 +43,19 @@ User
   → Natural language answer
 ```
 
-**Current state:** Only the **Capstone API** (middle box) is implemented and deployed. Agent, MCP server, schema tool, execution tool wrapper, and retry loop are **not implemented**.
+**Current state (2026-07-26):** Full agent path implemented — user question → schema tool → CodeGen API → execution → retry → NL response. Entry points: CLI (`agent.main`), MCP (`agent.mcp.server`), Web UI (`agent.web`). **88 tests passed.**
 
 ## Technology Stack (Target vs Actual)
 
 | Component | Spec (`agent.md`) | Actual today |
 |-----------|-------------------|--------------|
-| Agent framework | LangGraph or OpenAI Agents SDK | **None** |
-| Orchestrator LLM | GPT-class with tool calling | **None** (classifier is rules/embeddings inside FastAPI, not an agent) |
-| Tool protocol | MCP | **None** |
+| Agent framework | LangGraph or OpenAI Agents SDK | **LangGraph** (`agent/orchestration/`) |
+| Orchestrator LLM | GPT-class with tool calling | **Ollama** (`gemma3:4b`) |
+| Tool protocol | MCP | **MCP stdio** (`agent/mcp/`) |
 | Capstone API | FastAPI `/generate/*` | **`codegen_api`** — OpenAI `/v1/chat/completions` on Cloud Run |
-| Fine-tuned models | Text2SQL, SQL2NoSQL, SQL2Doc LoRA | **v2 on Hub** (`codegenstudio`), served from Cloud Run |
-| Databases | PostgreSQL, MongoDB | **TEND** Postgres/Mongo for eval only; no agent-facing execution API |
-| Deployment | Docker / Cloud | **Cloud Run** live at `https://codegen-api-161349047936.asia-south2.run.app` |
+| Fine-tuned models | Text2SQL, SQL2NoSQL, SQL2Doc LoRA | **v3 on Cloud Run** |
+| Databases | PostgreSQL, MongoDB | **TEND Docker** + standalone Chinook/Northwind |
+| Deployment | Docker / Cloud | **Cloud Run** + local Web UI (`agent/web/`) |
 
 ## Key Workflows
 
@@ -66,13 +66,14 @@ User
 3. **Inference API** — User message (+ schema in prompt) → classifier → LoRA adapter → generated SQL/NoSQL/doc
 4. **Execution eval** — Compare predicted vs gold query results via TEND (`database_execution.py`)
 
-### Target (agent — not implemented)
+### Agent (implemented — `agent/`)
 
-1. User question → agent detects intent (text2sql / sql2nosql / doc / explain)
+1. User question → Ollama detects intent (text2sql / sql2nosql / doc / explain / validate)
 2. Schema tool returns subset of relevant schema
-3. FastAPI tool calls Cloud Run with schema-enriched prompt (force intent to avoid `clarify`)
-4. Execution tool runs query; on error, agent retries with error context (≤3)
-5. Agent summarizes rows in natural language
+3. CodeGen client calls Cloud Run with schema-enriched prompt + explicit `intent`
+4. Execution tool runs query; on error, retry with error context (≤3)
+5. Ollama summarizes rows (or deterministic listing summary for tabular results)
+6. Web UI: `python -m agent.web` for capstone demo
 
 ## Related Prior Work in Repo
 
@@ -87,6 +88,6 @@ User
 
 Implementation should **reuse** `codegen_api` (HTTP client), `database_execution.py` patterns (execution), and prompt builders in `src/text2sql/` — not duplicate model logic in the agent.
 
-Planning must resolve: API contract shim (`/generate/*` vs `/v1/chat/completions`), orchestrator LLM choice, schema tool v1 strategy, and MCP vs LangGraph-native tools first.
+Planning resolved all open questions — see `planning/approvals/database-agent-approval.md`. Implementation complete through Stage 10.
 
-**Next phase:** Planning (`ai-workflow/planning/feature-plans/database-agent-plan.md`).
+**Artifacts:** `planning/task-breakdowns/database-agent-tasks.md`, `planning/implementation-roadmaps/database-agent-roadmap.md`, `planning/dependency-analysis/database-agent-dependencies.md`, `validation/validation-reports/database-agent-validation.md`.

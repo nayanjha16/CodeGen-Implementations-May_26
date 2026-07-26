@@ -4,19 +4,52 @@
 
 ---
 
-A modular, reproducible research pipeline for evaluating and fine-tuning small code language models on a **three-stage database query workflow**:
+A modular, reproducible research pipeline for evaluating and fine-tuning small code language models on a **three-stage database query workflow**, plus a capstone **AI Database Agent** that orchestrates schema retrieval, Cloud Run CodeGen inference, and live database execution.
 
 ```
 Natural language  →  SQL  →  MongoDB  →  Documentation
+                              ↓
+                    AI Agent (LangGraph + MCP + Web UI)
 ```
 
 **Base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configure in `.env`)
 
-## Results snapshot
+## Documentation
 
-### LoRA v1 (n=5 smoke eval)
+| Doc | Purpose |
+| --- | --- |
+| [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) | Baseline → LoRA eval → publish → Cloud Run redeploy |
+| [docs/gold-set-commands.md](docs/gold-set-commands.md) | Frozen 50-example gold validation commands |
+| [docs/lora-v1-v3-vs-baseline-comparison.pptx](docs/lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline presentation |
+| [agent/README.md](agent/README.md) | AI Database Agent — CLI, MCP, Web UI |
+| [fastapi-deploy/README.md](fastapi-deploy/README.md) | CodeGen API on Cloud Run |
+| [ai-workflow/context/current-state.md](ai-workflow/context/current-state.md) | Agent implementation status |
 
-Spider gold validation · **5 examples** · semantic judge `gemma3:4b` · smoke-trained v1 adapters
+## Results snapshot (Spider gold validation)
+
+### LoRA v3 — production (n=50)
+
+**50 examples** · execution accuracy on TEND · adapters published to Cloud Run (`fastapi-deploy`)
+
+| Task | Execution accuracy (baseline v3 → LoRA v3) |
+| ---- | ---------------------------------------- |
+| Text-to-SQL | 14% → **66%** |
+| SQL-to-MongoDB | 22% → **86%** |
+| Documentation (judge /10) | 8.33 → **8.82** |
+
+| Output | Path |
+| ------ | ---- |
+| Baseline metrics | `results/spider_gold_validation_codegen-350M-multi_baseline-v3/` |
+| LoRA metrics | `results/spider_gold_validation_codegen-350M-multi_lora-v3/` |
+| Presentation | [docs/lora-v1-v3-vs-baseline-comparison.pptx](docs/lora-v1-v3-vs-baseline-comparison.pptx) |
+
+### LoRA v2 (n=50)
+
+Report: [baseline-vs-lora-v2-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md)
+
+### LoRA v1 — smoke (n=5)
+
+**5 examples** · semantic judge `gemma3:4b` · smoke-trained v1 adapters (50 training rows, 5 epochs per task)
 
 | Task | Judge correct rate (baseline → LoRA v1) |
 | ---- | --------------------------------------- |
@@ -24,20 +57,15 @@ Spider gold validation · **5 examples** · semantic judge `gemma3:4b` · smoke-
 | SQL-to-MongoDB | 40% → **100%** |
 | Documentation | 20% → **100%** |
 
-LoRA v1 adapters were smoke-trained (50 training rows, 5 epochs per task).  
 Report: [baseline-vs-lora-v1-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v1/baseline-vs-lora-v1-comparison.md)
-
-Full **n=50** eval is reserved for **LoRA v3** (when adapters are ready) — not re-run for v1 to save time.
-
-### LoRA v2 (n=50, execution accuracy)
-
-Report: [baseline-vs-lora-v2-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md)
 
 ---
 
 ## Complete end-to-end flow
 
-Run the project in this order: **setup → pre-flight → baseline eval → LoRA training → fine-tuned eval → compare results**.
+Run the training/eval pipeline in this order: **setup → pre-flight → baseline eval → LoRA training → fine-tuned eval → compare → (optional) publish & deploy → agent demo**.
+
+For copy-paste **gold-set (n=50)** commands see [docs/gold-set-commands.md](docs/gold-set-commands.md). Full publish/deploy steps: [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md).
 
 ```mermaid
 flowchart LR
@@ -55,18 +83,25 @@ flowchart LR
     G[metrics.json + CSVs]
   end
   subgraph train [4. LoRA training]
-    H[train_lora / train_all_lora\n--version v1]
-    I[models/checkpoints/v1/]
+    H[train_lora / train_all_lora\n--version v3]
+    I[models/checkpoints/v3/]
   end
   subgraph lora_eval [5. Fine-tuned eval]
-    J[run_baseline_eval\n--adapter-run v1]
+    J[run_baseline_eval\n--adapter-run v3]
     K[metrics.json + CSVs]
   end
   subgraph compare [6. Compare]
-    L[baseline-vs-lora report]
+    L[metrics.json + PPTX]
+  end
+  subgraph deploy [7. Publish optional]
+    M[publish adapters + Cloud Run]
+  end
+  subgraph agent [8. Agent demo]
+    N[agent CLI / Web UI]
   end
   A --> B --> C --> D --> E --> F --> G
   G --> H --> I --> J --> K --> L
+  L --> M --> N
 ```
 
 ### Pipeline stages (inference)
@@ -88,30 +123,30 @@ Question + SQL schema
 
 ### Phase summary
 
-| Phase | Goal | Key command |
-| ----- | ---- | ----------- |
-| **1. Setup** | Python env, deps, `.env`, `PYTHONPATH` | See [Quick Start](#quick-start) |
+| Phase | Goal | Key command / doc |
+| ----- | ---- | ----------------- |
+| **1. Setup** | Python env, deps, `.env`, `PYTHONPATH` | [Quick Start](#quick-start) |
 | **2. Pre-flight** | Verify LoRA targets, dataset, prompts | `inspect_lora_modules.py`, `test_tend_loader.py`, `test_prompt_parity` |
-| **3. Baseline eval** | Score **base model** (no adapter) | `run_baseline_eval.py --max-samples 5` (v1 smoke) or `--max-samples 50` (v2/v3) |
-| **4. LoRA training** | Fine-tune one adapter per task | `train_lora.py --version v1` or `train_all_lora.py --version v1` |
-| **5. Fine-tuned eval** | Score **base + adapters** on same set | v1: `--max-samples 5 --adapter-run v1` · v2/v3: `--max-samples 50 --adapter-run v2` |
-| **6. Compare** | Baseline vs LoRA metrics | Compare `results/*/metrics.json` or see comparison report under LoRA run folder |
+| **3. Baseline eval** | Score **base model** (no adapter) | `run_baseline_eval.py --max-samples 50 --output ..._baseline-v3` |
+| **4. LoRA training** | Fine-tune one adapter per task | `train_all_lora.py --version v3` |
+| **5. Fine-tuned eval** | Score **base + adapters** on same set | `run_baseline_eval.py --max-samples 50 --adapter-run v3 --output ..._lora-v3` |
+| **6. Compare** | Baseline vs LoRA metrics | `results/*/metrics.json`, [PPTX](docs/lora-v1-v3-vs-baseline-comparison.pptx) |
+| **7. Publish & deploy** | Hub + Cloud Run (production API) | [evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) |
+| **8. Agent demo** | Capstone orchestration over live API | [agent/README.md](agent/README.md) — `python -m agent.web` |
 
-**Typical outputs**
+Use `--max-samples 5` and `--version v1` for **smoke** runs on CPU before full v3 training.
+
+**Typical outputs (v3)**
 
 ```
-results/spider_gold_validation_codegen-350M-multi_baseline-v1/
+results/spider_gold_validation_codegen-350M-multi_baseline-v3/
   metrics.json, text2sql_details.csv, sql2nosql_details.csv, documentation_details.csv
 
-results/spider_gold_validation_codegen-350M-multi_lora-v1/
-  metrics.json, *_details.csv, baseline-vs-lora-v1-comparison.md
-
-results/spider_gold_validation_codegen-350M-multi_baseline-v2/
+results/spider_gold_validation_codegen-350M-multi_lora-v3/
   metrics.json, *_details.csv
-
-results/spider_gold_validation_codegen-350M-multi_lora-v2/
-  metrics.json, *_details.csv, baseline-vs-lora-v2-comparison.md
 ```
+
+**Earlier runs (v1 smoke, v2)** — same layout under `results/spider_gold_validation_codegen-350M-multi_*`.
 
 **Smoke-first on CPU:** use `--max-samples 5` before full 50-sample runs (~2–3 hours each with judge on CPU).
 
@@ -122,7 +157,9 @@ results/spider_gold_validation_codegen-350M-multi_lora-v2/
 - **Natural Language → SQL** generation with greedy and beam search decoding
 - **SQL → MongoDB** model-based conversion with gold references from TEND
 - **NoSQL → Documentation** generation (nosql2doc)
-- **LoRA fine-tuning** — one task-specific adapter per pipeline stage (text2sql, sql2nosql, nosql2doc)
+- **LoRA fine-tuning** — one task-specific adapter per pipeline stage (text2sql, sql2nosql, nosql2doc); **v3** published to Cloud Run
+- **AI Database Agent** — LangGraph + MCP + Web UI over Cloud Run CodeGen API ([agent/README.md](agent/README.md))
+- **Cloud Run inference API** — `fastapi-deploy/codegen_api` with multi-adapter routing
 - **Benchmark evaluation** on the [TEND silver dataset](https://huggingface.co/datasets/care2achieve/tend) (Spider + BIRD configs)
 - **Metrics**: Exact Match, Execution Accuracy, BLEU, ROUGE-L, BERTScore, CodeBLEU, Ollama semantic judge
 - **MLflow** experiment tracking
@@ -142,6 +179,10 @@ CodeGen-Implementations-May_26/
 │   ├── evaluation/          # Metrics, benchmarks, MLflow, semantic judge
 │   ├── llm/                 # Ollama client + Hugging Face judge fallback
 │   └── utils/               # Config, paths, logging, seeds
+├── agent/                   # AI Database Agent (LangGraph, MCP, Web UI)
+├── fastapi-deploy/          # CodeGen API bundle for Cloud Run
+├── ai-workflow/             # Research, planning, implementation logs
+├── docs/                    # Runbooks, gold-set commands, presentation
 ├── models/
 │   ├── base/                # Downloaded HuggingFace base models (cached once)
 │   └── checkpoints/         # LoRA runs: checkpoints/<run>/<task>/
@@ -155,6 +196,23 @@ CodeGen-Implementations-May_26/
 ├── .env.example
 └── requirements.txt
 ```
+
+### AI Database Agent (capstone)
+
+The agent under `agent/` orchestrates three tools — schema extraction, CodeGen API calls, and read-only DB execution — with Ollama for intent and summarization. It does **not** generate SQL locally.
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+python -m agent.main "How many customers are in the database?"
+python -m agent.web          # http://127.0.0.1:8080
+python -m agent.mcp.server     # MCP stdio
+```
+
+Full setup, demo questions, and tests: **[agent/README.md](agent/README.md)**. Config: copy `agent/.env.example` → `agent/.env`.
+
+### Deployed inference API
+
+LoRA **v3** adapters are served via `fastapi-deploy/codegen_api` on Cloud Run. See **[fastapi-deploy/README.md](fastapi-deploy/README.md)** for publish and redeploy steps.
 
 ## Quick Start
 
@@ -236,7 +294,7 @@ YAML settings in `configs/default.yaml` cover generation, evaluation limits, tra
 
 ## Recommended Workflow
 
-Full **baseline → train → fine-tuned eval → compare** cycle (PowerShell examples; same commands on bash):
+**Production path (v3, n=50):** see [docs/gold-set-commands.md](docs/gold-set-commands.md) for copy-paste commands and [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) for publish/deploy.
 
 ```powershell
 # Activate env and set PYTHONPATH each session
@@ -244,31 +302,35 @@ Full **baseline → train → fine-tuned eval → compare** cycle (PowerShell ex
 $env:PYTHONPATH = (Get-Location).Path
 
 # --- Phase 2: Pre-flight ---
-python scripts/inspect_lora_modules.py          # trainable LoRA params > 0
-python scripts/test_tend_loader.py              # TEND + gold validation load OK
-python -m unittest tests.training.test_prompt_parity -v   # fast; skip slow training tests on CPU
-python scripts/build_sft_dataset.py             # SFT builder smoke
+python scripts/inspect_lora_modules.py
+python scripts/test_tend_loader.py
+python -m unittest tests.training.test_prompt_parity -v
 
-# --- Phase 3: Baseline evaluation (base model, no adapter) ---
-# v1 smoke (n=5)
+# --- Phase 3: Baseline (v3, n=50) ---
+python scripts/run_baseline_eval.py --max-samples 50 --output spider_gold_validation_codegen-350M-multi_baseline-v3
+
+# --- Phase 4: LoRA training (v3) ---
+python scripts/train_all_lora.py --no-mlflow --device cpu --version v3
+python scripts/verify_lora_adapters.py --version v3
+
+# --- Phase 5: LoRA eval (v3, n=50) ---
+python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v3 --output spider_gold_validation_codegen-350M-multi_lora-v3
+
+# --- Phase 6–7: Compare + publish/deploy ---
+# metrics.json under results/ above; then see docs/evaluation-and-deploy-runbook.md
+
+# --- Phase 8: Agent demo (after Cloud Run has v3) ---
+pip install -r agent/requirements.txt
+Copy-Item agent\.env.example agent\.env
+python -m agent.web
+```
+
+**Smoke path (v1, n=5)** — faster CPU sanity check:
+
+```powershell
 python scripts/run_baseline_eval.py --max-samples 5 --output spider_gold_validation_codegen-350M-multi_baseline-v1
-# v2 full (n=50) — run when comparing v2 adapters
-python scripts/run_baseline_eval.py --max-samples 50 --output spider_gold_validation_codegen-350M-multi_baseline-v2
-
-# --- Phase 4: LoRA training ---
-# Smoke (one task)
 python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow --device cpu --version v1
-# Full (all three tasks)
-python scripts/train_all_lora.py --no-mlflow --device cpu --version v1
-python scripts/verify_lora_adapters.py --version v1
-
-# --- Phase 5: Fine-tuned evaluation (v1 smoke, n=5) ---
 python scripts/run_baseline_eval.py --max-samples 5 --adapter-run v1 --output spider_gold_validation_codegen-350M-multi_lora-v1
-
-# --- Phase 6: Compare ---
-# v1 (n=5): results/spider_gold_validation_codegen-350M-multi_lora-v1/baseline-vs-lora-v1-comparison.md
-# v2 (n=50): results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md
-# v3 (n=50): run after v3 adapters are trained — use baseline-v3 / lora-v3 output names
 ```
 
 Use `--no-judge` to skip the semantic judge (faster; no Ollama required). Without Ollama, the judge falls back to a cached Hugging Face model (e.g. `google/gemma-3-4b-it` for `gemma3:4b`).
@@ -649,6 +711,8 @@ See [data/DATASETS.md](data/DATASETS.md) for TEND field definitions, split namin
 | ------- | --- |
 | TEND (HF `care2achieve/tend`) | LoRA training (spider + bird train/test) |
 | `data/spider_gold_validation.jsonl` | Frozen 50-example baseline evaluation |
+
+Gold-set eval commands: [docs/gold-set-commands.md](docs/gold-set-commands.md)
 
 ---
 

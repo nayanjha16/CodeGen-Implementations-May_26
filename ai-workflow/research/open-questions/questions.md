@@ -1,7 +1,9 @@
 # Open Questions — AI Database Agent (`database-agent`)
 
 > **Research date:** 2026-07-19  
-> **Status:** Unresolved — Planning phase must decide or defer explicitly
+> **Status:** **RESOLVED** — see [database-agent-approval.md](../../planning/approvals/database-agent-approval.md) (2026-07-25)
+
+Historical research questions below; all decisions locked at approval time.
 
 ## 1. Architecture & API
 
@@ -227,3 +229,5 @@ Each open question should appear in `planning/feature-plans/database-agent-plan.
 - **Deferred** (post-MVP with tracking ID)
 
 No implementation until `planning/approvals/database-agent-approval.md` is approved.
+
+**Update (2026-07-26):** Approved and implemented through Stage 10.

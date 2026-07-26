@@ -8,10 +8,13 @@ Use this document whenever you start a new eval cycle (e.g. v3, v4) or need to p
 
 | Doc | Purpose |
 | --- | --- |
-| [version-tracker.md](version-tracker.md) | LoRA versions, hyperparameters, historical metrics |
+| [gold-set-commands.md](gold-set-commands.md) | Copy-paste eval → publish → deploy commands |
+| [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline metrics (presentation) |
+| [../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json](../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json) | Latest LoRA v3 eval metrics |
 | [../fastapi-deploy/README.md](../fastapi-deploy/README.md) | API details, Cloud Run deploy, publish script reference |
 | [../data/DATASETS.md](../data/DATASETS.md) | TEND dataset fields and loading |
 | [../README.md](../README.md) | Full project setup, training flags, test suite |
+| [../agent/README.md](../agent/README.md) | AI Database Agent setup and demo |
 
 ---
 

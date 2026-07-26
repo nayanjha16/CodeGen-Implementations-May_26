@@ -1,6 +1,6 @@
 # Architecture Map — AI Database Agent (`database-agent`)
 
-> **Research date:** 2026-07-19  
+> **Research date:** 2026-07-19 · **Implementation complete:** 2026-07-26  
 > **Spec:** `agent/doc/agent.md`  
 > **Deployed API:** `fastapi-deploy/codegen_api` → Cloud Run
 
@@ -65,21 +65,22 @@
                     └───────────────────────┘
 ```
 
-**Gap:** No path from user question → schema tool → agent → execution → NL response.
+**Gap (resolved 2026-07-26):** Full path implemented in `agent/` — user question → schema tool → LangGraph → CodeGen API → execution → NL response. See `agent/orchestration/runner.py`.
 
 ## 3. Module Relationships
 
-### 3.1 Spec modules (`agent.md` §12) — all missing except doc
+### 3.1 Spec modules (`agent.md` §12) — implemented under `agent/`
 
 | Spec path | Status | Notes |
 |-----------|--------|-------|
-| `agent/main.py`, `planner.py`, `prompts.py`, `intent_detector.py`, `retry.py` | ❌ Missing | Greenfield |
-| `mcp/server.py`, `registry.py` | ❌ Missing | Greenfield |
-| `tools/schema_tool.py`, `fastapi_tool.py`, `execution_tool.py` | ❌ Missing | Greenfield |
-| `capstone_api/app.py` | ✅ Exists as `fastapi-deploy/codegen_api/api/app.py` | Different route shape |
-| `database/postgres.py`, `mongodb.py` | ❌ Missing | Use TEND or new thin wrappers |
-| `config/settings.py` | ❌ Missing | Agent config needed |
-| `tests/` | ❌ Missing | Agent tests needed |
+| `main.py`, `orchestrator/planner.py`, `prompts.py`, `intent_detector.py`, `retry.py` | ✅ | Under `agent/orchestrator/` + `agent/main.py` |
+| `mcp/server.py`, `registry.py` | ✅ | stdio MCP |
+| `tools/schema_tool.py`, `fastapi_tool.py`, `execution_tool.py` | ✅ | Three MCP tools |
+| `codegen_api` (Capstone API) | ✅ | `fastapi-deploy/codegen_api` — HTTP client only |
+| `database/postgres.py`, `mongodb.py` | ✅ | Read-only execution + introspection |
+| `config/settings.py` | ✅ | `agent/config/settings.py` |
+| `web/` (capstone extension) | ✅ | FastAPI chat UI |
+| `tests/` | ✅ | 88 tests |
 
 ### 3.2 Reusable `src/` modules
 
@@ -163,9 +164,9 @@ tests/ (unit + E2E)
 | Cloud Run `codegen-api` | Capstone tool | Cold start 1–3 min; URL in `deploy.env` |
 | TEND repo | Execution (eval pattern) | `TEND_REPO_PATH`; default path is macOS-centric |
 | Hugging Face Hub | Cloud Run adapter load | `codegenstudio/*-lora` public |
-| Orchestrator LLM API | Agent | OpenAI / Azure / compatible — **not in repo yet** |
-| LangGraph | Agent planner | **not in requirements.txt** |
-| MCP SDK | MCP server | **not in requirements.txt** |
+| Orchestrator LLM | Agent | **Ollama** (`gemma3:4b`) via `agent/clients/orchestrator_llm.py` |
+| LangGraph | Agent planner | **`agent/orchestration/graph.py`** — in `agent/requirements.txt` |
+| MCP SDK | MCP server | **`agent/mcp/server.py`** — in `agent/requirements.txt` |
 
 ## 8. Inconsistencies (spec vs codebase)
 
@@ -173,9 +174,9 @@ tests/ (unit + E2E)
 |-------|------|----------|
 | API routes | `/generate/sql`, `/generate/nosql`, … | `/v1/chat/completions` only |
 | Package name | `capstone_api` | `codegen_api` |
-| SQL explanation | `/generate/explanation` | Not implemented |
+| SQL explanation | `/generate/explanation` | **Ollama orchestrator** in agent (`explain_sql` intent) — no separate API route |
 | Schema in API | JSON `{question, schema}` body | Schema embedded in user message string |
 | Agent intent | Agent detects | FastAPI has internal classifier (+ optional `intent` override) |
 | Documentation task | SQL docs | `nosql2doc` — Mongo query documentation |
 
-Planning must document which gaps are **shimmed** vs **spec-updated**.
+Planning documented gaps as **adapter shims** (see `database-agent-plan.md` AD-1).

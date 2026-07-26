@@ -2,6 +2,15 @@
 
 Simplified copy-paste commands for **Spider gold validation** eval → compare → publish → deploy.
 
+**Related docs**
+
+| Doc | Purpose |
+| --- | --- |
+| [evaluation-and-deploy-runbook.md](evaluation-and-deploy-runbook.md) | Full publish + Cloud Run redeploy |
+| [../README.md](../README.md) | Project setup, training, agent overview |
+| [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline presentation |
+| [../agent/README.md](../agent/README.md) | Agent demo (uses Cloud Run v3 API) |
+
 Dataset: `data/spider_gold_validation.jsonl` (50 examples)  
 Paths below use your Windows setup — adjust if your folders differ.
 

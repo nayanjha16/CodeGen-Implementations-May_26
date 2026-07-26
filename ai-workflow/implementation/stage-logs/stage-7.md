@@ -9,7 +9,7 @@
 - `agent/mcp/server.py` — stdio MCP server (`python -m agent.mcp.server`)
 - `agent/tests/test_mcp_stage7.py` — registry unit tests (7 cases)
 - `agent/requirements.txt` — added `mcp>=1.0`
-- Docs: `agent/README.md`, `ai-workflow/planning/feature-plans/agent/status.md`
+- Docs: `agent/README.md`, `ai-workflow/context/current-state.md`
 
 ## MCP tools (spec §7)
 

@@ -4,7 +4,12 @@ Standalone capstone agent per **[doc/agent.md](doc/agent.md)** — full spec (§
 
 Orchestrates three MCP tools; **never generates SQL directly**. Generative work is done by **CodeGen + LoRA v3** on Cloud Run via HTTP.
 
-Planning docs live in **[ai-workflow/planning/feature-plans/agent/](../ai-workflow/planning/feature-plans/agent/)** (not under `agent/`).
+| Resource | Link |
+| --- | --- |
+| Spec | [doc/agent.md](doc/agent.md) |
+| Planning | [database-agent-plan.md](../ai-workflow/planning/feature-plans/database-agent-plan.md) |
+| Eval / deploy | [evaluation-and-deploy-runbook.md](../docs/evaluation-and-deploy-runbook.md) |
+| Project overview | [README.md](../README.md) |
 
 ## Folder layout
 
@@ -192,7 +197,7 @@ Same prerequisites as CLI: TEND Docker (Chinook), CodeGen API, Ollama (`gemma3:4
 
 ## Capstone walkthrough (Stage 9)
 
-One command for a live presentation — default set **D1, D3, D6, S1, N1** (reliable text2sql + sql2nosql + nosql2doc):
+One command for a live presentation — default set **D1, D3, D6** (reliable text2sql; avoid D2 three-table joins):
 
 ```powershell
 $env:PYTHONPATH = (Get-Location).Path
@@ -227,7 +232,7 @@ Unit + integration (skips if Postgres/Mongo offline):
 
 ```powershell
 $env:PYTHONPATH = (Get-Location).Path
-python -m pytest agent/tests/ -q
+python -m pytest agent/tests/ -q    # 88 tests
 python agent/scripts/run_integration_tests.py
 ```
 

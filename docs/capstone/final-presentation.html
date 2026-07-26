@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Interactive Database Querying Using Small Code Language Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    window.__mermaid = mermaid;
+    window.dispatchEvent(new Event("mermaid-ready"));
+  </script>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --bg-elev: #ffffff;
+      --bg-soft: #e8eef3;
+      --ink: #0f1c24;
+      --ink-muted: #4a5d6a;
+      --line: #c9d5de;
+      --accent: #0d6e6e;
+      --accent-2: #c45c26;
+      --accent-soft: rgba(13, 110, 110, 0.12);
+      --good: #1a7a4c;
+      --warn: #b45309;
+      --chart-1: #0d6e6e;
+      --chart-2: #c45c26;
+      --chart-3: #2f5d9f;
+      --shadow: 0 12px 40px rgba(15, 28, 36, 0.08);
+      --glow: radial-gradient(ellipse 80% 50% at 20% 0%, rgba(13, 110, 110, 0.14), transparent 55%),
+              radial-gradient(ellipse 60% 40% at 90% 10%, rgba(196, 92, 38, 0.10), transparent 50%),
+              linear-gradient(180deg, #f7f9fb 0%, #eef2f5 100%);
+      --nav-h: 56px;
+      --radius: 14px;
+      --font: "IBM Plex Sans", system-ui, sans-serif;
+      --serif: "IBM Plex Serif", Georgia, serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1218;
+      --bg-elev: #121c24;
+      --bg-soft: #1a2732;
+      --ink: #e8eef2;
+      --ink-muted: #9aafbd;
+      --line: #2a3b48;
+      --accent: #3db8b0;
+      --accent-2: #e08a55;
+      --accent-soft: rgba(61, 184, 176, 0.14);
+      --good: #3dcf8a;
+      --warn: #f0b35a;
+      --chart-1: #3db8b0;
+      --chart-2: #e08a55;
+      --chart-3: #6b9de8;
+      --shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+      --glow: radial-gradient(ellipse 80% 50% at 15% 0%, rgba(61, 184, 176, 0.16), transparent 55%),
+              radial-gradient(ellipse 55% 40% at 95% 5%, rgba(224, 138, 85, 0.12), transparent 50%),
+              linear-gradient(180deg, #0b1218 0%, #0e1620 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--glow);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .topbar {
+      position: fixed; inset: 0 0 auto 0; height: var(--nav-h); z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.25rem;
+      background: color-mix(in srgb, var(--bg-elev) 82%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+      flex-shrink: 0;
+    }
+    .brand-text { font-size: 0.82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand-sub { display: block; font-size: 0.68rem; color: var(--ink-muted); font-weight: 500; }
+
+    .top-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .btn {
+      appearance: none; border: 1px solid var(--line); background: var(--bg-elev);
+      color: var(--ink); border-radius: 999px; padding: 0.35rem 0.75rem;
+      font: 500 0.78rem/1.2 var(--font); cursor: pointer;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+    .btn:hover { background: var(--bg-soft); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+    .btn:active { transform: scale(0.98); }
+    .btn.icon { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+    .progress-wrap { display: flex; align-items: center; gap: 0.6rem; margin: 0 1rem; flex: 1; max-width: 420px; }
+    .progress-track { flex: 1; height: 4px; background: var(--bg-soft); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .25s ease; }
+    .slide-count { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-muted); min-width: 3.5rem; text-align: right; }
+
+    .deck {
+      height: 100%; padding-top: var(--nav-h);
+      overflow: hidden;
+    }
+    .slide {
+      display: none;
+      height: calc(100vh - var(--nav-h));
+      padding: 1.25rem clamp(1.25rem, 3vw, 3rem) 2.75rem;
+      overflow: auto;
+      animation: fadeIn .28s ease;
+    }
+    .slide.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .slide-inner { max-width: 1180px; margin: 0 auto; min-height: calc(100% - 0.5rem); display: flex; flex-direction: column; }
+    .eyebrow {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.55rem;
+    }
+    h1 {
+      font-family: var(--serif); font-weight: 600; font-size: clamp(1.8rem, 3.6vw, 2.75rem);
+      line-height: 1.15; letter-spacing: -0.02em; max-width: 18ch;
+    }
+    h2 {
+      font-family: var(--serif); font-weight: 600; font-size: clamp(1.45rem, 2.6vw, 2.1rem);
+      line-height: 1.2; letter-spacing: -0.015em; margin-bottom: 0.35rem;
+    }
+    h3 { font-size: 0.95rem; font-weight: 650; margin-bottom: 0.55rem; }
+    .lede { color: var(--ink-muted); font-size: 1rem; max-width: 62ch; margin-top: 0.65rem; line-height: 1.5; }
+    .lede.tight {
+      font-size: 0.88rem; max-width: 72ch; margin-top: 0.35rem; margin-bottom: 0; line-height: 1.45;
+    }
+    .slide-body { margin-top: 0.75rem; }
+    .slide-body.tight { margin-top: 0.55rem; }
+    .stack { display: flex; flex-direction: column; gap: 0.55rem; min-width: 0; }
+    .stack.tight { gap: 0.45rem; }
+    .grid { display: grid; gap: 0.75rem; margin-top: 0.75rem; }
+    .grid.dense { gap: 0.55rem; }
+    .grid.flush { margin-top: 0.45rem; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .progress-wrap { display: none; }
+      .title-slide .two-col { grid-template-columns: 1fr; }
+      .hero-visual { min-height: 300px; }
+      .hero-visual .mermaid-wrap { min-height: 240px; }
+      .hero-visual .mermaid-wrap svg { min-height: 220px; }
+    }
+
+    .card {
+      background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 1rem 1.1rem; box-shadow: var(--shadow);
+    }
+    .card.soft { background: var(--bg-soft); box-shadow: none; }
+    .card.accent { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: linear-gradient(180deg, var(--accent-soft), var(--bg-elev)); }
+    .card.warn-edge { border-left: 3px solid var(--warn); }
+    .card.fill { display: flex; flex-direction: column; height: 100%; gap: 0.4rem; }
+    .card .muted { font-size: 0.78rem; line-height: 1.4; color: var(--ink-muted); }
+    code.mono { font-family: var(--mono); font-size: 0.78em; }
+    a.chip { text-decoration: none; cursor: pointer; }
+    .hero-caption {
+      text-align: center; font-family: var(--mono); font-size: 0.78rem;
+      color: var(--ink-muted); margin-top: 0.65rem;
+    }
+    .stat {
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .stat .value {
+      font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 600;
+      letter-spacing: -0.02em; color: var(--accent);
+    }
+    .stat .label { font-size: 0.78rem; color: var(--ink-muted); font-weight: 500; }
+    .stat .delta { font-family: var(--mono); font-size: 0.72rem; color: var(--good); font-weight: 500; }
+
+    ul.clean { list-style: none; display: grid; gap: 0.55rem; }
+    ul.clean li {
+      position: relative; padding-left: 1.15rem; color: var(--ink); font-size: 0.92rem; line-height: 1.45;
+    }
+    ul.clean li::before {
+      content: ""; position: absolute; left: 0; top: 0.45rem;
+      width: 7px; height: 7px; border-radius: 2px; background: var(--accent);
+    }
+
+    table.data {
+      width: 100%; border-collapse: collapse; font-size: 0.82rem;
+    }
+    table.data th, table.data td {
+      text-align: left; padding: 0.55rem 0.65rem; border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    table.data th {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--ink-muted); font-weight: 600; background: var(--bg-soft);
+    }
+    table.data tr:last-child td { border-bottom: none; }
+    table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+    table.data .hl { color: var(--accent); font-weight: 650; }
+    table.data .up { color: var(--good); font-weight: 600; }
+    table.data.compact { font-size: 0.74rem; }
+    table.data.compact th, table.data.compact td {
+      padding: 0.28rem 0.45rem; vertical-align: middle; white-space: nowrap;
+    }
+    table.data.compact th { font-size: 0.62rem; letter-spacing: 0.04em; }
+    .card.compact { padding: 0.55rem 0.7rem; }
+    .card.compact h3 { margin-bottom: 0.3rem; font-size: 0.82rem; }
+    .card.compact .footnote { margin-top: 0.25rem; font-size: 0.65rem; }
+    .card.compact ul.clean { font-size: 0.78rem; }
+    .card.compact ul.clean li { margin-bottom: 0.2rem; padding-left: 1rem; line-height: 1.35; }
+    .card.compact .chip-row { margin-top: 0.35rem; gap: 0.3rem; }
+    .card.compact .chip { font-size: 0.68rem; padding: 0.2rem 0.45rem; }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.85rem; }
+    .chip {
+      font-size: 0.72rem; font-weight: 550; padding: 0.28rem 0.55rem; border-radius: 999px;
+      background: var(--bg-soft); border: 1px solid var(--line); color: var(--ink-muted);
+    }
+    .chip.accent { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--accent); }
+
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin-top: 0.85rem;
+    }
+    .flow .step {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.55rem;
+      border-radius: 8px; background: var(--bg-elev); border: 1px solid var(--line);
+    }
+    .flow .arrow { color: var(--ink-muted); font-size: 0.85rem; }
+
+    .arch-svg { width: 100%; height: auto; display: block; }
+    .arch-svg .box { fill: var(--bg-elev); stroke: var(--line); stroke-width: 1.5; }
+    .arch-svg .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+    .arch-svg .lbl { fill: var(--ink); font-family: var(--font); font-size: 12px; font-weight: 600; }
+    .arch-svg .sub { fill: var(--ink-muted); font-family: var(--font); font-size: 10px; }
+    .arch-svg .line { stroke: var(--ink-muted); stroke-width: 1.5; fill: none; }
+    .arch-svg .arrowhead { fill: var(--ink-muted); }
+
+    .chart-box { position: relative; height: 260px; }
+    .chart-box.tall { height: 300px; }
+    .footnote { margin-top: auto; padding-top: 1rem; font-size: 0.72rem; color: var(--ink-muted); }
+
+    .title-slide { justify-content: center; }
+    .title-slide .slide-inner { justify-content: center; gap: 1.5rem; }
+    .title-slide .two-col {
+      grid-template-columns: 1fr 1.2fr;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .hero-visual {
+      border-radius: var(--radius); border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 25%, transparent), transparent 40%),
+        radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-2) 20%, transparent), transparent 35%),
+        var(--bg-elev);
+      padding: 1.5rem 1.35rem 1.25rem;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+    .hero-visual .mermaid-wrap {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 300px;
+      align-items: center;
+    }
+    .hero-visual .mermaid-wrap svg {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: 290px;
+    }
+    .mermaid-hero .mermaid { font-size: 16px; }
+    .team { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .team span {
+      padding: 0.45rem 0.75rem; border-radius: 10px; background: var(--bg-elev);
+      border: 1px solid var(--line); font-size: 0.85rem; font-weight: 550;
+    }
+
+    .pipeline {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.55rem; margin-top: 1rem;
+    }
+    @media (max-width: 900px) { .pipeline { grid-template-columns: 1fr 1fr; } }
+    .pipeline .node {
+      background: var(--bg-elev); border: 1px solid var(--line); border-radius: 12px;
+      padding: 0.75rem; text-align: center; position: relative;
+    }
+    .pipeline .node .n {
+      width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 0.45rem;
+      display: grid; place-items: center; font-size: 0.7rem; font-weight: 700;
+      background: var(--accent); color: #fff;
+    }
+    .pipeline .node strong { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; }
+    .pipeline .node span { font-size: 0.7rem; color: var(--ink-muted); line-height: 1.35; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-top: 1.1rem; align-items: stretch; }
+    .two-col > * { min-width: 0; }
+    .two-col .fill-h { height: 100%; display: flex; flex-direction: column; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    .kbd {
+      font-family: var(--mono); font-size: 0.68rem; padding: 0.12rem 0.35rem;
+      border: 1px solid var(--line); border-radius: 5px; background: var(--bg-soft);
+    }
+    .hint-bar {
+      position: fixed; bottom: 0.75rem; left: 50%; transform: translateX(-50%);
+      z-index: 40; display: flex; gap: 0.75rem; align-items: center;
+      padding: 0.35rem 0.75rem; border-radius: 999px;
+      background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+      border: 1px solid var(--line); backdrop-filter: blur(10px);
+      font-size: 0.7rem; color: var(--ink-muted);
+    }
+
+    .metric-pill {
+      display: inline-flex; align-items: baseline; gap: 0.35rem;
+      padding: 0.2rem 0.5rem; border-radius: 8px; background: var(--accent-soft);
+      font-family: var(--mono); font-size: 0.78rem; color: var(--accent); font-weight: 600;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent); padding: 0.75rem 0.9rem;
+      background: var(--accent-soft); border-radius: 0 10px 10px 0;
+      font-size: 0.88rem; line-height: 1.45; margin-top: 0.75rem;
+    }
+    .key-list { list-style: none; display: grid; gap: 0.45rem; }
+    .key-list li {
+      display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.5rem;
+      font-size: 0.82rem; line-height: 1.4; align-items: baseline;
+    }
+    .key-list .k {
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 650;
+      letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent);
+    }
+    .key-list .v { color: var(--ink); min-width: 0; }
+    .key-list .v code { font-family: var(--mono); font-size: 0.78em; }
+    .key-list .v strong { color: var(--accent); font-weight: 650; }
+    .footnote.flush { padding-top: 0; }
+    .footnote.soft { padding-top: 0.25rem; }
+    .two-col.follow { margin-top: 0.7rem; }
+    .chip-row.follow { margin-top: 0.4rem; }
+    .tend-banner-meta .value.sm { font-size: 1.35rem; }
+    .thanks .slide-inner { align-items: center; text-align: center; }
+    .thanks h1 { max-width: 20ch; margin: 0 auto; }
+    .thanks .lede { margin: 0.75rem auto 0; text-align: center; }
+    .thanks .grid { width: 100%; margin-top: 1.75rem; text-align: left; }
+    .thanks .team { justify-content: center; margin-top: 1.5rem; }
+    .thanks .footnote { text-align: center; margin-top: 1.25rem; }
+    .chart-box.fill { flex: 1; min-height: 220px; }
+
+    .logo-row {
+      display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1rem;
+    }
+    .logo-card {
+      flex: 1; min-width: 120px; text-align: center; padding: 0.85rem 0.5rem;
+      border-radius: 12px; border: 1px solid var(--line); background: var(--bg-elev);
+    }
+    .logo-card svg { width: 36px; height: 36px; margin-bottom: 0.35rem; }
+    .logo-card .t { font-size: 0.75rem; font-weight: 600; }
+
+    .mermaid-wrap {
+      width: 100%; overflow: auto; display: flex; justify-content: center;
+      background: transparent;
+    }
+    .mermaid-wrap .mermaid { margin: 0 auto; }
+    .mermaid-wrap svg { max-width: 100%; height: auto; }
+    .mermaid-compact .mermaid { font-size: 12px; }
+
+    .sys-arch {
+      --sys-arch-canvas: color-mix(in srgb, var(--bg-soft) 55%, #c8d7e4);
+      width: 100%;
+      margin-top: 0.55rem;
+      padding: 0.7rem 0.85rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1px dashed color-mix(in srgb, var(--accent) 28%, var(--line));
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--accent-soft) 40%, transparent), transparent 70%),
+        linear-gradient(180deg, var(--sys-arch-canvas) 0%, color-mix(in srgb, var(--bg-soft) 40%, #b9cbd9) 100%);
+      box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+    }
+    [data-theme="dark"] .sys-arch {
+      --sys-arch-canvas: color-mix(in srgb, var(--bg-soft) 70%, #0a1520);
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--accent-soft) 45%, transparent), transparent 70%),
+        linear-gradient(180deg, var(--sys-arch-canvas) 0%, color-mix(in srgb, var(--bg) 55%, #071018) 100%);
+      box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+    }
+    .sys-arch-tier {
+      position: relative;
+      border: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+      border-radius: 12px;
+      padding: 0.95rem 0.75rem 0.65rem;
+      background: color-mix(in srgb, var(--bg-elev) 88%, var(--accent-soft));
+    }
+    .sys-arch-tier.gateway {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      background: color-mix(in srgb, var(--accent-soft) 35%, var(--bg-elev));
+    }
+    .sys-arch-tier.adapters {
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line));
+      background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+    }
+    .sys-arch-tier-label {
+      position: absolute;
+      top: -0.62rem;
+      left: 0.85rem;
+      padding: 0 0.45rem;
+      background: var(--sys-arch-canvas);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .sys-arch-tier.adapters .sys-arch-tier-label { color: var(--accent-2); }
+    .sys-arch-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+    .sys-arch-row.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .sys-arch-comp {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--bg-elev);
+      padding: 0.55rem 0.65rem;
+      text-align: center;
+      min-height: 3.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent);
+    }
+    .sys-arch-comp strong {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 650;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .sys-arch-comp span {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.7rem;
+      line-height: 1.3;
+      color: var(--ink-muted);
+    }
+    .sys-arch-comp.core {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    }
+    .sys-arch-comp.adapter {
+      background: color-mix(in srgb, var(--accent-2) 8%, var(--bg-elev));
+      border-color: color-mix(in srgb, var(--accent-2) 30%, var(--line));
+    }
+    .sys-arch-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      padding: 0.35rem 0;
+      color: var(--ink-muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
+    }
+    .sys-arch-link .stem {
+      width: 2px;
+      height: 12px;
+      background: color-mix(in srgb, var(--ink-muted) 70%, var(--line));
+    }
+    .sys-arch-link .chev { font-size: 0.72rem; line-height: 1; }
+    .sys-arch-fanout {
+      width: 100%;
+      height: 36px;
+      display: block;
+    }
+    .sys-arch-fanout line,
+    .sys-arch-fanout path {
+      stroke: color-mix(in srgb, var(--ink-muted) 75%, var(--line));
+      stroke-width: 1.5;
+      fill: none;
+    }
+    @media (max-width: 900px) {
+      .sys-arch-row.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+    a.inline:hover { border-bottom-color: var(--accent); }
+
+    .qr-placeholder {
+      width: 120px; height: 120px; border-radius: 12px; border: 1px dashed var(--line);
+      display: grid; place-items: center; font-size: 0.7rem; color: var(--ink-muted); text-align: center;
+      background: var(--bg-soft);
+    }
+
+    /* Slide 3 — TEND motivation */
+    .tend-banner {
+      display: grid;
+      grid-template-columns: 1.4fr auto;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.65rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: linear-gradient(135deg, var(--accent-soft), var(--bg-elev) 55%);
+      box-shadow: var(--shadow);
+    }
+    .tend-banner .acronym {
+      font-size: 0.92rem; font-weight: 650; letter-spacing: 0.01em; line-height: 1.3;
+    }
+    .tend-banner .acronym b { color: var(--accent); }
+    .tend-banner .blurb {
+      margin-top: 0.25rem; font-size: 0.8rem; color: var(--ink-muted); line-height: 1.35; max-width: 54ch;
+    }
+    .tend-banner-meta {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; text-align: right;
+    }
+    .tend-banner-meta .value {
+      font-family: var(--serif); font-size: 1.55rem; font-weight: 600;
+      color: var(--accent); letter-spacing: -0.02em; line-height: 1;
+    }
+    .tend-banner-meta .label { font-size: 0.7rem; color: var(--ink-muted); font-weight: 500; }
+    .cascade-strip {
+      margin-top: 0.75rem;
+      padding: 0.7rem 0.9rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--bg-elev);
+      box-shadow: var(--shadow);
+    }
+    .cascade-strip > h3 { margin-bottom: 0.15rem; }
+    .cascade-strip .hint {
+      font-size: 0.75rem; color: var(--ink-muted); line-height: 1.35; margin-bottom: 0.55rem;
+    }
+    .cascade-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .cascade-flow .node {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 0.5rem 0.4rem;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      text-align: center;
+      min-height: 3.6rem;
+      display: flex; flex-direction: column; justify-content: center; gap: 0.1rem;
+    }
+    .cascade-flow > .node { flex: 0.85 1 0; }
+    .cascade-flow .arrow {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      padding: 0 0.15rem;
+      color: var(--ink-muted);
+      min-width: 1.2rem;
+    }
+    .cascade-flow .arrow .chev {
+      font-size: 1rem;
+      line-height: 1;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .cascade-flow .arrow.fail .chev { color: var(--warn); }
+    .cascade-flow .arrow.ok .chev { color: var(--good); }
+    .cascade-flow .arrow .lbl {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+      margin-top: 0.1rem;
+      white-space: nowrap;
+    }
+    .cascade-flow .arrow.fail .lbl { color: var(--warn); }
+    .cascade-flow .arrow.ok .lbl { color: var(--good); }
+    .cascade-flow .node .n {
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.04em;
+    }
+    .cascade-flow .node strong {
+      display: block; font-size: 0.74rem; font-weight: 650; line-height: 1.2;
+    }
+    .cascade-flow .node span {
+      display: block; font-size: 0.66rem; color: var(--ink-muted); line-height: 1.25;
+    }
+    .cascade-flow .node.gate {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    }
+    .cascade-flow .node.out {
+      background: color-mix(in srgb, var(--accent-2) 10%, var(--bg-elev));
+      border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line));
+    }
+    .cascade-stage {
+      flex: 2.6 1 0;
+      min-width: 0;
+      border: 1px dashed color-mix(in srgb, var(--accent) 35%, var(--line));
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--bg-soft) 55%, var(--bg-elev));
+      padding: 0.35rem 0.4rem 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .cascade-stage-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0 0.15rem 0.05rem;
+    }
+    .converter-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      position: relative;
+    }
+    .converter-col {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    .converter-col .pass-from {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.05rem;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .converter-col .pass-tag {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: var(--good);
+      letter-spacing: 0.03em;
+      line-height: 1;
+      background: color-mix(in srgb, var(--bg-elev) 88%, var(--good));
+      border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line));
+      border-radius: 999px;
+      padding: 0.12rem 0.4rem;
+    }
+    .converter-col .pass-stem {
+      width: 2px;
+      height: 10px;
+      background: var(--good);
+      border-radius: 1px;
+    }
+    .converter-col .node {
+      width: 100%;
+      flex: 1 1 auto;
+      background: var(--bg-elev);
+    }
+    .pass-bus {
+      position: absolute;
+      left: 8%;
+      right: 0;
+      top: 0.55rem;
+      height: 2px;
+      background: var(--good);
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .cascade-legend {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem;
+      margin-top: 0.55rem; font-size: 0.7rem; color: var(--ink-muted);
+    }
+    .cascade-legend em { font-style: normal; font-weight: 650; }
+    .cascade-legend .ok { color: var(--good); }
+    .cascade-legend .fail { color: var(--warn); }
+    @media (max-width: 900px) {
+      .tend-banner { grid-template-columns: 1fr; }
+      .tend-banner-meta { align-items: flex-start; text-align: left; }
+      .cascade-flow { flex-wrap: wrap; gap: 0.35rem; }
+      .cascade-flow .node,
+      .cascade-stage { flex: 1 1 100%; }
+      .cascade-flow .arrow { transform: rotate(90deg); padding: 0.15rem 0; }
+      .pass-bus,
+      .converter-col .pass-from { display: none; }
+    }
+
+    /* Slide 5 — deploy architecture */
+    .deploy-arch {
+      --deploy-canvas: color-mix(in srgb, var(--bg-soft) 55%, #c8d7e4);
+      width: 100%;
+      margin-top: 0.55rem;
+      padding: 0.75rem 0.85rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1px dashed color-mix(in srgb, var(--accent) 28%, var(--line));
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 0%, color-mix(in srgb, var(--accent-soft) 40%, transparent), transparent 70%),
+        linear-gradient(180deg, var(--deploy-canvas) 0%, color-mix(in srgb, var(--bg-soft) 40%, #b9cbd9) 100%);
+      box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+    }
+    [data-theme="dark"] .deploy-arch {
+      --deploy-canvas: color-mix(in srgb, var(--bg-soft) 70%, #0a1520);
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 0%, color-mix(in srgb, var(--accent-soft) 45%, transparent), transparent 70%),
+        linear-gradient(180deg, var(--deploy-canvas) 0%, color-mix(in srgb, var(--bg) 55%, #071018) 100%);
+      box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+    }
+    .deploy-tier {
+      position: relative;
+      border: 2px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+      border-radius: 12px;
+      padding: 0.85rem 0.65rem 0.5rem;
+      background: color-mix(in srgb, var(--bg-elev) 90%, var(--accent-soft));
+    }
+    .deploy-tier.hub {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent-soft) 30%, var(--bg-elev));
+    }
+    .deploy-tier.run {
+      border-color: color-mix(in srgb, var(--accent-2) 40%, var(--line));
+      background: color-mix(in srgb, var(--accent-2) 8%, var(--bg-elev));
+    }
+    .deploy-tier.clients {
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--ink-muted) 35%, var(--line));
+      background: color-mix(in srgb, var(--bg-elev) 94%, transparent);
+    }
+    .deploy-tier-label {
+      position: absolute;
+      top: -0.55rem;
+      left: 0.75rem;
+      padding: 0 0.4rem;
+      background: var(--deploy-canvas);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .deploy-tier.run .deploy-tier-label { color: var(--accent-2); }
+    .deploy-tier.clients .deploy-tier-label { color: var(--ink-muted); }
+    .deploy-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+    .deploy-comp {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--bg-elev);
+      padding: 0.35rem 0.45rem;
+      text-align: center;
+      min-height: 2.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 4%, transparent);
+    }
+    .deploy-comp strong {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 650;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .deploy-comp span {
+      display: block;
+      margin-top: 0.12rem;
+      font-size: 0.62rem;
+      line-height: 1.2;
+      color: var(--ink-muted);
+    }
+    .deploy-comp.adapter {
+      background: color-mix(in srgb, var(--accent-2) 8%, var(--bg-elev));
+      border-color: color-mix(in srgb, var(--accent-2) 28%, var(--line));
+    }
+    .deploy-comp.core {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+    }
+    .deploy-comp.wide {
+      grid-column: 1 / -1;
+    }
+    .deploy-hub-row {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 0.45rem;
+    }
+    .deploy-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.08rem;
+      padding: 0.2rem 0;
+      color: var(--ink-muted);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.02em;
+    }
+    .deploy-link .stem {
+      width: 2px;
+      height: 8px;
+      background: color-mix(in srgb, var(--ink-muted) 70%, var(--line));
+    }
+    .deploy-link .chev { font-size: 0.7rem; line-height: 1; color: var(--accent); }
+    .deploy-fanout {
+      width: 100%;
+      height: 28px;
+      display: block;
+    }
+    .deploy-fanout line {
+      stroke: color-mix(in srgb, var(--ink-muted) 75%, var(--line));
+      stroke-width: 1.5;
+      fill: none;
+    }
+    @media (max-width: 900px) {
+      .deploy-hub-row { grid-template-columns: 1fr; }
+    }
+
+    /* Slide 6 — product journey + video */
+    .path-strip {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0.35rem;
+      align-items: stretch;
+      margin-top: 0.5rem;
+    }
+    .path-step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg-elev);
+      padding: 0.55rem 0.65rem;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    .path-step.blocked {
+      border-color: color-mix(in srgb, var(--warn) 45%, var(--line));
+      background: color-mix(in srgb, var(--warn) 8%, var(--bg-elev));
+    }
+    .path-step.long {
+      border-color: color-mix(in srgb, var(--ink-muted) 35%, var(--line));
+      background: var(--bg-soft);
+    }
+    .path-step.won {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      background: linear-gradient(180deg, var(--accent-soft), var(--bg-elev));
+    }
+    .path-step .tag {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .path-step.blocked .tag { color: var(--warn); }
+    .path-step.long .tag { color: var(--ink-muted); }
+    .path-step.won .tag { color: var(--accent); }
+    .path-step strong {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 650;
+      line-height: 1.25;
+      margin-bottom: 0.2rem;
+    }
+    .path-step p {
+      font-size: 0.68rem;
+      color: var(--ink-muted);
+      line-height: 1.35;
+    }
+    .path-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0 0.1rem;
+    }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #0b1218;
+      box-shadow: var(--shadow);
+    }
+    .card.fill > .video-frame {
+      flex: 1 1 auto;
+      aspect-ratio: auto;
+      min-height: 0;
+      height: auto;
+    }
+    .grid.match-cols { align-items: stretch; }
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .video-poster {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #0b1218;
+      color: inherit;
+      font: inherit;
+    }
+    .video-poster img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.88;
+      transition: opacity .2s, transform .25s;
+    }
+    .video-poster:hover img { opacity: 1; transform: scale(1.02); }
+    .video-poster .play {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 650;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .video-poster .play .tri {
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 10px;
+      border-color: transparent transparent transparent var(--accent);
+    }
+    @media (max-width: 900px) {
+      .path-strip { grid-template-columns: 1fr; }
+      .path-arrow { transform: rotate(90deg); padding: 0.15rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div class="brand-text">
+        CodeGen PEFT / LoRA
+        <span class="brand-sub">IIITH · Capstone · Aug 2026</span>
+      </div>
+    </div>
+    <div class="progress-wrap" aria-hidden="true">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="slide-count" id="slideCount">1 / 8</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn icon" id="themeBtn" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+      <button class="btn" id="prevBtn" aria-label="Previous slide">←</button>
+      <button class="btn" id="nextBtn" aria-label="Next slide">→</button>
+    </div>
+  </header>
+
+  <main class="deck" id="deck">
+
+    <!-- 1 TITLE -->
+    <section class="slide title-slide active" data-title="Title">
+      <div class="slide-inner">
+        <div class="two-col">
+          <div>
+            <div class="eyebrow">Slide 1 · Title</div>
+            <h1>Interactive Database Querying Using Small Code Language Models</h1>
+            <p class="lede">CodeGen fine-tuning with <strong>PEFT &amp; LoRA</strong> — three adapters on one 350M base, an execution-validated dataset, OpenAI-compatible serving, and a desktop SQL assistant with RAG schema injection.</p>
+            <div class="chip-row">
+              <span class="chip accent">Text→SQL</span>
+              <span class="chip accent">SQL→MongoDB</span>
+              <span class="chip accent">NoSQL→Docs</span>
+              <span class="chip">LoRA v4 · Current</span>
+            </div>
+            <div class="team">
+              <span>Naresh Reddy Yadulla</span>
+              <span>Mohana K Kishore Dwadasi</span>
+              <span>Sivakrishna Andraju</span>
+            </div>
+            <p class="footnote" style="margin-top:1rem">IIITH · PG Certification in AI &amp; Machine Learning · 8–9 August 2026</p>
+          </div>
+          <div class="hero-visual">
+            <div class="mermaid-wrap mermaid-hero">
+              <pre class="mermaid">flowchart TB
+  Clients["Clients<br/>Tool · Cursor · SDK"] --> GW["API Gateway<br/>Intent → set_adapter"]
+  GW --> T2S["text2sql<br/>NL + schema → SQL"]
+  GW --> S2N["sql2nosql<br/>SQL → Mongo"]
+  GW --> N2D["nosql2doc<br/>Mongo → docs"]</pre>
+            </div>
+            <p class="hero-caption">~40 MB / adapter · PEFT hot-swap</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 PROBLEM + ARCHITECTURE -->
+    <section class="slide" data-title="Problem &amp; Architecture">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 2 · Problem &amp; System</div>
+        <h2>Problem, answer, and architecture</h2>
+        <p class="lede tight">One frozen base · three LoRA adapters · OpenAI-compatible gateway — trained for structured DB tasks.</p>
+        <div class="grid grid-2 slide-body">
+          <div class="card">
+            <h3>Why this is hard</h3>
+            <ul class="clean">
+              <li>Full fine-tunes are costly on research / student hardware</li>
+              <li>Zero-shot CodeGen-350M is weak on structured DB tasks</li>
+              <li>Aligned NL ↔ SQL ↔ Mongo ↔ docs with <strong>execution proof</strong> is rare</li>
+              <li>IDEs need a deployable <strong>OpenAI-compatible</strong> endpoint</li>
+            </ul>
+          </div>
+          <div class="card accent">
+            <h3>Our answer</h3>
+            <ul class="clean">
+              <li>One frozen base + <strong>3 LoRA adapters</strong> (~40 MB each at v4)</li>
+              <li>Train &amp; eval on <strong>TEND</strong> (Spider + BIRD, exec-validated)</li>
+              <li>FastAPI intent → <code class="mono">set_adapter</code> on Cloud Run / HF</li>
+              <li>Desktop tool: RAG schema → generate → validate → execute</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid grid-3 dense flush">
+          <div class="card soft stat"><span class="value">350M</span><span class="label">Base parameters</span></div>
+          <div class="card soft stat"><span class="value">3</span><span class="label">Swappable adapters</span></div>
+          <div class="card soft stat"><span class="value">~40 MB</span><span class="label">Per-adapter size (v4)</span></div>
+        </div>
+        <div class="sys-arch" role="img" aria-label="System architecture: clients, API gateway, and task adapters">
+          <div class="sys-arch-tier clients">
+            <div class="sys-arch-tier-label">Clients</div>
+            <div class="sys-arch-row">
+              <div class="sys-arch-comp"><strong>Desktop AI SQL Assistant</strong><span>RAG schema · validate · execute</span></div>
+              <div class="sys-arch-comp"><strong>Cursor / VS Code</strong><span>OpenAI base URL → /v1/chat/completions</span></div>
+              <div class="sys-arch-comp"><strong>OpenAI-compatible SDK</strong><span>curl · Python · any HTTP client</span></div>
+            </div>
+          </div>
+
+          <div class="sys-arch-link" aria-hidden="true">
+            <span class="stem"></span>
+            <span>HTTPS / localhost</span>
+            <span class="chev">▼</span>
+          </div>
+
+          <div class="sys-arch-tier gateway">
+            <div class="sys-arch-tier-label">Multi-Adapter API Gateway</div>
+            <div class="sys-arch-row four">
+              <div class="sys-arch-comp"><strong>Intent classifier</strong><span>rules + MiniLM embeddings</span></div>
+              <div class="sys-arch-comp"><strong>Prompt builder</strong><span>text2sql · sql2nosql · nosql2doc</span></div>
+              <div class="sys-arch-comp core"><strong>PEFT hot-swap</strong><span>set_adapter at inference</span></div>
+              <div class="sys-arch-comp core"><strong>codegen-350M-multi</strong><span>frozen base + 3 LoRA v4 (~40 MB ea.)</span></div>
+            </div>
+          </div>
+
+          <svg class="sys-arch-fanout" viewBox="0 0 960 36" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="480" y1="0" x2="480" y2="14" />
+            <line x1="480" y1="14" x2="160" y2="14" />
+            <line x1="480" y1="14" x2="800" y2="14" />
+            <line x1="160" y1="14" x2="160" y2="36" />
+            <line x1="480" y1="14" x2="480" y2="36" />
+            <line x1="800" y1="14" x2="800" y2="36" />
+          </svg>
+
+          <div class="sys-arch-tier adapters">
+            <div class="sys-arch-tier-label">Task adapters (LoRA v4)</div>
+            <div class="sys-arch-row">
+              <div class="sys-arch-comp adapter"><strong>text2sql</strong><span>NL + schema → SQL</span></div>
+              <div class="sys-arch-comp adapter"><strong>sql2nosql</strong><span>SQL → MongoDB shell</span></div>
+              <div class="sys-arch-comp adapter"><strong>nosql2doc</strong><span>Mongo query → documentation</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 TEND — WHY -->
+    <section class="slide" data-title="Why TEND">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 3 · Dataset motivation</div>
+        <h2>Why we built TEND</h2>
+        <p class="lede tight">Spider &amp; BIRD stop at NL→SQL. We needed one execution-validated row for all three LoRA adapters — so we built and published TEND.</p>
+
+        <div class="tend-banner">
+          <div>
+            <div class="acronym"><b>T</b>ranslation · <b>E</b>valuation · <b>N</b>atural language · <b>D</b>ocument (NoSQL)</div>
+            <p class="blurb">Companion dataset extending Spider and BIRD into aligned question · SQL · Mongo · docs — filtered by execution match, not an LLM judge.</p>
+            <div class="chip-row follow">
+              <span class="chip accent">Public on Hugging Face</span>
+              <a class="chip accent" href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">care2achieve/tend ↗</a>
+            </div>
+          </div>
+          <div class="tend-banner-meta">
+            <div>
+              <div class="value">9,075</div>
+              <div class="label">execution-validated gold rows</div>
+            </div>
+            <div>
+              <div class="value sm">43.9%</div>
+              <div class="label">bronze → gold yield</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col follow">
+          <div class="card fill-h">
+            <h3>Gaps we hit</h3>
+            <ul class="clean">
+              <li>Benchmarks stop at <strong>NL → SQL</strong> — no aligned Mongo or docs</li>
+              <li>Three adapters need the <strong>same gold row</strong> across all tasks</li>
+              <li>LLM-only synthetic Mongo is unreliable without execution filter</li>
+            </ul>
+          </div>
+          <div class="card accent fill-h">
+            <h3>How we fixed it</h3>
+            <ul class="clean">
+              <li><strong>Deterministic first</strong> — rules → Python tool → Ollama fallback</li>
+              <li><strong>Execution is ground truth</strong> — PostgreSQL vs MongoDB must match</li>
+              <li><strong>One row, three tasks</strong> — question, SQL, Mongo, and docs together</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cascade-strip">
+          <h3>SQL → NoSQL conversion cascade</h3>
+          <p class="hint">Pass at any converter skips to the gate. Failures fall through; failed rows stay failed.</p>
+          <div class="cascade-flow" role="list">
+            <div class="node" role="listitem">
+              <span class="n">SRC</span>
+              <strong>Spider / BIRD</strong>
+              <span>NL + gold SQL</span>
+            </div>
+            <div class="arrow" aria-hidden="true"><span class="chev">→</span></div>
+            <div class="cascade-stage" role="group" aria-label="SQL to NoSQL converters">
+              <div class="cascade-stage-label">Converters — pass at any step skips to gate</div>
+              <div class="converter-row">
+                <div class="pass-bus" aria-hidden="true"></div>
+                <div class="converter-col">
+                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
+                  <div class="node" role="listitem">
+                    <span class="n">①</span>
+                    <strong>Rule converters</strong>
+                    <span>JOIN → $lookup</span>
+                  </div>
+                </div>
+                <div class="arrow fail" aria-hidden="true"><span class="chev">→</span><span class="lbl">fail</span></div>
+                <div class="converter-col">
+                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
+                  <div class="node" role="listitem">
+                    <span class="n">②</span>
+                    <strong>Python tool</strong>
+                    <span>sql-mongo-converter</span>
+                  </div>
+                </div>
+                <div class="arrow fail" aria-hidden="true"><span class="chev">→</span><span class="lbl">fail</span></div>
+                <div class="converter-col">
+                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
+                  <div class="node" role="listitem">
+                    <span class="n">③</span>
+                    <strong>Ollama fallback</strong>
+                    <span>Hard multi-table SQL</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="arrow ok" aria-hidden="true"><span class="chev">→</span><span class="lbl">pass</span></div>
+            <div class="node gate" role="listitem">
+              <span class="n">GATE</span>
+              <strong>Exec match</strong>
+              <span>PG = Mongo</span>
+            </div>
+            <div class="arrow ok" aria-hidden="true"><span class="chev">→</span></div>
+            <div class="node out" role="listitem">
+              <span class="n">OUT</span>
+              <strong>Gold → HF</strong>
+              <span>+ docs (not a judge)</span>
+            </div>
+          </div>
+          <div class="cascade-legend">
+            <span><em class="ok">Pass</em> from ① / ② / ③ → validation gate</span>
+            <span><em class="fail">Fail</em> → next converter</span>
+            <span>BIRD yield ≪ Spider · no LLM rescues bad queries</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 TRAINING & RESULTS -->
+    <section class="slide" data-title="Training &amp; Results">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 4 · Training &amp; Results</div>
+        <h2>LoRA version comparison</h2>
+        <p class="lede tight">Base <code class="mono">Salesforce/codegen-350M-multi</code> · PEFT LoRA · completion-only SFT · current: <span class="metric-pill">v4</span></p>
+        <div class="grid grid-2 dense slide-body tight">
+          <div class="card compact">
+            <h3>Training conditions</h3>
+            <table class="data compact">
+              <thead>
+                <tr>
+                  <th>Ver</th><th class="num">n</th><th class="num">Ep</th>
+                  <th>LoRA</th><th>Targets</th><th>Device</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Baseline</td><td class="num">—</td><td class="num">—</td><td>none</td><td>—</td><td>—</td></tr>
+                <tr><td>v1</td><td class="num">50</td><td class="num">10</td><td>r16 α32</td><td>attn</td><td>MPS</td></tr>
+                <tr><td>v2</td><td class="num">500</td><td class="num">5</td><td>r16 α32</td><td>attn</td><td>MPS</td></tr>
+                <tr><td>v3</td><td class="num">~8k</td><td class="num">5*</td><td>r16 α32</td><td>attn</td><td>MPS</td></tr>
+                <tr><td class="hl"><strong>v4 current</strong></td><td class="num">~8k</td><td class="num">5</td><td class="hl">r32 α64</td><td class="hl">attn+FFN</td><td class="hl">Kaggle</td></tr>
+              </tbody>
+            </table>
+            <p class="footnote flush">*v3 text2sql best @ ep2. v4 ~7h 34m CUDA.</p>
+          </div>
+          <div class="card compact">
+            <h3>Results · frozen gold (n=50)</h3>
+            <table class="data compact">
+              <thead>
+                <tr>
+                  <th>Ver</th>
+                  <th class="num">Text2SQL</th>
+                  <th class="num">SQL2NoSQL</th>
+                  <th class="num">Doc judge</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Baseline</td><td class="num">12%</td><td class="num">22%</td><td class="num">0.1</td></tr>
+                <tr><td>v1</td><td class="num">20%</td><td class="num">4%</td><td class="num">1.5</td></tr>
+                <tr><td>v2</td><td class="num">34%</td><td class="num">32%</td><td class="num">3.1</td></tr>
+                <tr><td>v3</td><td class="num">54%</td><td class="num">74%</td><td class="num">6.4</td></tr>
+                <tr><td class="hl"><strong>v4 current</strong></td><td class="num hl">60%</td><td class="num hl">88%</td><td class="num hl">7.8</td></tr>
+              </tbody>
+            </table>
+            <p class="footnote flush">Exec accuracy · Doc judge 0–10</p>
+          </div>
+        </div>
+        <div class="grid grid-2 dense">
+          <div class="stack tight">
+            <div class="card soft compact">
+              <h3>Why v4 won</h3>
+              <ul class="clean">
+                <li>Same full TEND data as v3 — capacity was the bottleneck</li>
+                <li>Wider LoRA: <strong>r 16→32</strong>, <strong>α 32→64</strong></li>
+                <li>Targets: attn → <strong>attn + FFN</strong> (<code class="mono">fc_in, fc_out</code>)</li>
+                <li>Adapter ~7.5 MB → <strong>~40 MB</strong>; Kaggle CUDA ~7h 34m</li>
+              </ul>
+            </div>
+            <div class="card soft compact">
+              <h3>Published on Hugging Face</h3>
+              <p class="muted">All three <strong>v4</strong> adapters are public on the Hub.</p>
+              <div class="chip-row">
+                <a class="chip accent" href="https://huggingface.co/care2achieve/codegen-350M-text2sql-lora" target="_blank" rel="noopener">text2sql ↗</a>
+                <a class="chip accent" href="https://huggingface.co/care2achieve/codegen-350M-sql2nosql-lora" target="_blank" rel="noopener">sql2nosql ↗</a>
+                <a class="chip accent" href="https://huggingface.co/care2achieve/codegen-350M-nosql2doc-lora" target="_blank" rel="noopener">nosql2doc ↗</a>
+              </div>
+              <p class="footnote flush"><code class="mono">care2achieve/codegen-350M-*-lora</code></p>
+            </div>
+          </div>
+          <div class="card compact fill">
+            <h3>Task scores by version</h3>
+            <div class="chart-box tall fill"><canvas id="execChart"></canvas></div>
+            <p class="footnote soft">Doc judge scaled ×10 → % (0–10 → 0–100)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 DEPLOY -->
+    <section class="slide" data-title="Deploy">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 5 · Deployments</div>
+        <h2>How adapters reach clients</h2>
+        <p class="lede tight">Publish LoRA v4 on Hugging Face → serve on Cloud Run → Cursor, desktop tool, and SDKs share one OpenAI-compatible <code class="mono">/v1</code> gateway.</p>
+
+        <div class="deploy-arch" role="img" aria-label="Deployment architecture from LoRA adapters to clients">
+          <div class="deploy-tier">
+            <div class="deploy-tier-label">Trained LoRA v4</div>
+            <div class="deploy-row">
+              <div class="deploy-comp adapter"><strong>text2sql</strong><span>NL + schema → SQL</span></div>
+              <div class="deploy-comp adapter"><strong>sql2nosql</strong><span>SQL → MongoDB</span></div>
+              <div class="deploy-comp adapter"><strong>nosql2doc</strong><span>Mongo → docs</span></div>
+            </div>
+          </div>
+
+          <div class="deploy-link" aria-hidden="true">
+            <span class="stem"></span>
+            <span>publish to Hub</span>
+            <span class="chev">▼</span>
+          </div>
+
+          <div class="deploy-tier hub">
+            <div class="deploy-tier-label">Hugging Face Hub</div>
+            <div class="deploy-hub-row">
+              <div class="deploy-comp core"><strong>3 adapter repos</strong><span>care2achieve/codegen-350M-*-lora · ~40 MB each</span></div>
+              <div class="deploy-comp"><strong>TEND dataset</strong><span>care2achieve/tend · gold rows</span></div>
+            </div>
+          </div>
+
+          <div class="deploy-link" aria-hidden="true">
+            <span class="stem"></span>
+            <span>Docker image · pull weights @ start</span>
+            <span class="chev">▼</span>
+          </div>
+
+          <div class="deploy-tier run">
+            <div class="deploy-tier-label">Google Cloud Run</div>
+            <div class="deploy-row">
+              <div class="deploy-comp"><strong>Docker + FastAPI</strong><span>containerized gateway</span></div>
+              <div class="deploy-comp core"><strong>Intent → set_adapter</strong><span>hot-swap LoRA per request</span></div>
+              <div class="deploy-comp"><strong>OpenAI /v1</strong><span>codegen-*****.run.app</span></div>
+            </div>
+          </div>
+
+          <svg class="deploy-fanout" viewBox="0 0 960 28" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="480" y1="0" x2="480" y2="12" />
+            <line x1="480" y1="12" x2="160" y2="12" />
+            <line x1="480" y1="12" x2="800" y2="12" />
+            <line x1="160" y1="12" x2="160" y2="28" />
+            <line x1="480" y1="12" x2="480" y2="28" />
+            <line x1="800" y1="12" x2="800" y2="28" />
+          </svg>
+
+          <div class="deploy-tier clients">
+            <div class="deploy-tier-label">Clients</div>
+            <div class="deploy-row">
+              <div class="deploy-comp"><strong>Cursor / VS Code</strong><span>custom model → /v1</span></div>
+              <div class="deploy-comp"><strong>Desktop AI SQL Assistant</strong><span>generate → validate → execute</span></div>
+              <div class="deploy-comp"><strong>OpenAI SDK · curl</strong><span>POST /v1/chat/completions</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-3 dense slide-body tight">
+          <div class="card compact">
+            <h3>Hugging Face Hub</h3>
+            <ul class="key-list">
+              <li><span class="k">Dataset</span><span class="v"><a class="inline" href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">care2achieve/tend</a></span></li>
+              <li><span class="k">Adapters</span><span class="v">3 × <code>codegen-350M-*-lora</code></span></li>
+              <li><span class="k">Size</span><span class="v">~40 MB each · source of truth</span></li>
+            </ul>
+          </div>
+
+          <div class="card compact accent">
+            <h3>Cloud Run gateway</h3>
+            <ul class="key-list">
+              <li><span class="k">Stack</span><span class="v">Docker · FastAPI · PEFT hot-swap</span></li>
+              <li><span class="k">Region</span><span class="v"><code>asia-south2</code> · scale-to-zero</span></li>
+              <li><span class="k">API</span><span class="v"><code>/v1/chat/completions</code></span></li>
+              <li><span class="k">Model</span><span class="v"><code>codegen-multi-adapter</code></span></li>
+            </ul>
+          </div>
+
+          <div class="card compact">
+            <h3>Intent → adapter</h3>
+            <ul class="key-list">
+              <li><span class="k">NL → SQL</span><span class="v"><strong>text2sql</strong></span></li>
+              <li><span class="k">SQL → Mongo</span><span class="v"><strong>sql2nosql</strong></span></li>
+              <li><span class="k">Mongo → docs</span><span class="v"><strong>nosql2doc</strong></span></li>
+              <li><span class="k">Ambiguous</span><span class="v">Clarify — no generation</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          One API, three skills via PEFT hot-swap · Hub holds eval’d v4 weights · schema RAG and DB stay on the client — gateway stays stateless
+        </div>
+      </div>
+    </section>
+    <!-- 6 THE TOOL -->
+    <section class="slide" data-title="Desktop Tool">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 6 · The tool we built</div>
+        <h2>Desktop AI SQL Assistant</h2>
+        <p class="lede tight">Tried Cursor → scoped a VS Code extension → shipped a desktop client that owns schema RAG, safety, and execute.</p>
+
+        <div class="path-strip" role="list">
+          <div class="path-step blocked" role="listitem">
+            <div class="tag">1 · Tried first</div>
+            <strong>Cursor custom model</strong>
+            <p><code class="mono">/v1</code> works — but no API to inject table DDL into the prompt before generation.</p>
+          </div>
+          <div class="path-arrow" aria-hidden="true">→</div>
+          <div class="path-step long" role="listitem">
+            <div class="tag">2 · Explored</div>
+            <strong>VS Code extension</strong>
+            <p>Could own schema RAG + Chat UI — too long a build for the capstone timeline.</p>
+          </div>
+          <div class="path-arrow" aria-hidden="true">→</div>
+          <div class="path-step won" role="listitem">
+            <div class="tag">3 · Shipped</div>
+            <strong>Desktop AI SQL Assistant</strong>
+            <p>RAG schema → generate → validate SELECT → execute on PostgreSQL.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-2 dense slide-body tight match-cols">
+          <div class="stack tight">
+            <div class="card compact warn-edge">
+              <h3>Why Cursor alone wasn’t enough</h3>
+              <ul class="clean">
+                <li>Custom model reaches our gateway, but <strong>prompt construction is opaque</strong></li>
+                <li>No way to <strong>inject retrieved DDL</strong> before generation</li>
+                <li>Without schema grounding, Text2SQL guesses table/column names</li>
+              </ul>
+            </div>
+            <div class="card compact accent">
+              <h3>What the tool adds</h3>
+              <ul class="clean">
+                <li><strong>Ask in English</strong> — get executable SQL, not a blank editor</li>
+                <li><strong>Schema RAG</strong> — retrieve top-K tables (+ FKs), inject only that DDL</li>
+                <li><strong>Closed loop</strong> — generate → SELECT-only validate → run → results</li>
+                <li><strong>Safety</strong> — blocks non-SELECT; log shows tables chosen</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card compact fill">
+            <h3>Live demo</h3>
+            <div class="video-frame" id="demoVideo">
+              <button type="button" class="video-poster" id="demoVideoPlay" aria-label="Play demo video">
+                <img src="https://img.youtube.com/vi/pcQ7tf6djOs/hqdefault.jpg" alt="Desktop AI SQL Assistant demo thumbnail" loading="lazy" />
+                <span class="play"><span class="tri" aria-hidden="true"></span> Play demo</span>
+              </button>
+            </div>
+            <p class="footnote flush">
+              <a class="inline" href="https://www.youtube.com/watch?v=pcQ7tf6djOs" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+              · NL → RAG tables → SQL → validate → PostgreSQL
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- 7 IMPROVEMENTS & FUTURE SCOPE -->
+    <section class="slide" data-title="Improvements &amp; Future Scope">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 7 · Roadmap</div>
+        <h2>Improvements &amp; future scope</h2>
+        <p class="lede tight">What we would harden next — from today’s desktop + Cloud Run path to an IDE-native, execution-gated product.</p>
+
+        <div class="grid grid-3 slide-body">
+          <div class="card">
+            <h3>Near-term</h3>
+            <ul class="clean">
+              <li><strong>VS Code extension</strong> — schema index + Chat UI on the same <code class="mono">/v1</code></li>
+              <li><strong>Per-task decoding</strong> — beam for Text2SQL/docs; greedy for SQL2NoSQL</li>
+              <li><strong>Full-split metrics</strong> — publish on full TEND test (~1.6k), not only gold-50</li>
+              <li><strong>Tool tabs</strong> — finish SQL→NoSQL and Documentation flows</li>
+            </ul>
+          </div>
+          <div class="card accent">
+            <h3>Mid-term</h3>
+            <ul class="clean">
+              <li><strong>Execute-checked agent</strong> — NL→SQL→Mongo→docs with a DB check between steps</li>
+              <li><strong>Richer schema linking</strong> — column-level retrieval; multi-DB workspaces</li>
+              <li><strong>Stricter gold retrains</strong> — LoRA on highest-yield execution subsets</li>
+              <li><strong>CI eval gate</strong> — gold-50 exec smoke before Cloud Run deploy</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Longer-term</h3>
+            <ul class="clean">
+              <li><strong>Larger base LM</strong> — 1–2B code model + same LoRA recipe</li>
+              <li><strong>Preference / DPO</strong> — learn from fluent-but-wrong SQL</li>
+              <li><strong>On-device adapters</strong> — privacy-first MPS / DirectML path</li>
+              <li><strong>Multi-user serving</strong> — API keys and quotas on Cloud Run</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout">
+          Today: Desktop tool + Cursor base URL + HF adapters → Next: VS Code extension → Then: agent with execution gates
+        </div>
+
+        <div class="grid grid-2 dense">
+          <div class="card soft">
+            <h3>Known ceilings</h3>
+            <ul class="clean">
+              <li>350M base limits hard multi-table / nested queries</li>
+              <li>Text2SQL still trails SQL2NoSQL (60% vs 88% exec)</li>
+              <li>Doc quality still partly LLM-judged</li>
+            </ul>
+          </div>
+          <div class="card soft">
+            <h3>What stays fixed</h3>
+            <ul class="clean">
+              <li>Execution as ground truth (TEND-style match)</li>
+              <li>One frozen base + swappable LoRA adapters</li>
+              <li>OpenAI-compatible gateway — clients own schema &amp; DB</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 THANKS -->
+    <section class="slide title-slide thanks" data-title="Thank You">
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 8 · Thank you</div>
+        <h1>Thank you</h1>
+        <p class="lede">Questions welcome — dataset, LoRA, serving, RAG tool, or evaluation protocol.</p>
+        <div class="grid grid-4">
+          <div class="card soft stat"><span class="value">60%</span><span class="label">Text2SQL exec</span></div>
+          <div class="card soft stat"><span class="value">88%</span><span class="label">SQL2NoSQL exec</span></div>
+          <div class="card soft stat"><span class="value">7.8</span><span class="label">Doc judge</span></div>
+          <div class="card soft stat"><span class="value">9k+</span><span class="label">Gold TEND rows</span></div>
+        </div>
+        <div class="team">
+          <span>Naresh Reddy Yadulla</span>
+          <span>Mohana K Kishore Dwadasi</span>
+          <span>Sivakrishna Andraju</span>
+        </div>
+        <p class="footnote">
+          IIITH · PG Certificate in AI &amp; ML · Current model: <strong>LoRA v4</strong>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="hint-bar" id="hintBar">
+    <span><span class="kbd">←</span> <span class="kbd">→</span> or click buttons</span>
+    <span>·</span>
+    <span><span class="kbd">T</span> theme</span>
+    <span>·</span>
+    <span><span class="kbd">F</span> fullscreen</span>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progressFill = document.getElementById("progressFill");
+    const slideCount = document.getElementById("slideCount");
+    const themeBtn = document.getElementById("themeBtn");
+    const root = document.documentElement;
+    let idx = 0;
+    let chartsReady = false;
+    let mermaidReady = false;
+    const chartInstances = {};
+
+    function cssVar(name) {
+      return getComputedStyle(root).getPropertyValue(name).trim();
+    }
+
+    function mermaidThemeConfig(theme) {
+      const dark = theme === "dark";
+      return {
+        startOnLoad: false,
+        securityLevel: "loose",
+        theme: dark ? "dark" : "base",
+        themeVariables: {
+          fontFamily: "IBM Plex Sans, system-ui, sans-serif",
+          fontSize: "16px",
+          primaryColor: dark ? "#1a3a3a" : "#d8efef",
+          primaryTextColor: dark ? "#e8eef2" : "#0f1c24",
+          primaryBorderColor: dark ? "#3db8b0" : "#0d6e6e",
+          secondaryColor: dark ? "#2a241c" : "#f5e6dc",
+          tertiaryColor: dark ? "#1a2732" : "#e8eef3",
+          lineColor: dark ? "#9aafbd" : "#4a5d6a",
+          background: dark ? "#121c24" : "#ffffff",
+          mainBkg: dark ? "#1a2732" : "#ffffff",
+          nodeBorder: dark ? "#3db8b0" : "#0d6e6e",
+          clusterBkg: dark ? "#152028" : "#f4f8f8",
+          clusterBorder: dark ? "#2a3b48" : "#c9d5de",
+          titleColor: dark ? "#e8eef2" : "#0f1c24",
+          edgeLabelBackground: dark ? "#121c24" : "#ffffff"
+        },
+        flowchart: { curve: "basis", padding: 16, htmlLabels: true, nodeSpacing: 36, rankSpacing: 44 }
+      };
+    }
+
+    async function renderMermaid(scope) {
+      const mermaid = window.__mermaid;
+      if (!mermaid) return;
+      const rootScope = scope || document;
+      const theme = root.getAttribute("data-theme") || "light";
+      mermaid.initialize(mermaidThemeConfig(theme));
+      const nodes = [...rootScope.querySelectorAll(".mermaid")];
+      for (const el of nodes) {
+        if (!el.dataset.src) {
+          const raw = el.textContent.trim();
+          if (!raw) continue;
+          el.dataset.src = raw;
+        }
+        el.removeAttribute("data-processed");
+        el.removeAttribute("data-mermaid-id");
+        el.textContent = el.dataset.src;
+      }
+      const toRun = nodes.filter((el) => el.dataset.src);
+      if (!toRun.length) return;
+      try {
+        await mermaid.run({ nodes: toRun, suppressErrors: true });
+      } catch (err) {
+        console.warn("Mermaid render issue:", err);
+      }
+      mermaidReady = true;
+    }
+
+    function chartDefaults() {
+      const ink = cssVar("--ink-muted");
+      const line = cssVar("--line");
+      Chart.defaults.color = ink;
+      Chart.defaults.borderColor = line;
+      Chart.defaults.font.family = "'IBM Plex Sans', system-ui, sans-serif";
+      Chart.defaults.font.size = 11;
+    }
+
+    function destroyCharts() {
+      Object.values(chartInstances).forEach(c => c.destroy());
+      Object.keys(chartInstances).forEach(k => delete chartInstances[k]);
+    }
+
+    function buildCharts() {
+      destroyCharts();
+      chartDefaults();
+      const c1 = cssVar("--chart-1");
+      const c2 = cssVar("--chart-2");
+      const c3 = cssVar("--chart-3");
+
+      const exec = document.getElementById("execChart");
+      if (exec) {
+        chartInstances.exec = new Chart(exec, {
+          type: "line",
+          data: {
+            labels: ["Baseline", "v1", "v2", "v3", "v4"],
+            datasets: [
+              {
+                label: "Text2SQL",
+                data: [12, 20, 34, 54, 60],
+                borderColor: c1, backgroundColor: c1 + "22",
+                tension: 0.3, fill: false, pointRadius: 4, pointBackgroundColor: c1,
+                borderWidth: 2.5
+              },
+              {
+                label: "SQL2NoSQL",
+                data: [22, 4, 32, 74, 88],
+                borderColor: c2, backgroundColor: c2 + "22",
+                tension: 0.3, fill: false, pointRadius: 4, pointBackgroundColor: c2,
+                borderWidth: 2.5
+              },
+              {
+                label: "NoSQL2Doc (×10 → %)",
+                data: [1, 15, 31, 64, 78],
+                borderColor: c3, backgroundColor: c3 + "22",
+                tension: 0.3, fill: false, pointRadius: 4, pointBackgroundColor: c3,
+                borderWidth: 2.5
+              }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: "bottom",
+                labels: { boxWidth: 12, boxHeight: 12, padding: 12, usePointStyle: true }
+              }
+            },
+            scales: {
+              y: { min: 0, max: 100, grid: { color: cssVar("--line") }, ticks: { callback: v => v + "%" } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      chartsReady = true;
+    }
+
+    function show(i) {
+      idx = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, n) => s.classList.toggle("active", n === idx));
+      progressFill.style.width = ((idx + 1) / slides.length * 100) + "%";
+      slideCount.textContent = (idx + 1) + " / " + slides.length;
+      document.title = slides[idx].dataset.title + " · CodeGen Capstone";
+      requestAnimationFrame(() => {
+        if (chartsReady) Object.values(chartInstances).forEach(c => c.resize());
+        if (window.__mermaid) renderMermaid(slides[idx]);
+      });
+    }
+
+    async function setTheme(theme) {
+      root.setAttribute("data-theme", theme);
+      localStorage.setItem("codegen-deck-theme", theme);
+      themeBtn.textContent = theme === "dark" ? "☀" : "◐";
+      if (chartsReady) buildCharts();
+      if (window.__mermaid) await renderMermaid(slides[idx]);
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => show(idx - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => show(idx + 1));
+    themeBtn.addEventListener("click", () => {
+      setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+        e.preventDefault(); show(idx + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault(); show(idx - 1);
+      } else if (e.key === "Home") {
+        show(0);
+      } else if (e.key === "End") {
+        show(slides.length - 1);
+      } else if (e.key.toLowerCase() === "t") {
+        setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      } else if (e.key.toLowerCase() === "f") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+    });
+
+    let touchX = null;
+    document.addEventListener("touchstart", e => { touchX = e.changedTouches[0].screenX; }, { passive: true });
+    document.addEventListener("touchend", e => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+      touchX = null;
+    }, { passive: true });
+
+    function wireDemoVideo() {
+      const frame = document.getElementById("demoVideo");
+      const playBtn = document.getElementById("demoVideoPlay");
+      if (!frame || !playBtn) return;
+      const watchUrl = "https://www.youtube.com/watch?v=pcQ7tf6djOs";
+      const embedUrl = "https://www.youtube-nocookie.com/embed/pcQ7tf6djOs?autoplay=1&rel=0";
+      playBtn.addEventListener("click", () => {
+        const canEmbed = location.protocol === "http:" || location.protocol === "https:";
+        if (!canEmbed) {
+          window.open(watchUrl, "_blank", "noopener,noreferrer");
+          return;
+        }
+        frame.innerHTML = "";
+        const iframe = document.createElement("iframe");
+        iframe.src = embedUrl;
+        iframe.title = "Desktop AI SQL Assistant demo";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        frame.appendChild(iframe);
+      });
+    }
+
+    async function boot() {
+      const saved = localStorage.getItem("codegen-deck-theme");
+      const theme = (saved === "dark" || saved === "light")
+        ? saved
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      root.setAttribute("data-theme", theme);
+      themeBtn.textContent = theme === "dark" ? "☀" : "◐";
+      wireDemoVideo();
+      show(0);
+      requestAnimationFrame(() => buildCharts());
+
+      const startMermaid = async () => {
+        await renderMermaid(slides[idx]);
+      };
+      if (window.__mermaid) await startMermaid();
+      else window.addEventListener("mermaid-ready", startMermaid, { once: true });
+    }
+
+    boot();
+  </script>
+</body>
+</html>

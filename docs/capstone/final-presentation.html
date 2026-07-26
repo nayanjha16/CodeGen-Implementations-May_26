@@ -127,6 +127,14 @@
       font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 0.55rem;
     }
+    .group-meta {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin: -0.15rem 0 0.65rem;
+      letter-spacing: 0.01em;
+    }
+    .group-meta span { color: var(--ink-muted); font-weight: 500; }
     h1 {
       font-family: var(--serif); font-weight: 600; font-size: clamp(1.8rem, 3.6vw, 2.75rem);
       line-height: 1.15; letter-spacing: -0.02em; max-width: 18ch;
@@ -1004,6 +1012,7 @@
         <div class="two-col">
           <div>
             <div class="eyebrow">Slide 1 · Title</div>
+            <p class="group-meta">Capstone Group 43 · CodeGen 10</p>
             <h1>Interactive Database Querying Using Small Code Language Models</h1>
             <p class="lede">CodeGen fine-tuning with <strong>PEFT &amp; LoRA</strong> — three adapters on one 350M base, an execution-validated dataset, OpenAI-compatible serving, and a desktop SQL assistant with RAG schema injection.</p>
             <div class="chip-row">

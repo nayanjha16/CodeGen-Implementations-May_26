@@ -1,0 +1,313 @@
+mongodb_query,prompt,input_token_count,raw_output,judge_doc_correct,judge_reason,judge_raw_response
+"db.singer.aggregate([
+  { ""$match"": { ""Country"": ""France"" } },
+  { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } }
+])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the average, minimum, and maximum age of all singers from France?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([
+  { ""$match"": { ""Country"": ""France"" } },
+  { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } }
+])
+
+Documentation:",433,"The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns the average age of all singers from France.
+
+The aggregate query returns",True,The documentation accurately describes the query's intent and produces the requested output of average age from singers in France. It correctly identifies the use of $match to filter by Country and the $group stage for aggregation.,"{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the query's intent and produces the requested output of average age from singers in France. It correctly identifies the use of $match to filter by Country and the $group stage for aggregation.""
+}"
+"db.singer.aggregate([{""$match"": {""country"": ""US""}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show all countries and the number of singers in each country.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$match"": {""country"": ""US""}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group
+
+Documentation:",637,"The query retrieves the number of singers in the United States.
+
+The query retrieves the number of singers in the United States.
+
+The query retrieves the number of singers in the United States.
+
+The query retrieves the number of singers in the United States.
+
+The query retrieves the number of singers in the United States.
+
+The query retrieves the number of singers in the United States.
+
+The query retrieves",True,"The documentation accurately describes the query's purpose – to count singers from the US – and the final result. While repetitive, it correctly reflects the aggregation pipeline stages.","{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the query's purpose – to count singers from the US – and the final result. While repetitive, it correctly reflects the aggregation pipeline stages.""
+}"
+"db.singer.aggregate([{""$match"": {""country"": ""US""}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many singers are from each country?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Age"": ""number"",
+    ""Country"": ""string"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$match"": {""country"": ""US""}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group"":{""_id"": ""$_id"",""count"": {""$sum"": 1}}},{""$sort"":{""count"":{""desc"": -1}}},{""$project"":{""_id"":0,""count"": {""$sum"": 1}}},{""$group
+
+Documentation:",633,"The query returns the number of singers from each country.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""Country"": ""string"",
+    ""Age"": ""number"",
+    ""Is_male"": ""string"",
+    ""Name"": ""string"",
+    ""Song_Name"": ""string"",
+    ""Song_release_year"": ""string"",
+    ""_id"": ""ObjectId""",True,"The documentation accurately describes the query's purpose of counting singers by country and demonstrates a correct understanding of the aggregation pipeline stages for grouping, summing, sorting, and projection.","{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the query's purpose of counting singers by country and demonstrates a correct understanding of the aggregation pipeline stages for grouping, summing, sorting, and projection.""
+}"
+"db.pets.aggregate([{""$match"": {""pet_age"": { ""$gte"": 0 } }}, {""$group"": {""_id"": ""max"", ""pet_age"": {""$max"": ""$pet_age""}}}, {""$sort"": {""pet_age"": -1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List the maximum weight and type for each type of pet.
+
+MongoDB Schema:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$match"": {""pet_age"": { ""$gte"": 0 } }}, {""$group"": {""_id"": ""max"", ""pet_age"": {""$max"": ""$pet_age""}}}, {""$sort"": {""pet_age"": -1}}])
+
+Documentation:",427,"* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type of pet.
+* List the maximum weight and type for each type",True,"The documentation accurately describes the aggregation pipeline. It correctly identifies that the query finds the maximum pet age and pet type for each pet type, using $match to filter by positive pet_age, $group to aggregate based on petType, and $sort to order results by pet_age in descending order.","{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the aggregation pipeline. It correctly identifies that the query finds the maximum pet age and pet type for each pet type, using $match to filter by positive pet_age, $group to aggregate based on petType, and $sort to order results by pet_age in descending order.""
+}"
+db.pets.find({'pet_age': {'$gt': 1}}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the id and weight of every pet who is older than 1?
+
+MongoDB Schema:
+{
+  ""Pets"": {
+    ""PetID"": ""number"",
+    ""PetType"": ""string"",
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.find({'pet_age': {'$gt': 1}})
+
+Documentation:",384,"The query returns a list of pets whose age is greater than 1.
+
+Query:
+db.pets.find({'pet_age': {'$gt': 1}})
+
+Output:
+[
+  {
+    ""_id"": ""1"",
+    ""pet_age"": ""1"",
+    ""weight"": ""1""
+  },
+  {
+    ""_id"": ""2"",
+    ""pet",True,The documentation accurately describes the query's behavior. It correctly states that the query returns pets where 'pet_age' is greater than 1. The use of '$gt' in the MongoDB query is reflected in the explanation.,"{
+  ""doc_correct"": true,
+  ""reason"": ""The documentation accurately describes the query's behavior. It correctly states that the query returns pets where 'pet_age' is greater than 1. The use of '$gt' in the MongoDB query is reflected in the explanation.""
+}"

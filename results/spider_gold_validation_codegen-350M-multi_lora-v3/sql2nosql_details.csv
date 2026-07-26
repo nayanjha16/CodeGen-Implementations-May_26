@@ -1,0 +1,2189 @@
+reference_sql,prompt,input_token_count,raw_output,predicted_mongodb_query,reference_mongodb_query,mongodb_warnings,mongodb_success,execution_match,execution_error
+SELECT count(*) FROM singer,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT count(*) FROM singer
+
+MongoDB:",240,db.singer.countDocuments({}),db.singer.countDocuments({}),db.singer.countDocuments({}),,True,True,
+SELECT count(*) FROM singer,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT count(*) FROM singer
+
+MongoDB:",240,db.singer.countDocuments({}),db.singer.countDocuments({}),db.singer.countDocuments({}),,True,True,
+"SELECT name ,  country ,  age FROM singer ORDER by age DESC","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  country ,  age FROM singer ORDER by age DESC
+
+MongoDB:",249,"db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})",,True,True,
+"SELECT name ,  country ,  age FROM singer ORDER by age DESC","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  country ,  age FROM singer ORDER by age DESC
+
+MongoDB:",249,"db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})",,True,True,
+"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'
+
+MongoDB:",261,"db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])",,True,True,
+"SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT avg(age) ,  min(age) ,  max(age) FROM singer WHERE country  =  'France'
+
+MongoDB:",261,"db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])",,True,True,
+"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1
+
+MongoDB:",253,"db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])",,True,True,
+"SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT song_name ,  song_release_year FROM singer ORDER by age LIMIT 1
+
+MongoDB:",253,"db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])",,True,True,
+SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)
+
+MongoDB:",254,"db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])",,True,True,
+SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT song_name FROM singer WHERE age  >  (SELECT avg(age) FROM singer)
+
+MongoDB:",254,"db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])",,True,True,
+"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000
+
+MongoDB:",242,"db.stadium.find( { ""capacity"": { ""$gte"": 5000, ""$lte"": 10000 } }, { ""location"": 1, ""name"": 1 } )","db.stadium.find( { ""capacity"": { ""$gte"": 5000, ""$lte"": 10000 } }, { ""location"": 1, ""name"": 1 } )","db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})",,True,True,
+"SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT location ,  name FROM stadium WHERE capacity BETWEEN 5000 AND 10000
+
+MongoDB:",242,"db.stadium.find( { ""capacity"": { ""$gte"": 5000, ""$lte"": 10000 } }, { ""location"": 1, ""name"": 1 } )","db.stadium.find( { ""capacity"": { ""$gte"": 5000, ""$lte"": 10000 } }, { ""location"": 1, ""name"": 1 } )","db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})",,True,True,
+"SELECT avg(capacity) ,  max(capacity) FROM stadium","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT avg(capacity) ,  max(capacity) FROM stadium
+
+MongoDB:",240,"db.stadium.aggregate([{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""max"":1}}])","db.stadium.aggregate([{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""max"":1}}])","db.stadium.aggregate([{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""max"":1}}])",,True,True,
+"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1
+
+MongoDB:",242,"db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])",,True,True,
+"SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  capacity FROM stadium ORDER by average DESC LIMIT 1
+
+MongoDB:",242,"db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])",,True,True,
+SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  }
+}
+
+SQL:
+SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015
+
+MongoDB:",232,"db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )",,True,True,
+SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  }
+}
+
+SQL:
+SELECT count(*) FROM concert WHERE year  =  2014 OR year  =  2015
+
+MongoDB:",232,"db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )",,True,True,
+"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name
+
+MongoDB:",336,"db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])",,True,True,
+"SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name ,  count(*) FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id GROUP by t1.stadium_id, t2.name
+
+MongoDB:",336,"db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])",,True,True,
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)
+
+MongoDB:",301,"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])",,True,True,
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert),"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name FROM stadium WHERE stadium_id NOT IN (SELECT stadium_id FROM concert)
+
+MongoDB:",301,"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])",,True,True,
+SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT country FROM singer WHERE age  >  40 INTERSECT SELECT country FROM singer WHERE age  <  30
+
+MongoDB:",257,"db.singer.aggregate([{""$group"":{""_id"":""$country"",""__a"":{""$max"":{""$cond"":[{""$gt"":[""$age"",""40""]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$lt"":[""$age"",""30""]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""country"":""$_id"",""_id"":0}}])","db.singer.aggregate([{""$group"":{""_id"":""$country"",""__a"":{""$max"":{""$cond"":[{""$gt"":[""$age"",""40""]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$lt"":[""$age"",""30""]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""country"":""$_id"",""_id"":0}}])","db.singer.aggregate([{""$group"":{""_id"":""$country"",""__a"":{""$max"":{""$cond"":[{""$gt"":[""$age"",40]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$lt"":[""$age"",30]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""country"":""$_id"",""_id"":0}}])",,True,False,row count mismatch: sql=1 mongo=0
+SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014
+
+MongoDB:",332,"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":2014}},{""$project"":{""_id"":0,""name"":""$j.name""}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":2014}},{""$project"":{""_id"":0,""name"":""$j.name""}}])","db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])",,True,False,row count mismatch: sql=6 mongo=0
+SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+SQL:
+SELECT name FROM stadium EXCEPT SELECT t2.name FROM concert AS t1 JOIN stadium AS t2 ON t1.stadium_id  =  t2.stadium_id WHERE t1.year  =  2014
+
+MongoDB:",332,"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":2014}},{""$project"":{""_id"":0,""name"":""$j.name""}}])","db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":2014}},{""$project"":{""_id"":0,""name"":""$j.name""}}])","db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])",,True,False,row count mismatch: sql=6 mongo=0
+"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme
+
+MongoDB:",328,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])",,True,True,
+"SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.concert_name ,  t2.theme ,  count(*) FROM singer_in_concert AS t1 JOIN concert AS t2 ON t1.concert_id  =  t2.concert_id GROUP by t2.concert_id, t2.concert_name, t2.theme
+
+MongoDB:",328,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])",,True,True,
+"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name
+
+MongoDB:",336,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])",,True,True,
+"SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name ,  count(*) FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id GROUP by t2.singer_id, t2.name
+
+MongoDB:",336,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])",,True,True,
+SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014
+
+MongoDB:",404,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":2014}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":2014}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])",,True,False,row count mismatch: sql=6 mongo=0
+SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+SQL:
+SELECT t2.name FROM singer_in_concert AS t1 JOIN singer AS t2 ON t1.singer_id  =  t2.singer_id JOIN concert AS t3 ON t1.concert_id  =  t3.concert_id WHERE t3.year  =  2014
+
+MongoDB:",404,"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":2014}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":2014}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])",,True,False,row count mismatch: sql=6 mongo=0
+"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'
+
+MongoDB:",251,"db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )",,True,True,
+"SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+SQL:
+SELECT name ,  country FROM singer WHERE song_name LIKE '%Hey%'
+
+MongoDB:",251,"db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )",,True,True,
+SELECT count(*) FROM pets WHERE weight  >  10,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT count(*) FROM pets WHERE weight  >  10
+
+MongoDB:",226,"db.pets.countDocuments({""weight"":{""$gt"":10}})","db.pets.countDocuments({""weight"":{""$gt"":10}})","db.pets.countDocuments({""weight"":{""$gt"":10}})",,True,True,
+SELECT count(*) FROM pets WHERE weight  >  10,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT count(*) FROM pets WHERE weight  >  10
+
+MongoDB:",226,"db.pets.countDocuments({""weight"":{""$gt"":10}})","db.pets.countDocuments({""weight"":{""$gt"":10}})","db.pets.countDocuments({""weight"":{""$gt"":10}})",,True,True,
+SELECT weight FROM pets ORDER by pet_age LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT weight FROM pets ORDER by pet_age LIMIT 1
+
+MongoDB:",226,"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])",,True,True,
+SELECT weight FROM pets ORDER by pet_age LIMIT 1,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT weight FROM pets ORDER by pet_age LIMIT 1
+
+MongoDB:",226,"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])",,True,True,
+"SELECT max(weight) ,  pettype FROM pets GROUP by pettype","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT max(weight) ,  pettype FROM pets GROUP by pettype
+
+MongoDB:",229,"db.pets.aggregate([{$group: {_id: '$pettype', max_weight: { $max: '$weight' }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","db.pets.aggregate([{$group: {_id: '$pettype', max_weight: { $max: '$weight' }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])",,True,True,
+"SELECT max(weight) ,  pettype FROM pets GROUP by pettype","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT max(weight) ,  pettype FROM pets GROUP by pettype
+
+MongoDB:",229,"db.pets.aggregate([{$group: {_id: '$pettype', max_weight: { $max: '$weight' }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","db.pets.aggregate([{$group: {_id: '$pettype', max_weight: { $max: '$weight' }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])",,True,True,
+SELECT count(DISTINCT pettype) FROM pets,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT count(DISTINCT pettype) FROM pets
+
+MongoDB:",226,"db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])",,True,True,
+SELECT count(DISTINCT pettype) FROM pets,"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT count(DISTINCT pettype) FROM pets
+
+MongoDB:",226,"db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])",,True,True,
+SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog'
+
+MongoDB:",423,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])",,True,True,
+SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT DISTINCT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' OR t3.pettype  =  'dog'
+
+MongoDB:",423,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])",,True,True,
+SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog'
+
+MongoDB:",475,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])",,True,True,
+SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog',"Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat' INTERSECT SELECT t1.fname FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog'
+
+MongoDB:",475,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])",,True,True,
+"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')
+
+MongoDB:",487,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$stuid"",""fname"":{""$first"":""$j1.fname""},""age"":{""$first"":""$j1.age""}}},{""$project"":{""_id"":0,""fname"":1,""age"":1}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$stuid"",""fname"":{""$first"":""$j1.fname""},""age"":{""$first"":""$j1.age""}}},{""$project"":{""_id"":0,""fname"":1,""age"":1}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])",,True,False,"first mismatch at row 0: sql=(19, 'Tracy') mongo=(None, None)"
+"SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+SQL:
+SELECT t1.fname ,  t1.age FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'dog' AND t1.stuid NOT IN (SELECT t1.stuid FROM student AS t1 JOIN has_pet AS t2 ON t1.stuid  =  t2.stuid JOIN pets AS t3 ON t3.petid  =  t2.petid WHERE t3.pettype  =  'cat')
+
+MongoDB:",487,"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$stuid"",""fname"":{""$first"":""$j1.fname""},""age"":{""$first"":""$j1.age""}}},{""$project"":{""_id"":0,""fname"":1,""age"":1}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$stuid"",""fname"":{""$first"":""$j1.fname""},""age"":{""$first"":""$j1.age""}}},{""$project"":{""_id"":0,""fname"":1,""age"":1}}])","db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])",,True,False,"first mismatch at row 0: sql=(19, 'Tracy') mongo=(None, None)"
+"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1
+
+MongoDB:",230,"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])",,True,True,
+"SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT pettype ,  weight FROM pets ORDER by pet_age LIMIT 1
+
+MongoDB:",230,"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])",,True,True,
+"SELECT petid ,  weight FROM pets WHERE pet_age  >  1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT petid ,  weight FROM pets WHERE pet_age  >  1
+
+MongoDB:",230,"db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})",,True,True,
+"SELECT petid ,  weight FROM pets WHERE pet_age  >  1","Task: sql2nosql
+
+Convert the SQL query into a MongoDB shell query.
+
+Requirements:
+
+* Return exactly one MongoDB shell query.
+* Return only the query text.
+* No explanations.
+* No SQL.
+* No markdown.
+* No extra text.
+* The response MUST start with: `db.`
+* The response MUST contain exactly one MongoDB query.
+* If the response does not start with `db.`, it is incorrect.
+
+Example
+
+SQL:
+SELECT COUNT(*) FROM users
+
+MongoDB:
+db.users.countDocuments({})
+
+MongoDB collections:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+SQL:
+SELECT petid ,  weight FROM pets WHERE pet_age  >  1
+
+MongoDB:",230,"db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})",,True,True,

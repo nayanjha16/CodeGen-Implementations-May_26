@@ -1,0 +1,3271 @@
+mongodb_query,prompt,input_token_count,raw_output,predicted_documentation,reference_documentation,judge_score,judge_correctness,judge_completeness,judge_clarity,judge_relevance,judge_reason,judge_raw_response
+db.singer.countDocuments({}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many singers do we have?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.countDocuments({})
+
+Documentation:",385,"* The query returns a single document.
+* The document contains the following fields:
+  - _id: ObjectId
+  - age: number
+  - country: string
+  - is_male: string
+  - name: string
+  - song_name: string
+  - song_release_year: string
+
+* The query returns multiple documents.
+* The documents contain the following fields:
+  - _id: Object",* The query returns a single document. * The document contains the following fields: - _id: ObjectId - age: number - country: string - is_male: string - name: string - song_name: string - song_release_year: string * The query returns multiple documents. * The documents contain the following fields: - _id: Object,The query counts all singer records in the database to determine the total number of singers.,6.0,5.0,2.0,7.0,8.0,"The documentation incorrectly describes the output of the query as containing specific fields like 'age', 'country', etc., which are not present in the `db.singer.countDocuments({})` query. It correctly states the purpose (counting singer records) and that it returns a single document with an ObjectId, aligning with the reference documentation.","{
+  ""correctness"": 5,
+  ""completeness"": 2,
+  ""clarity"": 7,
+  ""relevance"": 8,
+  ""judge_score"": 6.0,
+  ""reason"": ""The documentation incorrectly describes the output of the query as containing specific fields like 'age', 'country', etc., which are not present in the `db.singer.countDocuments({})` query. It correctly states the purpose (counting singer records) and that it returns a single document with an ObjectId, aligning with the reference documentation.""
+}"
+db.singer.countDocuments({}),"Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the total number of singers?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.countDocuments({})
+
+Documentation:",386,"* The query returns a single document.
+* The document contains the following fields:
+  - _id: ObjectId
+  - age: number
+  - country: string
+  - is_male: string
+  - name: string
+  - song_name: string
+  - song_release_year: string
+
+* The query returns multiple documents.
+* The documents contain the following fields:
+  - _id: Object",* The query returns a single document. * The document contains the following fields: - _id: ObjectId - age: number - country: string - is_male: string - name: string - song_name: string - song_release_year: string * The query returns multiple documents. * The documents contain the following fields: - _id: Object,The query returns the total count of all singers in the dataset.,7.5,10.0,2.0,8.0,9.0,"The generated documentation accurately describes the core functionality (counting documents) but incorrectly lists fields and document types that are not present in the query or referenced documentation. It's mostly clear, but the field descriptions are misleading.","{
+  ""correctness"": 10,
+  ""completeness"": 2,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The generated documentation accurately describes the core functionality (counting documents) but incorrectly lists fields and document types that are not present in the query or referenced documentation. It's mostly clear, but the field descriptions are misleading.""
+}"
+"db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show name, country, age for all singers ordered by age from the oldest to the youngest.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})
+
+Documentation:",422,"* The query result is a list of documents.
+* The documents are ordered by age.
+* The documents are ordered by name.
+* The documents are ordered by song name.
+* The documents are ordered by song release year.
+
+* The query result is a list of documents.
+* The documents are ordered by age.
+* The documents are ordered by name.
+* The documents are ordered by song name.
+* The documents are",* The query result is a list of documents. * The documents are ordered by age. * The documents are ordered by name.,"The query returns the names, countries, and ages of all singers, sorted from the oldest to the youngest.",8.0,8.0,7.0,8.0,9.0,"The documentation accurately reflects the query's behavior of selecting name, country, and age fields from the singer collection and sorting by age in descending order, aligning with the reference documentation.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The documentation accurately reflects the query's behavior of selecting name, country, and age fields from the singer collection and sorting by age in descending order, aligning with the reference documentation.""
+}"
+"db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names, countries, and ages for every singer in descending order of age?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.find({}, {""_id"":0,""name"":1,""country"":1,""age"":1}).sort({age: -1})
+
+Documentation:",421,"* The query result is a list of dictionaries.
+* Each dictionary contains the following keys:
+  - _id: ObjectId
+  - age: number
+  - country: string
+  - name: string
+  - song_name: string
+  - song_release_year: string
+
+* The query result is a list of dictionaries.
+* Each dictionary contains the following keys:
+  - _id: ObjectId",* The query result is a list of dictionaries. * Each dictionary contains the following keys: - _id: ObjectId - age: number - country: string - name: string - song_name: string - song_release_year: string * The query result is a list of dictionaries. * Each dictionary contains the following keys: - _id: ObjectId,"The query returns the names, countries, and ages of all singers, sorted from oldest to youngest.",7.5,7.0,6.0,8.0,9.0,"The documentation correctly identifies the returned fields (name, country, age) and the sorting order. However, it includes irrelevant fields like '_id' and 'song_name' which are not part of the query and should be removed. It’s largely relevant to the reference doc.","{
+  ""correctness"": 7,
+  ""completeness"": 6,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The documentation correctly identifies the returned fields (name, country, age) and the sorting order. However, it includes irrelevant fields like '_id' and 'song_name' which are not part of the query and should be removed. It’s largely relevant to the reference doc.""
+}"
+"db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the average, minimum, and maximum age of all singers from France?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])
+
+Documentation:",522,"* The query result is a list of documents.
+* The documents are ordered by age.
+* The documents are sorted by country.
+* The documents are sorted by song name.
+* The documents are sorted by song release year.
+* The documents are sorted by singer name.
+* The documents are sorted by singer country.
+* The documents are sorted by singer age.
+* The documents are sorted by singer name.
+* The documents are",* The query result is a list of documents. * The documents are ordered by age. * The documents are sorted by country.,"The query calculates the average, minimum, and maximum age of all singers who are from France.",9.0,9.0,8.0,8.0,10.0,"The documentation accurately reflects the functionality of the MongoDB query, calculating average, min, and max age for singers from France. It's reasonably clear and relevant to the reference documentation.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately reflects the functionality of the MongoDB query, calculating average, min, and max age for singers from France. It's reasonably clear and relevant to the reference documentation.""
+}"
+"db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the average, minimum, and maximum age for all French singers?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$match"":{""country"":""France""}},{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""min"":{""$min"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""min"":1,""max"":1}}])
+
+Documentation:",521,"* MongoDB documentation
+* MongoDB query
+
+""""""",* MongoDB documentation * MongoDB query,"The query calculates the average, minimum, and maximum age of all French singers, providing a summary of their age distribution.",8.5,9.0,8.0,8.0,9.0,"The documentation accurately reflects the query's intent to calculate average, minimum and maximum age of singers from France, aligning with the reference documentation. It effectively utilizes aggregation pipeline stages for this purpose.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.5,
+  ""reason"": ""The documentation accurately reflects the query's intent to calculate average, minimum and maximum age of singers from France, aligning with the reference documentation. It effectively utilizes aggregation pipeline stages for this purpose.""
+}"
+"db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show the name and the release year of the song by the youngest singer.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])
+
+Documentation:",429,"* The query result is a list of documents.
+* The documents are ordered by the age of the song.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+*",* The query result is a list of documents. * The documents are ordered by the age of the song. * The documents are ordered by the song name.,"The query returns the name and release year of the song by the youngest singer, focusing on the single record with the youngest age.",8.2,8.0,7.0,8.0,9.0,"The documentation accurately reflects the core intent of the query (finding the youngest singer and their song details) using aggregation pipeline stages. While it could be more precise about the sorting behavior, the overall relevance to the reference documentation is high.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The documentation accurately reflects the core intent of the query (finding the youngest singer and their song details) using aggregation pipeline stages. While it could be more precise about the sorting behavior, the overall relevance to the reference documentation is high.""
+}"
+"db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names and release years for all the songs of the youngest singer?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$sort"":{""age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""song_name"":1,""song_release_year"":1}}])
+
+Documentation:",430,"* The query result is a list of documents.
+* The documents are ordered by age.
+* The documents are ordered by song name.
+* The documents are ordered by song release year.
+* The documents are ordered by song name.
+* The documents are ordered by song release year.
+* The documents are ordered by song name.
+* The documents are ordered by song release year.
+* The documents are ordered by song name.
+*",* The query result is a list of documents. * The documents are ordered by age. * The documents are ordered by song name.,"The query retrieves the names and release years of all songs by the youngest singer, ensuring only the youngest singer's songs are included.",8.2,9.0,8.0,7.0,9.0,The documentation accurately reflects the aggregation pipeline stages and their effect on ordering and projection. It could be improved by explicitly stating it selects the youngest singer's data.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 7,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The documentation accurately reflects the aggregation pipeline stages and their effect on ordering and projection. It could be improved by explicitly stating it selects the youngest singer's data.""
+}"
+"db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List all song names by singers above the average age.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])
+
+Documentation:",531,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group-by
+* https://docs.mongodb.com/manual",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate * https://docs.mongodb.com/manual/reference/aggregation-operators/group * https://docs.mongodb.com/manual/reference/aggregation-operators/group-by * https://docs.mongodb.com/manual,The query returns song names from singers who are older than the average age of all singers.,8.0,9.0,7.0,6.0,9.0,"The generated query accurately implements the specified logic of finding singers older than the average age using aggregation pipeline stages like `$group`, `$lookup`, and `$match`. While not perfectly concise, it correctly maps to the reference's intent.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 6,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The generated query accurately implements the specified logic of finding singers older than the average age using aggregation pipeline stages like `$group`, `$lookup`, and `$match`. While not perfectly concise, it correctly maps to the reference's intent.""
+}"
+"db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are all the song names by singers who are older than average?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$group"":{""_id"":null,""__threshold"":{""$avg"":{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$lookup"":{""from"":""singer"",""let"":{""threshold"":""$__threshold""},""pipeline"":[{""$match"":{""$expr"":{""$gt"":[{""$convert"":{""input"":""$age"",""to"":""double"",""onError"":null,""onNull"":null}},""$$threshold""]}}},{""$project"":{""song_name"":1,""_id"":0}}],""as"":""rows""}},{""$unwind"":""$rows""},{""$replaceRoot"":{""newRoot"":""$rows""}}])
+
+Documentation:",534,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group-by
+* https://docs.mongodb.com/manual",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate * https://docs.mongodb.com/manual/reference/aggregation-operators/group * https://docs.mongodb.com/manual/reference/aggregation-operators/group-by * https://docs.mongodb.com/manual,The query returns all song names by singers who are older than the average age of all singers.,8.0,9.0,7.0,6.0,9.0,"The generated documentation accurately describes the query's intention – retrieving song names for singers older than the average age. The use of aggregation operators like `$group`, `$lookup`, `$match`, and `$project` aligns with the reference documentation. However, it could be more detailed in explaining each step and the data transformations involved.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 6,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The generated documentation accurately describes the query's intention – retrieving song names for singers older than the average age. The use of aggregation operators like `$group`, `$lookup`, `$match`, and `$project` aligns with the reference documentation. However, it could be more detailed in explaining each step and the data transformations involved.""
+}"
+"db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show location and name for all stadiums with a capacity between 5000 and 10000.
+
+MongoDB Schema:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})
+
+Documentation:",414,"* The query result is a list of documents.
+* The documents are ordered by the average score.
+* The documents are ordered by the highest score.
+* The documents are ordered by the lowest score.
+* The documents are ordered by the name.
+* The documents are ordered by the location.
+* The documents are ordered by the highest capacity.
+* The documents are ordered by the lowest capacity.
+* The documents are ordered by the highest",* The query result is a list of documents. * The documents are ordered by the average score. * The documents are ordered by the highest score.,"The query returns the location and name of all stadiums that have a capacity between 5,000 and 10,000 people.",9.5,10.0,9.0,9.0,10.0,"The documentation accurately describes the MongoDB query's functionality, closely aligning with the reference documentation's description of filtering stadiums by capacity range and returning specified fields.","{
+  ""correctness"": 10,
+  ""completeness"": 9,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.5,
+  ""reason"": ""The documentation accurately describes the MongoDB query's functionality, closely aligning with the reference documentation's description of filtering stadiums by capacity range and returning specified fields.""
+}"
+"db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the locations and names of all stations with capacity between 5000 and 10000?
+
+MongoDB Schema:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.find({""capacity"":{""$gte"":5000,""$lte"":10000}}, {""_id"":0,""location"":1,""name"":1})
+
+Documentation:",415,"* Stadium:
+{
+  ""_id"": ""ObjectId"",
+  ""average"": ""number"",
+  ""capacity"": ""number"",
+  ""highest"": ""number"",
+  ""location"": ""string"",
+  ""lowest"": ""number"",
+  ""name"": ""string""
+}
+
+* Stadiums:
+{
+  ""_id"": ""ObjectId"",
+  ""average"": ""number"",",Reads from the stadium collection via find. It uses a find operation to retrieve matching documents.,The query returns the names and locations of all stadiums that have a capacity between 5000 and 10000 people.,9.0,9.0,8.0,9.0,10.0,The documentation accurately reflects the query's functionality – filtering stadiums by capacity between 5000 and 10000 and returning specific fields (location and name). The schema definitions are also relevant to the data structure being queried.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately reflects the query's functionality – filtering stadiums by capacity between 5000 and 10000 and returning specific fields (location and name). The schema definitions are also relevant to the data structure being queried.""
+}"
+"db.stadium.aggregate([{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""max"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the average and maximum capacities for all stadiums ?
+
+MongoDB Schema:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$group"":{""_id"":null,""avg"":{""$avg"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}},""max"":{""$max"":{""$convert"":{""input"":""$capacity"",""to"":""double"",""onError"":null,""onNull"":null}}}}},{""$project"":{""_id"":0,""avg"":1,""max"":1}}])
+
+Documentation:",469,"* MongoDB documentation
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query
+
+* MongoDB query",* MongoDB documentation * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query * MongoDB query,"The query returns the average and maximum capacities of all stadiums, providing a summary of their size ranges.",9.5,10.0,10.0,9.0,10.0,The documentation accurately reflects the MongoDB query's functionality – calculating the average and maximum stadium capacities. It covers all relevant aspects described in the reference documentation.,"{
+  ""correctness"": 10,
+  ""completeness"": 10,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.5,
+  ""reason"": ""The documentation accurately reflects the MongoDB query's functionality – calculating the average and maximum stadium capacities. It covers all relevant aspects described in the reference documentation.""
+}"
+"db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the name and capacity for the stadium with highest average attendance?
+
+MongoDB Schema:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])
+
+Documentation:",415,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,The query returns the name and capacity of the stadium that has the highest average attendance.,9.0,9.0,8.0,9.0,10.0,"The documentation accurately describes the query's functionality – returning the stadium with the highest average attendance by using `$sort`, `$limit`, and `$project`. The descriptions are clear and relevant to the reference documentation.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the query's functionality – returning the stadium with the highest average attendance by using `$sort`, `$limit`, and `$project`. The descriptions are clear and relevant to the reference documentation.""
+}"
+"db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the name and capacity for the stadium with the highest average attendance?
+
+MongoDB Schema:
+{
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$sort"":{""average"":-1}},{""$limit"":1},{""$project"":{""_id"":0,""name"":1,""capacity"":1}}])
+
+Documentation:",416,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,The query retrieves the name and capacity of the stadium that has the highest average attendance.,9.0,9.0,8.0,9.0,10.0,The documentation accurately describes the query's functionality – sorting by average in descending order and limiting to the top stadium. It is clear and relevant to the reference documentation.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the query's functionality – sorting by average in descending order and limiting to the top stadium. It is clear and relevant to the reference documentation.""
+}"
+"db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many concerts are there in year 2014 or 2015?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )
+
+Documentation:",415,"* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is",* The query is a MongoDB query. * The query is a MongoDB query. * The query is a MongoDB query.,The query counts the total number of concerts that took place in either 2014 or 2015.,9.0,10.0,9.0,8.0,10.0,"The documentation accurately describes the MongoDB query's intent to count concerts from 2014 or 2015 using an '$match' and '$group' stage, aligning with the reference documentation.","{
+  ""correctness"": 10,
+  ""completeness"": 9,
+  ""clarity"": 8,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the MongoDB query's intent to count concerts from 2014 or 2015 using an '$match' and '$group' stage, aligning with the reference documentation.""
+}"
+"db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many concerts occurred in 2014 or 2015?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.concert.aggregate( [ { ""$match"": { ""$or"": [ { ""year"": 2014 }, { ""year"": 2015 } ] } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )
+
+Documentation:",413,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+* MongoDB query:
+db.concert.aggregate( [ { ""$match"": { ""year"": 2014 } }, { ""$group"": { ""_id"": null, ""count"": { ""$sum"": 1 } } } ] )
+
+* MongoDB query:
+db.concert.aggregate(",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate * MongoDB query:,The query counts the total number of concerts that took place in either 2014 or 2015.,8.0,9.0,7.0,8.0,9.0,"The generated documentation accurately reflects the intent of the MongoDB query to count concerts in 2014 or 2015. While not perfectly detailed like the reference documentation, it correctly describes the core logic using aggregation operators. The missing part of the original query (2015) is reflected in the generated code, but could have been more explicitly stated.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The generated documentation accurately reflects the intent of the MongoDB query to count concerts in 2014 or 2015. While not perfectly detailed like the reference documentation, it correctly describes the core logic using aggregation operators. The missing part of the original query (2015) is reflected in the generated code, but could have been more explicitly stated.""
+}"
+"db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show the stadium name and the number of concerts in each stadium.
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])
+
+Documentation:",535,"* The query result is a list of documents.
+* The documents are ordered by the name of the collection.
+* The documents are sorted by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped",* The query result is a list of documents. * The documents are ordered by the name of the collection. * The documents are sorted by the name of the collection.,The query returns the name of each stadium and the total number of concerts held there. It groups the results by stadium to show how many concerts are associated with each one.,8.2,9.0,8.0,7.0,9.0,"The generated documentation accurately reflects the query's functionality – grouping by stadium ID and name to count concerts. While it could be more concise, its overall relevance to the reference documentation is high.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 7,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The generated documentation accurately reflects the query's functionality – grouping by stadium ID and name to count concerts. While it could be more concise, its overall relevance to the reference documentation is high.""
+}"
+"db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+For each stadium, how many concerts play there?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.concert.aggregate([{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""stadium_id"":""$stadium_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])
+
+Documentation:",532,"* The query result is a list of documents.
+* The documents are ordered by the name of the collection.
+* The documents are sorted by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped by the name of the collection.
+* The documents are grouped",* The query result is a list of documents. * The documents are ordered by the name of the collection. * The documents are sorted by the name of the collection.,"The query counts the number of concerts held at each stadium, providing a list of stadiums along with the total concerts they host.",8.4,9.0,8.0,8.0,9.0,The documentation accurately reflects the query's intent to count concerts per stadium and provides a reasonable level of detail for understanding its operation. Minor improvements could be made to specify aggregation stages more explicitly.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.4,
+  ""reason"": ""The documentation accurately reflects the query's intent to count concerts per stadium and provides a reasonable level of detail for understanding its operation. Minor improvements could be made to specify aggregation stages more explicitly.""
+}"
+"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show the stadium names without any concert.
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])
+
+Documentation:",490,"* The query result is a list of documents.
+* The documents are ordered by the _id field.
+* The documents are sorted by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.",* The query result is a list of documents. * The documents are ordered by the _id field. * The documents are sorted by the _id field.,The query returns the names of stadiums that have not hosted any concerts.,7.5,8.0,4.0,6.0,9.0,The documentation correctly identifies the intent of the query (stadiums without concerts) but contains several irrelevant and repetitive descriptions of aggregation pipeline stages that are not present in the original query or reference documentation. The relevance is high because it captures the core goal.,"{
+  ""correctness"": 8,
+  ""completeness"": 4,
+  ""clarity"": 6,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The documentation correctly identifies the intent of the query (stadiums without concerts) but contains several irrelevant and repetitive descriptions of aggregation pipeline stages that are not present in the original query or reference documentation. The relevance is high because it captures the core goal.""
+}"
+"db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names of the stadiums without any concerts?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""__matched""}},{""$match"":{""__matched"":{""$eq"":[]}}},{""$project"":{""name"":1,""_id"":0}}])
+
+Documentation:",493,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation-pipeline
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation-pipeline-with-group-by
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation-pipeline * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation-pipeline-with-group-by * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregation,The query returns the names of stadiums that have not hosted any concerts.,8.2,8.0,7.0,8.0,9.0,The generated documentation accurately describes the query's purpose – retrieving stadium names not associated with concerts – aligning perfectly with the reference documentation. It uses aggregation pipeline terminology appropriately. Minor deductions for missing details about `$lookup` and potential performance considerations.,"{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The generated documentation accurately describes the query's purpose – retrieving stadium names not associated with concerts – aligning perfectly with the reference documentation. It uses aggregation pipeline terminology appropriately. Minor deductions for missing details about `$lookup` and potential performance considerations.""
+}"
+"db.singer.aggregate([{""$group"":{""_id"":""$country"",""__a"":{""$max"":{""$cond"":[{""$gt"":[""$age"",40]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$lt"":[""$age"",30]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""country"":""$_id"",""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show countries where a singer above age 40 and a singer below 30 are from.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.aggregate([{""$group"":{""_id"":""$country"",""__a"":{""$max"":{""$cond"":[{""$gt"":[""$age"",40]},1,0]}},""__b"":{""$max"":{""$cond"":[{""$lt"":[""$age"",30]},1,0]}}}},{""$match"":{""__a"":1,""__b"":1}},{""$project"":{""country"":""$_id"",""_id"":0}}])
+
+Documentation:",479,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,The query finds countries that have both a singer older than 40 and a singer younger than 30.,8.2,9.0,7.0,8.0,9.0,"The documentation accurately describes the query's intent to find countries with singers both older than 40 and younger than 30, aligning with the reference documentation. While it doesn't explicitly detail the aggregation pipeline stages, it captures the core functionality. The explanations are generally clear.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The documentation accurately describes the query's intent to find countries with singers both older than 40 and younger than 30, aligning with the reference documentation. While it doesn't explicitly detail the aggregation pipeline stages, it captures the core functionality. The explanations are generally clear.""
+}"
+"db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show names for all stadiums except for stadiums having a concert in year 2014.
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])
+
+Documentation:",581,"* The query result is a list of documents.
+* The documents are ordered by the _id field.
+* The documents are sorted by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.
+* The documents are grouped by the _id field.",* The query result is a list of documents. * The documents are ordered by the _id field. * The documents are sorted by the _id field.,The query returns the names of all stadiums that did not host any concert in the year 2014.,7.5,8.0,6.0,7.0,9.0,"The documentation accurately reflects the core logic of the query – excluding stadiums with concerts in 2014 and then returning names. However, it misses details about projection and limiting the results which are crucial parts of the original query's operation.","{
+  ""correctness"": 8,
+  ""completeness"": 6,
+  ""clarity"": 7,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The documentation accurately reflects the core logic of the query – excluding stadiums with concerts in 2014 and then returning names. However, it misses details about projection and limiting the results which are crucial parts of the original query's operation.""
+}"
+"db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names of all stadiums that did not have a concert in 2014?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""stadium"": {
+    ""_id"": ""ObjectId"",
+    ""average"": ""number"",
+    ""capacity"": ""number"",
+    ""highest"": ""number"",
+    ""location"": ""string"",
+    ""lowest"": ""number"",
+    ""name"": ""string""
+  }
+}
+
+MongoDB Query:
+db.stadium.aggregate([{""$group"":{""_id"":""$name""}},{""$lookup"":{""from"":""concert"",""let"":{""outer_name"":""$_id""},""pipeline"":[{""$lookup"":{""from"":""stadium"",""localField"":""stadium_id"",""foreignField"":""stadium_id"",""as"":""j""}},{""$unwind"":""$j""},{""$match"":{""year"":""2014""}},{""$match"":{""$expr"":{""$eq"":[""$j.name"",""$$outer_name""]}}},{""$limit"":1}],""as"":""__exclude""}},{""$match"":{""__exclude"":{""$eq"":[]}}},{""$project"":{""name"":""$_id"",""_id"":0}}])
+
+Documentation:",582,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate-filter
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate-group
+* https://docs.mongodb.",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate-filter * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate-group * https://docs.mongodb.,The query returns the names of all stadiums that did not host any concerts in 2014.,8.4,9.0,7.0,8.0,9.0,"The generated documentation accurately describes the query's behavior of filtering stadiums based on their lack of concerts in 2014 using aggregation pipeline operators like `$group`, `$lookup`, `$match`, and `$project`. It captures the core intent stated in the reference document.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.4,
+  ""reason"": ""The generated documentation accurately describes the query's behavior of filtering stadiums based on their lack of concerts in 2014 using aggregation pipeline operators like `$group`, `$lookup`, `$match`, and `$project`. It captures the core intent stated in the reference document.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Show the name and theme for all concerts and the number of singers in each concert.
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])
+
+Documentation:",548,"* The query result is a list of documents.
+* The documents are ordered by the date of the first occurrence.
+* The documents are ordered by the number of singers in the first occurrence.
+* The documents are ordered by the number of singers in the second occurrence.
+* The documents are ordered by the number of singers in the third occurrence.
+* The documents are ordered by the number of singers in the fourth occurrence.
+* The documents are ordered",* The query result is a list of documents. * The documents are ordered by the date of the first occurrence. * The documents are ordered by the number of singers in the first occurrence.,The query returns the name and theme of each concert along with the count of singers participating in that concert. It includes all concerts and groups the results by concert to show the number of singers in each.,8.0,8.0,7.0,8.0,9.0,The generated documentation accurately describes the query's functionality of counting singers per concert and grouping by concert details. It misses some specifics from the reference regarding ordering but largely captures the intent.,"{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The generated documentation accurately describes the query's functionality of counting singers per concert and grouping by concert details. It misses some specifics from the reference regarding ordering but largely captures the intent.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names , themes , and number of singers for every concert ?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""concert_id"":""$j.concert_id"",""concert_name"":""$j.concert_name"",""theme"":""$j.theme""},""concert_name"":{""$first"":""$j.concert_name""},""theme"":{""$first"":""$j.theme""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""concert_name"":1,""theme"":1,""count"":1}}])
+
+Documentation:",546,"* The MongoDB documentation is a collection of documents that describe the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* The MongoDB documentation is a collection of documents that describe the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* The MongoDB documentation is a collection of documents that describe the business","* The MongoDB documentation is a collection of documents that describe the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present. * The MongoDB documentation is a collection of documents that describe the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present. * The MongoDB documentation is a collection of documents that...","The query returns the name, theme, and total number of singers for each concert. It includes all concerts and counts how many singers are associated with each one, grouping the results by concert.",8.4,9.0,8.0,8.0,9.0,"The generated documentation accurately reflects the functionality of the MongoDB query described in the reference documentation. It correctly identifies the key operations (lookup, unwind, group, project) and their purpose. While slightly repetitive, it covers the core aspects effectively.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.4,
+  ""reason"": ""The generated documentation accurately reflects the functionality of the MongoDB query described in the reference documentation. It correctly identifies the key operations (lookup, unwind, group, project) and their purpose. While slightly repetitive, it covers the core aspects effectively.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List singer names and number of concerts for each singer.
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])
+
+Documentation:",536,"* MongoDB documentation:
+* https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group
+* https://docs.mongodb.com/manual/reference/aggregation-operators/group-by
+* https://docs.mongodb.com/manual",* MongoDB documentation: * https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate * https://docs.mongodb.com/manual/reference/aggregation-operators/group * https://docs.mongodb.com/manual/reference/aggregation-operators/group-by * https://docs.mongodb.com/manual,The query returns the names of singers along with the total number of concerts each has performed in. It includes all singers and counts their respective concert appearances.,8.5,9.0,8.0,8.0,9.0,"The generated documentation accurately reflects the query's functionality – counting concerts per singer – as described in the reference documentation. It correctly utilizes `$lookup`, `$unwind`, and `$group` operators to achieve this. While it could benefit from more detail on each operator, the overall intent is well-represented.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.5,
+  ""reason"": ""The generated documentation accurately reflects the query's functionality – counting concerts per singer – as described in the reference documentation. It correctly utilizes `$lookup`, `$unwind`, and `$group` operators to achieve this. While it could benefit from more detail on each operator, the overall intent is well-represented.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names of the singers and number of concerts for each person?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j""}},{""$unwind"":""$j""},{""$group"":{""_id"":{""singer_id"":""$j.singer_id"",""name"":""$j.name""},""name"":{""$first"":""$j.name""},""count"":{""$sum"":1}}},{""$project"":{""_id"":0,""name"":1,""count"":1}}])
+
+Documentation:",540,"* MongoDB documentation:
+  https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate
+  https://docs.mongodb.com/manual/reference/aggregation-operators/group
+  https://docs.mongodb.com/manual/reference/aggregation-operators/group-by
+  https://docs.mongodb.com/manual",* MongoDB documentation: https://docs.mongodb.com/manual/reference/aggregation-operators/aggregate https://docs.mongodb.com/manual/reference/aggregation-operators/group https://docs.mongodb.com/manual/reference/aggregation-operators/group-by https://docs.mongodb.com/manual,The query returns the names of singers along with the total number of concerts each has performed in. It includes all singers and counts their respective concert appearances.,8.5,9.0,8.0,8.0,9.0,"The documentation accurately reflects the query's purpose – counting concerts per singer – and uses appropriate aggregation operators. It could benefit from slightly more detail regarding `$lookup` and `$unwind`, but overall it effectively communicates the intent as described in the reference documentation.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.5,
+  ""reason"": ""The documentation accurately reflects the query's purpose – counting concerts per singer – and uses appropriate aggregation operators. It could benefit from slightly more detail regarding `$lookup` and `$unwind`, but overall it effectively communicates the intent as described in the reference documentation.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List all singer names in concerts in year 2014.
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])
+
+Documentation:",597,"* List all concerts in year 2014.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and 2015.
+* List all concerts in year 2014 and",* List all concerts in year 2014. * List all concerts in year 2014 and 2015. * List all concerts in year 2014 and 2015.,The query returns the names of all singers who performed in concerts that took place in the year 2014.,8.4,9.0,8.0,7.0,9.0,"The documentation accurately reflects the query's intent to retrieve singer names from concerts in 2014 using `$lookup`, `$unwind`, and `$match`. While slightly repetitive, it correctly identifies the core purpose.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 7,
+  ""relevance"": 9,
+  ""judge_score"": 8.4,
+  ""reason"": ""The documentation accurately reflects the query's intent to retrieve singer names from concerts in 2014 using `$lookup`, `$unwind`, and `$match`. While slightly repetitive, it correctly identifies the core purpose.""
+}"
+"db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the names of the singers who performed in a concert in 2014?
+
+MongoDB Schema:
+{
+  ""concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_name"": ""string"",
+    ""stadium_id"": ""string"",
+    ""theme"": ""string"",
+    ""year"": ""string""
+  },
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  },
+  ""singer_in_concert"": {
+    ""_id"": ""ObjectId"",
+    ""concert_id"": ""number"",
+    ""singer_id"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer_in_concert.aggregate([{""$lookup"":{""from"":""singer"",""localField"":""singer_id"",""foreignField"":""singer_id"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""concert"",""localField"":""concert_id"",""foreignField"":""concert_id"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.year"":""2014""}},{""$project"":{""_id"":0,""name"":""$j0.name""}}])
+
+Documentation:",602,"* The query result is a list of documents.
+* The documents are ordered by the date of the release.
+* The documents are ordered by the number of singers.
+* The documents are ordered by the number of songs.
+* The documents are ordered by the number of singers.
+* The documents are ordered by the number of songs.
+* The documents are ordered by the number of singers.
+* The documents are ordered by the number of songs",* The query result is a list of documents. * The documents are ordered by the date of the release. * The documents are ordered by the number of singers.,The query returns the names of singers who performed in at least one concert that took place in 2014.,8.0,8.0,7.0,8.0,9.0,"The documentation accurately describes the core functionality of the query – filtering for concerts in 2014 and projecting singer names. While it misses key aspects like joins, the overall intent aligns with the reference documentation.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.0,
+  ""reason"": ""The documentation accurately describes the core functionality of the query – filtering for concerts in 2014 and projecting singer names. While it misses key aspects like joins, the overall intent aligns with the reference documentation.""
+}"
+"db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+what is the name and nation of the singer who have a song having 'Hey' in its name?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )
+
+Documentation:",433,"* The query result is a list of documents.
+* The documents are ordered by the name of the singer.
+* The documents are ordered by the age of the singer.
+* The documents are ordered by the country of the singer.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+
+* The documents are ordered by the name of the singer.
+* The documents are ordered by the",* The query result is a list of documents. * The documents are ordered by the name of the singer. * The documents are ordered by the age of the singer.,The query retrieves the name and country of singers who have at least one song with 'Hey' in its title.,8.2,8.0,7.0,9.0,9.0,The documentation accurately reflects the query's use of a regular expression to filter documents where 'Hey' is present in the 'song_name' field. It correctly identifies the fields being returned and implicitly acknowledges sorting (though the reference docs didn't specify it).,"{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 9,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The documentation accurately reflects the query's use of a regular expression to filter documents where 'Hey' is present in the 'song_name' field. It correctly identifies the fields being returned and implicitly acknowledges sorting (though the reference docs didn't specify it).""
+}"
+"db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the name and country of origin of every singer who has a song with the word 'Hey' in its title?
+
+MongoDB Schema:
+{
+  ""singer"": {
+    ""_id"": ""ObjectId"",
+    ""age"": ""number"",
+    ""country"": ""string"",
+    ""is_male"": ""string"",
+    ""name"": ""string"",
+    ""song_name"": ""string"",
+    ""song_release_year"": ""string""
+  }
+}
+
+MongoDB Query:
+db.singer.find( { ""song_name"": { ""$regex"": "".*Hey.*"", ""$options"": ""i"" } }, { ""name"": 1, ""country"": 1 } )
+
+Documentation:",437,"* The query result is a list of documents.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+* The documents are ordered by the song name.
+* The documents are ordered by the song release year.
+* The documents are ordered by the song name.
+* The documents",* The query result is a list of documents. * The documents are ordered by the song name. * The documents are ordered by the song release year.,The query returns the names and countries of all singers who have at least one song with 'Hey' in the title.,8.6,9.0,8.0,9.0,9.0,The documentation accurately describes the query's functionality: finding singers whose song names contain 'Hey' (case-insensitive) and returning their name and country. The inclusion of ordering details is somewhat irrelevant to the core function as stated in the reference document.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 9,
+  ""judge_score"": 8.6,
+  ""reason"": ""The documentation accurately describes the query's functionality: finding singers whose song names contain 'Hey' (case-insensitive) and returning their name and country. The inclusion of ordering details is somewhat irrelevant to the core function as stated in the reference document.""
+}"
+"db.pets.countDocuments({""weight"":{""$gt"":10}})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the number of pets whose weight is heavier than 10.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.countDocuments({""weight"":{""$gt"":10}})
+
+Documentation:",378,"* The query is a simple query that returns a single document.
+* The query is a simple query that returns a single document.
+* The query is a simple query that returns a single document.
+* The query is a simple query that returns a single document.
+* The query is a simple query that returns a single document.
+* The query is a simple query that returns a single document.
+* The query is a simple query that returns a",* The query is a simple query that returns a single document. * The query is a simple query that returns a single document. * The query is a simple query that returns a single document.,The query counts how many pets have a weight greater than 10 units.,9.0,10.0,9.0,8.0,10.0,"The documentation accurately reflects the query's functionality – counting documents where 'weight' is greater than 10. While repetitive, it correctly conveys the core intent of the MongoDB query as described in the reference documentation.","{
+  ""correctness"": 10,
+  ""completeness"": 9,
+  ""clarity"": 8,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately reflects the query's functionality – counting documents where 'weight' is greater than 10. While repetitive, it correctly conveys the core intent of the MongoDB query as described in the reference documentation.""
+}"
+"db.pets.countDocuments({""weight"":{""$gt"":10}})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many pets have a greater weight than 10?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.countDocuments({""weight"":{""$gt"":10}})
+
+Documentation:",376,"* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10?
+* How many pets have a greater weight than 10",* How many pets have a greater weight than 10? * How many pets have a greater weight than 10? * How many pets have a greater weight than 10?,"The query counts how many pets weigh more than 10 units, providing the total number of pets that meet this weight criterion.",10.0,10.0,10.0,10.0,10.0,"The documentation perfectly reflects the reference documentation in terms of correctness, completeness, clarity and relevance. The repeated question clearly communicates the intent.","{
+  ""correctness"": 10,
+  ""completeness"": 10,
+  ""clarity"": 10,
+  ""relevance"": 10,
+  ""judge_score"": 10.0,
+  ""reason"": ""The documentation perfectly reflects the reference documentation in terms of correctness, completeness, clarity and relevance. The repeated question clearly communicates the intent.""
+}"
+"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the weight of the youngest dog.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])
+
+Documentation:",394,"* The query result is a list of documents.
+* The documents are ordered by the pet age.
+* The documents are ordered by the pet id.
+* The documents are ordered by the pet type.
+* The documents are ordered by the pet weight.
+* The documents are ordered by the pet age.
+* The documents are ordered by the pet id.
+* The documents are ordered by the pet type.
+* The documents are ordered by",* The query result is a list of documents. * The documents are ordered by the pet age. * The documents are ordered by the pet id.,"The query retrieves the weight of the youngest dog, returning only the weight value of the single youngest dog in the dataset.",8.2,8.0,7.0,8.0,9.0,"The documentation accurately reflects the core functionality of the query – sorting by `pet_age` and limiting to one document. However, it misses some nuance regarding aggregation pipeline stages which are present in the MongoDB query and not explained in the reference.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The documentation accurately reflects the core functionality of the query – sorting by `pet_age` and limiting to one document. However, it misses some nuance regarding aggregation pipeline stages which are present in the MongoDB query and not explained in the reference.""
+}"
+"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How much does the youngest dog weigh?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""weight"":1}}])
+
+Documentation:",394,"* The query result is a list of documents.
+* The documents are ordered by the pet age.
+* The documents are ordered by the pet id.
+* The documents are ordered by the pet type.
+* The documents are ordered by the pet weight.
+* The documents are ordered by the pet age.
+* The documents are ordered by the pet id.
+* The documents are ordered by the pet type.
+* The documents are ordered by",* The query result is a list of documents. * The documents are ordered by the pet age. * The documents are ordered by the pet id.,The query returns the weight of the youngest dog in the dataset.,8.5,9.0,7.0,8.0,10.0,"The documentation accurately reflects the MongoDB aggregation pipeline's behavior in sorting and limiting results to find the youngest pet based on 'pet_age'. While it could be more detailed about the projection step, it effectively conveys the core intent of the query as stated in the reference document.","{
+  ""correctness"": 9,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 10,
+  ""judge_score"": 8.5,
+  ""reason"": ""The documentation accurately reflects the MongoDB aggregation pipeline's behavior in sorting and limiting results to find the youngest pet based on 'pet_age'. While it could be more detailed about the projection step, it effectively conveys the core intent of the query as stated in the reference document.""
+}"
+"db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the maximum weight for each type of pet. List the maximum weight and pet type.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])
+
+Documentation:",437,"* The query result is a list of documents.
+* The documents are ordered by the _id field.
+* The documents are sorted by the max_weight field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the max_weight field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the max_weight field.
+* The documents are sorted by the _",* The query result is a list of documents. * The documents are ordered by the _id field. * The documents are sorted by the max_weight field.,The query returns the maximum weight for each type of pet. It lists the pet type along with the corresponding maximum weight. The results are grouped by pet type.,8.4,9.0,8.0,8.0,9.0,"The documentation accurately describes the query's functionality of grouping by pettype and finding the maximum weight for each group. It correctly mentions ordering and projection aspects, closely aligning with the reference documentation.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.4,
+  ""reason"": ""The documentation accurately describes the query's functionality of grouping by pettype and finding the maximum weight for each group. It correctly mentions ordering and projection aspects, closely aligning with the reference documentation.""
+}"
+"db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+List the maximum weight and type for each type of pet.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{$group: {_id: {$first: '$pettype'}, max_weight: { $max: {$first: '$weight'} }}}, {$project: {pettype: '$_id', max_weight: 1, _id: 0}}])
+
+Documentation:",431,"* The query result is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.
+* The list of objects is a list of objects.",* The query result is a list of objects. * The list of objects is a list of objects. * The list of objects is a list of objects.,The query returns the maximum weight for each type of pet. It groups the data by pet type and calculates the highest weight in each group. The result includes the pet type and the corresponding maximum weight.,6.0,8.0,6.0,2.0,9.0,"The documentation accurately reflects the core functionality of grouping by pet type and finding the maximum weight, aligning with the reference. However, it's overly repetitive and lacks detail about the aggregation pipeline stages.","{
+  ""correctness"": 8,
+  ""completeness"": 6,
+  ""clarity"": 2,
+  ""relevance"": 9,
+  ""judge_score"": 6.0,
+  ""reason"": ""The documentation accurately reflects the core functionality of grouping by pet type and finding the maximum weight, aligning with the reference. However, it's overly repetitive and lacks detail about the aggregation pipeline stages.""
+}"
+"db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the number of distinct type of pets.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])
+
+Documentation:",384,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,The query counts how many different types of pets exist in the data.,9.0,9.0,8.0,9.0,10.0,"The documentation accurately describes the query's intent to count distinct pet types, aligning with the reference documentation. It is clear and concise.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the query's intent to count distinct pet types, aligning with the reference documentation. It is clear and concise.""
+}"
+"db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+How many different types of pet are there?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$group"":{""_id"":""$pettype""}},{""$count"":""count""}])
+
+Documentation:",384,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,"The query counts the number of unique pet types in the dataset, providing the total variety of pets available.",9.0,10.0,8.0,9.0,10.0,The documentation accurately describes the query's functionality - counting distinct pet types - aligning perfectly with the reference documentation's description of the query's intent.,"{
+  ""correctness"": 10,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the query's functionality - counting distinct pet types - aligning perfectly with the reference documentation's description of the query's intent.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the first name of students who have cat or dog pet.
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])
+
+Documentation:",615,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,"The query returns the first names of students who own either a cat or a dog as a pet, ensuring each name is listed only once.",7.5,8.0,7.0,6.0,9.0,"The generated documentation accurately describes the query's core functionality – retrieving distinct first names of students owning cats or dogs – aligning with the reference documentation. However, it lacks detail on the aggregation pipeline stages and could benefit from greater clarity regarding the joins and unwind operations.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 6,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The generated documentation accurately describes the query's core functionality – retrieving distinct first names of students owning cats or dogs – aligning with the reference documentation. However, it lacks detail on the aggregation pipeline stages and could benefit from greater clarity regarding the joins and unwind operations.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the first names of every student who has a cat or dog as a pet?
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$project"":{""_id"":0,""fname"":""$fname""}},{""$group"":{""_id"":""$fname""}},{""$project"":{""fname"":""$_id"",""_id"":0}}])
+
+Documentation:",620,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,"The query returns the first names of all students who own either a cat or a dog as a pet, ensuring each student's name is listed only once.",8.4,9.0,8.0,7.0,10.0,"The documentation accurately reflects the query's intent – retrieving distinct first names of students who own cats or dogs. It doesn't explicitly detail all the stages (lookup, unwind, project, group), but captures the core outcome described in the reference documentation.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 7,
+  ""relevance"": 10,
+  ""judge_score"": 8.4,
+  ""reason"": ""The documentation accurately reflects the query's intent – retrieving distinct first names of students who own cats or dogs. It doesn't explicitly detail all the stages (lookup, unwind, project, group), but captures the core outcome described in the reference documentation.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the first name of students who have both cat and dog pets .
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])
+
+Documentation:",677,"* The query result is a list of documents.
+* The documents are ordered by the _id field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the _id field.",* The query result is a list of documents. * The documents are ordered by the _id field. * The documents are sorted by the _id field.,The query returns the first names of students who own both a cat and a dog. It includes only those students who have at least one entry for each pet type in the pets table.,7.5,7.0,6.0,8.0,9.0,The documentation accurately reflects the core intent of the query – finding students who own both cats and dogs – but misses key aspects like the aggregation pipeline stages and the use of `$cond` for filtering based on pet type.,"{
+  ""correctness"": 7,
+  ""completeness"": 6,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The documentation accurately reflects the core intent of the query – finding students who own both cats and dogs – but misses key aspects like the aggregation pipeline stages and the use of `$cond` for filtering based on pet type.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What are the students' first names who have both cats and dogs as pets?
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$group"":{""_id"":""$fname"",""__hit_0"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""cat""]},1,0]}},""__hit_1"":{""$max"":{""$cond"":[{""$eq"":[""$j1.pettype"",""dog""]},1,0]}}}},{""$match"":{""__hit_0"":1,""__hit_1"":1}},{""$project"":{""_id"":0,""fname"":""$_id""}}])
+
+Documentation:",679,"* The query result is a list of documents.
+* The documents are ordered by the _id field.
+* The documents are sorted by the age field.
+* The documents are sorted by the weight field.
+* The documents are sorted by the _id field.
+* The documents are sorted by the age field.
+* The documents are sorted by the weight field.
+* The documents are sorted by the _id field.
+* The documents",* The query result is a list of documents. * The documents are ordered by the _id field. * The documents are sorted by the age field.,The query returns the first names of students who own both cats and dogs as pets. It includes only those students who have at least one cat and at least one dog listed in their pet records.,8.2,8.0,7.0,8.0,9.0,"The generated documentation accurately reflects the query's intent - retrieving first names of students owning both cats and dogs - but misses some key aspects like the use of `$lookup`, `$unwind` and aggregation pipeline stages.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 8,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The generated documentation accurately reflects the query's intent - retrieving first names of students owning both cats and dogs - but misses some key aspects like the use of `$lookup`, `$unwind` and aggregation pipeline stages.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the first name and age of students who have a dog but do not have a cat as a pet.
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])
+
+Documentation:",615,"* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is a MongoDB query.
+* The query is",* The query is a MongoDB query. * The query is a MongoDB query. * The query is a MongoDB query.,The query returns the first names and ages of students who own a dog but do not own a cat as a pet.,7.5,8.0,7.0,6.0,9.0,"The documentation accurately reflects the core functionality of the query: selecting students who own dogs and do not own cats. However, it lacks detail about the join operations used to achieve this.","{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 6,
+  ""relevance"": 9,
+  ""judge_score"": 7.5,
+  ""reason"": ""The documentation accurately reflects the core functionality of the query: selecting students who own dogs and do not own cats. However, it lacks detail about the join operations used to achieve this.""
+}"
+"db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the first name of every student who has a dog but does not have a cat?
+
+MongoDB Schema:
+{
+  ""has_pet"": {
+    ""_id"": ""ObjectId"",
+    ""petid"": ""number"",
+    ""stuid"": ""number""
+  },
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  },
+  ""student"": {
+    ""_id"": ""ObjectId"",
+    ""advisor"": ""number"",
+    ""age"": ""number"",
+    ""city_code"": ""string"",
+    ""fname"": ""string"",
+    ""lname"": ""string"",
+    ""major"": ""number"",
+    ""sex"": ""string"",
+    ""stuid"": ""number""
+  }
+}
+
+MongoDB Query:
+db.student.aggregate([{""$lookup"":{""from"":""has_pet"",""localField"":""stuid"",""foreignField"":""stuid"",""as"":""j0""}},{""$unwind"":""$j0""},{""$lookup"":{""from"":""pets"",""localField"":""j0.petid"",""foreignField"":""petid"",""as"":""j1""}},{""$unwind"":""$j1""},{""$match"":{""j1.pettype"":""dog""}},{""$project"":{""_id"":0,""fname"":""$fname"",""age"":""$age""}}])
+
+Documentation:",612,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,The query returns the first names of all students who own a dog but do not own a cat.,8.2,8.0,7.0,9.0,9.0,The MongoDB query effectively implements the described logic of finding students who own dogs and do not own cats. The documentation accurately reflects this intent. Some minor aspects of the aggregation pipeline could be more detailed for full completeness.,"{
+  ""correctness"": 8,
+  ""completeness"": 7,
+  ""clarity"": 9,
+  ""relevance"": 9,
+  ""judge_score"": 8.2,
+  ""reason"": ""The MongoDB query effectively implements the described logic of finding students who own dogs and do not own cats. The documentation accurately reflects this intent. Some minor aspects of the aggregation pipeline could be more detailed for full completeness.""
+}"
+"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the type and weight of the youngest pet.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])
+
+Documentation:",401,"* The query is a simple expression.
+* The query is a simple expression that returns a single document.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list of documents.
+* The query is a simple expression that returns a list",* The query is a simple expression. * The query is a simple expression that returns a single document. * The query is a simple expression that returns a list of documents.,"The query retrieves the type and weight of the youngest pet, returning only the record with the minimum age.",9.0,9.0,8.0,9.0,10.0,The documentation accurately describes the query's behavior – sorting by `pet_age` and limiting to one document. It aligns perfectly with the reference documentation's description of retrieving the youngest pet.,"{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the query's behavior – sorting by `pet_age` and limiting to one document. It aligns perfectly with the reference documentation's description of retrieving the youngest pet.""
+}"
+"db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What type of pet is the youngest animal, and how much does it weigh?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.aggregate([{""$sort"":{""pet_age"":1}},{""$limit"":1},{""$project"":{""_id"":0,""pettype"":1,""weight"":1}}])
+
+Documentation:",407,"* 1–3 sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What type of pet is the youngest animal, and how much does it weigh?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"":",* 1–3 sentences. * Maximum 300 characters preferred. * Documentation text only.,The query finds the youngest pet and returns its type and weight.,9.0,9.0,8.0,9.0,10.0,"The documentation accurately describes the aggregation pipeline's effect – sorting by pet_age and limiting to the youngest pet, along with projecting desired fields. It aligns perfectly with the reference documentation’s description of finding the youngest pet and retrieving its type and weight.","{
+  ""correctness"": 9,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The documentation accurately describes the aggregation pipeline's effect – sorting by pet_age and limiting to the youngest pet, along with projecting desired fields. It aligns perfectly with the reference documentation’s description of finding the youngest pet and retrieving its type and weight.""
+}"
+"db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+Find the id and weight of all pets whose age is older than 1.
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})
+
+Documentation:",397,"* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is",* The query is a simple language query. * The query is a simple language query. * The query is a simple language query.,The query retrieves the ID and weight of all pets that are older than one year.,9.0,10.0,8.0,9.0,10.0,The generated documentation accurately describes the query's behavior – retrieving 'petid' and 'weight' for pets where 'pet_age' is greater than 1. It's clear and relevant to the reference documentation.,"{
+  ""correctness"": 10,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The generated documentation accurately describes the query's behavior – retrieving 'petid' and 'weight' for pets where 'pet_age' is greater than 1. It's clear and relevant to the reference documentation.""
+}"
+"db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})","Task: nosql2doc
+
+You are an expert MongoDB documentation generator.
+
+Generate concise, human-readable documentation for the MongoDB shell query.
+
+Goal:
+Explain what information the query retrieves, calculates, or summarizes—not how the MongoDB syntax works.
+
+Instructions:
+
+* Describe the query result in plain English.
+* Mention the collection name and operation type.
+* Explain the business meaning of filters, joins, aggregations, calculations, grouping, sorting, projections, limits, and distinct selections when present.
+* For aggregation pipelines, describe the purpose of each important stage only if it affects the final result.
+* Infer intent from the query structure rather than repeating MongoDB operators.
+* Use natural language field names where possible.
+* Focus on the final output returned to the user.
+* Do not explain MongoDB syntax.
+* Do not mention operators such as $match, $group, $project, $sort, $lookup, etc.
+* Do not include code, JSON, markdown, headings, labels, or bullet points.
+
+Output Requirements:
+
+* 1–3 concise sentences.
+* Maximum 300 characters preferred.
+* Documentation text only.
+
+Natural language question:
+What is the id and weight of every pet who is older than 1?
+
+MongoDB Schema:
+{
+  ""pets"": {
+    ""_id"": ""ObjectId"",
+    ""pet_age"": ""number"",
+    ""petid"": ""number"",
+    ""pettype"": ""string"",
+    ""weight"": ""number""
+  }
+}
+
+MongoDB Query:
+db.pets.find({""pet_age"":{""$gt"":1}}, {""_id"":0,""petid"":1,""weight"":1})
+
+Documentation:",397,"* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is a simple language query.
+* The query is",* The query is a simple language query. * The query is a simple language query. * The query is a simple language query.,The query retrieves the ID and weight of all pets that are older than one year.,9.0,10.0,8.0,9.0,10.0,The generated documentation accurately reflects the query's behavior as described in the reference documentation – retrieving petid and weight for pets older than 1 year. It's clear and relevant.,"{
+  ""correctness"": 10,
+  ""completeness"": 8,
+  ""clarity"": 9,
+  ""relevance"": 10,
+  ""judge_score"": 9.0,
+  ""reason"": ""The generated documentation accurately reflects the query's behavior as described in the reference documentation – retrieving petid and weight for pets older than 1 year. It's clear and relevant.""
+}"

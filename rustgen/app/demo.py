@@ -84,9 +84,9 @@ def _header_html() -> str:
     with idiom + retrieved examples on compile failure.</p>
     <div class="rg-badges">
       <span>HumanEval-Rust</span>
-      <span>350M era best 10.3%</span>
-      <span>Qwen vanilla 37.8%</span>
-      <span class="rg-hot">compile-gated cascade 44.9%</span>
+      <span>1.5B vanilla 37.8%</span>
+      <span>1.5B cascade 44.9% · live</span>
+      <span class="rg-hot">7B + pipeline 62.8% · best</span>
     </div>
   </div>
 </div>"""
@@ -126,22 +126,27 @@ def backend_status() -> str:
     return f"**Model:** `{label}` (vanilla weights) + compile-guided cascade"
 
 
-def verify_compiles(code: str, tests: str | None = None) -> str:
-    """Compile (and optionally test-run) the generated function with rustc."""
+def verify_compiles(code: str, tests: str | None = None, ground_truth: bool = False) -> str:
+    """Compile (and optionally test-run) the generated function with rustc.
+
+    ground_truth=True marks `tests` as curated reference asserts, so the verdict
+    is reported as authoritative rather than 'indicative' (model-written)."""
     if shutil.which("rustc") is None:
         return "rustc not installed — compile check skipped (install via https://rustup.rs)"
     try:
         result = run_rust(code, tests or "fn main() {}")
     except Exception as exc:  # never let verification take the demo down
         return f"verification error: {exc}"
+    kind = "ground-truth reference" if ground_truth else "model-generated"
     if result.passed:
         if tests:
             n = tests.count("assert")
-            return f"✓ compiles AND passes {n} model-generated tests (indicative, not ground truth)"
+            hedge = "" if ground_truth else " (indicative, not ground truth)"
+            return f"✓ compiles AND passes {n} {kind} tests{hedge}"
         return "✓ compiles (rustc)"
     first_lines = "\n".join(result.stderr.strip().splitlines()[:12])
     if tests and result.stage == "run":
-        return f"✗ compiled, but FAILED the model-generated tests:\n{first_lines}"
+        return f"✗ compiled, but FAILED the {kind} tests:\n{first_lines}"
     return f"✗ {result.stage} failed:\n{first_lines}"
 
 
@@ -217,7 +222,8 @@ def _nearest_idiom_or_none(query: str) -> str | None:
 
 def translate(description: str, python_code: str, signature: str,
               use_pivot: bool, draft_sig: bool, gen_tests: bool,
-              use_cascade: bool, drafted_state: dict | None = None):
+              use_cascade: bool, reference_tests: str = "",
+              drafted_state: dict | None = None):
     prev_drafts = drafted_state or {}
     python = (python_code or "").strip() or None
     description = description.strip()
@@ -310,10 +316,14 @@ def translate(description: str, python_code: str, signature: str,
                      + "\n\n".join(exs))
     retrieved = "\n\n".join(parts)
 
-    tests, tests_panel = (None, "")
-    if gen_tests:
+    # Reference tests (if supplied) are curated ground truth and win over drafting.
+    tests, tests_panel, is_ref = (None, "", False)
+    ref = (reference_tests or "").strip()
+    if ref:
+        tests, tests_panel, is_ref = ref, ref, True
+    elif gen_tests:
         tests, tests_panel = draft_rust_tests(description, signature)
-    verify = verify_compiles(rust, tests)
+    verify = verify_compiles(rust, tests, ground_truth=is_ref)
     cascade_trail = " → ".join(trail) if len(trail) > 1 else ""
     pipeline = _pipeline_line(route, verify, cascade_trail)
 
@@ -349,8 +359,14 @@ def build_demo() -> gr.Blocks:
                 signature = gr.Textbox(
                     label="Rust signature — optional: leave empty and Qwen drafts it",
                     placeholder="fn count_even(nums: Vec<isize>) -> isize")
-                with gr.Accordion("Generated tests (model-written)", open=False):
+                with gr.Accordion("Tests that were run (model-written, or reference)", open=False):
                     tests_out = gr.Code(language=RUST_LANG, label="assert_eq! checks")
+                with gr.Accordion("Reference tests — optional, run as ground truth", open=False):
+                    reference_tests = gr.Textbox(
+                        label="Paste an assert_eq! fn main() to verify against; "
+                              "overrides the model-written tests",
+                        lines=4, placeholder=("fn main() {\n"
+                        "    assert_eq!(my_fn(vec![1, 2, 3]), 6);\n}"))
                 with gr.Row():
                     go = gr.Button("Translate to Rust", variant="primary",
                                    size="lg", scale=3)
@@ -382,7 +398,7 @@ def build_demo() -> gr.Blocks:
         drafted_state = gr.State({})   # what the model drafted last run
 
         inputs = [description, python_code, signature, use_pivot, draft_sig,
-                  gen_tests, use_cascade]
+                  gen_tests, use_cascade, reference_tests]
         panels = [pipeline_out, rust_out, verify_out, tests_out, retrieved_out]
 
         # Stale-output guard: USER edits (typing, toggles) invalidate the
@@ -429,33 +445,51 @@ def build_demo() -> gr.Blocks:
         clear.click(reset_all, None,
                     [description, python_code, signature, drafted_state] + panels)
 
-        # Every row below was battery-tested against the 350M fine-tune on
-        # 2026-07-11 (all compiled on the FIRST, RAG-free attempt, so the
-        # cascade stays quiet); re-validate once against the Qwen backend
-        # before presenting. is_not_prime keeps test-gen OFF (Qwen's test
-        # rightly flags the n=1 edge case that the MBPP reference itself gets
-        # wrong). The last row is the full pivot: empty Python box, Qwen
-        # drafts Python + signature, tests pass 3/3.
+        # Rows are [description, python, signature, use_pivot, draft_sig, gen_tests,
+        # use_cascade, reference_tests]. Row 1 (add_elements) exercises the cascade:
+        # it fails to compile at K=0 (indexing a Vec with an isize -> E0277) and the
+        # retrieved index_with_cast idiom supplies the `as usize` fix. It carries the
+        # benchmark's own asserts (ADD_ELEMENTS_TESTS) so the verdict is ground truth;
+        # fib4 (HumanEval_46) is an equivalent fallback if the base compiles K=0.
+        # is_not_prime keeps gen_tests OFF: the drafted test flags is_not_prime(1),
+        # an edge case the MBPP reference itself gets wrong. The last row is the pivot
+        # path (empty Python box -> Qwen drafts Python + signature).
+        ADD_ELEMENTS_TESTS = (
+            "fn main() {\n"
+            "    let candidate = add_elements;\n"
+            "    assert_eq!(candidate(vec![1, -2, -3, 41, 57, 76, 87, 88, 99], 3), -4);\n"
+            "    assert_eq!(candidate(vec![111, 121, 3, 4000, 5, 6], 2), 0);\n"
+            "    assert_eq!(candidate(vec![11, 21, 3, 90, 5, 6, 7, 8, 9], 4), 125);\n"
+            "    assert_eq!(candidate(vec![111, 21, 3, 4000, 5, 6, 7, 8, 9], 4), 24);\n"
+            "    assert_eq!(candidate(vec![1], 1), 1);\n"
+            "}")
         examples = gr.Examples(
             examples=[
+                ["Given a non-empty vector of integers arr and an integer k, return the "
+                 "sum of the elements that have at most two digits, looking only at the "
+                 "first k elements of arr. Example: add_elements([111, 21, 3, 4000, 5, 6, "
+                 "7, 8, 9], 4) = 24.",
+                 "",
+                 "fn add_elements(arr: Vec<isize>, k: isize) -> isize",
+                 False, False, False, True, ADD_ELEMENTS_TESTS],
                 ["Identify non-prime numbers.",
                  "import math\ndef is_not_prime(n):\n    result = False\n"
                  "    for i in range(2, int(math.sqrt(n)) + 1):\n"
                  "        if n % i == 0:\n            result = True\n    return result",
-                 "fn is_not_prime(n: isize) -> bool", True, True, False, True],
+                 "fn is_not_prime(n: isize) -> bool", True, True, False, True, ""],
                 ["Count how many numbers in a vector are even.",
                  "def count_even(nums):\n    return sum(1 for n in nums if n % 2 == 0)",
-                 "fn count_even(nums: Vec<isize>) -> isize", True, True, True, True],
+                 "fn count_even(nums: Vec<isize>) -> isize", True, True, True, True, ""],
                 ["Find the smallest number in a vector.",
                  "def minimum(nums):\n    smallest = nums[0]\n    for x in nums:\n"
                  "        if x < smallest:\n            smallest = x\n    return smallest",
-                 "fn minimum(nums: Vec<isize>) -> isize", True, True, True, True],
+                 "fn minimum(nums: Vec<isize>) -> isize", True, True, True, True, ""],
                 ["Compute the factorial of n.",
                  "def factorial(n):\n    result = 1\n    for i in range(2, n + 1):\n"
                  "        result *= i\n    return result",
-                 "fn factorial(n: u64) -> u64", True, True, True, True],
+                 "fn factorial(n: u64) -> u64", True, True, True, True, ""],
                 ["Count how many numbers in a vector are even.", "",
-                 "fn count_even(nums: Vec<isize>) -> isize", True, True, True, True],
+                 "fn count_even(nums: Vec<isize>) -> isize", True, True, True, True, ""],
             ],
             inputs=inputs,
             elem_id="rg-examples",

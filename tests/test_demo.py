@@ -24,7 +24,8 @@ def test_cascade_recovers_on_second_attempt(monkeypatch):
     # attempt must run, win, and be visible in the pipeline trail.
     verdicts = iter([False, True])
     monkeypatch.setattr(demo, "_quick_compiles", lambda code: next(verdicts))
-    monkeypatch.setattr(demo, "verify_compiles", lambda code, tests=None: "✓ compiles (rustc)")
+    monkeypatch.setattr(demo, "verify_compiles",
+                        lambda code, tests=None, ground_truth=False: "✓ compiles (rustc)")
 
     pipeline, rust, *_ = _translate()
     assert "❌ RAG off" in pipeline
@@ -38,7 +39,8 @@ def test_cascade_attempts_include_the_idiom_exemplar(monkeypatch):
     # idiom exemplar on top of the k=2 retrieved examples.
     verdicts = iter([False, True])
     monkeypatch.setattr(demo, "_quick_compiles", lambda code: next(verdicts))
-    monkeypatch.setattr(demo, "verify_compiles", lambda code, tests=None: "✓ compiles (rustc)")
+    monkeypatch.setattr(demo, "verify_compiles",
+                        lambda code, tests=None, ground_truth=False: "✓ compiles (rustc)")
 
     out = _translate()
     retrieved_panel = out[4]
@@ -52,8 +54,20 @@ def test_cascade_attempts_include_the_idiom_exemplar(monkeypatch):
 def test_cascade_off_is_a_single_attempt(monkeypatch):
     calls = []
     monkeypatch.setattr(demo, "_quick_compiles", lambda code: calls.append(1) or False)
-    monkeypatch.setattr(demo, "verify_compiles", lambda code, tests=None: "✗ compile failed")
+    monkeypatch.setattr(demo, "verify_compiles",
+                        lambda code, tests=None, ground_truth=False: "✗ compile failed")
 
     pipeline, *_ = _translate(use_cascade=False)
     assert len(calls) == 1
     assert "cascade" not in pipeline.lower()
+
+
+def test_reference_tests_are_labeled_ground_truth(monkeypatch):
+    # Reference tests are reported as authoritative, not "indicative".
+    monkeypatch.setattr(demo.shutil, "which", lambda _: "/usr/bin/rustc")
+    passed = type("R", (), {"passed": True, "stage": "ok", "stderr": ""})()
+    monkeypatch.setattr(demo, "run_rust", lambda code, tests, timeout=30: passed)
+    ref = demo.verify_compiles("fn f() {}", "fn main() { assert_eq!(1, 1); }", ground_truth=True)
+    drafted = demo.verify_compiles("fn f() {}", "fn main() { assert_eq!(1, 1); }", ground_truth=False)
+    assert "ground-truth" in ref and "indicative" not in ref
+    assert "indicative" in drafted and "ground-truth" not in drafted

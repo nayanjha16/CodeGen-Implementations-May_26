@@ -135,23 +135,19 @@ Spider and BIRD provide NL + gold SQL only. Training three LoRA adapters require
 
 ### 3.2 How TEND is built (conversion cascade)
 
-```
-Spider / BIRD (NL + gold SQL)
-        │
-        ▼
-① Rule converters (e.g. JOIN → $lookup)
-        │ fail
-        ▼
-② Python tool (sql-mongo-converter)
-        │ fail
-        ▼
-③ Ollama fallback (hard multi-table SQL)
-        │ pass from any stage
-        ▼
-GATE: execution match (PostgreSQL result = MongoDB result)
-        │
-        ▼
-Gold row on Hugging Face (+ documentation; docs are not the judge)
+```mermaid
+flowchart LR
+    SRC["Spider / BIRD<br/>NL + gold SQL"]
+
+    SRC --> R1["① Rule converters<br/>JOIN → $lookup"]
+    R1 -->|fail| R2["② Python tool<br/>sql-mongo-converter"]
+    R2 -->|fail| R3["③ Ollama fallback<br/>hard multi-table SQL"]
+
+    R1 -->|pass| GATE["GATE<br/>Exec match<br/>PG = Mongo"]
+    R2 -->|pass| GATE
+    R3 -->|pass| GATE
+
+    GATE --> OUT["Gold → Hugging Face<br/>+ docs (not a judge)"]
 ```
 
 Failed rows stay failed. BIRD yield is much lower than Spider. No LLM “rescue” of queries that fail execution.
@@ -226,23 +222,127 @@ Full TEND test eval is available via `--full-split` for extended analysis.
 
 ## 4. System architecture (what we built)
 
-```
-Clients
-  Desktop AI SQL Assistant  |  Cursor / VS Code  |  OpenAI SDK / curl
-                │
-                ▼  HTTPS / localhost
-Multi-Adapter API Gateway (hf-deploy)
-  Intent classifier (rules + MiniLM)
-  Prompt builder (per task)
-  PEFT hot-swap (set_adapter)
-  Frozen codegen-350M-multi + 3 LoRA adapters
-                │
-    ┌───────────┼───────────┐
-    ▼           ▼           ▼
- text2sql   sql2nosql   nosql2doc
+**Design choice:** schema RAG and database execution stay on the **client**. The gateway stays **stateless** and OpenAI-compatible (`/v1/chat/completions`).
+
+### 4.1 End-to-end product architecture
+
+Clients call one OpenAI-compatible gateway; the gateway classifies intent, builds a task prompt, and hot-swaps the matching LoRA adapter on a frozen CodeGen base.
+
+```mermaid
+flowchart TB
+    subgraph Clients["Clients"]
+        DESK["Desktop AI SQL Assistant<br/>RAG schema · validate · execute"]
+        IDE["Cursor / VS Code<br/>OpenAI base URL → /v1/chat/completions"]
+        SDK["OpenAI-compatible SDK<br/>curl · Python · any HTTP client"]
+    end
+
+    subgraph Gateway["Multi-Adapter API Gateway · hf-deploy"]
+        INT["Intent classifier<br/>rules + MiniLM embeddings"]
+        PB["Prompt builder<br/>text2sql · sql2nosql · nosql2doc"]
+        HOT["PEFT hot-swap<br/>set_adapter at inference"]
+        BASE["codegen-350M-multi<br/>frozen base + 3 LoRA v4"]
+        INT --> PB --> HOT --> BASE
+    end
+
+    subgraph Adapters["Task adapters · LoRA v4"]
+        T2S["text2sql<br/>NL + schema → SQL"]
+        S2N["sql2nosql<br/>SQL → MongoDB shell"]
+        N2D["nosql2doc<br/>Mongo query → documentation"]
+    end
+
+    DESK -->|HTTPS / localhost| INT
+    IDE -->|HTTPS / localhost| INT
+    SDK -->|HTTPS / localhost| INT
+
+    BASE --> T2S
+    BASE --> S2N
+    BASE --> N2D
 ```
 
-**Design choice:** schema RAG and database execution stay on the **client**. The gateway stays **stateless** and OpenAI-compatible (`/v1/chat/completions`).
+### 4.2 Deployment path (Hub → Cloud Run → clients)
+
+```mermaid
+flowchart TB
+    subgraph Trained["Trained LoRA v4"]
+        A1["text2sql"]
+        A2["sql2nosql"]
+        A3["nosql2doc"]
+    end
+
+    subgraph Hub["Hugging Face Hub"]
+        REPOS["3 adapter repos<br/>care2achieve/codegen-350M-*-lora · ~40 MB each"]
+        TEND["TEND dataset<br/>care2achieve/tend · gold rows"]
+    end
+
+    subgraph Run["Google Cloud Run · asia-south2"]
+        DOCKER["Docker + FastAPI<br/>containerized gateway"]
+        SWAP["Intent → set_adapter<br/>hot-swap LoRA per request"]
+        API["OpenAI /v1<br/>codegen-*****.run.app"]
+    end
+
+    subgraph EndClients["Clients"]
+        C1["Cursor / VS Code"]
+        C2["Desktop AI SQL Assistant"]
+        C3["OpenAI SDK · curl"]
+    end
+
+    A1 --> REPOS
+    A2 --> REPOS
+    A3 --> REPOS
+    REPOS -->|Docker image · pull weights at start| DOCKER
+    TEND -.->|training / eval data| REPOS
+    DOCKER --> SWAP --> API
+    API --> C1
+    API --> C2
+    API --> C3
+```
+
+### 4.3 Research / training view (three independent tasks)
+
+Tasks are **trained and evaluated independently** with **gold** fields from the same TEND row — predicted outputs are never chained during benchmarking.
+
+```mermaid
+flowchart LR
+    subgraph Row["TEND / gold validation row"]
+        Q["question"]
+        SS["schema"]
+        SQL["sql"]
+        NS["nosql_schema"]
+        NQ["nosql_query"]
+        DOC["documentation"]
+    end
+
+    Q --> T2S["Text2SQL adapter"]
+    SS --> T2S
+    T2S --> PS["predicted SQL"]
+
+    SQL --> S2N["SQL2NoSQL adapter"]
+    SS --> S2N
+    NS --> S2N
+    S2N --> PN["predicted Mongo"]
+
+    NQ --> N2D["NoSQL2Doc adapter"]
+    NS --> N2D
+    Q --> N2D
+    N2D --> PD["predicted docs"]
+```
+
+| Task | Input | Output | Adapter |
+|------|-------|--------|---------|
+| **Text2SQL** | Question + SQL schema | SQL | `text2sql` |
+| **SQL2NoSQL** | Gold SQL + schemas | MongoDB shell | `sql2nosql` |
+| **NoSQL2Doc** | Gold Mongo + schema | Documentation | `nosql2doc` |
+
+### 4.4 Desktop tool closed loop (client-side)
+
+```mermaid
+flowchart LR
+    NL["Natural language<br/>question"] --> RAG["Schema RAG<br/>top-K tables + FKs"]
+    RAG --> GEN["Generate via<br/>/v1 gateway"]
+    GEN --> VAL["Safety validate<br/>SELECT-only"]
+    VAL --> EXE["Execute on<br/>PostgreSQL"]
+    EXE --> RES["Results table<br/>+ activity log"]
+```
 
 ---
 

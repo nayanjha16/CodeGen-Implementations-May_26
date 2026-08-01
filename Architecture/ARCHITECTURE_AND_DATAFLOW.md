@@ -22,7 +22,7 @@ Natural Language --(Stage 1 adapter)--> Java --(Stage 2 adapter)--> C#
 | Stage | Task | Dataset | Adapter target |
 |-------|------|---------|----------------|
 | 1 | Natural Language → Java | `code_search_net` (java) | LoRA adapter on `model` |
-| 2 | Java → C# | XLCoST → CodeTransOcean → CodeXGLUE (auto-fallback) | separate LoRA adapter on `model_s2` |
+| 2 | Java → C# | CodeXGLUE (auto-fallback) | separate LoRA adapter on `model_s2` |
 
 ---
 
@@ -135,7 +135,7 @@ flowchart TD
 
     S1PUSH --> FREE["free_memory(base_model)"]
 
-    FREE --> S2LOAD["Stage 2: load Java↔C# corpus<br/>XLCoST -> CodeTransOcean -> CodeXGLUE"]
+    FREE --> S2LOAD["Stage 2: load Java↔C# corpus<br/>CodeXGLUE"]
     S2LOAD --> S2CLEAN["Filter · de-dup · shuffle<br/>95/5 train/val split"]
     S2MODEL["Load FRESH 4-bit Qwen base<br/>attach SEPARATE LoRA adapter #2"] --> S2PROMPT
     S2CLEAN --> S2PROMPT["Build Stage 2 SFT prompts<br/>### Java / ### Response + C# hint + EOS"]
@@ -156,7 +156,7 @@ flowchart TD
 - **LoRA:** r=16, alpha=32, dropout=0, targets q/k/v/o + gate/up/down projections.
 
 ### Stage 2 training details
-- **Dataset:** first successful of XLCoST → CodeTransOcean → CodeXGLUE, normalized to `{java, cs}`.
+- **Dataset:** first successful of CodeXGLUE, normalized to `{java, cs}`.
 - **Cleaning:** drop empty/short/non-code pairs, de-duplicate, cap at `STAGE2_MAX_SAMPLES = 6000`.
 - **Prompt:** `### Instruction ... ### Java\n{java}\n\n### Response\n{csharp}{EOS}`
 - **Hyperparameters:** 2 epochs, batch 2 × grad-accum 4 (eff. 8), LR 2e-4, cosine schedule,
@@ -240,7 +240,7 @@ re-implement the same logic in two languages, which is slow and error-prone.
 flowchart TD
     subgraph SOURCES["Data Sources (HF Hub)"]
         CSN["code_search_net<br/>(java)"]
-        XL["XLCoST / CodeTransOcean / CodeXGLUE<br/>(Java↔C#)"]
+        XL["CodeXGLUE<br/>(Java↔C#)"]
     end
 
     subgraph STAGE1DATA["Stage 1 Data Pipeline"]
@@ -384,7 +384,7 @@ python main.py evaluate
 ### Deliberate divergences from the notebook
 
 - **Single-dataset Stage 2 loading.** `data/dataset.py`'s `load_java_csharp_dataset()` no longer
-  tries XLCoST → CodeTransOcean → CodeXGLUE in sequence; it loads only
+  tries CodeXGLUE; it loads only
   `google/code_x_glue_cc_code_to_code_trans` (CodeXGLUE-Java-CS) directly and raises on failure —
   no silent fallback.
 - **Fully decoupled inference.** `inference/pipeline.py` only imports `models.model_loader` (never

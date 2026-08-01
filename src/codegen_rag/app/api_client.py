@@ -78,6 +78,20 @@ class APIClient:
             {"query": query, "task": task, "top_k": top_k, "strategy": strategy, "use_llm": use_llm},
         )
 
+    def score(self, prediction: str, reference: str, language: str = "python") -> dict[str, Any]:
+        """Instant per-query metrics for one generation vs. a user-supplied
+        reference -- CodeBLEU/BERTScore/exact-match, the same metrics the
+        checkpoint notebooks compute in batch, but for a single pair."""
+        return self._post("/score", {"prediction": prediction, "reference": reference, "language": language})
+
+    def score_sql(self, predicted_sql: str, db_id: str, gold_sql: str | None = None) -> dict[str, Any]:
+        """Instant per-query SQL feedback: did it execute, and (if a gold
+        query was supplied) did its result set match."""
+        payload: dict[str, Any] = {"predicted_sql": predicted_sql, "db_id": db_id}
+        if gold_sql:
+            payload["gold_sql"] = gold_sql
+        return self._post("/score_sql", payload)
+
 
 def _extract_detail(response: requests.Response) -> str:
     try:

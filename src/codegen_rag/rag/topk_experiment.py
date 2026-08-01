@@ -1,6 +1,14 @@
 """Top-K (and dynamic Top-K) retrieval experiments, plus the 4-tier model
 comparison (small LM baseline, LLM no-RAG, LLM+RAG, fine-tuned model+RAG)
-required by Checkpoint 3.
+required by Checkpoint 3, and specifically the Checkpoint 4 requirement of
+putting the team's own fine-tuned model into the RAG system and evaluating
+it (the ``fine_tuned_rag`` tier).
+
+For the richer, per-task metric suite (exact_match / CodeBLEU / BERTScore,
+not just CodeBLEU) that lands in the project's main comparison_table.csv,
+see ``codegen_rag.rag.rag_task_adapter.RAGAugmentedTask``, which wraps any
+task module + RAGPipeline + generate_fn so it can be scored through the
+same ``Evaluator.evaluate_task()`` path as every other tier.
 """
 
 from __future__ import annotations
@@ -110,12 +118,26 @@ def run_four_tier_comparison(
     llm_generate_fn: Callable[[str], str],
     rag_pipeline: RAGPipeline,
     fine_tuned_rag_pipeline: RAGPipeline | None,
+    fine_tuned_generate_fn: Callable[[str], str] | None = None,
     language: str = "python",
     query_key: str = "intent",
     reference_key: str = "code",
 ) -> pd.DataFrame:
-    """Produce the core Checkpoint-3 deliverable: small LM vs. LLM (no RAG)
-    vs. LLM+RAG vs. fine-tuned-model+RAG, scored with CodeBLEU."""
+    """Produce the core Checkpoint-3/4 deliverable: small LM vs. LLM (no RAG)
+    vs. LLM+RAG vs. fine-tuned-model+RAG ("their model" put into the RAG
+    system, per Checkpoint 4's requirement), scored with CodeBLEU.
+
+    ``fine_tuned_generate_fn`` is the fine-tuned model's own generate
+    callable and is what actually drives the ``fine_tuned_rag`` tier. It is
+    kept separate from ``small_lm_generate_fn`` (which drives the untouched
+    baseline tier) on purpose: reusing ``small_lm_generate_fn`` for both
+    would silently make the "fine-tuned + RAG" tier just "base model + RAG"
+    again, defeating the point of the comparison. For backward
+    compatibility, if a ``fine_tuned_rag_pipeline`` is supplied without an
+    explicit ``fine_tuned_generate_fn``, this falls back to
+    ``small_lm_generate_fn`` and logs a warning, since that was the
+    (incorrect) implicit behavior before this fix.
+    """
     tiers: dict[str, list[str]] = {
         "small_lm_baseline": [],
         "llm_no_rag": [],
@@ -123,6 +145,16 @@ def run_four_tier_comparison(
     }
     if fine_tuned_rag_pipeline is not None:
         tiers["fine_tuned_rag"] = []
+        if fine_tuned_generate_fn is None:
+            logger.warning(
+                "fine_tuned_rag_pipeline was provided without a distinct "
+                "fine_tuned_generate_fn -- falling back to small_lm_generate_fn, "
+                "which means the 'fine_tuned_rag' tier will actually be running "
+                "the base model, not your fine-tuned checkpoint. Pass "
+                "fine_tuned_generate_fn explicitly to evaluate your fine-tuned "
+                "model inside the RAG system."
+            )
+            fine_tuned_generate_fn = small_lm_generate_fn
 
     references = [str(r.get(reference_key, "")) for r in eval_records]
 
@@ -133,7 +165,7 @@ def run_four_tier_comparison(
         tiers["llm_rag"].append(rag_pipeline.generate(query, llm_generate_fn).generation)
         if fine_tuned_rag_pipeline is not None:
             tiers["fine_tuned_rag"].append(
-                fine_tuned_rag_pipeline.generate(query, small_lm_generate_fn).generation
+                fine_tuned_rag_pipeline.generate(query, fine_tuned_generate_fn).generation
             )
 
     rows = []

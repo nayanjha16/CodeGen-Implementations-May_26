@@ -163,3 +163,107 @@ def test_openapi_docs_available(client: TestClient):
     assert "/translate" in schema["paths"]
     assert "/sql" in schema["paths"]
     assert "/rag" in schema["paths"]
+    assert "/score" in schema["paths"]
+    assert "/score_sql" in schema["paths"]
+
+
+# ---------------------------------------------------------------------------
+# /score, /score_sql -- instant per-query scoring (the live counterpart to
+# the batch metrics the checkpoint notebooks compute in Evaluator).
+# CodeBLEU/BERTScore are monkeypatched to fast fakes here: their real
+# implementations are already covered by tests/test_metrics.py, and this
+# file's job is to verify the endpoint wires request -> metrics -> response
+# correctly, not to re-verify the metrics themselves (which would otherwise
+# load a CodeBERT model just to test request plumbing).
+# ---------------------------------------------------------------------------
+
+
+def test_score_endpoint_returns_percentage_ready_fractions(client: TestClient, monkeypatch):
+    import codegen_rag.evaluation.metrics as metrics_module
+
+    monkeypatch.setattr(
+        metrics_module, "compute_codebleu", lambda preds, refs, language="python": {"codebleu": 0.75}
+    )
+    monkeypatch.setattr(metrics_module, "compute_bertscore", lambda preds, refs: {"f1": 0.9})
+
+    response = client.post(
+        "/score",
+        json={"prediction": "def f(): return 1", "reference": "def f(): return 1", "language": "python"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["exact_match"] == 1.0
+    assert body["codebleu"] == 0.75
+    assert body["bertscore_f1"] == 0.9
+
+
+def test_score_endpoint_reports_zero_exact_match_for_different_strings(client: TestClient, monkeypatch):
+    import codegen_rag.evaluation.metrics as metrics_module
+
+    monkeypatch.setattr(
+        metrics_module, "compute_codebleu", lambda preds, refs, language="python": {"codebleu": 0.1}
+    )
+    monkeypatch.setattr(metrics_module, "compute_bertscore", lambda preds, refs: {"f1": 0.5})
+
+    response = client.post("/score", json={"prediction": "def f(): pass", "reference": "def g(): pass"})
+    assert response.status_code == 200
+    assert response.json()["exact_match"] == 0.0
+
+
+def test_score_endpoint_rejects_empty_prediction(client: TestClient):
+    response = client.post("/score", json={"prediction": "", "reference": "x"})
+    assert response.status_code == 422
+
+
+def test_score_sql_endpoint_reports_success_with_no_gold_query(client: TestClient):
+    response = client.post("/score_sql", json={"predicted_sql": "SELECT * FROM singer", "db_id": "concert_singer"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["executed_successfully"] is True
+    assert body["execution_match"] is None
+
+
+def test_score_sql_endpoint_reports_execution_failure(client: TestClient):
+    response = client.post(
+        "/score_sql", json={"predicted_sql": "SELECT * FROM nonexistent_table", "db_id": "concert_singer"}
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["executed_successfully"] is False
+    assert body["predicted_error"] is not None
+
+
+def test_score_sql_endpoint_reports_execution_match_true_for_equivalent_queries(client: TestClient):
+    response = client.post(
+        "/score_sql",
+        json={
+            "predicted_sql": "SELECT * FROM singer",
+            "db_id": "concert_singer",
+            "gold_sql": "SELECT * FROM singer;",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["execution_match"] is True
+
+
+def test_score_sql_endpoint_reports_execution_match_false_for_mismatched_gold(client: TestClient, concert_db: Path):
+    conn = sqlite3.connect(str(concert_db))
+    conn.execute("INSERT INTO singer VALUES (1, 'Alice')")
+    conn.commit()
+    conn.close()
+
+    response = client.post(
+        "/score_sql",
+        json={
+            "predicted_sql": "SELECT * FROM singer",
+            "db_id": "concert_singer",
+            "gold_sql": "SELECT * FROM singer WHERE Singer_ID = 999",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["execution_match"] is False
+
+
+def test_score_sql_endpoint_404_for_unknown_db(client: TestClient):
+    response = client.post("/score_sql", json={"predicted_sql": "SELECT 1", "db_id": "totally_unknown_db"})
+    assert response.status_code == 404

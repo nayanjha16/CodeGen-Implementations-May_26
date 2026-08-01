@@ -34,8 +34,12 @@ from codegen_rag.api.schemas import (
     HealthResponse,
     RAGRequest,
     RAGResponse,
+    ScoreRequest,
+    ScoreResponse,
     SQLRequest,
     SQLResponse,
+    SQLScoreRequest,
+    SQLScoreResponse,
     TranslateRequest,
     TranslateResponse,
 )
@@ -195,6 +199,70 @@ def create_app() -> FastAPI:
             strategy=result.strategy,
             top_k=result.top_k,
             used_llm=request.use_llm,
+        )
+
+    @app.post(
+        "/score",
+        response_model=ScoreResponse,
+        responses={500: {"model": ErrorResponse}},
+        tags=["scoring"],
+    )
+    def score(request: ScoreRequest) -> ScoreResponse:
+        """Score a single (prediction, reference) pair on demand -- the
+        instant, per-query counterpart to the batch metrics the checkpoint
+        notebooks compute over a whole dataset via Evaluator.evaluate_task().
+        Lets the demo show CodeBLEU/BERTScore/exact-match for whatever the
+        user just typed in, not only the pre-computed dataset-level baseline.
+        """
+        from codegen_rag.evaluation.metrics import compute_bertscore, compute_codebleu, exact_match
+
+        em = exact_match([request.prediction], [request.reference])
+        codebleu_result = compute_codebleu([request.prediction], [request.reference], language=request.language)
+        bertscore_result = compute_bertscore([request.prediction], [request.reference])
+
+        return ScoreResponse(
+            exact_match=em,
+            codebleu=codebleu_result.get("codebleu"),
+            bertscore_f1=bertscore_result.get("f1"),
+        )
+
+    @app.post(
+        "/score_sql",
+        response_model=SQLScoreResponse,
+        responses={404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
+        tags=["scoring"],
+    )
+    def score_sql(request: SQLScoreRequest, state: AppState = Depends(get_app_state)) -> SQLScoreResponse:
+        """Execute the just-generated SQL (and, if supplied, a gold query)
+        against the same database used to generate it -- instant per-query
+        feedback, distinct from the batch execution_accuracy the checkpoint
+        notebooks compute over the full Spider/BIRD eval split."""
+        from codegen_rag.evaluation.metrics import _execute_sql, _results_match
+
+        schema = get_schema_for_db(request.db_id, state)
+
+        predicted_error: str | None = None
+        predicted_result = None
+        try:
+            predicted_result = _execute_sql(request.predicted_sql, schema.db_path)
+        except Exception as exc:  # sqlite3.Error and friends
+            predicted_error = str(exc)
+
+        execution_match: bool | None = None
+        gold_error: str | None = None
+        if request.gold_sql:
+            try:
+                gold_result = _execute_sql(request.gold_sql, schema.db_path)
+                execution_match = predicted_result is not None and _results_match(predicted_result, gold_result)
+            except Exception as exc:
+                gold_error = str(exc)
+                execution_match = False
+
+        return SQLScoreResponse(
+            executed_successfully=predicted_error is None,
+            predicted_error=predicted_error,
+            execution_match=execution_match,
+            gold_error=gold_error,
         )
 
     return app

@@ -77,5 +77,39 @@ class RAGResponse(BaseModel):
     used_llm: bool
 
 
+class ScoreRequest(BaseModel):
+    """Score one generated output against a user-supplied reference, for
+    instant per-query feedback in the demo (as opposed to the batch
+    evaluation the checkpoint notebooks run over a whole dataset)."""
+
+    prediction: str = Field(..., min_length=1, description="The model's generated output")
+    reference: str = Field(..., min_length=1, description="What the output should look like")
+    language: str = Field("python", description="Used for CodeBLEU's AST/dataflow grammar selection")
+
+
+class ScoreResponse(BaseModel):
+    exact_match: float = Field(..., description="1.0 if prediction == reference after stripping, else 0.0")
+    codebleu: float | None = Field(None, description="CodeBLEU score in [0, 1], or null if the metric fell back/failed")
+    bertscore_f1: float | None = Field(None, description="BERTScore F1 in [0, 1], or null if unavailable")
+
+
+class SQLScoreRequest(BaseModel):
+    """Execute a generated SQL query (and, if supplied, a gold query) against
+    the same database used to generate it, for instant per-query feedback."""
+
+    predicted_sql: str = Field(..., min_length=1)
+    db_id: str = Field(..., description="Database identifier (same one used for /sql)")
+    gold_sql: str | None = Field(None, description="Optional known-correct query to compare result sets against")
+
+
+class SQLScoreResponse(BaseModel):
+    executed_successfully: bool = Field(..., description="Whether predicted_sql ran without a SQLite error")
+    predicted_error: str | None = None
+    execution_match: bool | None = Field(
+        None, description="True/False if gold_sql was supplied and both queries executed; null otherwise"
+    )
+    gold_error: str | None = None
+
+
 class ErrorResponse(BaseModel):
     detail: str

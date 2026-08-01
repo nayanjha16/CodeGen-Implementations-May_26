@@ -84,3 +84,38 @@ def test_rag_passes_all_parameters(mock_post):
     client.rag("query", top_k=3, strategy="hybrid", use_llm=True)
     payload = mock_post.call_args[1]["json"]
     assert payload == {"query": "query", "task": "program_synthesis", "top_k": 3, "strategy": "hybrid", "use_llm": True}
+
+
+@patch("codegen_rag.app.api_client.requests.post")
+def test_score_passes_prediction_reference_and_language(mock_post):
+    mock_post.return_value = _mock_response(200, {"exact_match": 0.0, "codebleu": 0.42, "bertscore_f1": 0.91})
+    client = APIClient(base_url="http://testserver")
+    result = client.score("def f(): pass", "def f(): return None", language="python")
+    assert result["codebleu"] == 0.42
+    called_url = mock_post.call_args[0][0]
+    payload = mock_post.call_args[1]["json"]
+    assert called_url == "http://testserver/score"
+    assert payload == {"prediction": "def f(): pass", "reference": "def f(): return None", "language": "python"}
+
+
+@patch("codegen_rag.app.api_client.requests.post")
+def test_score_sql_omits_gold_sql_when_not_provided(mock_post):
+    mock_post.return_value = _mock_response(
+        200, {"executed_successfully": True, "predicted_error": None, "execution_match": None, "gold_error": None}
+    )
+    client = APIClient(base_url="http://testserver")
+    client.score_sql("SELECT 1", "concert_singer")
+    payload = mock_post.call_args[1]["json"]
+    assert payload == {"predicted_sql": "SELECT 1", "db_id": "concert_singer"}
+
+
+@patch("codegen_rag.app.api_client.requests.post")
+def test_score_sql_includes_gold_sql_when_provided(mock_post):
+    mock_post.return_value = _mock_response(
+        200, {"executed_successfully": True, "predicted_error": None, "execution_match": True, "gold_error": None}
+    )
+    client = APIClient(base_url="http://testserver")
+    result = client.score_sql("SELECT 1", "concert_singer", gold_sql="SELECT 1;")
+    assert result["execution_match"] is True
+    payload = mock_post.call_args[1]["json"]
+    assert payload == {"predicted_sql": "SELECT 1", "db_id": "concert_singer", "gold_sql": "SELECT 1;"}

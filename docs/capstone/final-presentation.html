@@ -1546,13 +1546,14 @@
           </div>
         </div>
 
-        <div class="grid grid-3 dense slide-body tight">
+        <div class="grid grid-2 dense slide-body tight">
           <div class="card compact">
             <h3>Hugging Face Hub</h3>
             <ul class="key-list">
               <li><span class="k">Dataset</span><span class="v"><a class="inline" href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">care2achieve/tend</a></span></li>
-              <li><span class="k">Adapters</span><span class="v">3 × <code>codegen-350M-*-lora</code></span></li>
-              <li><span class="k">Size</span><span class="v">~40 MB each · source of truth</span></li>
+              <li><span class="k">text2sql</span><span class="v"><a class="inline" href="https://huggingface.co/care2achieve/codegen-350M-text2sql-lora" target="_blank" rel="noopener">codegen-350M-text2sql-lora</a></span></li>
+              <li><span class="k">sql2nosql</span><span class="v"><a class="inline" href="https://huggingface.co/care2achieve/codegen-350M-sql2nosql-lora" target="_blank" rel="noopener">codegen-350M-sql2nosql-lora</a></span></li>
+              <li><span class="k">nosql2doc</span><span class="v"><a class="inline" href="https://huggingface.co/care2achieve/codegen-350M-nosql2doc-lora" target="_blank" rel="noopener">codegen-350M-nosql2doc-lora</a></span></li>
             </ul>
           </div>
 
@@ -1563,16 +1564,6 @@
               <li><span class="k">Region</span><span class="v"><code>asia-south2</code> · scale-to-zero</span></li>
               <li><span class="k">API</span><span class="v"><code>/v1/chat/completions</code></span></li>
               <li><span class="k">Model</span><span class="v"><code>codegen-multi-adapter</code></span></li>
-            </ul>
-          </div>
-
-          <div class="card compact">
-            <h3>Intent → adapter</h3>
-            <ul class="key-list">
-              <li><span class="k">NL → SQL</span><span class="v"><strong>text2sql</strong></span></li>
-              <li><span class="k">SQL → Mongo</span><span class="v"><strong>sql2nosql</strong></span></li>
-              <li><span class="k">Mongo → docs</span><span class="v"><strong>nosql2doc</strong></span></li>
-              <li><span class="k">Ambiguous</span><span class="v">Clarify — no generation</span></li>
             </ul>
           </div>
         </div>

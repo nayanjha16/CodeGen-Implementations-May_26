@@ -17,8 +17,12 @@ starcoder2 base model is trained for code completion not for following instructi
 Original Dataset java, python translation pairs: Mean AST Similarity Score: 0.5424
 
 original java compilation rate: 100%
+
 original java Pass@1 : 98.80%, 98.53%
+
 original python pass@1 : 100%
+
+MBPP is unknown dataset for the finetuned model
 
 -----------------------------------------------Text to Python--------------------------------------------------------------------
 
@@ -48,7 +52,7 @@ max_new_tokens=300, do_sample=True, temperature=0.7
 
 | **Metric**               | **Text → Python (Base)** | **Text → Python (Fine-Tuned)** | **Text → Java (Base)** | **Text → Java (Fine-Tuned)** | **Java → Python (Base)** | **Java → Python (Fine-Tuned)** | **Python → Java (Base)** | **Python → Java (Fine-Tuned)** |
 | :----------------------- | :----------------------: | :----------------------------: | :--------------------: | :--------------------------: | :----------------------: | :----------------------------: | :----------------------: | :----------------------------: |
-| **Dataset**              |      Custom Dataset      |         Custom Dataset         |  Custom Dataset (200)  |     Custom Dataset (332)     |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
+| **Dataset**              |      Custom Dataset      |         Custom Dataset         |     Custom Dataset     |        Custom Dataset        |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
 | **Pass@1 (%)**           |         **0.60**         |           **53.01**            |        **0.00**        |          **49.70**           |         **0.90**         |           **65.97**            |         **0.00**         |           **55.72**            |
 | **Compilation Rate (%)** |            —             |               —                |           —            |              —               |            —             |               —                |         **1.81**         |           **94.28**            |
 | **CodeBERT Similarity**  |        **0.6773**        |           **0.8516**           |       **0.6788**       |          **0.9485**          |        **0.6186**        |           **0.9180**           |        **0.6514**        |           **0.9219**           |

@@ -14,7 +14,7 @@
 | Baseline | Base model only (no adapter) | `results/spider_gold_validation_codegen-350M-multi_baseline-v1/` |
 | LoRA v1 | Fine-tuned adapters per task | `results/spider_gold_validation_codegen-350M-multi_lora-v1/` |
 
-**Training context for v1:** Smoke-scale LoRA fine-tuning — 50 training rows, 5 epochs per task (Spider + BIRD train split). Adapters were produced on a prior run; this eval loads them from `models/checkpoints/v1/{text2sql,sql2nosql,nosql2doc}/`.
+**Training context for v1:** Smoke-scale LoRA fine-tuning — 50 training rows, **10 epochs** per task (Spider + BIRD train split). Adapters were produced on a prior run; this eval loads them from `models/checkpoints/v1/{text2sql,sql2nosql,nosql2doc}/`.
 
 ---
 

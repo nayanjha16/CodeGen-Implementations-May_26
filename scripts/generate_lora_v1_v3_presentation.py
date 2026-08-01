@@ -11,9 +11,9 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Inches, Pt
 
 ROOT = Path(__file__).resolve().parents[1]
-IMAGES = ROOT / "docs" / "images" / "lora-v1-v3"
-OUT_FULL = ROOT / "docs" / "lora-v1-v3-vs-baseline-comparison.pptx"
-OUT_SHORT = ROOT / "docs" / "lora-v1-v3-vs-baseline-comparison-short.pptx"
+IMAGES = ROOT / "docs" / "reference" / "images" / "lora-v1-v3"
+OUT_FULL = ROOT / "docs" / "reference" / "lora-v1-v3-vs-baseline-comparison.pptx"
+OUT_SHORT = ROOT / "docs" / "reference" / "lora-v1-v3-vs-baseline-comparison-short.pptx"
 
 # Palette
 NAVY = RGBColor(0x0F, 0x17, 0x2A)
@@ -253,7 +253,7 @@ def _slide_title(prs: Presentation, tagline: str = "") -> None:
     meta = slide.shapes.add_textbox(Inches(0.65), Inches(5.0), Inches(8.5), Inches(1.2))
     lines = [
         "Model: Salesforce/codegen-350M-multi",
-        "Best adapter: LoRA v3 (~8,040 training samples)",
+        "Best adapter: LoRA v3 (full TEND ~8k, r=32+FFN, 10 epochs)",
         "Judge: gemma3:4b · Evaluated with live database execution",
     ]
     mtf = meta.text_frame
@@ -286,13 +286,13 @@ def _slide_problem(prs: Presentation) -> None:
 
 def _slide_journey(prs: Presentation) -> None:
     slide = _blank_slide(prs)
-    _header(slide, "Training journey", "More data → better adapters")
+    _header(slide, "Training journey", "Smoke test → full TEND → wider LoRA (v3)")
 
     steps = [
         ("Baseline", "No training", "14% / 22%", SLATE_LIGHT, SLATE),
         ("LoRA v1", "50 samples · smoke test", "Pipeline check only", SLATE_LIGHT, AMBER),
-        ("LoRA v2", "500 samples", "60% / 74%", BLUE_SOFT, BLUE),
-        ("LoRA v3", "~8,040 samples", "66% / 86%", GREEN_SOFT, GREEN),
+        ("LoRA v2", "~8k · r=16 · 5 epochs", "60% / 74%", BLUE_SOFT, BLUE),
+        ("LoRA v3", "~8k · r=32+FFN · 10 ep", "66% / 86%", GREEN_SOFT, GREEN),
     ]
     for i, (name, train, result, fill, accent) in enumerate(steps):
         left = Inches(0.55 + i * 2.35)
@@ -344,8 +344,8 @@ def _slide_headline_kpis(prs: Presentation) -> None:
         ["Version", "Training data", "Text2SQL", "SQL2NoSQL", "Doc judge"],
         [
             ["Baseline", "—", "14%", "22%", "8.33"],
-            ["LoRA v2", "500 samples", "60%", "74%", "8.41"],
-            ["LoRA v3 ★", "~8,040 samples", "66%", "86%", "8.82"],
+            ["LoRA v2", "Full TEND, r=16, 5 ep", "60%", "74%", "8.41"],
+            ["LoRA v3 ★", "Full TEND, r=32+FFN, 10 ep", "66%", "86%", "8.82"],
         ],
         top=Inches(3.85),
         highlight_rows={3},
@@ -403,7 +403,7 @@ def _slide_takeaways(prs: Presentation, short: bool = False) -> None:
         "LoRA clearly beats zero-shot CodeGen — the improvement is large and consistent.",
         "Biggest wins: SQL2NoSQL (22% → 86%) and exact match (4% → 78%).",
         "Documentation improves modestly; code generation benefits most from fine-tuning.",
-        "Training scale matters: v2 (500) → v3 (~8k) continues to improve results.",
+        "LoRA capacity and schedule: v2 (r=16, 5 epochs) → v3 (r=32 + FFN, 10 epochs) on the same full TEND data.",
         "Deploy LoRA v3 as the production adapter for the agent and API.",
     ]
     if short:

@@ -1,6 +1,6 @@
 # Workflow Status
 
-> Updated: 2026-07-26
+> Updated: 2026-08-01
 
 ## Active feature: `database-agent`
 
@@ -56,7 +56,6 @@
 |---------|-------|
 | `lora-finetuning` | Implemented (v1–v3) |
 | `tendv2-ollama` | Implemented |
-| `text2sql-ui-tool` | Documented; `tool/` not on disk |
 | `fastapi-deploy` | Deployed (Cloud Run codegen-api) |
 
 ## Infrastructure ready for agent
@@ -68,4 +67,4 @@
 
 ---
 
-**Next action:** Capstone demo — `python -m agent.web` or `python -m agent.main "<question>"`
+**Next action:** Project demo — `python -m agent.web` or `python agent/scripts/run_capstone_demo.py`

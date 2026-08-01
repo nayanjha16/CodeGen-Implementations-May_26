@@ -21,7 +21,7 @@
     │                 │                     │
     ▼                 ▼                     ▼
 ┌─────────────┐ ┌──────────────────┐ ┌─────────────────────────┐
-│ Schema Tool │ │ Capstone API Tool│ │ Execution Tool          │
+│ Schema Tool │ │ CodeGen API Tool │ │ Execution Tool          │
 │ (MCP #1)    │ │ (MCP #2)         │ │ (MCP #3)                │
 │             │ │ HTTP → FastAPI   │ │ Postgres / Mongo        │
 └─────────────┘ └────────┬─────────┘ └───────────┬─────────────┘
@@ -30,7 +30,7 @@
               ┌────────────────────┐    ┌─────────────────────┐
               │ codegen_api        │    │ TEND or direct DB   │
               │ (Cloud Run)        │    │ drivers             │
-              │ LoRA v2 adapters   │    │                     │
+              │ LoRA v3 adapters   │    │                     │
               └────────────────────┘    └─────────────────────┘
 ```
 
@@ -45,7 +45,7 @@
                                          └──────────────┬──────────────┘
                                                         │
                         Hugging Face Hub                │
-                        codegenstudio LoRA v2           │
+                        codegenstudio LoRA v3           │
                                                         ▼
                                          ┌─────────────────────────────┐
                                          │ Salesforce/codegen-350M-multi│
@@ -76,17 +76,17 @@
 | `main.py`, `orchestrator/planner.py`, `prompts.py`, `intent_detector.py`, `retry.py` | ✅ | Under `agent/orchestrator/` + `agent/main.py` |
 | `mcp/server.py`, `registry.py` | ✅ | stdio MCP |
 | `tools/schema_tool.py`, `fastapi_tool.py`, `execution_tool.py` | ✅ | Three MCP tools |
-| `codegen_api` (Capstone API) | ✅ | `fastapi-deploy/codegen_api` — HTTP client only |
+| `codegen_api` (CodeGen API) | ✅ | `fastapi-deploy/codegen_api` — HTTP client only |
 | `database/postgres.py`, `mongodb.py` | ✅ | Read-only execution + introspection |
 | `config/settings.py` | ✅ | `agent/config/settings.py` |
-| `web/` (capstone extension) | ✅ | FastAPI chat UI |
+| `web/` (agent Web UI) | ✅ | FastAPI chat UI |
 | `tests/` | ✅ | 88 tests |
 
 ### 3.2 Reusable `src/` modules
 
 | Module | Path | Reuse for agent |
 |--------|------|-----------------|
-| Text2SQL prompts | `src/text2sql/prompt_builder.py`, `sql_executor.py` | Build Capstone tool payloads |
+| Text2SQL prompts | `src/text2sql/prompt_builder.py`, `sql_executor.py` | Build CodeGen API payloads |
 | SQL validation | `src/text2sql/sql_validator.py` | Pre/post execution safety |
 | SQL2NoSQL | `src/sql2nosql/nosql_generator.py`, `prompt_builder.py` | Stage 2 agent path |
 | Documentation | `src/documentation/doc_generator.py` | Stage 3 agent path |
@@ -104,7 +104,7 @@
 | Router | `fastapi-deploy/codegen_api/adapters/router.py` | Load base + hot-swap LoRA |
 | Classifier | `fastapi-deploy/codegen_api/classifier/classifier.py` | Rules + embeddings; not agent-level |
 | Prompt | `fastapi-deploy/codegen_api/prompt/builder.py` | Prepends `Task: <intent>` |
-| Manifest | `fastapi-deploy/manifest.yaml` | v2 adapters, generation params |
+| Manifest | `fastapi-deploy/manifest.yaml` | v3 adapters, generation params |
 | Deploy | `fastapi-deploy/infra/cloudrun/deploy.py` | Cloud Run URL in `deploy.env` |
 
 ## 4. Service Boundaries
@@ -113,7 +113,7 @@
 |----------|-------|----------|
 | Agent ↔ Orchestrator LLM | New `agent/` | Tool calls / LangGraph state |
 | Agent ↔ MCP | New `mcp/` | MCP tool schemas |
-| Capstone tool ↔ Cloud Run | New `tools/fastapi_tool.py` | HTTP JSON; map to `/v1/chat/completions` |
+| Agent codegen client ↔ Cloud Run | `agent/clients/codegen_client.py` | HTTP JSON → `/v1/chat/completions` |
 | Execution tool ↔ DB | New `tools/execution_tool.py` | `{"query"}` → `{"rows", "error"}` |
 | Schema tool ↔ metadata | New `tools/schema_tool.py` | `{"question"}` → `{tables, columns, relationships}` |
 | Model inference | `codegen_api` (unchanged) | No SQL generation inside agent |
@@ -126,7 +126,7 @@
 3. Schema Tool:
      input: question
      output: { tables: [customers, orders], columns: [...], relationships: [...] }
-4. Capstone Tool:
+4. CodeGen API (Cloud Run):
      POST /v1/chat/completions
      body: { model: "codegen-text2sql", intent: "text2sql",
              messages: [{ role: "user", content: "<question>\n\nSchema:\n<ddl>" }] }
@@ -135,7 +135,7 @@
      input: SQL
      output: { rows: [...] } or { error: "..." }
 6. If error and retries < 3:
-     Capstone Tool with prior SQL + error in prompt → corrected SQL → goto 5
+     CodeGen API with prior SQL + error in prompt → corrected SQL → goto 5
 7. Agent: summarize rows → user
 ```
 
@@ -161,7 +161,7 @@ tests/ (unit + E2E)
 
 | Dependency | Required for | Notes |
 |------------|--------------|-------|
-| Cloud Run `codegen-api` | Capstone tool | Cold start 1–3 min; URL in `deploy.env` |
+| Cloud Run `codegen-api` | AI Database Agent | Cold start 1–3 min; URL in `deploy.env` |
 | TEND repo | Execution (eval pattern) | `TEND_REPO_PATH`; default path is macOS-centric |
 | Hugging Face Hub | Cloud Run adapter load | `codegenstudio/*-lora` public |
 | Orchestrator LLM | Agent | **Ollama** (`gemma3:4b`) via `agent/clients/orchestrator_llm.py` |

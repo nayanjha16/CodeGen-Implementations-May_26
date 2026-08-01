@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeGen Capstone Demo · Group-44</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #070b10;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f4f7fb;
+      --muted: #94a3b8;
+      --teal: #2dd4bf;
+      --teal-dim: rgba(45, 212, 191, 0.15);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251, 191, 36, 0.12);
+      --violet: #a78bfa;
+      --violet-dim: rgba(167, 139, 250, 0.12);
+      --rose: #fb7185;
+      --good: #34d399;
+      --font: "DM Sans", system-ui, sans-serif;
+      --serif: "Instrument Serif", Georgia, serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --nav: 64px;
+      --radius: 20px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: rgba(15, 23, 42, 0.03);
+      --surface-2: rgba(15, 23, 42, 0.06);
+      --border: rgba(15, 23, 42, 0.1);
+      --text: #0f172a;
+      --muted: #64748b;
+      --teal: #0d9488;
+      --teal-dim: rgba(13, 148, 136, 0.1);
+      --amber-dim: rgba(217, 119, 6, 0.1);
+      --violet-dim: rgba(124, 58, 237, 0.08);
+      --shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .ambient {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(40rem 30rem at 10% 15%, rgba(45, 212, 191, 0.18), transparent 60%),
+        radial-gradient(35rem 28rem at 88% 12%, rgba(167, 139, 250, 0.16), transparent 58%),
+        radial-gradient(30rem 24rem at 50% 100%, rgba(251, 191, 36, 0.1), transparent 55%);
+    }
+    [data-theme="light"] .ambient {
+      background:
+        radial-gradient(40rem 30rem at 10% 15%, rgba(13, 148, 136, 0.12), transparent 60%),
+        radial-gradient(35rem 28rem at 88% 12%, rgba(124, 58, 237, 0.08), transparent 58%),
+        radial-gradient(30rem 24rem at 50% 100%, rgba(217, 119, 6, 0.06), transparent 55%);
+    }
+
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--nav); z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; font-size: 0.9rem; }
+    .brand-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--violet));
+      box-shadow: 0 0 16px var(--teal);
+    }
+    .brand small { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 500; margin-top: 1px; }
+    .nav-mid { display: flex; align-items: center; gap: 1rem; flex: 1; max-width: 420px; margin: 0 1.5rem; }
+    .progress { flex: 1; height: 4px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+    .progress > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--teal), var(--violet)); transition: width 0.35s ease; }
+    .count { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+    .nav-actions { display: flex; gap: 0.45rem; }
+    .btn {
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text); border-radius: 10px; padding: 0.45rem 0.75rem;
+      font: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .btn:hover { background: var(--surface-2); border-color: color-mix(in srgb, var(--teal) 40%, var(--border)); }
+    .btn:active { transform: scale(0.97); }
+    .btn.icon { width: 36px; padding: 0; display: grid; place-items: center; }
+
+    .deck { position: relative; z-index: 1; height: 100%; padding-top: var(--nav); }
+    .slide {
+      position: absolute; inset: var(--nav) 0 0 0;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      transform: translateY(12px);
+      overflow-y: auto;
+    }
+    .slide.active { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+    .wrap {
+      max-width: 1140px; margin: 0 auto;
+      padding: 2rem 1.75rem 3rem;
+      min-height: calc(100vh - var(--nav));
+      display: flex; flex-direction: column;
+    }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 1rem;
+    }
+    .tag::before { content: ""; width: 18px; height: 1px; background: var(--teal); }
+
+    h1, h2 {
+      font-family: var(--serif); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05;
+    }
+    h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); max-width: 14ch; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); margin-bottom: 0.5rem; }
+    .subtitle {
+      font-size: clamp(1rem, 1.8vw, 1.2rem); color: var(--muted);
+      max-width: 52ch; line-height: 1.55; margin-top: 1rem;
+    }
+    .lead { color: var(--muted); font-size: 0.95rem; line-height: 1.6; max-width: 58ch; margin-top: 0.75rem; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.85rem; margin-top: 1.5rem; }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .nav-mid { display: none; }
+    }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.35rem;
+      backdrop-filter: blur(8px); box-shadow: var(--shadow);
+    }
+    .card.glow-teal { border-color: color-mix(in srgb, var(--teal) 35%, var(--border)); background: linear-gradient(145deg, var(--teal-dim), var(--surface)); }
+    .card.glow-violet { border-color: color-mix(in srgb, var(--violet) 35%, var(--border)); background: linear-gradient(145deg, var(--violet-dim), var(--surface)); }
+    .card.glow-amber { border-color: color-mix(in srgb, var(--amber) 35%, var(--border)); background: linear-gradient(145deg, var(--amber-dim), var(--surface)); }
+    .card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.65rem; }
+    .card p, .card li { font-size: 0.86rem; line-height: 1.5; color: var(--muted); }
+    .card ul { list-style: none; display: grid; gap: 0.45rem; }
+    .card ul li { position: relative; padding-left: 1rem; }
+    .card ul li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 5px; height: 5px; border-radius: 50%; background: var(--teal);
+    }
+
+    .metric {
+      text-align: center; padding: 1.35rem 1rem;
+    }
+    .metric .num {
+      font-family: var(--serif); font-size: clamp(2rem, 4vw, 2.8rem);
+      color: var(--teal); line-height: 1;
+    }
+    .metric .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; font-weight: 500; }
+    .metric .delta { font-family: var(--mono); font-size: 0.68rem; color: var(--good); margin-top: 0.25rem; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .chip {
+      font-size: 0.78rem; font-weight: 600; padding: 0.4rem 0.75rem;
+      border-radius: 999px; border: 1px solid var(--border);
+      background: var(--surface-2); color: var(--text);
+    }
+    .chip.teal { border-color: color-mix(in srgb, var(--teal) 45%, var(--border)); color: var(--teal); }
+
+    code, .mono { font-family: var(--mono); font-size: 0.82em; }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Slide 1 hero */
+    .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .hero-row { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; align-items: center; margin-top: 1.5rem; }
+    @media (max-width: 900px) { .hero-row { grid-template-columns: 1fr; } }
+
+    .pipeline {
+      display: flex; flex-direction: column; gap: 0.65rem;
+    }
+    .pipe-step {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.85rem; align-items: start;
+      padding: 0.85rem 1rem; border-radius: 14px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .pipe-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: grid; place-items: center; font-family: var(--mono);
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .pipe-step:nth-child(1) .pipe-icon { background: var(--teal-dim); color: var(--teal); }
+    .pipe-step:nth-child(2) .pipe-icon { background: var(--violet-dim); color: var(--violet); }
+    .pipe-step:nth-child(3) .pipe-icon { background: var(--amber-dim); color: var(--amber); }
+    .pipe-step strong { display: block; font-size: 0.88rem; margin-bottom: 0.15rem; }
+    .pipe-step span { font-size: 0.78rem; color: var(--muted); }
+
+    .team-bar {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; align-items: center;
+      margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+      font-size: 0.82rem; color: var(--muted);
+    }
+    .team-bar strong { color: var(--text); }
+
+    /* Architecture flow */
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 0.5rem 0.35rem; margin-top: 1.25rem;
+    }
+    .flow-node {
+      padding: 0.65rem 1rem; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 0.78rem; font-weight: 600; text-align: center; min-width: 100px;
+    }
+    .flow-node.core {
+      border-color: color-mix(in srgb, var(--teal) 50%, var(--border));
+      background: var(--teal-dim); color: var(--teal);
+    }
+    .flow-arrow { color: var(--muted); font-size: 1rem; padding: 0 0.15rem; }
+
+    /* Results chart */
+    .chart-wrap { height: 260px; margin-top: 0.75rem; position: relative; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem; }
+    th, td { padding: 0.55rem 0.65rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+    td.num { font-family: var(--mono); text-align: right; }
+    tr.highlight td { color: var(--teal); font-weight: 600; }
+
+    /* Demo commands */
+    .cmd {
+      display: block; margin-top: 0.65rem; padding: 0.75rem 1rem;
+      border-radius: 12px; background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border); font-family: var(--mono);
+      font-size: 0.74rem; line-height: 1.5; color: #e2e8f0;
+      overflow-x: auto;
+    }
+    [data-theme="light"] .cmd { background: #1e293b; color: #f1f5f9; }
+
+    .links-grid { display: grid; gap: 0.55rem; margin-top: 1rem; }
+    .link-row {
+      display: grid; grid-template-columns: 140px 1fr; gap: 0.75rem; align-items: baseline;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem;
+    }
+    .link-row:last-child { border-bottom: 0; }
+    .link-row .k { color: var(--muted); font-weight: 600; }
+
+    .hint {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 99;
+      padding: 0.5rem 1rem; text-align: center;
+      font-size: 0.72rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(10px);
+    }
+    kbd {
+      font-family: var(--mono); font-size: 0.68rem;
+      padding: 0.1rem 0.35rem; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+
+    .spacer { flex: 1; }
+    .slide-footer {
+      margin-top: auto; padding-top: 1.5rem;
+      font-size: 0.72rem; color: var(--muted);
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <header class="nav">
+    <div class="brand">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span>CodeGen Capstone<small>Group-44 · Codegen-11 · July 2026</small></span>
+    </div>
+    <div class="nav-mid">
+      <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+      <span class="count" id="count">1 / 7</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn icon" id="theme" title="Toggle theme" aria-label="Toggle theme">◐</button>
+      <button class="btn" id="prev" aria-label="Previous">←</button>
+      <button class="btn" id="next" aria-label="Next">→</button>
+    </div>
+  </header>
+
+  <main class="deck">
+
+    <!-- 1 TITLE -->
+    <section class="slide active" data-title="Title">
+      <div class="wrap hero">
+        <div class="tag">Project demo</div>
+        <div class="hero-row">
+          <div>
+            <h1>CodeGen Fine-Tuning with PEFT &amp; LoRA</h1>
+            <p class="subtitle">Interactive Database Querying Using Small Code Language Models</p>
+            <p class="lead">One frozen <strong>Salesforce/codegen-350M-multi</strong> base, three production LoRA adapters, execution-validated TEND training, a Cloud Run API, and an AI Database Agent for live demos.</p>
+            <div class="chips">
+              <span class="chip teal">LoRA v3 · Production</span>
+              <span class="chip">Text→SQL</span>
+              <span class="chip">SQL→NoSQL</span>
+              <span class="chip">NoSQL→Docs</span>
+            </div>
+            <div class="grid-4" style="margin-top:1.75rem">
+              <div class="card metric glow-teal"><div class="num">66%</div><div class="lbl">Text2SQL exec</div><div class="delta">+52 pp vs baseline</div></div>
+              <div class="card metric glow-violet"><div class="num">86%</div><div class="lbl">SQL2NoSQL exec</div><div class="delta">+64 pp vs baseline</div></div>
+              <div class="card metric glow-amber"><div class="num">8.82</div><div class="lbl">Doc judge /10</div><div class="delta">gold n=50</div></div>
+              <div class="card metric"><div class="num">3</div><div class="lbl">PEFT adapters</div><div class="delta">~40 MB each</div></div>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="pipe-step">
+              <div class="pipe-icon">NL</div>
+              <div><strong>Natural language + schema</strong><span>text2sql LoRA → SQL query</span></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-icon">SQL</div>
+              <div><strong>SQL + Mongo schema</strong><span>sql2nosql LoRA → Mongo shell</span></div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-icon">DOC</div>
+              <div><strong>Mongo query</strong><span>nosql2doc LoRA → plain-English docs</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="team-bar">
+          <strong>K.Bhavani</strong> · <strong>Sai Hemanta</strong> · <strong>Narayanan</strong>
+          <span>· IIITH · PG Certification in AI &amp; ML</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 PROBLEM -->
+    <section class="slide" data-title="Problem">
+      <div class="wrap">
+        <div class="tag">Slide 2 · Motivation</div>
+        <h2>Why this project?</h2>
+        <p class="lead">Production data systems span SQL and NoSQL. Small code models are cheap to run, but zero-shot CodeGen-350M is weak on structured database tasks without task-specific adapters.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>The gap</h3>
+            <ul>
+              <li>Spider &amp; BIRD stop at NL→SQL — no aligned Mongo or documentation</li>
+              <li>Full fine-tuning is too costly on student / research hardware</li>
+              <li>IDEs and agents need an OpenAI-compatible deployed endpoint</li>
+              <li>Metrics must prove <em>execution</em>, not string match alone</li>
+            </ul>
+          </div>
+          <div class="card glow-teal">
+            <h3>Our approach</h3>
+            <ul>
+              <li><strong>PEFT / LoRA</strong> — one frozen 350M base, three swappable adapters</li>
+              <li><strong>TEND</strong> — aligned NL · SQL · Mongo · docs on the same row</li>
+              <li><strong>Gold-50 benchmark</strong> — frozen <code>spider_gold_validation.jsonl</code></li>
+              <li><strong>Independent tasks</strong> — no chained predictions during eval</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>Train</h3><p><code>src/</code> + <code>scripts/train_all_lora.py</code><br/>TEND spider+bird · ~10,697 HF train rows</p></div>
+          <div class="card glow-violet"><h3>Serve</h3><p><code>fastapi-deploy/codegen_api</code><br/>Cloud Run · PEFT hot-swap · <code>/v1/chat/completions</code></p></div>
+          <div class="card glow-amber"><h3>Demo</h3><p><code>agent/</code> — LangGraph + MCP + Web UI<br/>Chinook on TEND Docker · live execution</p></div>
+        </div>
+        <p class="slide-footer">Objectives 1–6 complete · see docs/project-demo/01-executive-summary.md</p>
+      </div>
+    </section>
+
+    <!-- 3 TEND -->
+    <section class="slide" data-title="TEND">
+      <div class="wrap">
+        <div class="tag">Slide 3 · Dataset</div>
+        <h2>TEND — Translation · Evaluation · NL · Document</h2>
+        <p class="lead">Companion dataset on Hugging Face extending Spider + BIRD into aligned question · SQL · Mongo · docs — filtered by PostgreSQL vs MongoDB execution match.</p>
+        <div class="grid-4">
+          <div class="card metric"><div class="num">10,697</div><div class="lbl">HF train rows</div></div>
+          <div class="card metric"><div class="num">~8,040</div><div class="lbl">LoRA rows / task</div></div>
+          <div class="card metric glow-teal"><div class="num">50</div><div class="lbl">Gold eval set</div></div>
+          <div class="card metric"><div class="num">3</div><div class="lbl">Adapter tasks</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>SQL → NoSQL cascade</h3>
+            <div class="flow">
+              <span class="flow-node">Spider / BIRD</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-node">Rules</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-node">Python tool</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-node">Ollama fallback</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-node core">Exec gate</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-node">HF publish</span>
+            </div>
+            <p style="margin-top:0.75rem">Pass at any converter → validation gate. PG result must equal Mongo result.</p>
+          </div>
+          <div class="card glow-teal">
+            <h3>Public artifact</h3>
+            <p style="margin-bottom:0.5rem"><a href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">huggingface.co/datasets/care2achieve/tend</a></p>
+            <p>Each row: <code>question</code>, <code>sql</code>, <code>nosql_query</code>, <code>documentation</code>, schemas, <code>db_id</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 RESULTS -->
+    <section class="slide" data-title="Results">
+      <div class="wrap">
+        <div class="tag">Slide 4 · Results</div>
+        <h2>LoRA v3 vs baseline</h2>
+        <p class="lead">Frozen gold-50 · greedy decode · TEND Postgres/Mongo execution · Ollama <code>gemma3:4b</code> doc judge · source: <code>results/…_lora-v3/metrics.json</code></p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Training ladder</h3>
+            <table>
+              <thead><tr><th>Ver</th><th>Train</th><th>Ep</th><th>LoRA</th></tr></thead>
+              <tbody>
+                <tr><td>v1 smoke</td><td>50 / task</td><td class="num">10</td><td>r16 attn</td></tr>
+                <tr><td>v2</td><td>~8,040</td><td class="num">5</td><td>r16 attn</td></tr>
+                <tr class="highlight"><td><strong>v3 prod</strong></td><td>~8,040</td><td class="num">10</td><td>r32 attn+FFN</td></tr>
+              </tbody>
+            </table>
+            <p style="margin-top:0.65rem;font-size:0.78rem">v3 config: <code>configs/default.yaml</code></p>
+          </div>
+          <div class="card glow-teal">
+            <h3>Execution accuracy</h3>
+            <table>
+              <thead><tr><th>Run</th><th>Text2SQL</th><th>SQL2NoSQL</th><th>Doc</th></tr></thead>
+              <tbody>
+                <tr><td>Baseline</td><td class="num">14%</td><td class="num">22%</td><td class="num">8.33</td></tr>
+                <tr><td>LoRA v2</td><td class="num">60%</td><td class="num">74%</td><td class="num">8.41</td></tr>
+                <tr class="highlight"><td><strong>LoRA v3</strong></td><td class="num">66%</td><td class="num">86%</td><td class="num">8.82</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <h3>Execution accuracy by version</h3>
+          <div class="chart-wrap"><canvas id="chart"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 DEPLOY -->
+    <section class="slide" data-title="Deploy">
+      <div class="wrap">
+        <div class="tag">Slide 5 · Deploy</div>
+        <h2>From checkpoints to Cloud Run</h2>
+        <p class="lead">Train locally or Kaggle → publish to Hugging Face Hub → Docker pulls weights at startup → one OpenAI-compatible gateway for Cursor, SDKs, and the agent.</p>
+        <div class="flow" style="margin-bottom:1.25rem">
+          <span class="flow-node">models/checkpoints/v3</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">push_adapters.py</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node core">codegenstudio/*-lora</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node core">Cloud Run codegen-api</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Clients</span>
+        </div>
+        <div class="grid-2">
+          <div class="card glow-violet">
+            <h3>Hugging Face Hub</h3>
+            <div class="links-grid">
+              <div class="link-row"><span class="k">Dataset</span><span><a href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">care2achieve/tend</a></span></div>
+              <div class="link-row"><span class="k">text2sql</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-text2sql-lora" target="_blank" rel="noopener">codegen-350M-text2sql-lora</a></span></div>
+              <div class="link-row"><span class="k">sql2nosql</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-sql2nosql-lora" target="_blank" rel="noopener">codegen-350M-sql2nosql-lora</a></span></div>
+              <div class="link-row"><span class="k">nosql2doc</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-nosql2doc-lora" target="_blank" rel="noopener">codegen-350M-nosql2doc-lora</a></span></div>
+            </div>
+          </div>
+          <div class="card glow-teal">
+            <h3>Cloud Run gateway</h3>
+            <div class="links-grid">
+              <div class="link-row"><span class="k">URL</span><span><a href="https://codegen-api-161349047936.asia-south2.run.app/v1/chat/completions" target="_blank" rel="noopener">codegen-api-161349047936.asia-south2.run.app</a></span></div>
+              <div class="link-row"><span class="k">Region</span><span><code>asia-south2</code> (Hyderabad)</span></div>
+              <div class="link-row"><span class="k">Package</span><span><code>fastapi-deploy/codegen_api</code></span></div>
+              <div class="link-row"><span class="k">Manifest</span><span><code>checkpoint_version: v3</code></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 AGENT DEMO -->
+    <section class="slide" data-title="Agent Demo">
+      <div class="wrap">
+        <div class="tag">Slide 6 · Live demo</div>
+        <h2>AI Database Agent</h2>
+        <p class="lead">LangGraph + Ollama <code>gemma3:4b</code> orchestrator — never generates SQL directly. Routes intent → schema subset → Cloud Run LoRA v3 → validate → execute → natural-language answer.</p>
+        <div class="grid-3">
+          <div class="card"><h3>1 · Intent</h3><p>Ollama + rules<br/>text2sql · sql2nosql · nosql2doc · explain_sql · validate_sql</p></div>
+          <div class="card glow-violet"><h3>2 · Generate</h3><p><code>schema_tool</code> → CodeGen API<br/><code>/v1/chat/completions</code></p></div>
+          <div class="card glow-teal"><h3>3 · Execute</h3><p><code>execution_tool</code><br/>Postgres/Mongo · retry ≤3</p></div>
+        </div>
+        <div class="grid-2">
+          <div class="card glow-amber">
+            <h3>Demo questions (Chinook)</h3>
+            <ul>
+              <li><strong>D1</strong> — List album titles with artist names.</li>
+              <li><strong>D3</strong> — Which artist has the most albums?</li>
+              <li><strong>D6</strong> — How many tracks are in each genre?</li>
+            </ul>
+            <code class="cmd">python agent/scripts/run_capstone_demo.py</code>
+            <code class="cmd">python -m agent.web   # http://127.0.0.1:8080</code>
+          </div>
+          <div class="card">
+            <h3>Entry points &amp; prereqs</h3>
+            <ul>
+              <li><strong>CLI</strong> — <code>python -m agent.main</code></li>
+              <li><strong>MCP</strong> — <code>python -m agent.mcp.server</code></li>
+              <li><strong>Tests</strong> — 88 passed (<code>pytest agent/tests</code>)</li>
+            </ul>
+            <p style="margin-top:0.75rem">Prerequisites: TEND Docker (Chinook), Cloud Run API, Ollama</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 THANKS -->
+    <section class="slide" data-title="Thank You">
+      <div class="wrap" style="justify-content:center;text-align:center">
+        <div class="tag" style="justify-content:center">Slide 7 · Thank you</div>
+        <h2 style="font-size:clamp(2.5rem,5vw,3.5rem)">Thank you</h2>
+        <p class="subtitle" style="margin:1rem auto 0">Questions welcome — TEND, LoRA v3, Cloud Run, agent, or evaluation protocol.</p>
+        <div class="grid-4" style="max-width:720px;margin:2rem auto 0">
+          <div class="card metric glow-teal"><div class="num">66%</div><div class="lbl">Text2SQL</div></div>
+          <div class="card metric glow-violet"><div class="num">86%</div><div class="lbl">SQL2NoSQL</div></div>
+          <div class="card metric glow-amber"><div class="num">8.82</div><div class="lbl">Doc judge</div></div>
+          <div class="card metric"><div class="num">50</div><div class="lbl">Gold eval</div></div>
+        </div>
+        <div class="card" style="max-width:760px;margin:1.5rem auto 0;text-align:left">
+          <h3>Links</h3>
+          <div class="links-grid">
+            <div class="link-row"><span class="k">Repo</span><span><a href="https://github.com/nayanjha16/CodeGen-Implementations-May_26.git" target="_blank" rel="noopener">github.com/nayanjha16/CodeGen-Implementations-May_26.git</a> · branch <code>Group-44</code></span></div>
+            <div class="link-row"><span class="k">API</span><span><a href="https://codegen-api-161349047936.asia-south2.run.app/v1/chat/completions" target="_blank" rel="noopener">codegen-api-161349047936.asia-south2.run.app/v1</a></span></div>
+            <div class="link-row"><span class="k">TEND</span><span><a href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">huggingface.co/datasets/care2achieve/tend</a></span></div>
+            <div class="link-row"><span class="k">text2sql LoRA</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-text2sql-lora" target="_blank" rel="noopener">huggingface.co/codegenstudio/codegen-350M-text2sql-lora</a></span></div>
+            <div class="link-row"><span class="k">sql2nosql LoRA</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-sql2nosql-lora" target="_blank" rel="noopener">huggingface.co/codegenstudio/codegen-350M-sql2nosql-lora</a></span></div>
+            <div class="link-row"><span class="k">nosql2doc LoRA</span><span><a href="https://huggingface.co/codegenstudio/codegen-350M-nosql2doc-lora" target="_blank" rel="noopener">huggingface.co/codegenstudio/codegen-350M-nosql2doc-lora</a></span></div>
+          </div>
+        </div>
+        <div class="team-bar" style="justify-content:center;border:0;margin-top:1.5rem">
+          <strong>K.Bhavani</strong> · <strong>Sai Hemanta</strong> · <strong>Narayanan</strong>
+          <span>· Group-44 · Codegen-11 · July 2026</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="hint"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>T</kbd> theme · <kbd>F</kbd> fullscreen</div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const bar = document.getElementById("bar");
+    const count = document.getElementById("count");
+    const root = document.documentElement;
+    let i = 0;
+    let chart;
+
+    function css(name) {
+      return getComputedStyle(root).getPropertyValue(name).trim();
+    }
+
+    function buildChart() {
+      if (chart) chart.destroy();
+      const el = document.getElementById("chart");
+      if (!el) return;
+      chart = new Chart(el, {
+        type: "bar",
+        data: {
+          labels: ["Baseline", "LoRA v2", "LoRA v3"],
+          datasets: [
+            {
+              label: "Text2SQL exec %",
+              data: [14, 60, 66],
+              backgroundColor: css("--teal"),
+              borderRadius: 8,
+              barPercentage: 0.7
+            },
+            {
+              label: "SQL2NoSQL exec %",
+              data: [22, 74, 86],
+              backgroundColor: css("--violet"),
+              borderRadius: 8,
+              barPercentage: 0.7
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { color: css("--muted"), boxWidth: 12, padding: 16, font: { family: "'DM Sans'" } }
+            }
+          },
+          scales: {
+            y: {
+              min: 0, max: 100,
+              grid: { color: css("--border") },
+              ticks: { color: css("--muted"), callback: v => v + "%" }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: css("--muted") }
+            }
+          }
+        }
+      });
+    }
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach((s, k) => s.classList.toggle("active", k === i));
+      bar.style.width = ((i + 1) / slides.length * 100) + "%";
+      count.textContent = (i + 1) + " / " + slides.length;
+      document.title = slides[i].dataset.title + " · Group-44 · Codegen-11";
+      if (chart) requestAnimationFrame(() => chart.resize());
+    }
+
+    function setTheme(t) {
+      root.setAttribute("data-theme", t);
+      localStorage.setItem("codegen-demo-theme", t);
+      document.getElementById("theme").textContent = t === "dark" ? "☀" : "◐";
+      buildChart();
+    }
+
+    document.getElementById("prev").onclick = () => show(i - 1);
+    document.getElementById("next").onclick = () => show(i + 1);
+    document.getElementById("theme").onclick = () => {
+      setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+
+    document.addEventListener("keydown", e => {
+      if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      else if (e.key === "Home") show(0);
+      else if (e.key === "End") show(slides.length - 1);
+      else if (e.key.toLowerCase() === "t") setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      else if (e.key.toLowerCase() === "f") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+    });
+
+    let tx = null;
+    document.addEventListener("touchstart", e => { tx = e.changedTouches[0].screenX; }, { passive: true });
+    document.addEventListener("touchend", e => {
+      if (tx == null) return;
+      const dx = e.changedTouches[0].screenX - tx;
+      if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+      tx = null;
+    }, { passive: true });
+
+    const saved = localStorage.getItem("codegen-demo-theme");
+    setTheme(saved === "light" ? "light" : "dark");
+    buildChart();
+    show(0);
+  </script>
+</body>
+</html>

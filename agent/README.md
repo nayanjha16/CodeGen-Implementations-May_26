@@ -8,7 +8,7 @@ Orchestrates three MCP tools; **never generates SQL directly**. Generative work 
 | --- | --- |
 | Spec | [doc/agent.md](doc/agent.md) |
 | Planning | [database-agent-plan.md](../ai-workflow/planning/feature-plans/database-agent-plan.md) |
-| Eval / deploy | [evaluation-and-deploy-runbook.md](../docs/evaluation-and-deploy-runbook.md) |
+| Eval / deploy | [evaluation-and-deploy-runbook.md](../docs/reference/evaluation-and-deploy-runbook.md) |
 | Project overview | [README.md](../README.md) |
 
 ## Folder layout

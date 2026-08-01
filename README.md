@@ -14,22 +14,23 @@ Natural language  →  SQL  →  MongoDB  →  Documentation
 
 **Base model:** [Salesforce/codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi) (configure in `.env`)
 
+**Repository:** [github.com/nayanjha16/CodeGen-Implementations-May_26](https://github.com/nayanjha16/CodeGen-Implementations-May_26.git) · branch **`Group-44`** · cohort **Codegen-11**
+
 ## Documentation
 
 | Doc | Purpose |
 | --- | --- |
-| [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) | Baseline → LoRA eval → publish → Cloud Run redeploy |
-| [docs/gold-set-commands.md](docs/gold-set-commands.md) | Frozen 50-example gold validation commands |
-| [docs/lora-v1-v3-vs-baseline-comparison.pptx](docs/lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline presentation |
+| **[docs/project-demo/](docs/project-demo/)** | **Live demo** — [presentation.html](docs/project-demo/presentation.html) + reviewer package (Group-44 · Codegen-11) |
+| [docs/reference/](docs/reference/) | Runbooks, metrics, training, deployment ([version-tracker](docs/reference/version-tracker.md), [gold-set commands](docs/reference/gold-set-commands.md)) |
+| [docs/README.md](docs/README.md) | Full documentation index |
 | [agent/README.md](agent/README.md) | AI Database Agent — CLI, MCP, Web UI |
 | [fastapi-deploy/README.md](fastapi-deploy/README.md) | CodeGen API on Cloud Run |
-| [ai-workflow/context/current-state.md](ai-workflow/context/current-state.md) | Agent implementation status |
 
 ## Results snapshot (Spider gold validation)
 
 ### LoRA v3 — production (n=50)
 
-**50 examples** · execution accuracy on TEND · adapters published to Cloud Run (`fastapi-deploy`)
+**50 examples** · full TEND training (~8k rows / task) · **r=32 + FFN**, **10 epochs** (`configs/default.yaml`) · execution accuracy on TEND · adapters published to Cloud Run (`fastapi-deploy`)
 
 | Task | Execution accuracy (baseline v3 → LoRA v3) |
 | ---- | ---------------------------------------- |
@@ -41,15 +42,25 @@ Natural language  →  SQL  →  MongoDB  →  Documentation
 | ------ | ---- |
 | Baseline metrics | `results/spider_gold_validation_codegen-350M-multi_baseline-v3/` |
 | LoRA metrics | `results/spider_gold_validation_codegen-350M-multi_lora-v3/` |
-| Presentation | [docs/lora-v1-v3-vs-baseline-comparison.pptx](docs/lora-v1-v3-vs-baseline-comparison.pptx) |
+| Presentation | [docs/project-demo/presentation.html](docs/project-demo/presentation.html) · [PPTX](docs/reference/lora-v1-v3-vs-baseline-comparison.pptx) |
 
 ### LoRA v2 (n=50)
 
+**50 examples** · full TEND training (~8k rows / task) · **r=16**, attention only · **5 epochs** · AD-6 recipe
+
+| Task | Execution accuracy (baseline v2 → LoRA v2) |
+| ---- | ---------------------------------------- |
+| Text-to-SQL | 12% → **60%** |
+| SQL-to-MongoDB | 22% → **74%** |
+| Documentation (judge /10) | 8.33 → **8.41** |
+
 Report: [baseline-vs-lora-v2-comparison.md](results/spider_gold_validation_codegen-350M-multi_lora-v2/baseline-vs-lora-v2-comparison.md)
+
+See [docs/reference/version-tracker.md](docs/reference/version-tracker.md) for v1–v3 hyperparameters and training commands.
 
 ### LoRA v1 — smoke (n=5)
 
-**5 examples** · semantic judge `gemma3:4b` · smoke-trained v1 adapters (50 training rows, 5 epochs per task)
+**5 examples** · semantic judge `gemma3:4b` · smoke-trained v1 adapters (50 training rows, **10 epochs** per task)
 
 | Task | Judge correct rate (baseline → LoRA v1) |
 | ---- | --------------------------------------- |
@@ -65,7 +76,7 @@ Report: [baseline-vs-lora-v1-comparison.md](results/spider_gold_validation_codeg
 
 Run the training/eval pipeline in this order: **setup → pre-flight → baseline eval → LoRA training → fine-tuned eval → compare → (optional) publish & deploy → agent demo**.
 
-For copy-paste **gold-set (n=50)** commands see [docs/gold-set-commands.md](docs/gold-set-commands.md). Full publish/deploy steps: [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md).
+For copy-paste **gold-set (n=50)** commands see [docs/reference/gold-set-commands.md](docs/reference/gold-set-commands.md). Full publish/deploy steps: [docs/reference/evaluation-and-deploy-runbook.md](docs/reference/evaluation-and-deploy-runbook.md).
 
 ```mermaid
 flowchart LR
@@ -130,8 +141,8 @@ Question + SQL schema
 | **3. Baseline eval** | Score **base model** (no adapter) | `run_baseline_eval.py --max-samples 50 --output ..._baseline-v3` |
 | **4. LoRA training** | Fine-tune one adapter per task | `train_all_lora.py --version v3` |
 | **5. Fine-tuned eval** | Score **base + adapters** on same set | `run_baseline_eval.py --max-samples 50 --adapter-run v3 --output ..._lora-v3` |
-| **6. Compare** | Baseline vs LoRA metrics | `results/*/metrics.json`, [PPTX](docs/lora-v1-v3-vs-baseline-comparison.pptx) |
-| **7. Publish & deploy** | Hub + Cloud Run (production API) | [evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) |
+| **6. Compare** | Baseline vs LoRA metrics | `results/*/metrics.json`, [PPTX](docs/reference/lora-v1-v3-vs-baseline-comparison.pptx) |
+| **7. Publish & deploy** | Hub + Cloud Run (production API) | [evaluation-and-deploy-runbook.md](docs/reference/evaluation-and-deploy-runbook.md) |
 | **8. Agent demo** | Capstone orchestration over live API | [agent/README.md](agent/README.md) — `python -m agent.web` |
 
 Use `--max-samples 5` and `--version v1` for **smoke** runs on CPU before full v3 training.
@@ -182,7 +193,7 @@ CodeGen-Implementations-May_26/
 ├── agent/                   # AI Database Agent (LangGraph, MCP, Web UI)
 ├── fastapi-deploy/          # CodeGen API bundle for Cloud Run
 ├── ai-workflow/             # Research, planning, implementation logs
-├── docs/                    # Runbooks, gold-set commands, presentation
+├── docs/                    # project-demo/ (demo) + reference/ (runbooks)
 ├── models/
 │   ├── base/                # Downloaded HuggingFace base models (cached once)
 │   └── checkpoints/         # LoRA runs: checkpoints/<run>/<task>/
@@ -294,7 +305,7 @@ YAML settings in `configs/default.yaml` cover generation, evaluation limits, tra
 
 ## Recommended Workflow
 
-**Production path (v3, n=50):** see [docs/gold-set-commands.md](docs/gold-set-commands.md) for copy-paste commands and [docs/evaluation-and-deploy-runbook.md](docs/evaluation-and-deploy-runbook.md) for publish/deploy.
+**Production path (v3, n=50):** see [docs/reference/gold-set-commands.md](docs/reference/gold-set-commands.md) for copy-paste commands and [docs/reference/evaluation-and-deploy-runbook.md](docs/reference/evaluation-and-deploy-runbook.md) for publish/deploy.
 
 ```powershell
 # Activate env and set PYTHONPATH each session
@@ -317,7 +328,7 @@ python scripts/verify_lora_adapters.py --version v3
 python scripts/run_baseline_eval.py --max-samples 50 --adapter-run v3 --output spider_gold_validation_codegen-350M-multi_lora-v3
 
 # --- Phase 6–7: Compare + publish/deploy ---
-# metrics.json under results/ above; then see docs/evaluation-and-deploy-runbook.md
+# metrics.json under results/ above; then see docs/reference/evaluation-and-deploy-runbook.md
 
 # --- Phase 8: Agent demo (after Cloud Run has v3) ---
 pip install -r agent/requirements.txt
@@ -423,8 +434,11 @@ Long prompts are truncated from the **start** (schema head dropped, question + t
 ### Train a single task
 
 ```bash
-# Full training (default: 5 epochs, spider+bird train/eval)
-python scripts/train_lora.py --task text2sql
+# Full training — v3 production config (10 epochs, configs/default.yaml)
+python scripts/train_lora.py --task text2sql --version v3
+
+# v2-style full TEND run (AD-6: r=16, 5 epochs — see docs/reference/version-tracker.md)
+python scripts/train_all_lora.py --version v2 --epochs 5
 
 # Smoke / debug run
 python scripts/train_lora.py --task text2sql --max-samples 50 --epochs 1 --no-mlflow --version v1
@@ -445,7 +459,7 @@ python scripts/train_lora.py --task nosql2doc --train-csv data/my_train.jsonl --
 | `--output-dir` | `models/checkpoints/<run>/<task>/` | Adapter output directory (overrides default path) |
 | `--version`, `--name` | date-based `DDMM` | Run folder under `models/checkpoints/` (e.g. `v1`) |
 | `--max-samples` | all rows | Limit rows for smoke/debug |
-| `--epochs` | `5` (from config) | Override epoch count |
+| `--epochs` | `10` (from config) | Override epoch count (v2 used **5**) |
 | `--device` | `auto` | `auto`, `cuda`, `mps`, or `cpu` |
 | `--config` | `configs/default.yaml` | Alternate YAML config |
 | `--no-mlflow` | off | Disable MLflow logging |
@@ -468,7 +482,11 @@ python scripts/train_all_lora.py --dry-run
 
 After all tasks complete, `train_all_lora.py` verifies adapter artifacts and writes a timestamped summary JSON to `models/checkpoints/training_summary_<timestamp>.json`.
 
-### Training hyperparameters (`configs/default.yaml`)
+### Training hyperparameters
+
+**Authoritative per-version table:** [docs/reference/version-tracker.md](docs/reference/version-tracker.md)
+
+**Production v3** uses [`configs/default.yaml`](configs/default.yaml):
 
 ```yaml
 training:
@@ -480,7 +498,7 @@ training:
   max_target_tokens: 256
   learning_rate: 2.0e-4
   weight_decay: 0.01
-  epochs: 5
+  epochs: 10
   per_device_train_batch_size: 8
   per_device_eval_batch_size: 8
   gradient_accumulation_steps: 4   # effective batch size = 32
@@ -491,14 +509,18 @@ training:
   bf16: false
 
 lora:
-  r: 16
-  lora_alpha: 32
+  r: 32
+  lora_alpha: 64
   lora_dropout: 0.05
   bias: none
   target_modules:
     - qkv_proj
     - out_proj
+    - fc_in
+    - fc_out
 ```
+
+**v1 / v2 (AD-6 smoke recipe):** r=16, alpha 32, attention projections only (`qkv_proj`, `out_proj`). v1 = 50 samples, 10 epochs; v2 = full TEND (~8k), **5 epochs**.
 
 Training uses TRL `SFTTrainer` with **completion-only loss** (prompt tokens masked). Each run writes:
 
@@ -521,9 +543,9 @@ Checks for `adapter_config.json`, `adapter_model.safetensors`, and optionally `r
 
 ### Training wall-clock notes
 
-| Device | Approx. time per task (full 10k rows, 5 epochs) |
-| ------ | ----------------------------------------------- |
-| CUDA GPU | Hours (fastest) |
+| Device | Approx. time per task (full TEND ~8k rows) |
+| ------ | ------------------------------------------ |
+| CUDA GPU | v3 (10 ep): hours · v2 (5 ep): ~half |
 | Apple MPS | ~10–15+ hours per task |
 | CPU | Very slow; use `--max-samples` for smoke tests |
 
@@ -689,14 +711,14 @@ evaluation:
 training:
   max_length: 2048
   max_target_tokens: 256
-  epochs: 5
+  epochs: 10
   learning_rate: 2.0e-4
   # ... see full file for LoRA and batch settings
 
 lora:
-  target_modules: [qkv_proj, out_proj]
-  r: 16
-  lora_alpha: 32
+  target_modules: [qkv_proj, out_proj, fc_in, fc_out]
+  r: 32
+  lora_alpha: 64
 ```
 
 To use a different HuggingFace base model, change `MODEL_NAME` in `.env`, run `inspect_lora_modules.py` to verify LoRA target modules, and update `lora.target_modules` in the YAML if needed.
@@ -712,7 +734,7 @@ See [data/DATASETS.md](data/DATASETS.md) for TEND field definitions, split namin
 | TEND (HF `care2achieve/tend`) | LoRA training (spider + bird train/test) |
 | `data/spider_gold_validation.jsonl` | Frozen 50-example baseline evaluation |
 
-Gold-set eval commands: [docs/gold-set-commands.md](docs/gold-set-commands.md)
+Gold-set eval commands: [docs/reference/gold-set-commands.md](docs/reference/gold-set-commands.md)
 
 ---
 

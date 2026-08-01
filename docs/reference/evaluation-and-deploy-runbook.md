@@ -2,19 +2,21 @@
 
 Complete step-by-step flow for running **baseline → LoRA evaluation → compare → publish → Cloud Run redeploy** on the CodeGen three-stage pipeline.
 
-Use this document whenever you start a new eval cycle (e.g. v3, v4) or need to promote adapters to production.
+Use this document whenever you start a new eval cycle (e.g. v3) or need to promote adapters to production.
 
 **Related docs**
 
 | Doc | Purpose |
 | --- | --- |
 | [gold-set-commands.md](gold-set-commands.md) | Copy-paste eval → publish → deploy commands |
+| [version-tracker.md](version-tracker.md) | LoRA v1–v3 metrics and production status |
+| [Multi_Adapter_Deployment_Plan.md](Multi_Adapter_Deployment_Plan.md) | Cloud Run multi-adapter API architecture |
 | [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline metrics (presentation) |
-| [../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json](../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json) | Latest LoRA v3 eval metrics |
-| [../fastapi-deploy/README.md](../fastapi-deploy/README.md) | API details, Cloud Run deploy, publish script reference |
-| [../data/DATASETS.md](../data/DATASETS.md) | TEND dataset fields and loading |
-| [../README.md](../README.md) | Full project setup, training flags, test suite |
-| [../agent/README.md](../agent/README.md) | AI Database Agent setup and demo |
+| [../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json](../../results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json) | Latest LoRA v3 eval metrics |
+| [../fastapi-deploy/README.md](../../fastapi-deploy/README.md) | API details, Cloud Run deploy, publish script reference |
+| [../data/DATASETS.md](../../data/DATASETS.md) | TEND dataset fields and loading |
+| [../README.md](../../README.md) | Full project setup, training flags, test suite |
+| [../agent/README.md](../../agent/README.md) | AI Database Agent setup and demo |
 
 ---
 
@@ -218,7 +220,7 @@ python scripts/run_baseline_eval.py `
   --output spider_gold_validation_codegen-350M-multi_baseline-v3
 ```
 
-Replace `baseline-v3` with your version tag (e.g. `baseline-v4`).
+Replace `baseline-v3` with your version tag (e.g. `baseline-vN`).
 
 **Do not pass** `--adapter-run` for baseline.
 
@@ -281,6 +283,14 @@ python scripts/run_baseline_eval.py --max-samples 5 --output spider_gold_validat
 ## Phase 5 — LoRA training (if adapters do not exist)
 
 Skip this phase if checkpoints already exist under `models/checkpoints/<version>/`.
+
+**Training versions** (see [version-tracker.md](version-tracker.md)):
+
+| Version | Train scale | LoRA | Epochs | Command |
+|---------|-------------|------|--------|---------|
+| v1 | 50 rows / task (smoke) | r=16, attn only | 10 | `train_all_lora.py --version v1 --max-samples 50` |
+| v2 | Full TEND (~8k) | r=16, attn only | **5** | `train_all_lora.py --version v2 --epochs 5` |
+| v3 (prod) | Full TEND (~8k) | r=32 + FFN (`configs/default.yaml`) | **10** | `train_all_lora.py --version v3` |
 
 ### 5.1 Train all three tasks
 

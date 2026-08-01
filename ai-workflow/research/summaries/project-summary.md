@@ -26,7 +26,7 @@ The **agent layer is implemented** under `agent/` — LangGraph orchestrator, MC
 |------|-------------------------------|
 | Agentic orchestration | LLM agent selects tools; never writes SQL directly |
 | MCP architecture | Three MCP-compatible tools exposed via MCP server |
-| Fine-tuned models | Capstone FastAPI tool calls Cloud Run LoRA v2 adapters |
+| Fine-tuned models | Agent calls Cloud Run LoRA **v3** via `/v1/chat/completions` |
 | Database interaction | Execution tool runs Postgres (and later Mongo) queries |
 | Error recovery | Failed execution → error fed back to model → retry (≤3) |
 | Production readiness | Modular tools, config-driven URLs, deployable services |
@@ -37,7 +37,7 @@ The **agent layer is implemented** under `agent/` — LangGraph orchestrator, MC
 User
   → AI Agent (LangGraph + orchestrator LLM)
        → Schema Tool        (relevant tables/columns only)
-       → Capstone API Tool  (HTTP → codegen-api Cloud Run)
+       → CodeGen API Tool    (HTTP → codegen-api Cloud Run)
        → Execution Tool     (Postgres / Mongo → rows)
        → Retry loop on execution failure
   → Natural language answer
@@ -52,7 +52,7 @@ User
 | Agent framework | LangGraph or OpenAI Agents SDK | **LangGraph** (`agent/orchestration/`) |
 | Orchestrator LLM | GPT-class with tool calling | **Ollama** (`gemma3:4b`) |
 | Tool protocol | MCP | **MCP stdio** (`agent/mcp/`) |
-| Capstone API | FastAPI `/generate/*` | **`codegen_api`** — OpenAI `/v1/chat/completions` on Cloud Run |
+| CodeGen API | OpenAI `/v1/chat/completions` | **`codegen_api`** on Cloud Run (`fastapi-deploy/`) |
 | Fine-tuned models | Text2SQL, SQL2NoSQL, SQL2Doc LoRA | **v3 on Cloud Run** |
 | Databases | PostgreSQL, MongoDB | **TEND Docker** + standalone Chinook/Northwind |
 | Deployment | Docker / Cloud | **Cloud Run** + local Web UI (`agent/web/`) |
@@ -73,16 +73,15 @@ User
 3. CodeGen client calls Cloud Run with schema-enriched prompt + explicit `intent`
 4. Execution tool runs query; on error, retry with error context (≤3)
 5. Ollama summarizes rows (or deterministic listing summary for tabular results)
-6. Web UI: `python -m agent.web` for capstone demo
+6. Web UI: `python -m agent.web` for project demo
 
 ## Related Prior Work in Repo
 
 | Initiative | Status | Relevance to agent |
 |------------|--------|-------------------|
-| LoRA fine-tuning | Implemented (v1 smoke, v2 full) | Models served by Cloud Run |
-| `fastapi-deploy` | Deployed | **Capstone FastAPI tool** target |
-| `text2sql-ui-tool` | Documented in `ai-workflow/`; **`tool/` absent on disk** | Planned schema loader, FastAPI client, pipeline — can inform agent tools |
-| `hf-deploy` | Removed | Replaced by `fastapi-deploy` |
+| LoRA fine-tuning | Implemented (v1–v3) | Models served by Cloud Run |
+| `fastapi-deploy` | Deployed on Cloud Run | **CodeGen API** target (`codegen_api`) |
+| `agent/` | Complete (Stages 1–10) | CLI, MCP, Web UI |
 
 ## Research Conclusion
 

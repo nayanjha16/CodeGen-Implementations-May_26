@@ -6,10 +6,12 @@ Simplified copy-paste commands for **Spider gold validation** eval → compare �
 
 | Doc | Purpose |
 | --- | --- |
+| [version-tracker.md](version-tracker.md) | LoRA v1–v3 training hyperparameters and metrics |
 | [evaluation-and-deploy-runbook.md](evaluation-and-deploy-runbook.md) | Full publish + Cloud Run redeploy |
-| [../README.md](../README.md) | Project setup, training, agent overview |
+| [../project-demo/README.md](../project-demo/README.md) | Live demo — presentation + reviewer package |
+| [../README.md](../../README.md) | Project setup, training, agent overview |
 | [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline presentation |
-| [../agent/README.md](../agent/README.md) | Agent demo (uses Cloud Run v3 API) |
+| [../agent/README.md](../../agent/README.md) | Agent demo (uses Cloud Run v3 API) |
 
 Dataset: `data/spider_gold_validation.jsonl` (50 examples)  
 Paths below use your Windows setup — adjust if your folders differ.
@@ -95,13 +97,17 @@ results/spider_gold_validation_codegen-350M-multi_baseline-v3/metrics.json
 
 ---
 
-## 5. LoRA eval (after adapters exist under models/checkpoints/v3/)
+## 5. LoRA eval (v2 or v3 — after adapters exist)
 
 ```powershell
+# v3 (production)
 python scripts/run_baseline_eval.py --adapter-run v3 --max-samples 50 --output spider_gold_validation_codegen-350M-multi_lora-v3
+
+# v2 (full TEND, r=16, 5 epochs)
+python scripts/run_baseline_eval.py --adapter-run v2 --max-samples 50 --output spider_gold_validation_codegen-350M-multi_lora-v2
 ```
 
-Output:
+Output (v3 example):
 
 ```text
 results/spider_gold_validation_codegen-350M-multi_lora-v3/metrics.json
@@ -178,10 +184,12 @@ curl.exe -X POST "https://codegen-api-161349047936.asia-south2.run.app/v1/chat/c
 | --- | --- |
 | Baseline v1 | `..._baseline-v1` |
 | LoRA v1 | `..._lora-v1` |
+| Baseline v2 | `..._baseline-v2` |
+| LoRA v2 | `..._lora-v2` |
 | Baseline v3 | `..._baseline-v3` |
 | LoRA v3 | `..._lora-v3` |
-| Baseline v4 | `..._baseline-v4` |
-| LoRA v4 | `..._lora-v4` |
+| Baseline vN | `..._baseline-vN` |
+| LoRA vN | `..._lora-vN` |
 
 Same commands — only change `--output`, `--adapter-run`, `--version`, and `checkpoint_version`.
 

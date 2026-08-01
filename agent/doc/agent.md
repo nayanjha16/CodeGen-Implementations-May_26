@@ -19,7 +19,7 @@ The system will:
 
 * Understand user intent
 * Retrieve only the required database schema
-* Invoke the fine-tuned Capstone FastAPI model
+* Invoke the Cloud Run CodeGen API (LoRA v3 via `/v1/chat/completions`)
 * Execute generated queries
 * Return results in natural language
 * Retry automatically when execution fails
@@ -55,7 +55,7 @@ The architecture demonstrates modern Agentic AI concepts including:
       ▼                 ▼                     ▼
 
 ┌──────────────┐  ┌─────────────────┐  ┌────────────────┐
-│Schema Tool   │  │ Capstone API    │  │ Execution Tool │
+│Schema Tool   │  │ CodeGen API     │  │ Execution Tool │
 │              │  │ (FastAPI)       │  │                │
 │Schema Search │  │ Text→SQL        │  │ Execute SQL    │
 │Metadata      │  │ SQL→NoSQL       │  │ Execute Mongo  │
@@ -333,23 +333,19 @@ Output
 
 ## Tool 2
 
-Capstone FastAPI Tool
+CodeGen API client (`agent/clients/codegen_client.py`)
 
 Purpose
 
-Generate SQL
+Generate SQL, MongoDB queries, or documentation via the deployed multi-adapter API.
 
-Endpoints
+Endpoint (production)
 
 ```
-POST /generate/sql
-
-POST /generate/nosql
-
-POST /generate/documentation
-
-POST /generate/explanation
+POST /v1/chat/completions
 ```
+
+OpenAI-compatible body with schema in the user message; optional `"intent": "text2sql" | "sql2nosql" | "nosql2doc"`.
 
 ---
 
@@ -481,6 +477,8 @@ User
 
 # 10. FastAPI Endpoints
 
+> **Deployed API (`fastapi-deploy/codegen_api`):** OpenAI-compatible **`POST /v1/chat/completions`** only — not the convenience routes below. The agent maps spec intents via `agent/tools/fastapi_tool.py` (e.g. `intent: "text2sql"`). SQL **explanation** uses the local Ollama orchestrator, not CodeGen. See [fastapi-deploy/README.md](../../fastapi-deploy/README.md).
+
 ## Generate SQL
 
 ```
@@ -546,7 +544,7 @@ Workflow
 
 2. Retrieve relevant schema.
 
-3. Call the Capstone API.
+3. Call the CodeGen API (Cloud Run `/v1/chat/completions`).
 
 4. Execute generated query if requested.
 
@@ -564,45 +562,23 @@ Never hallucinate schemas.
 # 12. Project Structure
 
 ```
-database-agent/
+agent/                          # AI Database Agent (this repo)
+├── main.py                     # CLI
+├── web/                        # FastAPI chat UI
+├── orchestration/              # LangGraph pipeline
+├── orchestrator/               # Intent, planner, prompts, retry
+├── tools/                      # schema_tool, codegen client, execution_tool
+├── mcp/                        # stdio MCP server
+├── database/                   # Postgres + Mongo profiles
+├── scripts/                    # verify DBs, run_capstone_demo.py
+├── data/standalone/            # Chinook / Northwind demo SQL
+└── tests/
 
-│
-├── agent/
-│      main.py
-│      planner.py
-│      prompts.py
-│      intent_detector.py
-│      retry.py
-│
-├── mcp/
-│      server.py
-│      registry.py
-│
-├── tools/
-│      schema_tool.py
-│      fastapi_tool.py
-│      execution_tool.py
-│
-├── capstone_api/
-│      app.py
-│
-│      adapters/
-│          text2sql.py
-│          sql2nosql.py
-│          sql2doc.py
-│
-├── database/
-│      postgres.py
-│      mongodb.py
-│
-├── config/
-│      settings.py
-│
-├── logs/
-│
-├── tests/
-│
-└── README.md
+fastapi-deploy/                 # Cloud Run serving package (separate)
+└── codegen_api/                # OpenAI-compatible API + PEFT hot-swap
+    ├── api/app.py
+    ├── adapters/               # LoRA router
+    └── classifier/
 ```
 
 ---

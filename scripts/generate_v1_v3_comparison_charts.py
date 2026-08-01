@@ -1,4 +1,4 @@
-"""Generate static PNG charts for docs/lora-v1-v3-vs-baseline-comparison.md."""
+"""Generate static PNG charts for docs/reference/lora-v1-v3-vs-baseline-comparison.pptx."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "docs" / "images" / "lora-v1-v3"
+OUT = ROOT / "docs" / "reference" / "images" / "lora-v1-v3"
 
 # Presentation palette — light / dark blue + neutral baseline
 BLUE_DARK = "#1e40af"   # LoRA / primary series / best result
@@ -186,7 +186,7 @@ def chart_improvement_doc_judge() -> Path:
         "Judge score (0–10)",
         "00_improvement_doc_judge_baseline_v2_v3.png",
         ylim=(0, 10),
-        footnote="LoRA v1 omitted — n=5 smoke only (judge correct rate, not 0–10 score)",
+        footnote="* v1 = n=5 smoke only. v2/v3 = full TEND ~8k; v2: r=16, 5 ep; v3: r=32+FFN, 10 ep",
     )
 
 

@@ -5,12 +5,12 @@
 
 ## Target flow
 
-`User → Agent (LangGraph) → [Schema | Capstone API | Execution] tools → NL answer`
+`User → Agent (LangGraph) → [Schema | CodeGen API | Execution] tools → NL answer`
 
 ## Implemented
 
 - **Agent:** `agent/` — LangGraph, MCP, CLI, Web UI (88 tests)
-- **Capstone API:** `fastapi-deploy/codegen_api` → Cloud Run (LoRA v3)
+- **CodeGen API:** `fastapi-deploy/codegen_api` → Cloud Run (LoRA v3)
 - **Eval / training:** `src/` pipeline (unchanged; agent imports prompts at runtime)
 
 ## Entry points

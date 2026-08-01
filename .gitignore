@@ -41,7 +41,7 @@ data/cache/
 # results/**/*_details.csv
 
 # Regenerated presentation assets (source: scripts/generate_v1_v3_comparison_charts.py)
-docs/images/
+docs/reference/images/
 
 # MLflow
 mlruns/
@@ -58,3 +58,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Local backups / archives
+*.zip

@@ -24,7 +24,7 @@
 | LangGraph orchestrator + CLI | ✅ |
 | MCP server (stdio) | ✅ |
 | Integration / E2E tests | ✅ |
-| Capstone demo scripts | ✅ |
+| Project demo scripts | ✅ |
 | Web UI + SQL repair + hints | ✅ |
 
 ### Demo DB health
@@ -50,7 +50,7 @@ python -m agent.web
 ### Recommended live demo questions
 
 - **D1** — List album titles with artist names
-- **D3** — How many customers?
+- **D3** — Which artist has the most albums?
 - **D6** — Filter + order query
 
 Avoid **D2** (3-table join) — still flaky.

@@ -20,7 +20,9 @@ Both runs use the **same 50-example validation set**. LoRA v2 metrics below are 
 | Run | Training |
 |-----|----------|
 | Baseline | Zero-shot CodeGen-350M |
-| LoRA v2 | Full LoRA (~8k train rows per task; adapters under `models/checkpoints/v2/`) |
+| LoRA v2 | Full TEND (~8k rows / task), **r=16** (attention only), **5 epochs** — adapters under `models/checkpoints/v2/` |
+
+See [docs/reference/version-tracker.md](../../docs/reference/version-tracker.md) for the full v1–v3 hyperparameter table.
 
 ---
 

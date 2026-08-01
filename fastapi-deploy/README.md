@@ -2,8 +2,9 @@
 
 A self-contained **FastAPI** serving package for the fine-tuned CodeGen stack:
 **`Salesforce/codegen-350M-multi`** + three LoRA adapters, behind an
-**OpenAI-compatible** API. This is the **Capstone FastAPI Tool** that the
-AI Database Agent (see `agent/doc/agent.md`) calls to generate SQL / NoSQL / docs.
+**OpenAI-compatible** API for the fine-tuned CodeGen stack:
+**`Salesforce/codegen-350M-multi`** + three LoRA adapters. The **AI Database Agent**
+(`agent/`) calls this service via `POST /v1/chat/completions` to generate SQL / NoSQL / docs.
 
 - Classifies the natural-language request (no task keywords required)
 - Hot-swaps the matching LoRA adapter (one base model in memory)
@@ -173,7 +174,7 @@ The response includes `codegen_routing` (intent, confidence, adapter id) for deb
 
 ## Run locally
 
-Adapter source is `local` by default (uses `models/checkpoints/v2/`).
+Adapter source is `local` by default (uses `models/checkpoints/<checkpoint_version>/`; production **v3**).
 
 ### Windows PowerShell
 
@@ -391,7 +392,7 @@ gcloud run services add-iam-policy-binding codegen-api `
 
 ## After fine-tuning: publish and redeploy
 
-Use this checklist whenever you finish a new LoRA training run (e.g. v3, v4)
+Use this checklist whenever you finish a new LoRA training run (production today: **v3**)
 and want Cloud Run to serve it. **Run your eval first** (e.g. 50-sample gold
 validation) and only publish when you are satisfied with metrics.
 
@@ -528,7 +529,7 @@ under `models/checkpoints/`. Flags: `--org`, `--token`, `--private`, `--dry-run`
 | Setting | Manifest key | Env override | Default |
 | --- | --- | --- | --- |
 | Base model | `base_model` | `CODEGEN_BASE_MODEL` | `Salesforce/codegen-350M-multi` |
-| Checkpoint version | `checkpoint_version` | `CODEGEN_CHECKPOINT_VERSION` | `v2` |
+| Checkpoint version | `checkpoint_version` | `CODEGEN_CHECKPOINT_VERSION` | `v3` |
 | Adapter source | `adapter_source` | `CODEGEN_ADAPTER_SOURCE` | `local` |
 | Checkpoints root | `checkpoints_root` | `CODEGEN_CHECKPOINTS_ROOT` | `models/checkpoints` |
 | Eager load | `eager_load` | `CODEGEN_EAGER_LOAD` | `true` |

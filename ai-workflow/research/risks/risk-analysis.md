@@ -20,7 +20,7 @@
 | **I-1 Cloud Run cold start** | High | 1–3+ min model load on first request | Warm `/health` before demo; document in runbook |
 | **I-2 Cloud Run scale-to-zero** | Medium | Demo fails if service asleep | Option 1 from `fastapi-deploy/README.md` (auto sleep OK with warm-up) |
 | **I-3 TEND dependency** | High | `database_execution.py` imports external TEND repo; default path macOS | Set `TEND_REPO_PATH` on Windows; or direct psycopg in execution tool |
-| **I-4 Missing `tool/` codebase** | High | text2sql-ui-tool modules documented but not on disk | Re-implement schema loader/client in `tools/`; don't assume `tool/` imports |
+| **I-4 Missing standalone UI** | — | Superseded — agent Web UI under `agent/web/` | N/A (resolved) |
 | **I-5 SQL extraction from LLM output** | Medium | Model may return prose + SQL | Reuse extraction patterns from `sql_generator.py` / API post-processing |
 | **I-6 nosql2doc vs SQL documentation** | Medium | Spec capability doesn't match adapter task | MVP text2sql only; document naming mismatch for doc path |
 
@@ -48,8 +48,6 @@
 | Item | Location | Impact on agent |
 |------|----------|-----------------|
 | Stale research docs | Older `project-summary` LoRA-only narrative | **Resolved** — research updated 2026-07-19 |
-| text2sql-ui-tool without `tool/` | ai-workflow says complete | Cannot reuse; reimplement or restore from backup |
-| hf-deploy removed | — | Use `fastapi-deploy` only |
 | Classifier `clarify` at low confidence | `codegen_api` | Agent must force intent |
 | v2 baseline metrics incomplete EX in JSON | `baseline-v2/metrics.json` | Unrelated to agent; don't block |
 | TEND default path | `database_execution.py` | Breaks on Windows without env |
@@ -71,7 +69,7 @@
 | Retry count enforced | FR-5 |
 | Read-only SQL enforcement | Safety |
 | Schema tool returns non-empty subset | FR-2 |
-| Capstone tool handles API 5xx / timeout | Resilience |
+| Agent codegen client handles API 5xx / timeout | Resilience |
 | E2E with mocked Cloud Run + mocked DB | CI without GPU/network |
 
 ## 8. Risk Priority for Planning

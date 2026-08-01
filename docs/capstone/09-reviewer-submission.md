@@ -50,11 +50,11 @@ This document is written for **capstone reviewers**. It explains the team, the d
 All members contributed across dataset construction, LoRA training, evaluation, deployment, desktop tool, and presentation (as stated in the final deck).
 
 
-| Name                         | Notes       |
-| ---------------------------- | ----------- |
-| **Naresh Reddy Yadulla**     | Team member |
-| **Mohana K Kishore Dwadasi** | Team member |
-| **Sivakrishna Andraju**      | Team member |
+| Name                     | Notes       |
+| ------------------------ | ----------- |
+| **Naresh Reddy Yadulla** | Team member |
+| **Kishore Dwadasi**      | Team member |
+| **Sivakrishna Andraju**  | Team member |
 
 
 
@@ -149,6 +149,8 @@ flowchart LR
 
     GATE --> OUT["Gold → Hugging Face<br/>+ docs (not a judge)"]
 ```
+
+
 
 Failed rows stay failed. BIRD yield is much lower than Spider. No LLM “rescue” of queries that fail execution.
 
@@ -259,6 +261,10 @@ flowchart TB
     BASE --> N2D
 ```
 
+
+
+
+
 ### 4.2 Deployment path (Hub → Cloud Run → clients)
 
 ```mermaid
@@ -297,6 +303,10 @@ flowchart TB
     API --> C3
 ```
 
+
+
+
+
 ### 4.3 Research / training view (three independent tasks)
 
 Tasks are **trained and evaluated independently** with **gold** fields from the same TEND row — predicted outputs are never chained during benchmarking.
@@ -327,11 +337,17 @@ flowchart LR
     N2D --> PD["predicted docs"]
 ```
 
-| Task | Input | Output | Adapter |
-|------|-------|--------|---------|
-| **Text2SQL** | Question + SQL schema | SQL | `text2sql` |
-| **SQL2NoSQL** | Gold SQL + schemas | MongoDB shell | `sql2nosql` |
-| **NoSQL2Doc** | Gold Mongo + schema | Documentation | `nosql2doc` |
+
+
+
+| Task          | Input                 | Output        | Adapter     |
+| ------------- | --------------------- | ------------- | ----------- |
+| **Text2SQL**  | Question + SQL schema | SQL           | `text2sql`  |
+| **SQL2NoSQL** | Gold SQL + schemas    | MongoDB shell | `sql2nosql` |
+| **NoSQL2Doc** | Gold Mongo + schema   | Documentation | `nosql2doc` |
+
+
+
 
 ### 4.4 Desktop tool closed loop (client-side)
 
@@ -343,6 +359,8 @@ flowchart LR
     VAL --> EXE["Execute on<br/>PostgreSQL"]
     EXE --> RES["Results table<br/>+ activity log"]
 ```
+
+
 
 ---
 

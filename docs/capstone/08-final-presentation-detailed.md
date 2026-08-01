@@ -49,7 +49,7 @@
 All team members contributed across every project task (dataset, training, evaluation, deployment, tool, and presentation).
 
 - Naresh Reddy Yadulla
-- Mohana K Kishore Dwadasi
+- Kishore Dwadasi
 - Sivakrishna Andraju
 
 **On slide:** list names only — no roles or per-person task split.

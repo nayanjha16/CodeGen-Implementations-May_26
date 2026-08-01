@@ -146,6 +146,8 @@
       line-height: 1.2; letter-spacing: -0.015em; margin-bottom: 0.35rem;
     }
     h3 { font-size: 0.95rem; font-weight: 650; margin-bottom: 0.55rem; }
+    h3.with-sub { display: flex; align-items: baseline; gap: 0.35rem; flex-wrap: wrap; }
+    h3.with-sub .muted { font-weight: 500; margin: 0; }
     .lede { color: var(--ink-muted); font-size: 1rem; max-width: 62ch; margin-top: 0.65rem; line-height: 1.5; }
     .lede.tight {
       font-size: 0.88rem; max-width: none; width: 100%; margin-top: 0.35rem; margin-bottom: 0; line-height: 1.45;
@@ -464,22 +466,23 @@
     .two-col.follow { margin-top: 0.7rem; }
     .chip-row.follow { margin-top: 0.4rem; }
     .tend-banner-meta .value.sm { font-size: 1.35rem; }
-    .thanks .slide-inner { align-items: center; text-align: center; }
-    .thanks h1 { max-width: 20ch; margin: 0 auto; }
-    .thanks .lede { margin: 0.75rem auto 0; text-align: center; }
+    .thanks .slide-inner { align-items: center; text-align: center; justify-content: flex-start; padding-top: 0.25rem; }
+    .thanks .eyebrow {
+      align-self: stretch;
+      text-align: left;
+      width: 100%;
+    }
+    .thanks h1 { max-width: 20ch; margin: 0 auto; font-size: clamp(1.65rem, 3vw, 2.35rem); }
+    .thanks .lede {
+      margin: 0.65rem auto 0;
+      text-align: center;
+      font-size: clamp(1.08rem, 1.85vw, 1.22rem);
+      line-height: 1.45;
+      max-width: 48ch;
+    }
     .thanks .grid { width: 100%; margin-top: 1.25rem; text-align: left; }
     .thanks .team { justify-content: center; margin-top: 1rem; }
     .thanks .footnote { text-align: center; margin-top: 0.85rem; }
-    .thanks .slide-inner { justify-content: flex-start; padding-top: 0.25rem; }
-    .thanks h1 { font-size: clamp(1.65rem, 3vw, 2.35rem); }
-    .thanks .lede { font-size: 0.92rem; margin-top: 0.5rem; }
-
-    .deliverables {
-      width: 100%;
-      margin-top: 1.1rem;
-      display: flex;
-      justify-content: center;
-    }
     .thanks .deliverables-card {
       padding: 0.45rem 0.65rem;
       margin-top: 0;
@@ -494,6 +497,17 @@
       color: var(--accent-2);
       letter-spacing: 0.06em;
       text-transform: uppercase;
+    }
+    .thanks table.data.deliverables-table {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .deliverables {
+      width: 100%;
+      margin-top: 1.1rem;
+      display: flex;
+      justify-content: center;
     }
     table.data.deliverables-table {
       font-size: 0.62rem;
@@ -1088,7 +1102,7 @@
     .path-step.blocked .tag { color: var(--warn); }
     .path-step.long .tag { color: var(--ink-muted); }
     .path-step.won .tag { color: var(--accent); }
-    .path-step strong {
+    .path-step > strong {
       display: block;
       font-size: 0.8rem;
       font-weight: 650;
@@ -1099,6 +1113,16 @@
       font-size: 0.68rem;
       color: var(--ink-muted);
       line-height: 1.35;
+    }
+    .path-step p.single-line {
+      white-space: nowrap;
+      font-size: clamp(0.58rem, 0.72vw, 0.66rem);
+      letter-spacing: -0.01em;
+    }
+    .path-step p.single-line strong {
+      display: inline;
+      color: var(--ink);
+      font-weight: 650;
     }
     .path-arrow {
       display: flex;
@@ -1263,27 +1287,27 @@
           <span class="chip accent">Text→SQL</span>
           <span class="chip accent">SQL→NoSQL</span>
           <span class="chip accent">NoSQL→Docs</span>
-          <span class="chip">LoRA v4 · Current</span>
+          <span class="chip">LoRA v4 · Live</span>
         </div>
 
         <div class="two-col opening-main">
           <div class="opening-cards">
             <div class="card">
-              <h3>Why this is hard</h3>
+              <h3>Why it matters</h3>
               <ul class="clean">
-                <li>Full fine-tunes are costly on research / student hardware</li>
-                <li>Zero-shot CodeGen-350M is weak on structured DB tasks</li>
-                <li>Aligned NL ↔ SQL ↔ NoSQL ↔ docs with <strong>execution proof</strong> is rare</li>
-                <li>IDEs need a deployable <strong>OpenAI-compatible</strong> endpoint</li>
+                <li>Full fine-tunes are <strong>cost and ops-heavy</strong> for small teams</li>
+                <li>Generic 350M code models <strong>miss</strong> schema-bound SQL and Mongo</li>
+                <li>Benchmarks rarely give <strong>one trusted row</strong> across NL · SQL · NoSQL · docs</li>
+                <li>AI IDEs talk to models — they don’t <strong>ground on your DDL</strong> or run queries</li>
               </ul>
             </div>
             <div class="card accent">
-              <h3>Our answer</h3>
+              <h3>What we shipped</h3>
               <ul class="clean">
-                <li>One frozen base + <strong>3 LoRA adapters</strong> (~40 MB each at v4)</li>
-                <li>Train &amp; eval on <strong>TEND</strong> (Spider + BIRD, exec-validated)</li>
-                <li>FastAPI intent → <code class="mono">set_adapter</code> on Cloud Run / HF</li>
-                <li>Desktop tool: RAG schema → generate → validate → execute</li>
+                <li><strong>PEFT at scale:</strong> one base, three hot-swappable adapters</li>
+                <li><strong>TEND:</strong> 9k+ gold rows where PostgreSQL and Mongo <strong>results match</strong></li>
+                <li><strong>Gateway:</strong> intent → <code class="mono">set_adapter</code> · scale-to-zero Cloud Run</li>
+                <li><strong>Reference client:</strong> RAG schema → generate → SELECT-only → execute</li>
               </ul>
             </div>
           </div>
@@ -1295,7 +1319,7 @@
   GW --> S2N["sql2nosql<br/>SQL → Mongo"]
   GW --> N2D["nosql2doc<br/>Mongo → docs"]</pre>
             </div>
-            <p class="hero-caption">~40 MB / adapter · PEFT hot-swap</p>
+            <p class="hero-caption">~40 MB per skill · no full-model redeploy</p>
           </div>
         </div>
 
@@ -1310,7 +1334,7 @@
             <span>Kishore Dwadasi</span>
             <span>Sivakrishna Andraju</span>
           </div>
-          <p class="footnote opening-meta">IIITH · PG Certification in AI &amp; Machine Learning · 8–9 August 2026</p>
+          <p class="footnote opening-meta">IIITH · PG Certification in AI &amp; Machine Learning · August 2026</p>
         </div>
       </div>
     </section>
@@ -1319,13 +1343,13 @@
     <section class="slide" data-title="Why TEND">
       <div class="slide-inner">
         <div class="eyebrow">Slide 2 · Dataset motivation</div>
-        <h2>Why we built TEND - To build labeled dataset for all three code generation tasks</h2>
-        <p class="lede tight">Spider &amp; BIRD stop at NL→SQL. We needed one execution-validated row for all three LoRA adapters — so we built and published TEND.</p>
+        <h2>Why TEND? One labeled dataset for all three code-generation tasks</h2>
+        <p class="lede tight">Spider and BIRD stop at NL→SQL. We built aligned question · SQL · Mongo · docs — kept only rows where <strong>execution agrees</strong> — and open-sourced it.</p>
 
         <div class="tend-banner">
           <div>
             <div class="acronym"><b>T</b>ranslation · <b>E</b>valuation · <b>N</b>atural language · <b>D</b>ocument (NoSQL)</div>
-            <p class="blurb">Companion dataset extending Spider and BIRD into aligned question · SQL · Mongo · docs — filtered by execution match.</p>
+            <p class="blurb">Execution is the label. No synthetic Mongo without a PostgreSQL vs Mongo result-set match.</p>
             <div class="chip-row follow">
               <span class="chip accent">Public on Hugging Face</span>
               <a class="chip accent" href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">care2achieve/tend ↗</a>
@@ -1345,26 +1369,26 @@
 
         <div class="two-col follow">
           <div class="card fill-h">
-            <h3>Gaps we hit</h3>
+            <h3>The gap</h3>
             <ul class="clean">
-              <li>Benchmarks stop at <strong>NL → SQL</strong> — no aligned Mongo or docs</li>
-              <li>Three adapters need the <strong>same gold row</strong> across all tasks</li>
-              <li>LLM-only synthetic Mongo is unreliable without execution filter</li>
+              <li>No public set with <strong>aligned</strong> SQL, Mongo, and documentation</li>
+              <li>Three LoRA heads need identical supervision — not three stitched pipelines</li>
+              <li>LLM-generated Mongo without exec check = <strong>pretty but wrong</strong></li>
             </ul>
           </div>
           <div class="card accent fill-h">
-            <h3>How we fixed it</h3>
+            <h3>Our pipeline</h3>
             <ul class="clean">
-              <li><strong>Deterministic first</strong> — rules → Python tool → Ollama fallback</li>
-              <li><strong>Execution is ground truth</strong> — PostgreSQL vs MongoDB must match</li>
-              <li><strong>One row, three tasks</strong> — question, SQL, Mongo, and docs together</li>
+              <li><strong>Cheap first:</strong> rules → converter tool → local LLM only when needed</li>
+              <li><strong>Gate on results:</strong> PG and Mongo outputs must match</li>
+              <li><strong>Ship once:</strong> one row trains Text2SQL, SQL2NoSQL, and NoSQL2Doc</li>
             </ul>
           </div>
         </div>
 
         <div class="cascade-strip">
           <h3>SQL → NoSQL conversion cascade</h3>
-          <p class="hint">Pass at any converter skips to the gate. Failures fall through; failed rows stay failed.</p>
+          <p class="hint">First converter that succeeds goes straight to the exec gate — no LLM salvage for bad SQL.</p>
           <div class="cascade-flow" role="list">
             <div class="node" role="listitem">
               <span class="n">SRC</span>
@@ -1420,7 +1444,7 @@
           <div class="cascade-legend">
             <span><em class="ok">Pass</em> from ① / ② / ③ → validation gate</span>
             <span><em class="fail">Fail</em> → next converter</span>
-            <span>BIRD yield ≪ Spider · no LLM rescues bad queries</span>
+            <span>Hard SQL fails closed · quality over volume</span>
           </div>
         </div>
       </div>
@@ -1428,10 +1452,10 @@
 
     <!-- 4 TRAINING & RESULTS -->
     <section class="slide" data-title="Training &amp; Results">
-      <div class="slide-inner wide">
-        <div class="eyebrow">Slide 3 · Training &amp; Results</div>
+      <div class="slide-inner">
+        <div class="eyebrow">Slide 3 · Proof it works</div>
         <h2>LoRA version comparison</h2>
-        <p class="lede tight">Each version is scored on the same frozen gold set (n=50). For Text2SQL and SQL2NoSQL, the model’s generated query is executed and its result set is compared to the ground-truth query’s result set — a match counts as correct (execution accuracy). For NoSQL2Doc, an LLM judge scores predicted documentation against gold on a 0–10 scale. Tasks are evaluated independently; predictions are never chained.</p>
+        <p class="lede tight">Same frozen benchmark (n=50). SQL tasks: <strong>execution accuracy</strong> (result sets must match). Docs: LLM judge 0–10. Each task scored alone — no chained inference.</p>
         <div class="grid grid-2 dense slide-body tight">
           <div class="card compact">
             <h3>Training conditions</h3>
@@ -1453,7 +1477,7 @@
             <p class="footnote flush">*v3 text2sql best @ ep2. v4 ~7h 34m CUDA.</p>
           </div>
           <div class="card compact">
-            <h3>Results</h3>
+            <h3 class="with-sub">Results <span class="muted">· execution accuracy · document judge score</span></h3>
             <table class="data compact">
               <thead>
                 <tr>
@@ -1471,10 +1495,10 @@
                 <tr><td class="hl"><strong>v4 current</strong></td><td class="num hl">60%</td><td class="num hl">88%</td><td class="num hl">7.8</td></tr>
               </tbody>
             </table>
-            <p class="footnote flush">Exec accuracy · Doc judge 0–10</p>
+            <p class="footnote flush">v4 vs baseline: +48 pp Text2SQL · +66 pp SQL2NoSQL · +7.7 doc score</p>
           </div>
         </div>
-        <div class="card compact fill">
+        <div class="card compact fill slide-body">
           <h3>Task scores by version</h3>
           <div class="chart-box tall"><canvas id="execChart"></canvas></div>
         </div>
@@ -1484,9 +1508,9 @@
     <!-- 5 DEPLOY -->
     <section class="slide" data-title="Deploy">
       <div class="slide-inner">
-        <div class="eyebrow">Slide 4 · Deployments</div>
-        <h2>Architecture & Deployments</h2>
-        <p class="lede tight">Publish LoRA v4 on Hugging Face → serve on Cloud Run → Cursor, desktop tool, and SDKs share one OpenAI-compatible <code class="mono">/v1</code> gateway.</p>
+        <div class="eyebrow">Slide 4 · Production path</div>
+        <h2>Hub → Cloud Run → any OpenAI client</h2>
+        <p class="lede tight">Weights on Hugging Face. One container pulls adapters at boot. Cursor, curl, and our desktop app hit the same <code class="mono">/v1/chat/completions</code> — intent picks the LoRA.</p>
 
         <div class="deploy-arch" role="img" aria-label="Deployment architecture from LoRA adapters to clients">
           <div class="deploy-tier">
@@ -1578,45 +1602,45 @@
       <div class="slide-inner">
         <div class="eyebrow">Slide 5 · The tool we built</div>
         <h2>Desktop AI SQL Assistant</h2>
-        <p class="lede tight">Tried Cursor → scoped a VS Code extension → shipped a desktop client that owns schema RAG, safety, and execute.</p>
+        <p class="lede tight">The model API was ready; the IDE wasn’t. We shipped a client that owns <strong>DDL retrieval, guardrails, and execution</strong> — the pattern any internal tool can copy.</p>
 
         <div class="path-strip" role="list">
           <div class="path-step blocked" role="listitem">
             <div class="tag">1 · Tried first</div>
             <strong>Cursor custom model</strong>
-            <p><code class="mono">/v1</code> works — but no API to inject table DDL into the prompt before generation.</p>
+            <p class="single-line">Custom URL works — <strong>no hook</strong> to inject schema before the model runs.</p>
           </div>
           <div class="path-arrow" aria-hidden="true">→</div>
           <div class="path-step long" role="listitem">
             <div class="tag">2 · Explored</div>
             <strong>VS Code extension</strong>
-            <p>Could own schema RAG + Chat UI — too long a build for the capstone timeline.</p>
+            <p>Right long-term home — scoped out for timeline.</p>
           </div>
           <div class="path-arrow" aria-hidden="true">→</div>
           <div class="path-step won" role="listitem">
             <div class="tag">3 · Shipped</div>
             <strong>Desktop AI SQL Assistant</strong>
-            <p>RAG schema → generate → validate SELECT → execute on PostgreSQL.</p>
+            <p>Top-K tables + FKs → generate → SELECT-only → run on PostgreSQL.</p>
           </div>
         </div>
 
         <div class="grid grid-2 dense slide-body tight match-cols">
           <div class="stack tight">
             <div class="card compact warn-edge">
-              <h3>Why Cursor alone wasn’t enough</h3>
+              <h3>Gap in “AI in the IDE”</h3>
               <ul class="clean">
-                <li>Custom model reaches our gateway, but <strong>prompt construction is opaque</strong></li>
-                <li>No way to <strong>inject retrieved DDL</strong> before generation</li>
-                <li>Without schema grounding, Text2SQL guesses table/column names</li>
+                <li>Model endpoint ≠ <strong>product</strong> — prompts and context are black-box</li>
+                <li>Text2SQL without DDL retrieval <strong>hallucinates</strong> tables and columns</li>
+                <li>Enterprise needs <strong>read-only execution</strong> and an audit trail</li>
               </ul>
             </div>
             <div class="card compact accent">
-              <h3>What the tool adds</h3>
+              <h3>What we prove here</h3>
               <ul class="clean">
-                <li><strong>Ask in English</strong> — get executable SQL, not a blank editor</li>
-                <li><strong>Schema RAG</strong> — retrieve top-K tables (+ FKs), inject only that DDL</li>
-                <li><strong>Closed loop</strong> — generate → SELECT-only validate → run → results</li>
-                <li><strong>Safety</strong> — blocks non-SELECT; log shows tables chosen</li>
+                <li><strong>Grounded generation</strong> — only retrieved schema hits the model</li>
+                <li><strong>Safe by default</strong> — non-SELECT blocked before run</li>
+                <li><strong>Verify in DB</strong> — same execution mindset as TEND training</li>
+                <li><strong>Same backend</strong> — Cloud Run <code class="mono">/v1</code> as Cursor would use</li>
               </ul>
             </div>
           </div>
@@ -1635,16 +1659,13 @@
         </div>
 
         <div class="card compact future-scope-bar">
-          <h3>Improvements &amp; future scope</h3>
+          <h3>Roadmap</h3>
           <ul class="future-scope-list">
-            <li><strong>VS Code extension</strong> — schema RAG + Chat UI on the same <code class="mono">/v1</code> gateway</li>
-            <li><strong>Execute-checked agent</strong> — NL→SQL→Mongo→docs with execution gates between steps</li>
-            <li><strong>Full TEND test metrics</strong> — report on the full ~1.6k split, not only gold-50</li>
-            <li><strong>CI eval gate</strong> — gold-50 execution smoke before every Cloud Run deploy</li>
-            <li><strong>Per-task decoding &amp; tool tabs</strong> — tuned beams; ship SQL→NoSQL and documentation flows</li>
-            <li><strong>Scale-up path</strong> — 1–2B code base + same LoRA recipe; API keys and quotas on Cloud Run</li>
+            <li><strong>Ship where developers live</strong> — VS Code extension reusing this gateway and RAG pattern</li>
+            <li><strong>Trust at deploy time</strong> — gold-50 execution smoke in CI before Cloud Run promote</li>
+            <li><strong>Scale quality &amp; model</strong> — full TEND test split reporting; optional 1–2B base + API keys / quotas</li>
           </ul>
-          <p class="future-scope-path"><strong>Today:</strong> Desktop tool + Cursor base URL + HF adapters &nbsp;→&nbsp; <strong>Next:</strong> VS Code extension &nbsp;→&nbsp; <strong>Then:</strong> execution-gated multi-step agent</p>
+          <p class="future-scope-path"><strong>Now:</strong> live API + desktop reference &nbsp;→&nbsp; <strong>Next:</strong> IDE extension + CI gate &nbsp;→&nbsp; <strong>Then:</strong> multi-step agent with exec checkpoints</p>
         </div>
       </div>
     </section>
@@ -1652,8 +1673,8 @@
     <!-- 7 THANKS -->
     <section class="slide title-slide thanks" data-title="Thank You">
       <div class="slide-inner">
-        <div class="eyebrow">Slide 6 · Thank you</div>
-        <h1>Thank you</h1>
+        <div class="eyebrow">Slide 6 · Close</div>
+        <h1>Thank you!</h1>
         <p class="lede">Questions welcome — dataset, LoRA, serving, RAG tool, or evaluation protocol.</p>
         <div class="grid grid-4">
           <div class="card soft stat"><span class="value">60%</span><span class="label">Text2SQL exec</span></div>
@@ -1718,7 +1739,7 @@
           <span>Sivakrishna Andraju</span>
         </div>
         <p class="footnote">
-          IIITH · PG Certificate in AI &amp; ML · Current model: <strong>LoRA v4</strong>
+          IIITH · PG Certificate in AI &amp; ML
         </p>
       </div>
     </section>

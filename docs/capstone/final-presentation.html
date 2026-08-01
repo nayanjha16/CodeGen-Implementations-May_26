@@ -773,7 +773,7 @@
     }
     .cascade-flow {
       display: flex;
-      align-items: stretch;
+      align-items: center;
       gap: 0;
     }
     .cascade-flow .node {
@@ -819,6 +819,8 @@
     }
     .cascade-flow .arrow.fail .lbl { color: var(--warn); }
     .cascade-flow .arrow.ok .lbl { color: var(--good); }
+    .cascade-flow .arrow.validate .chev { color: var(--accent); }
+    .cascade-flow .arrow.validate .lbl { color: var(--accent); }
     .cascade-flow .node .n {
       font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
       color: var(--accent); letter-spacing: 0.04em;
@@ -838,15 +840,16 @@
       border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line));
     }
     .cascade-stage {
-      flex: 2.6 1 0;
+      flex: 1.15 1 0;
       min-width: 0;
+      max-width: 11.5rem;
       border: 1px dashed color-mix(in srgb, var(--accent) 35%, var(--line));
       border-radius: 12px;
       background: color-mix(in srgb, var(--bg-soft) 55%, var(--bg-elev));
-      padding: 0.35rem 0.4rem 0.45rem;
+      padding: 0.35rem 0.45rem 0.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.2rem;
     }
     .cascade-stage-label {
       font-size: 0.62rem;
@@ -854,65 +857,34 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--accent);
-      padding: 0 0.15rem 0.05rem;
+      padding: 0 0.1rem 0.15rem;
+      text-align: center;
     }
-    .converter-row {
+    .converter-stack {
       display: flex;
+      flex-direction: column;
       align-items: stretch;
       gap: 0;
-      position: relative;
     }
-    .converter-col {
-      flex: 1 1 0;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.15rem;
-    }
-    .converter-col .pass-from {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.05rem;
+    .converter-stack .arrow.v { align-self: center; }
+    .converter-stack .node {
       width: 100%;
-      position: relative;
-      z-index: 1;
-    }
-    .converter-col .pass-tag {
-      font-family: var(--mono);
-      font-size: 0.58rem;
-      font-weight: 700;
-      color: var(--good);
-      letter-spacing: 0.03em;
-      line-height: 1;
-      background: color-mix(in srgb, var(--bg-elev) 88%, var(--good));
-      border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line));
-      border-radius: 999px;
-      padding: 0.12rem 0.4rem;
-    }
-    .converter-col .pass-stem {
-      width: 2px;
-      height: 10px;
-      background: var(--good);
-      border-radius: 1px;
-    }
-    .converter-col .node {
-      width: 100%;
-      flex: 1 1 auto;
       background: var(--bg-elev);
+      min-height: 3rem;
+      padding: 0.4rem 0.35rem;
     }
-    .pass-bus {
-      position: absolute;
-      left: 8%;
-      right: 0;
-      top: 0.55rem;
-      height: 2px;
-      background: var(--good);
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: 0;
+    .cascade-flow .arrow.v {
+      flex-direction: column;
+      padding: 0.12rem 0;
+      min-width: unset;
+      min-height: 1.35rem;
     }
+    .cascade-flow .arrow.v .chev {
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+    .cascade-flow .arrow.muted .chev { color: var(--ink-muted); }
+    .cascade-flow .arrow.muted .lbl { color: var(--ink-muted); }
     .cascade-legend {
       display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem;
       margin-top: 0.55rem; font-size: 0.7rem; color: var(--ink-muted);
@@ -920,15 +892,14 @@
     .cascade-legend em { font-style: normal; font-weight: 650; }
     .cascade-legend .ok { color: var(--good); }
     .cascade-legend .fail { color: var(--warn); }
+    .cascade-legend .validate { color: var(--accent); }
     @media (max-width: 900px) {
       .tend-banner { grid-template-columns: 1fr; }
       .tend-banner-meta { align-items: flex-start; text-align: left; }
-      .cascade-flow { flex-wrap: wrap; gap: 0.35rem; }
-      .cascade-flow .node,
-      .cascade-stage { flex: 1 1 100%; }
-      .cascade-flow .arrow { transform: rotate(90deg); padding: 0.15rem 0; }
-      .pass-bus,
-      .converter-col .pass-from { display: none; }
+      .cascade-flow { flex-wrap: wrap; gap: 0.35rem; justify-content: flex-start; }
+      .cascade-stage { max-width: none; flex: 1 1 100%; }
+      .cascade-flow > .node.gate,
+      .cascade-flow > .node.out { flex: 1 1 calc(50% - 0.5rem); }
     }
 
     /* Slide 5 — deploy architecture */
@@ -1388,53 +1359,43 @@
 
         <div class="cascade-strip">
           <h3>SQL → NoSQL conversion cascade</h3>
-          <p class="hint">First converter that succeeds goes straight to the exec gate — no LLM salvage for bad SQL.</p>
+          <p class="hint">Each converter emits a Mongo candidate → <strong>gate</strong> exec match (PG = Mongo). Only <strong>gate pass</strong> rows ship to Gold / HF.</p>
           <div class="cascade-flow" role="list">
             <div class="node" role="listitem">
               <span class="n">SRC</span>
               <strong>Spider / BIRD</strong>
               <span>NL + gold SQL</span>
             </div>
-            <div class="arrow" aria-hidden="true"><span class="chev">→</span></div>
+            <div class="arrow muted" aria-hidden="true"><span class="chev">→</span><span class="lbl">in</span></div>
             <div class="cascade-stage" role="group" aria-label="SQL to NoSQL converters">
-              <div class="cascade-stage-label">Converters — pass at any step skips to gate</div>
-              <div class="converter-row">
-                <div class="pass-bus" aria-hidden="true"></div>
-                <div class="converter-col">
-                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
-                  <div class="node" role="listitem">
-                    <span class="n">①</span>
-                    <strong>Rule converters</strong>
-                    <span>JOIN → $lookup</span>
-                  </div>
+              <div class="cascade-stage-label">Converters · try in order</div>
+              <div class="converter-stack">
+                <div class="node" role="listitem">
+                  <span class="n">①</span>
+                  <strong>Rule converters</strong>
+                  <span>JOIN → $lookup</span>
                 </div>
-                <div class="arrow fail" aria-hidden="true"><span class="chev">→</span><span class="lbl">fail</span></div>
-                <div class="converter-col">
-                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
-                  <div class="node" role="listitem">
-                    <span class="n">②</span>
-                    <strong>Python tool</strong>
-                    <span>sql-mongo-converter</span>
-                  </div>
+                <div class="arrow v fail" aria-hidden="true"><span class="chev">↓</span><span class="lbl">fail</span></div>
+                <div class="node" role="listitem">
+                  <span class="n">②</span>
+                  <strong>Python tool</strong>
+                  <span>sql-mongo-converter</span>
                 </div>
-                <div class="arrow fail" aria-hidden="true"><span class="chev">→</span><span class="lbl">fail</span></div>
-                <div class="converter-col">
-                  <div class="pass-from" aria-hidden="true"><span class="pass-tag">pass</span><span class="pass-stem"></span></div>
-                  <div class="node" role="listitem">
-                    <span class="n">③</span>
-                    <strong>Ollama fallback</strong>
-                    <span>Hard multi-table SQL</span>
-                  </div>
+                <div class="arrow v fail" aria-hidden="true"><span class="chev">↓</span><span class="lbl">fail</span></div>
+                <div class="node" role="listitem">
+                  <span class="n">③</span>
+                  <strong>Ollama fallback</strong>
+                  <span>Hard multi-table SQL</span>
                 </div>
               </div>
             </div>
-            <div class="arrow ok" aria-hidden="true"><span class="chev">→</span><span class="lbl">pass</span></div>
+            <div class="arrow validate" aria-hidden="true"><span class="chev">→</span><span class="lbl">validate</span></div>
             <div class="node gate" role="listitem">
               <span class="n">GATE</span>
               <strong>Exec match</strong>
               <span>PG = Mongo</span>
             </div>
-            <div class="arrow ok" aria-hidden="true"><span class="chev">→</span></div>
+            <div class="arrow ok" aria-hidden="true"><span class="chev">→</span><span class="lbl">pass</span></div>
             <div class="node out" role="listitem">
               <span class="n">OUT</span>
               <strong>Gold → HF</strong>
@@ -1442,9 +1403,9 @@
             </div>
           </div>
           <div class="cascade-legend">
-            <span><em class="ok">Pass</em> from ① / ② / ③ → validation gate</span>
-            <span><em class="fail">Fail</em> → next converter</span>
-            <span>Hard SQL fails closed · quality over volume</span>
+            <span><em class="fail">Fail</em> at converter → next step</span>
+            <span><em class="validate">Validate</em> — every candidate checked at gate</span>
+            <span><em class="ok">Pass</em> at gate → Gold on HF</span>
           </div>
         </div>
       </div>

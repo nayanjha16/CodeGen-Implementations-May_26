@@ -50,6 +50,8 @@ Pass@10 for text to python
 
 max_new_tokens=300, do_sample=True, temperature=0.7
 
+Custom dataset metrics:
+
 | **Metric**               | **Text → Python (Base)** | **Text → Python (Fine-Tuned)** | **Text → Java (Base)** | **Text → Java (Fine-Tuned)** | **Java → Python (Base)** | **Java → Python (Fine-Tuned)** | **Python → Java (Base)** | **Python → Java (Fine-Tuned)** |
 | :----------------------- | :----------------------: | :----------------------------: | :--------------------: | :--------------------------: | :----------------------: | :----------------------------: | :----------------------: | :----------------------------: |
 | **Dataset**              |      Custom Dataset      |         Custom Dataset         |     Custom Dataset     |        Custom Dataset        |      Custom Dataset      |         Custom Dataset         |      Custom Dataset      |         Custom Dataset         |
@@ -71,26 +73,30 @@ Key Improvements for Text → Python
 | **CodeBERT Similarity** | 0.6773 | **0.8516** | **+0.1743** |
 | **Composite Score** | 0.2945 | **0.6530** | **+0.3585** |
 
+Key Improvements for Text → Java
+| Metric | Base | Fine-Tuned | Improvement |
+| ----------------------- | -----: | ---------: | ---------------------------: |
+| **Pass@1** | 0.00% | **49.70%** | **+49.70 percentage points** |
+| **AST Similarity** | 0.5456 | **0.7384** | **+0.1928** |
+| **CodeBERT Similarity** | 0.6788 | **0.9485** | **+0.2697** |
+| **Composite Score** | 0.4202 | **0.8192** | **+0.3990** |
+
 Key Improvements for Java → Python
 | Metric | Base | Fine-Tuned | Improvement |
-| ----------------------- | -----: | ---------: | ----------: |
-| **Pass@1** | 0.90% | — | — |
+| ----------------------- | -----: | ---------: | ---------------------------: |
+| **Pass@1** | 0.90% | **65.97%** | **+65.07 percentage points** |
 | **AST Similarity** | 0.0455 | **0.6000** | **+0.5545** |
 | **CodeBERT Similarity** | 0.6186 | **0.9180** | **+0.2994** |
 | **Composite Score** | 0.2904 | **0.6824** | **+0.3920** |
 
-Improvement of Fine-Tuned Python → Java over Base Model
+Key Improvements for Python → Java
 | Metric | Base | Fine-Tuned | Improvement |
-| -------------------- | ---------: | ---------: | ------------: |
-| Pass@1 (%) | **0.00** | — | — |
-| Compilation Rate (%) | **1.81** | **91.87** | **+90.06 pp** |
-| CodeBERT Similarity | **0.6514** | **0.8809** | **+0.2295** |
-| AST Similarity | **0.5660** | **0.7487** | **+0.1827** |
-| BLEU Score | **0.0646** | **0.5319** | **+0.4673** |
-| ROUGE-1 | **0.1932** | **0.6620** | **+0.4688** |
-| ROUGE-2 | **0.0810** | **0.4809** | **+0.3999** |
-| ROUGE-L | **0.1330** | **0.6052** | **+0.4722** |
-| Composite Score | **0.4193** | **0.7297** | **+0.3104** |
+| ----------------------- | -----: | ---------: | ---------------------------: |
+| **Pass@1** | 0.00% | **55.72%** | **+55.72 percentage points** |
+| **Compilation Rate** | 1.81% | **94.28%** | **+92.47 percentage points** |
+| **AST Similarity** | 0.5660 | **0.7593** | **+0.1933** |
+| **CodeBERT Similarity** | 0.6514 | **0.9219** | **+0.2705** |
+| **Composite Score** | 0.4193 | **0.8074** | **+0.3881** |
 
 --------------------------------------------Text to Java----------------------------------------------------------------------
 

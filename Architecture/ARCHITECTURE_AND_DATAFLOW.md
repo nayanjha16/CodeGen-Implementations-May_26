@@ -1,19 +1,7 @@
-> **⚠️ DRAFT**
->
-> This diagram is under development and subject to change.
-
-# Table Of Contents
-
--   [Dataset Generation Pipeline](#dataset-generation-pipeline)
--   [Baseline Accuracy Computation](#baseline-accuracy-computation)
--   [Phase 1: NL -\> Java (PL1)](#phase-1-nl---java-pl1)
--   [Phase 2: Java (PL1) -\> C# (PL2)](#phase-2-java-pl1---c-pl2)
-
-------------------------------------------------------------------------
-
 # Architecture & Data Flow — NL → Java → C# Code Generation
 
 **Source notebook:** [nl-java-c-final-working.ipynb](nl-java-c-final-working.ipynb)
+**Reference package:** [codegen_pipeline/](codegen_pipeline/) (modular Python reimplementation; see Section 11)
 **Base model:** `unsloth/Qwen2.5-Coder-1.5B-Instruct-bnb-4bit` (4-bit quantized)
 **Technique:** Two-stage parameter-efficient fine-tuning (PEFT / LoRA)
 **Target hardware:** Single NVIDIA T4 GPU (~16 GB VRAM) — Kaggle / Google Colab
@@ -342,8 +330,8 @@ Saved into a **timestamped** run folder `CFG.SAVE_DIR/run_<timestamp>/`:
 | `training_configuration.json` | Hyperparameters + Stage 1 & Stage 2 evaluation metrics |
 
 Published to the Hugging Face Hub as two **merged FP16** repos:
-- Stage 1 → `CFG.HF_REPO` (`shibsankardhara2/Qwen2.5-Coder-1.5B-NL-Java`)
-- Stage 2 → `CFG.HF_REPO_STAGE2` (`shibsankardhara2/Qwen2.5-Coder-1.5B-Java-CSharp`)
+- Stage 1 → `CFG.HF_REPO` (`shibsankardhara2/Qwen2.5-Coder-1.5B-NL-Java_V5`)
+- Stage 2 → `CFG.HF_REPO_STAGE2` (`shibsankardhara2/Qwen2.5-Coder-1.5B-Java-CSharp_V5`)
 
 ---
 
@@ -358,3 +346,58 @@ Published to the Hugging Face Hub as two **merged FP16** repos:
 | **Version tolerance** | `build_sft_config` filters unknown kwargs; handles `tokenizer`→`processing_class` and `eval_strategy` renames |
 | **Config centralization** | Single immutable `CFG` dataclass; no scattered literals |
 | **Secret handling** | `get_hf_token()` resolves token from Kaggle secret → env var → Colab → interactive prompt |
+
+---
+
+## 11. Reference Implementation Package (`codegen_pipeline/`)
+
+A modular, production-style Python reimplementation of this same architecture lives in
+[codegen_pipeline/](codegen_pipeline/) (see its own [README](codegen_pipeline/README.md)). It
+mirrors every notebook component 1:1 as an importable module, orchestrated by a `main.py` CLI
+with `train` / `infer` / `evaluate` subcommands, instead of one linear notebook.
+
+| Package module | Notebook equivalent | Responsibility |
+|---|---|---|
+| `config/config.py` | Section 3 (`CFG`) | Single frozen `Config` dataclass — all hyperparameters/paths |
+| `utils/logger.py`, `utils/helpers.py` | Section 4 | Structured logging, seeding, GPU/memory helpers |
+| `utils/io_utils.py` | Sections 12, 20 | `get_hf_token`, JSON save/load |
+| `data/dataset.py` | Sections 5, 14 | `load_code_dataset`, `load_java_csharp_dataset`, `validate_dataset` |
+| `data/prompt_templates.py` | Sections 8, 15 | Shared training/inference prompt builders for both stages |
+| `data/preprocessing.py` | Sections 8, 15 | Cleaning/dedup/splitting + prompt-column construction |
+| `models/model_loader.py` | Sections 6–7, 16 | `load_base_model`, `configure_lora` (Unsloth 4-bit) |
+| `models/train_java_model.py` | Section 9 | Stage 1 `SFTTrainer` pipeline (`train_stage1`) |
+| `models/train_translation_model.py` | Section 17 | Stage 2 `SFTTrainer` pipeline (`train_stage2`) |
+| `inference/pipeline.py` | Sections 10, 18 | `CodeGenPipeline` — loads fine-tuned models only, exposes chained NL→Java→C# generation |
+| `evaluation/metrics.py`, `codebleu.py`, `compile_validation.py` | Section 11, 19 | BLEU/Exact Match, CodeBLEU/CodeBERTScore, Syntax/AST/Compilation Rate |
+| `evaluation/evaluate.py` | Sections 11, 19 | Orchestrates predictions + full metric report (`run_full_evaluation`) |
+| `main.py` | — (new) | CLI entry point: `python main.py train\|infer\|evaluate` |
+
+### CLI usage
+
+```bash
+cd codegen_pipeline
+python main.py train --stage both
+python main.py infer "write a function to check if a number is prime"
+python main.py evaluate
+```
+
+### Deliberate divergences from the notebook
+
+- **Single-dataset Stage 2 loading.** `data/dataset.py`'s `load_java_csharp_dataset()` no longer
+  tries XLCoST → CodeTransOcean → CodeXGLUE in sequence; it loads only
+  `google/code_x_glue_cc_code_to_code_trans` (CodeXGLUE-Java-CS) directly and raises on failure —
+  no silent fallback.
+- **Fully decoupled inference.** `inference/pipeline.py` only imports `models.model_loader` (never
+  `models.train_*`), so running `main.py infer` never pulls in training-only dependencies.
+- **Dual adapter persistence per stage.** Each stage's `SFTConfig.output_dir`
+  (`CFG.STAGE1_OUTPUT_DIR` / `CFG.STAGE2_OUTPUT_DIR`, under `./checkpoints/`) holds the raw Trainer
+  checkpoint, while `train_stage1()` / `train_stage2()` additionally save the final adapter +
+  tokenizer under `CFG.SAVE_DIR` (`./saved_models/stage1_nl2java_adapter`,
+  `./saved_models/stage2_java2csharp_adapter`) — there is no notebook-style timestamped
+  `training_configuration.json`; `evaluate.py` returns its report as a plain dict for the CLI to
+  print/redirect to a file.
+- **Evaluation sample sizes are explicit config fields**: `CFG.EVAL_SAMPLES = 100` (Stage 1),
+  `CFG.STAGE2_EVAL_SAMPLES = 50` (Stage 2), vs. inline literals in the notebook.
+- **CodeBLEU dataflow-excluded variant is Stage-1-only** (`compute_code_metrics` in
+  `evaluation/codebleu.py`); Stage 2's `evaluate_stage2_predictions` reports plain `CodeBLEU` only,
+  matching the notebook's six-metric Stage 2 report.

@@ -33,6 +33,8 @@ The main workflow is defined in the LangGraph pipeline in `codegen_agent.py` and
 
 The graph stores state in `state.py`, uses a request body model from `app.py`, and relies on external model/providers configured through `config.py`.
 
+![Workflow Graph](graph.png)
+
 ## Key Modules
 
 - `app.py` – FastAPI service entrypoint that exposes the `/router` endpoint

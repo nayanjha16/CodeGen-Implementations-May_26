@@ -46,57 +46,7 @@ for name, module in model.named_modules():
 
 model.print_trainable_parameters()
 
-# #msg = 'def add_two_numbers(a, b):\n    # This function adds two numbers and returns the result\n'
-# #msg = 'def add_two_numbers(a, b):\n    return '
-# #msg = '# write a python program to add 2 numbers using lambda'
-# #msg = '''write a python program to add 2 numbers using lambda function'''
-# #msg = '''write a python program to generate fibanacci series'''
-# #msg = "write java program to concatenate 2 strings"
-# msg = "write java program to concatenate 2 strings using lambda function"
-# #msg = "Write a python function to sort the array"
-# # tokenized_inputs = tokenizer.tokenize(msg)
-# # tokenized_inputs
-# inputs = tokenizer(msg, return_tensors='pt').to(device)
-# outputs = model.generate(**inputs,
-#                          max_new_tokens=300,
-#                          do_sample=False,
-#                          repetition_penalty=1.2,
-#                          eos_token_id=tokenizer.eos_token_id)#temperature=0.2
-# tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-# mbpp =  load_dataset("Muennighoff/mbpp", trust_remote_code=True)
-# java_ds = load_dataset("Nan-Do/instructional_code-search-net-java")
-# print(mbpp, java_ds)
-# #----------------------------------------------
-# mbpp_inst = mbpp['test'].map(lambda obj: {
-#     'language': 'python',
-#     'instruction': obj['text'],
-#     'response': obj['code']
-# }, remove_columns=mbpp['test'].column_names)
-
-# java_inst = java_ds['train'].select(range(1000)).map(lambda obj: {
-#     'language': 'java',
-#     'instruction': obj['INSTRUCTION'],
-#     'response': obj['RESPONSE']
-# }, remove_columns=java_ds['train'].column_names)
-
-# print(mbpp_inst, java_inst)
-# #----------------------------------------------------------------
-# combined_instr_ds = datasets.concatenate_datasets([mbpp_inst, java_inst])
-# print(combined_instr_ds)
-# #-----------------------------------------------------
-# def format_instruction_repsonse(obj):
-#     return {
-#         "text": f"""### Instruction
-# {obj['instruction']}
-
-# ### Response
-# {obj['response']}"""
-#     }
-
-# instr_train_ds = combined_instr_ds.map(format_instruction_repsonse, remove_columns=combined_instr_ds.column_names)
-
-translation_pairs_df = pd.read_csv('/content/java_python_translation_pairs_corrected.csv')
+translation_pairs_df = pd.read_csv('/content/java_python_translation_pairs_corrected_5.csv')
 display(translation_pairs_df.head())
 
 # Create a dataset for Java translation pairs

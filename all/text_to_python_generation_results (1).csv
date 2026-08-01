@@ -1,0 +1,90 @@
+qid,text,python_code_original,generated_python_code_first_attempt,passes_all_tests,ast_similarity_score,bleu_score,rouge1_score,rouge2_score,rougeL_score,codebert_similarity_score,translation_score
+602,Find the first repeated character in a given string.,"def first_repeated_char(str1):
+  for index,c in enumerate(str1):
+    if str1[:index+1].count(c) > 1:
+      return c 
+  return ""None""","def first_repeated_char(string):
+    for i in range(len(string)):
+        for j in range(i + 1, len(string)):
+            if string[i] == string[j]:
+                return string[i]
+    return None",False,0.6364,0.1824596530661635,0.4313725490196078,0.16326530612244897,0.39215686274509803,0.8663830757141113,0.5907040914264032
+603, get a lucid number smaller than or equal to n.,"def get_ludic(n):
+	ludics = []
+	for i in range(1, n + 1):
+		ludics.append(i)
+	index = 1
+	while(index != len(ludics)):
+		first_ludic = ludics[index]
+		remove_index = index + first_ludic
+		while(remove_index < len(ludics)):
+			ludics.remove(ludics[remove_index])
+			remove_index = remove_index + first_ludic - 1
+		index += 1
+	return ludics","def get_ludic(n):
+    ludic = [1]
+    for i in range(2, n+1):
+        if i not in ludic:
+            ludic.append(i)
+            for j in range(i*i, n+1, i):
+                if j in ludic:
+                    ludic.remove(j)
+    return ludic",False,0.4394,0.20090680882696604,0.42222222222222217,0.20454545454545453,0.37777777777777777,0.9469786286354065,0.5704993625212504
+604, reverse words in a given string.,"def reverse_words(s):
+        return ' '.join(reversed(s.split()))","def reverse_words(string):
+  return ' '.join(reversed(string.split()))",True,1.0,0.7522135016840221,0.7777777777777778,0.5,0.7777777777777778,0.9773039221763611,0.886722167374573
+605, check if the given integer is a prime number.,"def prime_num(num):
+  if num >=1:
+   for i in range(2, num//2):
+     if (num % i) == 0:
+                return False
+     else:
+                return True
+  else:
+          return False","def prime_num(num):
+  if num > 1:
+    for i in range(2, num):
+      if (num % i) == 0:
+        return False
+  else:
+    return True",False,0.803,0.7461504769138344,0.9166666666666666,0.8695652173913043,0.9166666666666666,0.9915856719017029,0.8950649603932113
+606, convert degrees to radians.,"import math
+def radian_degree(degree):
+ radian = degree*(math.pi/180)
+ return radian","def radian_degree(degree):
+  radian = (degree * 3.142 / 180)
+  return radian",False,1.0,0.5830150476655682,0.7500000000000001,0.6363636363636365,0.7500000000000001,0.8963935971260071,0.8413574455788411
+608,Find nth bell number.,"def bell_Number(n): 
+    bell = [[0 for i in range(n+1)] for j in range(n+1)] 
+    bell[0][0] = 1
+    for i in range(1, n+1):
+        bell[i][0] = bell[i-1][i-1]
+        for j in range(1, i+1): 
+            bell[i][j] = bell[i-1][j-1] + bell[i][j-1] 
+    return bell[n][0] ","def bell_Number(n):
+  if n == 1:
+    return 1
+  else:
+    return bell_Number(n-1) + bell_Number(n-2)",False,0.3636,0.024545299558459834,0.32911392405063294,0.2077922077922078,0.30379746835443044,0.8726074695587158,0.48763776734923475
+609,Find minimum possible value for the given periodic function.,"def floor_Min(A,B,N):
+    x = max(B - 1,N)
+    return (A*x) // B","def floor_Min(a, b, c):
+  return min(a, b, c)",False,0.7273,0.1417883035974551,0.6153846153846153,0.3333333333333333,0.6153846153846153,0.8680984973907471,0.6703511249593276
+610,Remove the k'th element from a given list.,"def remove_kth_element(list1, L):
+    return  list1[:L-1] + list1[L:]","def remove_kth_element(arr, k):
+    if k == 0:
+        return arr
+    else:
+        return arr[:k] + arr[k+1:]",False,0.6818,0.23005567239800093,0.4,0.21428571428571427,0.4,0.7190682888031006,0.555843754035171
+611, find the maximum of nth column from the given tuple list.,"def max_of_nth(test_list, N):
+  res = max([sub[N] for sub in test_list])
+  return (res) ","def max_of_nth(test_list, n):
+  res = max(test_list[i][n] for i in range(len(test_list)))
+  return res",True,0.9394,0.42866652223224644,0.7999999999999999,0.6315789473684211,0.7999999999999999,0.9515590667724609,0.8423412729620069
+614, find the cumulative sum of all the values that are present in the given tuple list.,"def cummulative_sum(test_list):
+  res = sum(map(sum, test_list))
+  return (res)","def cummulative_sum(arr):
+  result = 0
+  for i in arr:
+    result += sum(i)
+  return result",True,0.8636,0.2070242903657632,0.3571428571428571,0.15384615384615383,0.3571428571428571,0.7810301780700684,0.6069410133391222

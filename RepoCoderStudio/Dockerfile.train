@@ -1,0 +1,38 @@
+# RepoCoder Studio — one-off training job image.
+#
+# Builds the candidate corpus, validates it, builds the task dataset, and
+# LoRA-trains the student model, producing outputs/adapters/<final_adapter_name>/.
+# Not the inference image (see Dockerfile) — this one is run once via
+# `docker run --rm ...`, not served.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential default-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./requirements.txt
+COPY requirements-train.txt ./requirements-train.txt
+RUN pip install --no-cache-dir -r requirements-train.txt
+
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+# Runtime configuration resolves repositories beneath
+# REPOCODER_PROJECT_ROOT=/data. Keep the training/index image consistent with
+# the notebook and inference image so the documented build_repo_index override
+# works without a second manual repository copy.
+COPY repo_explorer_data/ /data/repo_explorer_data/
+COPY pyproject.toml ./pyproject.toml
+RUN pip install --no-cache-dir --no-deps .
+
+ENV REPOCODER_PROJECT_ROOT=/data
+ENV REPOCODER_ADAPTER_NAME=RepoCoderStudio_FastCorrected_LoRA_v1_0
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Default entrypoint runs LoRA training. To build the Stage 4 repository
+# index instead (same image, same /data volume), override the command:
+#   docker run --rm -v <host>:/data <image> python scripts/build_repo_index.py
+CMD ["python", "-m", "scripts.run_training_pipeline"]

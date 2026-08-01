@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RepoCoder Studio</title>
+  <link rel="stylesheet" href="/style.css?v=20260802">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">CAPSTONE DEMONSTRATION</p>
+      <h1>RepoCoder Studio</h1>
+      <p class="hero-copy">Fine-tuned bilingual code intelligence with repository-aware RAG, transparent evidence, and controlled four-arm comparison.</p>
+    </div>
+    <div id="capability-badges" class="capability-badges"></div>
+    <div id="health-banner" class="banner hidden"></div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="section-heading">
+        <div><p class="eyebrow">GUIDED DEMO</p><h2>Choose repository, task, and example</h2></div>
+        <span class="hint">The same catalogue powers the notebook UI</span>
+      </div>
+      <div class="control-grid three">
+        <div><label for="repository-select">Repository context</label><select id="repository-select"></select></div>
+        <div><label for="task-select">Task contract</label><select id="task-select"></select></div>
+        <div><label for="showcase-select">Preloaded example</label><select id="showcase-select"></select></div>
+      </div>
+      <p id="repository-description" class="description"></p>
+      <p id="showcase-description" class="description"></p>
+      <div id="source-path" class="source-path hidden"></div>
+      <div id="expected-sources" class="expected-sources"></div>
+    </section>
+
+    <section class="card">
+      <div class="control-grid three">
+        <div>
+          <label for="run-mode">Comparison mode</label>
+          <select id="run-mode">
+            <option value="full">Four arms: baseline/fine-tuned × no-RAG/RAG</option>
+            <option value="no_rag">Two arms: baseline vs fine-tuned, no RAG</option>
+            <option value="with_rag">Two arms: baseline vs fine-tuned, with RAG</option>
+          </select>
+        </div>
+        <div class="contract-note"><strong id="input-language">Input</strong><span>RAG-off examples remain available under Generic.</span></div>
+        <label class="retry-control" for="retry-invalid">
+          <input id="retry-invalid" type="checkbox" checked>
+          <span><strong>Retry invalid output once</strong><small>Visible, validation-guided, and UI-only</small></span>
+        </label>
+      </div>
+      <label for="input-text">Model input</label>
+      <textarea id="input-text" rows="12" spellcheck="false"></textarea>
+      <div class="run-row"><button id="run-button">Run controlled comparison</button><span id="run-progress">Ready</span></div>
+    </section>
+
+    <section id="sources-panel" class="card hidden">
+      <div class="section-heading">
+        <div><p class="eyebrow">RETRIEVAL TRACE</p><h2>Evidence and provenance</h2></div>
+        <div id="rag-decision" class="decision-pill"></div>
+      </div>
+      <div id="sources-list" class="sources-list"></div>
+    </section>
+
+    <section id="comparison-panel" class="card hidden">
+      <div class="section-heading">
+        <div><p class="eyebrow">STRUCTURAL COMPARISON</p><h2>What changed between arms?</h2></div>
+        <span class="hint">PASS means parse/compile/format validation—not functional correctness</span>
+      </div>
+      <div id="comparison-summary" class="comparison-summary"></div>
+    </section>
+
+    <section>
+      <div class="section-heading results-heading">
+        <div><p class="eyebrow">CONTROLLED ABLATION</p><h2>Generation results</h2></div>
+        <span class="hint">Each visible arm receives exactly the same input</span>
+      </div>
+      <div class="results-grid">
+        <article class="result-panel" data-arm="baseline_no_rag">
+          <div class="result-title"><div><span class="arm-tag">ARM 1</span><h3>Baseline · No RAG</h3></div><span id="baseline-no-rag-status" class="validation muted">Not run</span></div>
+          <div class="output-toolbar"><span id="baseline-no-rag-language" class="language-badge">OUTPUT</span><button class="tiny copy-output">Copy</button><button class="tiny download-output">Download</button><button class="tiny use-output">Use next</button></div>
+          <pre id="baseline-no-rag-output" class="code-output"><code></code></pre><details><summary>Raw model completion</summary><pre class="raw-output"></pre></details>
+        </article>
+        <article class="result-panel rag-arm" data-arm="baseline_with_rag">
+          <div class="result-title"><div><span class="arm-tag">ARM 2</span><h3>Baseline · With RAG</h3></div><span id="baseline-rag-status" class="validation muted">Not run</span></div>
+          <div class="output-toolbar"><span id="baseline-rag-language" class="language-badge">OUTPUT</span><button class="tiny copy-output">Copy</button><button class="tiny download-output">Download</button><button class="tiny use-output">Use next</button></div>
+          <pre id="baseline-rag-output" class="code-output"><code></code></pre><details><summary>Raw model completion</summary><pre class="raw-output"></pre></details>
+        </article>
+        <article class="result-panel" data-arm="finetuned_no_rag">
+          <div class="result-title"><div><span class="arm-tag">ARM 3</span><h3>Fine-tuned · No RAG</h3></div><span id="finetuned-no-rag-status" class="validation muted">Not run</span></div>
+          <div class="output-toolbar"><span id="finetuned-no-rag-language" class="language-badge">OUTPUT</span><button class="tiny copy-output">Copy</button><button class="tiny download-output">Download</button><button class="tiny use-output">Use next</button></div>
+          <pre id="finetuned-no-rag-output" class="code-output"><code></code></pre><details><summary>Raw model completion</summary><pre class="raw-output"></pre></details>
+        </article>
+        <article class="result-panel featured rag-arm" data-arm="finetuned_with_rag">
+          <div class="result-title"><div><span class="arm-tag">ARM 4</span><h3>Fine-tuned · With RAG</h3></div><span id="finetuned-rag-status" class="validation muted">Not run</span></div>
+          <div class="output-toolbar"><span id="finetuned-rag-language" class="language-badge">OUTPUT</span><button class="tiny copy-output">Copy</button><button class="tiny download-output">Download</button><button class="tiny use-output">Use next</button></div>
+          <pre id="finetuned-rag-output" class="code-output"><code></code></pre><details><summary>Raw model completion</summary><pre class="raw-output"></pre></details>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer>Syntax/format validation is non-executing. A validated retry is explicitly labelled. Functional correctness is reported separately by the isolated Docker evaluator.</footer>
+  <script src="/app.js?v=20260802"></script>
+</body>
+</html>

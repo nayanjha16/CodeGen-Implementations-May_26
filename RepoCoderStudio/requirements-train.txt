@@ -1,0 +1,23 @@
+-r requirements.txt
+
+datasets==2.21.0
+trl==0.10.1
+rapidfuzz  # edit-similarity scoring in src/realworld_rag_generation_eval.py (Stage 4/5 external benchmarks)
+bitsandbytes>=0.43,<0.46
+evaluate>=0.4,<0.5
+codebleu==0.7.0
+rouge-score>=0.1.2,<0.2
+sacrebleu>=2.4,<3
+nltk>=3.8,<4
+pytest>=8,<9
+
+# pandas, numpy, tree-sitter, tree-sitter-java, sentence-transformers are
+# already pulled in via -r requirements.txt (they're now needed at
+# inference time too -- Java indexing and the Stage 5 corpus index run in
+# the deployed service, not just offline). Only genuinely training-only
+# extras are listed here.
+
+# Stage 4 — dependency-graph visualization (offline only; not needed at
+# inference time, see scripts/build_repo_index.py)
+networkx
+matplotlib

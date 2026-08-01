@@ -1,0 +1,28 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+gradio==4.44.1
+torch>=2.2
+transformers==4.44.2
+peft==0.12.0
+accelerate==0.34.2
+sentencepiece
+protobuf>=3.20.2,<6
+
+# Stage 4/5 — repository-aware RAG (search-time only; index building
+# happens offline via scripts/build_repo_index.py)
+faiss-cpu>=1.8,<2
+sentence-transformers>=3.0,<4
+pandas==2.2.2
+numpy>=1.26,<3
+
+# Stage 4 — Java repository indexing (src/repo_explorer/step1_ast_parser.py's
+# JavaASTParser). Only the Python bindings are needed here, not a JDK/javac --
+# that's a corpus-validation-time concern (src/java_validator.py) that stays
+# in Dockerfile.train. Without these, Java files are skipped gracefully
+# (tree-sitter's own fallback), not a startup crash -- but Java indexing
+# won't actually happen in a deployed inference container without them.
+tree-sitter>=0.21,<0.24
+tree-sitter-java>=0.21,<0.24

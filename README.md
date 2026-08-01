@@ -1,17 +1,31 @@
 # CodeGen-Implementations-May_26
 
-create and activate venv:
-        
-        python -m venv venv
-        
-        .\venv\Scripts\Activate
+A simple Streamlit-based chatbot project for CodeGen implementations.
 
+## Setup
 
-install dependencies:
+### 1. Create and activate a virtual environment
 
-       pip install -r requirements.txt
+```bash
+python -m venv venv
+.\venv\Scripts\Activate
+```
 
+### 2. Install dependencies
 
-Run the app:
+```bash
+pip install -r requirements.txt
+```
 
-      python -m streamlit run .\codegen_chatbot.py
+### 3. Run the app
+
+```bash
+python -m streamlit run .\codegen_chatbot.py
+```
+
+## Notes
+
+- Make sure Python is installed on your system.
+- If you are using PowerShell, activate the virtual environment with the command shown above.
+- The app entry point is `codegen_chatbot.py`.
+

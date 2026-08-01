@@ -17,6 +17,9 @@ This folder contains all documentation needed to **present, defend, and demonstr
 | 5 | [Results & Analysis](05-results-and-analysis.md) | Baseline vs LoRA metrics, findings, limitations | Results slides |
 | 6 | [Tech Stack & Reproducibility](06-tech-stack-reproducibility.md) | Dependencies, config, hardware, MLflow | Appendix, demo setup |
 | 7 | [Presentation Guide](07-presentation-guide.md) | Slide outline and talking points | Live defense |
+| 8 | [Final Presentation Detailed](08-final-presentation-detailed.md) | Full speaker notes, Q&A depth, demo scripts | Presenters |
+| 9 | [**Reviewer Submission Guide**](09-reviewer-submission.md) | Team, datasets, every folder explained with file tables | **Capstone reviewers** |
+| — | [final-presentation.html](final-presentation.html) | Interactive slide deck | Live presentation |
 
 ---
 
@@ -36,11 +39,14 @@ This folder contains all documentation needed to **present, defend, and demonstr
 
 ## Recommended Reading Order
 
-1. **Executive Summary** — start here for a 5-minute overview
-2. **System Architecture** — use diagrams in slides or poster
-3. **Methodology** — explain how training, testing, and validation differ
-4. **Results & Analysis** — support claims with numbers
-5. **Presentation Guide** — rehearse slides and Q&A
+**For reviewers (submit this first):** [09-reviewer-submission.md](09-reviewer-submission.md)
+
+1. **Reviewer Submission Guide** — team, datasets, folder-by-folder map, results
+2. **Executive Summary** — 5-minute problem/goals overview
+3. **System Architecture** — diagrams for slides or poster
+4. **Methodology** — how training, testing, and validation differ
+5. **Results & Analysis** — support claims with numbers
+6. **final-presentation.html** — interactive deck used in defense
 
 ---
 

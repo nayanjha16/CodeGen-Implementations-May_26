@@ -2,17 +2,19 @@
 
 ## 👥 Group 6 – Contributors
 
-- **Dhruba Maiti**  
-  GitHub: [dhrubamaiti](https://github.com/dhrubamaiti)
+- **Taruni Swathi**  
+  GitHub: [ChTaruniSwathi](https://github.com/ChTaruniSwathi)
 
 - **Sattwik Ayyagari**  
   GitHub: [sattwikayyagari](https://github.com/sattwikayyagari)
 
-- **Taruni Swathi**  
-  GitHub: [ChTaruniSwathi](https://github.com/ChTaruniSwathi)
-
 - **Shib Sankar Dhara**  
   GitHub: [shibaditi](https://github.com/shibaditi)
+  
+- **Dhruba Maiti**  
+  GitHub: [dhrubamaiti](https://github.com/dhrubamaiti)
+
+
 
 
 ---

@@ -1,1 +1,1 @@
-"""Inference package: standalone NL -> Java -> C# generation pipeline."""
+"""Configuration package for code generation benchmarks."""

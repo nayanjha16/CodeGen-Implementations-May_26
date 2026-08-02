@@ -1,0 +1,363 @@
+17:00:39 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/manifests/config_snapshot_20260801_170039.json
+17:00:39 | INFO     | RepoCoderStudio.Main | Project storage initialized successfully.
+17:00:48 | INFO     | RepoCoderStudio.Main | [cache MISS] XLCoST not in cache — downloading from HuggingFace
+17:00:48 | INFO     | RepoCoderStudio.Main | Downloading XLCoST Python config...
+17:01:01 | INFO     | RepoCoderStudio.Main | Downloading XLCoST Java config...
+17:01:08 | INFO     | RepoCoderStudio.Main | Saving XLCoST to disk cache: /content/drive/MyDrive/RepoCoderStudio/datasets/cache
+17:01:09 | INFO     | RepoCoderStudio.Main | XLCoST saved to cache.
+17:01:09 | INFO     | RepoCoderStudio.Main | [cache MISS] CodeXGLUE not in cache — downloading from HuggingFace
+17:01:09 | INFO     | RepoCoderStudio.Main | Downloading CodeXGLUE Python config...
+17:03:29 | INFO     | RepoCoderStudio.Main | Downloading CodeXGLUE Java config...
+17:04:59 | WARNING  | RepoCoderStudio.Main | Primary CodeXGLUE dataset load failed for google/code_x_glue_ct_code_to_text/java: (ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')), '(Request ID: ef6bd70e-f503-4155-8071-68dd7874f2fe)'). Trying fallback code_search_net/java.
+17:09:47 | INFO     | RepoCoderStudio.Main | Saving CodeXGLUE to disk cache: /content/drive/MyDrive/RepoCoderStudio/datasets/cache
+17:10:04 | INFO     | RepoCoderStudio.Main | CodeXGLUE saved to cache.
+17:10:57 | INFO     | RepoCoderStudio.Main | [cache HIT] Loading XLCoST from disk: /content/drive/MyDrive/RepoCoderStudio/datasets/cache
+17:10:58 | INFO     | RepoCoderStudio.Main | [cache HIT] Loading CodeXGLUE from disk: /content/drive/MyDrive/RepoCoderStudio/datasets/cache
+17:10:59 | INFO     | RepoCoderStudio.Main | [test] Pools — NL: 119  Python: 60  Java: 60
+17:11:08 | INFO     | RepoCoderStudio.Main | Loading sentence-transformer: sentence-transformers/all-MiniLM-L6-v2
+17:11:22 | INFO     | RepoCoderStudio.Main | [test] Semantic triples formed: 97
+17:11:22 | INFO     | RepoCoderStudio.Main | [train] Pools — NL: 599  Python: 300  Java: 300
+17:11:50 | INFO     | RepoCoderStudio.Main | [train] Semantic triples formed: 547
+17:11:50 | INFO     | RepoCoderStudio.Main | [validation] Pools — NL: 120  Python: 60  Java: 60
+17:11:52 | INFO     | RepoCoderStudio.Main | [validation] Semantic triples formed: 93
+17:11:52 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/alignment_analytics.jsonl (3 rows)
+17:11:55 | INFO     | RepoCoderStudio.Main | [test] CodeXGLUE evidence — Python: 60  Java: 60
+17:11:56 | INFO     | RepoCoderStudio.Main | [test] CodeXGLUE accepted triples: 1 | below threshold: 59 | teacher queue py/java: 59/59
+17:11:56 | INFO     | RepoCoderStudio.Main | [train] CodeXGLUE evidence — Python: 300  Java: 300
+17:11:56 | INFO     | RepoCoderStudio.Main | [train] CodeXGLUE accepted triples: 14 | below threshold: 286 | teacher queue py/java: 286/286
+17:11:57 | INFO     | RepoCoderStudio.Main | [validation] CodeXGLUE evidence — Python: 60  Java: 60
+17:11:57 | INFO     | RepoCoderStudio.Main | [validation] CodeXGLUE accepted triples: 0 | below threshold: 60 | teacher queue py/java: 60/60
+17:11:57 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/teacher_queue/teacher_completion_queue.jsonl (810 rows)
+17:11:57 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/alignment_analytics.jsonl (6 rows)
+17:11:57 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/candidate_corpus/candidate_corpus.jsonl (616 rows)
+17:11:57 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/candidate_corpus/duplicate_report.jsonl (136 rows)
+17:12:30 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/alignment_analytics.jsonl (6 rows)
+17:12:30 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/teacher_queue/teacher_completion_queue.jsonl (810 rows)
+17:12:53 | INFO     | RepoCoderStudio.Main | Tree-sitter Java grammar loaded (v2 structural analysis active).
+17:13:01 | INFO     | RepoCoderStudio.Main | Tree-sitter Java grammar loaded (v2 structural analysis active).
+17:22:39 | INFO     | RepoCoderStudio.Main | Teacher model loaded: Qwen/Qwen2.5-Coder-7B-Instruct
+17:35:48 | INFO     | RepoCoderStudio.Main | Validated 100/616 rows
+17:52:01 | INFO     | RepoCoderStudio.Main | Validated 200/616 rows
+18:03:48 | INFO     | RepoCoderStudio.Main | Validated 300/616 rows
+18:18:32 | INFO     | RepoCoderStudio.Main | Validated 400/616 rows
+18:32:47 | INFO     | RepoCoderStudio.Main | Validated 500/616 rows
+18:51:13 | INFO     | RepoCoderStudio.Main | Validated 600/616 rows
+19:38:54 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/manifests/config_snapshot_20260801_193854.json
+19:38:54 | INFO     | RepoCoderStudio.Main | Project storage initialized successfully.
+19:39:21 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/approved_corpus/approved_corpus.jsonl (537 rows)
+19:39:29 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset.jsonl (3222 rows)
+19:39:30 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_distribution_v2_3.csv (18 rows)
+19:39:31 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_family_difficulty_v2_3.csv (18 rows)
+19:39:31 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_contribution_v2_3.csv (12 rows)
+19:39:32 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_summary_v2_3.json
+19:40:04 | INFO     | RepoCoderStudio.Main | Tree-sitter Java grammar loaded (v2 structural analysis active).
+19:40:06 | INFO     | RepoCoderStudio.Main | Official CodeBLEU metric available via codebleu package.
+19:40:10 | INFO     | RepoCoderStudio.Main | Tree-sitter Java grammar loaded (v2 structural analysis active).
+19:40:16 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+19:40:40 | INFO     | RepoCoderStudio.Main | [BASELINE] 1/120 | T1
+19:41:08 | INFO     | RepoCoderStudio.Main | Official CodeBLEU metric available via codebleu package.
+19:41:08 | INFO     | RepoCoderStudio.Main | [BASELINE] 2/120 | T1
+19:41:30 | INFO     | RepoCoderStudio.Main | [BASELINE] 3/120 | T1
+19:41:53 | INFO     | RepoCoderStudio.Main | [BASELINE] 4/120 | T1
+19:42:15 | INFO     | RepoCoderStudio.Main | [BASELINE] 5/120 | T1
+19:42:37 | INFO     | RepoCoderStudio.Main | [BASELINE] 6/120 | T1
+19:43:00 | INFO     | RepoCoderStudio.Main | [BASELINE] 7/120 | T1
+19:43:22 | INFO     | RepoCoderStudio.Main | [BASELINE] 8/120 | T1
+19:43:45 | INFO     | RepoCoderStudio.Main | [BASELINE] 9/120 | T1
+19:44:06 | INFO     | RepoCoderStudio.Main | [BASELINE] 10/120 | T1
+19:44:29 | INFO     | RepoCoderStudio.Main | [BASELINE] 11/120 | T1
+19:44:51 | INFO     | RepoCoderStudio.Main | [BASELINE] 12/120 | T1
+19:45:12 | INFO     | RepoCoderStudio.Main | [BASELINE] 13/120 | T1
+19:45:34 | INFO     | RepoCoderStudio.Main | [BASELINE] 14/120 | T1
+19:45:57 | INFO     | RepoCoderStudio.Main | [BASELINE] 15/120 | T1
+19:46:19 | INFO     | RepoCoderStudio.Main | [BASELINE] 16/120 | T1
+19:46:41 | INFO     | RepoCoderStudio.Main | [BASELINE] 17/120 | T1
+19:47:03 | INFO     | RepoCoderStudio.Main | [BASELINE] 18/120 | T1
+19:47:25 | INFO     | RepoCoderStudio.Main | [BASELINE] 19/120 | T1
+19:47:48 | INFO     | RepoCoderStudio.Main | [BASELINE] 20/120 | T1
+19:48:09 | INFO     | RepoCoderStudio.Main | [BASELINE] 21/120 | T2
+19:48:33 | INFO     | RepoCoderStudio.Main | [BASELINE] 22/120 | T2
+19:48:57 | INFO     | RepoCoderStudio.Main | [BASELINE] 23/120 | T2
+19:49:14 | INFO     | RepoCoderStudio.Main | [BASELINE] 24/120 | T2
+19:49:37 | INFO     | RepoCoderStudio.Main | [BASELINE] 25/120 | T2
+19:49:59 | INFO     | RepoCoderStudio.Main | [BASELINE] 26/120 | T2
+19:50:22 | INFO     | RepoCoderStudio.Main | [BASELINE] 27/120 | T2
+19:50:44 | INFO     | RepoCoderStudio.Main | [BASELINE] 28/120 | T2
+19:51:05 | INFO     | RepoCoderStudio.Main | [BASELINE] 29/120 | T2
+19:51:28 | INFO     | RepoCoderStudio.Main | [BASELINE] 30/120 | T2
+19:51:51 | INFO     | RepoCoderStudio.Main | [BASELINE] 31/120 | T2
+19:52:14 | INFO     | RepoCoderStudio.Main | [BASELINE] 32/120 | T2
+19:52:38 | INFO     | RepoCoderStudio.Main | [BASELINE] 33/120 | T2
+19:53:01 | INFO     | RepoCoderStudio.Main | [BASELINE] 34/120 | T2
+19:53:24 | INFO     | RepoCoderStudio.Main | [BASELINE] 35/120 | T2
+19:53:47 | INFO     | RepoCoderStudio.Main | [BASELINE] 36/120 | T2
+19:54:11 | INFO     | RepoCoderStudio.Main | [BASELINE] 37/120 | T2
+19:54:33 | INFO     | RepoCoderStudio.Main | [BASELINE] 38/120 | T2
+19:54:57 | INFO     | RepoCoderStudio.Main | [BASELINE] 39/120 | T2
+19:55:19 | INFO     | RepoCoderStudio.Main | [BASELINE] 40/120 | T2
+19:55:43 | INFO     | RepoCoderStudio.Main | [BASELINE] 41/120 | T3
+19:56:06 | INFO     | RepoCoderStudio.Main | [BASELINE] 42/120 | T3
+19:56:24 | INFO     | RepoCoderStudio.Main | [BASELINE] 43/120 | T3
+19:56:47 | INFO     | RepoCoderStudio.Main | [BASELINE] 44/120 | T3
+19:57:10 | INFO     | RepoCoderStudio.Main | [BASELINE] 45/120 | T3
+19:57:32 | INFO     | RepoCoderStudio.Main | [BASELINE] 46/120 | T3
+19:57:54 | INFO     | RepoCoderStudio.Main | [BASELINE] 47/120 | T3
+19:58:17 | INFO     | RepoCoderStudio.Main | [BASELINE] 48/120 | T3
+19:58:39 | INFO     | RepoCoderStudio.Main | [BASELINE] 49/120 | T3
+19:59:02 | INFO     | RepoCoderStudio.Main | [BASELINE] 50/120 | T3
+19:59:26 | INFO     | RepoCoderStudio.Main | [BASELINE] 51/120 | T3
+19:59:45 | INFO     | RepoCoderStudio.Main | [BASELINE] 52/120 | T3
+20:00:07 | INFO     | RepoCoderStudio.Main | [BASELINE] 53/120 | T3
+20:00:29 | INFO     | RepoCoderStudio.Main | [BASELINE] 54/120 | T3
+20:00:46 | INFO     | RepoCoderStudio.Main | [BASELINE] 55/120 | T3
+20:01:06 | INFO     | RepoCoderStudio.Main | [BASELINE] 56/120 | T3
+20:01:28 | INFO     | RepoCoderStudio.Main | [BASELINE] 57/120 | T3
+20:01:51 | INFO     | RepoCoderStudio.Main | [BASELINE] 58/120 | T3
+20:02:09 | INFO     | RepoCoderStudio.Main | [BASELINE] 59/120 | T3
+20:02:33 | INFO     | RepoCoderStudio.Main | [BASELINE] 60/120 | T3
+20:02:53 | INFO     | RepoCoderStudio.Main | [BASELINE] 61/120 | T4
+20:03:16 | INFO     | RepoCoderStudio.Main | [BASELINE] 62/120 | T4
+20:03:37 | INFO     | RepoCoderStudio.Main | [BASELINE] 63/120 | T4
+20:04:00 | INFO     | RepoCoderStudio.Main | [BASELINE] 64/120 | T4
+20:04:22 | INFO     | RepoCoderStudio.Main | [BASELINE] 65/120 | T4
+20:04:45 | INFO     | RepoCoderStudio.Main | [BASELINE] 66/120 | T4
+20:05:07 | INFO     | RepoCoderStudio.Main | [BASELINE] 67/120 | T4
+20:05:29 | INFO     | RepoCoderStudio.Main | [BASELINE] 68/120 | T4
+20:05:51 | INFO     | RepoCoderStudio.Main | [BASELINE] 69/120 | T4
+20:06:13 | INFO     | RepoCoderStudio.Main | [BASELINE] 70/120 | T4
+20:06:36 | INFO     | RepoCoderStudio.Main | [BASELINE] 71/120 | T4
+20:06:48 | INFO     | RepoCoderStudio.Main | [BASELINE] 72/120 | T4
+20:07:10 | INFO     | RepoCoderStudio.Main | [BASELINE] 73/120 | T4
+20:07:32 | INFO     | RepoCoderStudio.Main | [BASELINE] 74/120 | T4
+20:07:53 | INFO     | RepoCoderStudio.Main | [BASELINE] 75/120 | T4
+20:08:15 | INFO     | RepoCoderStudio.Main | [BASELINE] 76/120 | T4
+20:08:26 | INFO     | RepoCoderStudio.Main | [BASELINE] 77/120 | T4
+20:08:48 | INFO     | RepoCoderStudio.Main | [BASELINE] 78/120 | T4
+20:09:03 | INFO     | RepoCoderStudio.Main | [BASELINE] 79/120 | T4
+20:09:25 | INFO     | RepoCoderStudio.Main | [BASELINE] 80/120 | T4
+20:09:47 | INFO     | RepoCoderStudio.Main | [BASELINE] 81/120 | T5
+20:10:05 | INFO     | RepoCoderStudio.Main | [BASELINE] 82/120 | T5
+20:10:15 | INFO     | RepoCoderStudio.Main | [BASELINE] 83/120 | T5
+20:10:24 | INFO     | RepoCoderStudio.Main | [BASELINE] 84/120 | T5
+20:10:33 | INFO     | RepoCoderStudio.Main | [BASELINE] 85/120 | T5
+20:10:43 | INFO     | RepoCoderStudio.Main | [BASELINE] 86/120 | T5
+20:10:52 | INFO     | RepoCoderStudio.Main | [BASELINE] 87/120 | T5
+20:11:01 | INFO     | RepoCoderStudio.Main | [BASELINE] 88/120 | T5
+20:11:11 | INFO     | RepoCoderStudio.Main | [BASELINE] 89/120 | T5
+20:11:20 | INFO     | RepoCoderStudio.Main | [BASELINE] 90/120 | T5
+20:11:29 | INFO     | RepoCoderStudio.Main | [BASELINE] 91/120 | T5
+20:11:39 | INFO     | RepoCoderStudio.Main | [BASELINE] 92/120 | T5
+20:11:48 | INFO     | RepoCoderStudio.Main | [BASELINE] 93/120 | T5
+20:11:57 | INFO     | RepoCoderStudio.Main | [BASELINE] 94/120 | T5
+20:12:06 | INFO     | RepoCoderStudio.Main | [BASELINE] 95/120 | T5
+20:12:13 | INFO     | RepoCoderStudio.Main | [BASELINE] 96/120 | T5
+20:12:23 | INFO     | RepoCoderStudio.Main | [BASELINE] 97/120 | T5
+20:12:32 | INFO     | RepoCoderStudio.Main | [BASELINE] 98/120 | T5
+20:12:41 | INFO     | RepoCoderStudio.Main | [BASELINE] 99/120 | T5
+20:12:50 | INFO     | RepoCoderStudio.Main | [BASELINE] 100/120 | T5
+20:13:00 | INFO     | RepoCoderStudio.Main | [BASELINE] 101/120 | T6
+20:13:09 | INFO     | RepoCoderStudio.Main | [BASELINE] 102/120 | T6
+20:13:18 | INFO     | RepoCoderStudio.Main | [BASELINE] 103/120 | T6
+20:13:28 | INFO     | RepoCoderStudio.Main | [BASELINE] 104/120 | T6
+20:13:36 | INFO     | RepoCoderStudio.Main | [BASELINE] 105/120 | T6
+20:13:46 | INFO     | RepoCoderStudio.Main | [BASELINE] 106/120 | T6
+20:13:55 | INFO     | RepoCoderStudio.Main | [BASELINE] 107/120 | T6
+20:14:04 | INFO     | RepoCoderStudio.Main | [BASELINE] 108/120 | T6
+20:14:14 | INFO     | RepoCoderStudio.Main | [BASELINE] 109/120 | T6
+20:14:14 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+20:14:23 | INFO     | RepoCoderStudio.Main | [BASELINE] 110/120 | T6
+20:14:32 | INFO     | RepoCoderStudio.Main | [BASELINE] 111/120 | T6
+20:14:42 | INFO     | RepoCoderStudio.Main | [BASELINE] 112/120 | T6
+20:14:50 | INFO     | RepoCoderStudio.Main | [BASELINE] 113/120 | T6
+20:15:00 | INFO     | RepoCoderStudio.Main | [BASELINE] 114/120 | T6
+20:15:10 | INFO     | RepoCoderStudio.Main | [BASELINE] 115/120 | T6
+20:15:18 | INFO     | RepoCoderStudio.Main | [BASELINE] 116/120 | T6
+20:15:28 | INFO     | RepoCoderStudio.Main | [BASELINE] 117/120 | T6
+20:15:38 | INFO     | RepoCoderStudio.Main | [BASELINE] 118/120 | T6
+20:15:46 | INFO     | RepoCoderStudio.Main | [BASELINE] 119/120 | T6
+20:15:56 | INFO     | RepoCoderStudio.Main | [BASELINE] 120/120 | T6
+20:16:05 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/baseline_prediction_logs.jsonl (120 rows)
+20:16:05 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/baseline_metric_rows.jsonl (120 rows)
+20:16:52 | INFO     | RepoCoderStudio.Main | Loaded model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+20:16:57 | INFO     | RepoCoderStudio.Main | No checkpoint found. Training will start fresh.
+20:38:33 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset.jsonl (3222 rows)
+20:38:57 | INFO     | RepoCoderStudio.Main | Tree-sitter Java grammar loaded (v2 structural analysis active).
+20:38:58 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+20:39:01 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_FastCorrected_LoRA_v1_0
+20:39:02 | INFO     | RepoCoderStudio.Main | [FINETUNED] 1/120 | T1
+20:39:06 | INFO     | RepoCoderStudio.Main | Official CodeBLEU metric available via codebleu package.
+20:39:06 | INFO     | RepoCoderStudio.Main | [FINETUNED] 2/120 | T1
+20:39:15 | INFO     | RepoCoderStudio.Main | [FINETUNED] 3/120 | T1
+20:39:21 | INFO     | RepoCoderStudio.Main | [FINETUNED] 4/120 | T1
+20:39:32 | INFO     | RepoCoderStudio.Main | [FINETUNED] 5/120 | T1
+20:39:40 | INFO     | RepoCoderStudio.Main | [FINETUNED] 6/120 | T1
+20:39:44 | INFO     | RepoCoderStudio.Main | [FINETUNED] 7/120 | T1
+20:39:54 | INFO     | RepoCoderStudio.Main | [FINETUNED] 8/120 | T1
+20:40:00 | INFO     | RepoCoderStudio.Main | [FINETUNED] 9/120 | T1
+20:40:14 | INFO     | RepoCoderStudio.Main | [FINETUNED] 10/120 | T1
+20:40:47 | INFO     | RepoCoderStudio.Main | [FINETUNED] 11/120 | T1
+20:40:55 | INFO     | RepoCoderStudio.Main | [FINETUNED] 12/120 | T1
+20:41:03 | INFO     | RepoCoderStudio.Main | [FINETUNED] 13/120 | T1
+20:41:22 | INFO     | RepoCoderStudio.Main | [FINETUNED] 14/120 | T1
+20:41:34 | INFO     | RepoCoderStudio.Main | [FINETUNED] 15/120 | T1
+20:41:45 | INFO     | RepoCoderStudio.Main | [FINETUNED] 16/120 | T1
+20:42:01 | INFO     | RepoCoderStudio.Main | [FINETUNED] 17/120 | T1
+20:42:11 | INFO     | RepoCoderStudio.Main | [FINETUNED] 18/120 | T1
+20:42:34 | INFO     | RepoCoderStudio.Main | [FINETUNED] 19/120 | T1
+20:42:53 | INFO     | RepoCoderStudio.Main | [FINETUNED] 20/120 | T1
+20:43:01 | INFO     | RepoCoderStudio.Main | [FINETUNED] 21/120 | T2
+20:43:18 | INFO     | RepoCoderStudio.Main | [FINETUNED] 22/120 | T2
+20:43:38 | INFO     | RepoCoderStudio.Main | [FINETUNED] 23/120 | T2
+20:43:57 | INFO     | RepoCoderStudio.Main | [FINETUNED] 24/120 | T2
+20:44:19 | INFO     | RepoCoderStudio.Main | [FINETUNED] 25/120 | T2
+20:44:38 | INFO     | RepoCoderStudio.Main | [FINETUNED] 26/120 | T2
+20:44:56 | INFO     | RepoCoderStudio.Main | [FINETUNED] 27/120 | T2
+20:45:05 | INFO     | RepoCoderStudio.Main | [FINETUNED] 28/120 | T2
+20:45:22 | INFO     | RepoCoderStudio.Main | [FINETUNED] 29/120 | T2
+20:45:31 | INFO     | RepoCoderStudio.Main | [FINETUNED] 30/120 | T2
+20:45:46 | INFO     | RepoCoderStudio.Main | [FINETUNED] 31/120 | T2
+20:46:01 | INFO     | RepoCoderStudio.Main | [FINETUNED] 32/120 | T2
+20:46:14 | INFO     | RepoCoderStudio.Main | [FINETUNED] 33/120 | T2
+20:46:35 | INFO     | RepoCoderStudio.Main | [FINETUNED] 34/120 | T2
+20:47:15 | INFO     | RepoCoderStudio.Main | [FINETUNED] 35/120 | T2
+20:47:23 | INFO     | RepoCoderStudio.Main | [FINETUNED] 36/120 | T2
+20:47:31 | INFO     | RepoCoderStudio.Main | [FINETUNED] 37/120 | T2
+20:47:49 | INFO     | RepoCoderStudio.Main | [FINETUNED] 38/120 | T2
+20:48:17 | INFO     | RepoCoderStudio.Main | [FINETUNED] 39/120 | T2
+20:48:24 | INFO     | RepoCoderStudio.Main | [FINETUNED] 40/120 | T2
+20:48:38 | INFO     | RepoCoderStudio.Main | [FINETUNED] 41/120 | T3
+20:48:48 | INFO     | RepoCoderStudio.Main | [FINETUNED] 42/120 | T3
+20:48:54 | INFO     | RepoCoderStudio.Main | [FINETUNED] 43/120 | T3
+20:49:02 | INFO     | RepoCoderStudio.Main | [FINETUNED] 44/120 | T3
+20:49:12 | INFO     | RepoCoderStudio.Main | [FINETUNED] 45/120 | T3
+20:49:25 | INFO     | RepoCoderStudio.Main | [FINETUNED] 46/120 | T3
+20:49:37 | INFO     | RepoCoderStudio.Main | [FINETUNED] 47/120 | T3
+20:49:59 | INFO     | RepoCoderStudio.Main | [FINETUNED] 48/120 | T3
+20:50:21 | INFO     | RepoCoderStudio.Main | [FINETUNED] 49/120 | T3
+20:50:31 | INFO     | RepoCoderStudio.Main | [FINETUNED] 50/120 | T3
+20:50:51 | INFO     | RepoCoderStudio.Main | [FINETUNED] 51/120 | T3
+20:51:02 | INFO     | RepoCoderStudio.Main | [FINETUNED] 52/120 | T3
+20:51:15 | INFO     | RepoCoderStudio.Main | [FINETUNED] 53/120 | T3
+20:51:28 | INFO     | RepoCoderStudio.Main | [FINETUNED] 54/120 | T3
+20:51:40 | INFO     | RepoCoderStudio.Main | [FINETUNED] 55/120 | T3
+20:51:54 | INFO     | RepoCoderStudio.Main | [FINETUNED] 56/120 | T3
+20:52:08 | INFO     | RepoCoderStudio.Main | [FINETUNED] 57/120 | T3
+20:52:35 | INFO     | RepoCoderStudio.Main | [FINETUNED] 58/120 | T3
+20:52:46 | INFO     | RepoCoderStudio.Main | [FINETUNED] 59/120 | T3
+20:52:55 | INFO     | RepoCoderStudio.Main | [FINETUNED] 60/120 | T3
+20:53:06 | INFO     | RepoCoderStudio.Main | [FINETUNED] 61/120 | T4
+20:53:48 | INFO     | RepoCoderStudio.Main | [FINETUNED] 62/120 | T4
+20:54:15 | INFO     | RepoCoderStudio.Main | [FINETUNED] 63/120 | T4
+20:54:22 | INFO     | RepoCoderStudio.Main | [FINETUNED] 64/120 | T4
+20:54:33 | INFO     | RepoCoderStudio.Main | [FINETUNED] 65/120 | T4
+20:54:43 | INFO     | RepoCoderStudio.Main | [FINETUNED] 66/120 | T4
+20:54:57 | INFO     | RepoCoderStudio.Main | [FINETUNED] 67/120 | T4
+20:55:06 | INFO     | RepoCoderStudio.Main | [FINETUNED] 68/120 | T4
+20:55:17 | INFO     | RepoCoderStudio.Main | [FINETUNED] 69/120 | T4
+20:55:28 | INFO     | RepoCoderStudio.Main | [FINETUNED] 70/120 | T4
+20:55:37 | INFO     | RepoCoderStudio.Main | [FINETUNED] 71/120 | T4
+20:55:44 | INFO     | RepoCoderStudio.Main | [FINETUNED] 72/120 | T4
+20:56:00 | INFO     | RepoCoderStudio.Main | [FINETUNED] 73/120 | T4
+20:56:09 | INFO     | RepoCoderStudio.Main | [FINETUNED] 74/120 | T4
+20:56:16 | INFO     | RepoCoderStudio.Main | [FINETUNED] 75/120 | T4
+20:56:24 | INFO     | RepoCoderStudio.Main | [FINETUNED] 76/120 | T4
+20:56:31 | INFO     | RepoCoderStudio.Main | [FINETUNED] 77/120 | T4
+20:56:40 | INFO     | RepoCoderStudio.Main | [FINETUNED] 78/120 | T4
+20:56:51 | INFO     | RepoCoderStudio.Main | [FINETUNED] 79/120 | T4
+20:56:59 | INFO     | RepoCoderStudio.Main | [FINETUNED] 80/120 | T4
+20:57:08 | INFO     | RepoCoderStudio.Main | [FINETUNED] 81/120 | T5
+20:57:20 | INFO     | RepoCoderStudio.Main | [FINETUNED] 82/120 | T5
+20:57:28 | INFO     | RepoCoderStudio.Main | [FINETUNED] 83/120 | T5
+20:57:41 | INFO     | RepoCoderStudio.Main | [FINETUNED] 84/120 | T5
+20:57:45 | INFO     | RepoCoderStudio.Main | [FINETUNED] 85/120 | T5
+20:57:51 | INFO     | RepoCoderStudio.Main | [FINETUNED] 86/120 | T5
+20:57:56 | INFO     | RepoCoderStudio.Main | [FINETUNED] 87/120 | T5
+20:58:08 | INFO     | RepoCoderStudio.Main | [FINETUNED] 88/120 | T5
+20:58:14 | INFO     | RepoCoderStudio.Main | [FINETUNED] 89/120 | T5
+20:58:18 | INFO     | RepoCoderStudio.Main | [FINETUNED] 90/120 | T5
+20:58:25 | INFO     | RepoCoderStudio.Main | [FINETUNED] 91/120 | T5
+20:58:30 | INFO     | RepoCoderStudio.Main | [FINETUNED] 92/120 | T5
+20:58:35 | INFO     | RepoCoderStudio.Main | [FINETUNED] 93/120 | T5
+20:58:47 | INFO     | RepoCoderStudio.Main | [FINETUNED] 94/120 | T5
+20:58:56 | INFO     | RepoCoderStudio.Main | [FINETUNED] 95/120 | T5
+20:58:58 | INFO     | RepoCoderStudio.Main | [FINETUNED] 96/120 | T5
+20:59:01 | INFO     | RepoCoderStudio.Main | [FINETUNED] 97/120 | T5
+20:59:07 | INFO     | RepoCoderStudio.Main | [FINETUNED] 98/120 | T5
+20:59:16 | INFO     | RepoCoderStudio.Main | [FINETUNED] 99/120 | T5
+20:59:17 | INFO     | RepoCoderStudio.Main | [FINETUNED] 100/120 | T5
+20:59:19 | INFO     | RepoCoderStudio.Main | [FINETUNED] 101/120 | T6
+20:59:28 | INFO     | RepoCoderStudio.Main | [FINETUNED] 102/120 | T6
+20:59:33 | INFO     | RepoCoderStudio.Main | [FINETUNED] 103/120 | T6
+20:59:40 | INFO     | RepoCoderStudio.Main | [FINETUNED] 104/120 | T6
+20:59:49 | INFO     | RepoCoderStudio.Main | [FINETUNED] 105/120 | T6
+20:59:56 | INFO     | RepoCoderStudio.Main | [FINETUNED] 106/120 | T6
+20:59:58 | INFO     | RepoCoderStudio.Main | [FINETUNED] 107/120 | T6
+21:00:07 | INFO     | RepoCoderStudio.Main | [FINETUNED] 108/120 | T6
+21:00:17 | INFO     | RepoCoderStudio.Main | [FINETUNED] 109/120 | T6
+21:00:17 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+21:00:35 | INFO     | RepoCoderStudio.Main | [FINETUNED] 110/120 | T6
+21:00:38 | INFO     | RepoCoderStudio.Main | [FINETUNED] 111/120 | T6
+21:00:40 | INFO     | RepoCoderStudio.Main | [FINETUNED] 112/120 | T6
+21:00:46 | INFO     | RepoCoderStudio.Main | [FINETUNED] 113/120 | T6
+21:00:52 | INFO     | RepoCoderStudio.Main | [FINETUNED] 114/120 | T6
+21:00:56 | INFO     | RepoCoderStudio.Main | [FINETUNED] 115/120 | T6
+21:01:05 | INFO     | RepoCoderStudio.Main | [FINETUNED] 116/120 | T6
+21:01:12 | INFO     | RepoCoderStudio.Main | [FINETUNED] 117/120 | T6
+21:01:14 | INFO     | RepoCoderStudio.Main | [FINETUNED] 118/120 | T6
+21:01:20 | INFO     | RepoCoderStudio.Main | [FINETUNED] 119/120 | T6
+21:01:37 | INFO     | RepoCoderStudio.Main | [FINETUNED] 120/120 | T6
+21:01:54 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/finetuned_prediction_logs.jsonl (120 rows)
+21:01:54 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/finetuned_metric_rows.jsonl (120 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/baseline_vs_finetuned_comparison.csv (6 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T1.csv (14 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T2.csv (14 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T3.csv (14 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T4.csv (14 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T5.csv (14 rows)
+21:03:01 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T6.csv (14 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/baseline_vs_finetuned_comparison.csv (6 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T1.csv (14 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T2.csv (14 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T3.csv (14 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T4.csv (14 rows)
+21:03:07 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T5.csv (14 rows)
+21:03:08 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/per_task_comparison_T6.csv (14 rows)
+21:03:15 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/report_overall_outcome_table.csv (6 rows)
+21:03:25 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/baseline_failure_analytics.csv (120 rows)
+21:03:25 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/finetuned_failure_analytics.csv (120 rows)
+21:03:32 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/report_failure_summary_table.csv (6 rows)
+21:03:41 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/approved_corpus/approved_corpus.jsonl (537 rows)
+21:03:41 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/trusted_tests/trusted_test_repository_summary.csv (537 rows)
+21:03:41 | INFO     | RepoCoderStudio.Main | Loaded CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/trusted_tests/trusted_test_repository_summary.csv (537 rows)
+21:04:38 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 21 files, 74 functions, 9 classes (mock_embeddings=False)
+21:04:38 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repo_explorer_summary.json
+21:04:38 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repository_summary_ledgerflow.json
+21:04:46 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 170 files, 794 functions, 144 classes (mock_embeddings=False)
+21:04:46 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repo_explorer_summary.json
+21:04:46 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repository_summary_aws_s3.json
+21:04:47 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repo_explorer_eval_metrics.json
+21:04:47 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/retrieval_evaluation_ledgerflow.json
+21:05:52 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/hybrid_vs_cross_encoder_ablation.csv (15 rows)
+21:05:52 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/evaluation/hybrid_vs_cross_encoder_quality.csv (3 rows)
+21:06:06 | INFO     | RepoCoderStudio.Main | Streaming up to 100 rows from tianyang/repobench_python_v1.1 (cross_file_first) ...
+21:06:16 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repobench_eval_summary_python.json
+21:06:16 | INFO     | RepoCoderStudio.Main | Streaming up to 100 rows from tianyang/repobench_java_v1.1 (cross_file_first) ...
+21:06:25 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/repobench_eval_summary_java.json
+21:06:40 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/approved_corpus/approved_corpus.jsonl (537 rows)
+21:06:40 | INFO     | RepoCoderStudio.Main | CorpusIndex: 405/537 approved rows are train-split and eligible for retrieval (validation/test rows are excluded so RAG can never retrieve the exact answer an evaluation run is scoring against).
+21:06:43 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/corpus_index_summary.json
+21:06:43 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+21:06:48 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+21:06:52 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_FastCorrected_LoRA_v1_0
+21:07:17 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+21:07:46 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+21:08:27 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/stage5_four_arm_repository_demo.json
+21:09:14 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+21:10:08 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+21:10:28 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/functional_eval_report.json
+22:03:07 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+22:03:37 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+22:06:53 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+22:08:01 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+22:19:21 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+22:20:11 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.

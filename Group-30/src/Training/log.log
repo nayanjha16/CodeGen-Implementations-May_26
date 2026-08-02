@@ -1,0 +1,966 @@
+W0704 15:06:28.527000 2393404 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0704 15:06:28.543000 2393404 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Got disconnected from remote data host. Retrying in 5sec [1/20]
+Got disconnected from remote data host. Retrying in 5sec [1/20]
+Hugging Face API key loaded successfully from secrets.
+Local cached dataset purged: ./cached_data/filtered_subset_10
+
+--- Starting Baseline Evaluation for the entire dataset ---
+Resetting singleton states for BaselineData and its dependencies...
+Singleton states reset.
+Using dataset with 10 records
+Initializing BaselineData singleton using device: cuda...
+Initializing FilteredDataset singleton...
+No cached dataset found at ./cached_data/filtered_subset_10
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+FilteredDataset initialized successfully.
+Generating and caching 10 samples...
+Starting iteration over combined dataset (alternating Python and C++) via __iter__...
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Collected 10 samples. Converting to Dataset...
+Saving the dataset (0/1 shards):   0%|          | 0/10 [00:00<?, ? examples/s]Saving the dataset (1/1 shards): 100%|██████████| 10/10 [00:00<00:00, 4267.27 examples/s]Saving the dataset (1/1 shards): 100%|██████████| 10/10 [00:00<00:00, 4008.70 examples/s]
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Cached dataset saved to ./cached_data/filtered_subset_10
+BaselineData initialized successfully.
+Loading all models...
+QwenModelBase using device: cuda for model Qwen/Qwen2.5-Coder-7B-Instruct
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   1%|          | 2/339 [00:00<00:18, 17.80it/s]Loading weights:   1%|          | 4/339 [00:00<00:27, 12.15it/s]Loading weights:  12%|█▏        | 41/339 [00:00<00:03, 81.62it/s]Loading weights:  14%|█▍        | 48/339 [00:00<00:04, 65.17it/s]Loading weights:  37%|███▋      | 126/339 [00:00<00:01, 191.49it/s]Loading weights:  44%|████▍     | 150/339 [00:01<00:01, 131.60it/s]Loading weights:  64%|██████▎   | 216/339 [00:01<00:00, 217.35it/s]Loading weights:  73%|███████▎  | 248/339 [00:01<00:00, 128.74it/s]Loading weights:  93%|█████████▎| 315/339 [00:02<00:00, 187.69it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 161.43it/s]
+CodeDocumentationGenerator using device: cuda
+QwenCodeGenerator using device: cuda
+Initializing GraphCodeBERTScorer...
+Using device: cuda
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 53727.67it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/graphcodebert-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+GraphCodeBERTScorer initialized successfully.
+LLMJudge using device: cuda
+All models loaded.
+
+Starting computation for 3 records (starting from index 0, each with 3 tries per phase)...
+
+Synchronizing CUDA and empty cache
+Using cached dataset with 10 samples...
+DEBUG: First record language: 'Python', is_processable: True
+Processing record 1/3 (language: Python)...
+  Generating documentation for d99a1e98...
+  Generating code from documentation for Python...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+This Python script defines a set of serializers using Django REST framework (DRF) and DRF-GIS extensions to serialize geographic data models into JSON format. Each serializer corresponds to a different geographic feature model, providing a way to represent these features as GeoJSON objects.
+
+### High-Level Overview
+The program consists of multiple serializers, each tailored to handle a specific type of geographic feature. These serializers include information such as surface area, usage codes, and coverage labels, which are essential for representing various aspects of urban planning and geography.
+
+### Global Variables and Standalone Functions
+- **get_label**: A utility function that takes a `code` and a `label`, and returns a formatted string where the label is truncated to at most 30 characters. If the input is `None`, it defaults to "-" for the code and "inconnu" for the label.
+
+### Classes and Their Purposes
+#### Serializer Classes
+Each serializer class inherits from `serializers.GeoFeatureModelSerializer` or `serializers.ModelSerializer`, depending on whether it needs to handle geographic data (`GeoFeatureModelSerializer`) or simple data (`ModelSerializer`). They are designed to serialize instances of corresponding database models into JSON format suitable for web APIs.
+
+##### Example: Artificialisee2015to
+*************
+Code:
+assistant
+```python
+from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from django.contrib.gis.db.models import GeometryField
+
+# Utility function
+def get_label(code=None, label=None):
+    if code is None:
+        code = "-"
+    if label is None:
+        label = "inconnu"
+    return f"{code[:30]} - {label[:30]}"
+
+# Example serializer class
+class Artificialisee2015to(GeoFeatureModelSerializer):
+    class Meta:
+        model = Artificialisee2015toModel  # Assuming this model exists
+        geo_field = 'geom'  # Assuming 'geom' is the name of the geometry field
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['label'] = get_label(instance.code, instance.label)
+        return representation
+
+# Assuming other serializers follow a similar pattern
+```
+
+In this example, I've created a serializer class named `Artificialisee2015to` that inherits from `GeoFeatureModelSerializer`. The `Meta` class specifies the model and geometry field to be serialized. The `to_representation` method is overridden to add a custom `label` field using the `get_label` utility function. This approach can be extended to create additional serializers for other geographic feature models as described in the documentation.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.7407, GraphCodeBERTScore: 0.9536, Average: 0.8472
+	Documentation for record 'd99a1e98eccb58cbc0c0cef6e9e6702f33461b0e' updated locally.
+	Scores for record 'd99a1e98eccb58cbc0c0cef6e9e6702f33461b0e' updated locally
+		NL->PL Avg=0.8472
+
+	Clear GPU cache after each record to prevent memory fragmentation
+	Recording result: 'hexsha': d99a1e98ec, 'nl_pl_best_ast_score': 0.7407, 'nl_pl_best_graphcodebert_score': 0.9536, 'nl_pl_best_average_score': 0.8472
+
+Processed 2/3 records. Current record d99a1e98ec... NL->PL Avg Score: 0.8472
+Processing record 3/3 (language: C++)...
+  Generating documentation for 4f1d9e36...
+  Generating code from documentation for C++...
+	Info: Qwen code generation max new tokens: 16384
+*************
+Documentation:
+### Overview
+
+The provided source code is written in C++ and appears to handle various button events within a game application. It interacts with multiple components such as `Window`, `Window_Manager`, `Game`, `Android_Leaderboard`, `Android`, and `GUI_Manager`. The primary functionality revolves around handling different button events like game over, Google Play Games sign-in/sign-out, showing leaderboards, achievements, and managing upgrades.
+
+### Classes and Structs
+
+#### Button_Events
+
+**Purpose:**  
+This class contains methods to handle different button events within the game.
+
+**Fields:**
+- None explicitly defined in the provided code.
+
+**Methods:**
+- `handle_button_event_game(string button_event, Window* parent_window, bool& window_opened_on_top)`  
+  **Purpose:** Handles various button events related to the game.
+  **Parameters:**
+  - `button_event`: A string representing the type of button event.
+  - `parent_window`: A pointer to the parent window associated with the button event.
+  - `window_opened_on_top`: A reference to a boolean indicating whether a window was opened on top.
+  **Return Value:** Returns `true` if the event was handled, otherwise `false`.
+
+### Functions and Global Variables
+
+#### Important
+*************
+Code:
+assistant
+```cpp
+#include <iostream>
+#include <string>
+
+class Window {
+public:
+    void open() { /* Implementation */ }
+    void close() { /* Implementation */ }
+};
+
+class Window_Manager {
+public:
+    void manageWindows() { /* Implementation */ }
+};
+
+class Game {
+public:
+    void gameOver() { /* Implementation */ }
+};
+
+class Android_Leaderboard {
+public:
+    void showLeaderboard() { /* Implementation */ }
+};
+
+class Android {
+public:
+    void signIn() { /* Implementation */ }
+    void signOut() { /* Implementation */ }
+};
+
+class GUI_Manager {
+public:
+    void showAchievements() { /* Implementation */ }
+    void upgradeManager() { /* Implementation */ }
+};
+
+class Button_Events {
+public:
+    bool handle_button_event_game(const std::string& button_event, Window* parent_window, bool& window_opened_on_top) {
+        if (button_event == "game_over") {
+            Game game;
+            game.gameOver();
+            return true;
+        } else if (button_event == "google_play_sign_in") {
+            Android android;
+            android.signIn();
+            return true;
+        } else if (button_event == "google_play_sign_out") {
+            Android android;
+            android.signOut();
+            return true;
+        } else if (button_event == "show_leaderboard") {
+            Android_Leaderboard leaderboard;
+            leaderboard.showLeaderboard();
+            return true;
+        } else if (button_event == "show_achievements") {
+            GUI_Manager gui_manager;
+            gui_manager.showAchievements();
+            return true;
+        } else if (button_event == "upgrade") {
+            GUI_Manager gui_manager;
+            gui_manager.upgradeManager();
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+This code defines the required classes and methods based on the provided documentation. Each method handles specific button events by interacting with other components such as `Game`, `Android`, `Android_Leaderboard`, and `GUI_Manager`. The `Button_Events` class contains the `handle_button_event_game` method, which processes different button events and calls the appropriate methods from other classes.
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.6897, GraphCodeBERTScore: 0.9492, Average: 0.8194
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+	Documentation for record '4f1d9e36be378fb394dc7da2e912f46bf7c71a18' updated locally.
+	Scores for record '4f1d9e36be378fb394dc7da2e912f46bf7c71a18' updated locally
+		NL->PL Avg=0.8194
+		NL->C++->Py Avg=0.7706
+	Clear GPU cache after each record to prevent memory fragmentation
+	Recording result: 'hexsha': 4f1d9e36be, 'nl_pl_best_ast_score': 0.6897, 'nl_pl_best_graphcodebert_score': 0.9492, 'nl_pl_best_average_score': 0.8194
+	Recording NL->PL1->PL2 result: 'hexsha': 4f1d9e36be, 'nl_pl1_pl2_best_ast_score': 0.6129, 'nl_pl1_pl2_best_average_score': 0.7706
+
+Processed 4/3 records. Current record 4f1d9e36be... NL->PL Avg Score: 0.8194, NL->C++->Py Avg Score: 0.7706
+
+
+******************************
+
+
+Baseline Summary:
+  Total records processed: 2
+	- Python records: 1
+	- C++ records: 1
+NL->PL Average Score: 0.8333
+	NL->PL AST Score: 0.7152
+	NL->PL GCB Score: 0.9514
+	Python NL->PL Average Score: 0.8472 (n=1)
+	C++ NL->PL Average Score: 0.8194 (n=1)
+	NL->PL1->PL2 Average Score: 0.7706 (n=1)
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:37,  3.45it/s]Loading weights:   1%|          | 2/339 [00:00<01:06,  5.05it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 67.74it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 94.76it/s]Loading weights:  16%|█▌        | 54/339 [00:00<00:02, 102.61it/s]Loading weights:  22%|██▏       | 76/339 [00:00<00:02, 130.11it/s]Loading weights:  27%|██▋       | 91/339 [00:00<00:01, 128.51it/s]Loading weights:  33%|███▎      | 112/339 [00:01<00:01, 136.83it/s]Loading weights:  40%|████      | 136/339 [00:01<00:01, 136.26it/s]Loading weights:  47%|████▋     | 160/339 [00:01<00:01, 151.93it/s]Loading weights:  52%|█████▏    | 176/339 [00:01<00:01, 149.72it/s]Loading weights:  58%|█████▊    | 196/339 [00:01<00:00, 152.81it/s]Loading weights:  63%|██████▎   | 212/339 [00:01<00:00, 150.24it/s]Loading weights:  68%|██████▊   | 232/339 [00:01<00:00, 156.80it/s]Loading weights:  73%|███████▎  | 248/339 [00:02<00:00, 150.47it/s]Loading weights:  79%|███████▉  | 268/339 [00:02<00:00, 156.50it/s]Loading weights:  84%|████████▍ | 284/339 [00:02<00:00, 149.26it/s]Loading weights:  90%|████████▉ | 304/339 [00:02<00:00, 155.52it/s]Loading weights:  94%|█████████▍| 320/339 [00:02<00:00, 149.16it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 132.50it/s]
+Printing modules in Qwen2.5-Coder-7B-Instruct model
+	
+	model
+	model.embed_tokens
+	model.layers
+	model.layers.0
+	model.layers.0.self_attn
+	model.layers.0.self_attn.q_proj
+	model.layers.0.self_attn.k_proj
+	model.layers.0.self_attn.v_proj
+	model.layers.0.self_attn.o_proj
+	model.layers.0.mlp
+	model.layers.0.mlp.gate_proj
+	model.layers.0.mlp.up_proj
+	model.layers.0.mlp.down_proj
+	model.layers.0.mlp.act_fn
+	model.layers.0.input_layernorm
+	model.layers.0.post_attention_layernorm
+	model.layers.1
+	model.layers.1.self_attn
+	model.layers.1.self_attn.q_proj
+	model.layers.1.self_attn.k_proj
+	model.layers.1.self_attn.v_proj
+	model.layers.1.self_attn.o_proj
+	model.layers.1.mlp
+	model.layers.1.mlp.gate_proj
+	model.layers.1.mlp.up_proj
+	model.layers.1.mlp.down_proj
+	model.layers.1.mlp.act_fn
+	model.layers.1.input_layernorm
+	model.layers.1.post_attention_layernorm
+	model.layers.2
+	model.layers.2.self_attn
+	model.layers.2.self_attn.q_proj
+	model.layers.2.self_attn.k_proj
+	model.layers.2.self_attn.v_proj
+	model.layers.2.self_attn.o_proj
+	model.layers.2.mlp
+	model.layers.2.mlp.gate_proj
+	model.layers.2.mlp.up_proj
+	model.layers.2.mlp.down_proj
+	model.layers.2.mlp.act_fn
+	model.layers.2.input_layernorm
+	model.layers.2.post_attention_layernorm
+	model.layers.3
+	model.layers.3.self_attn
+	model.layers.3.self_attn.q_proj
+	model.layers.3.self_attn.k_proj
+	model.layers.3.self_attn.v_proj
+	model.layers.3.self_attn.o_proj
+	model.layers.3.mlp
+	model.layers.3.mlp.gate_proj
+	model.layers.3.mlp.up_proj
+	model.layers.3.mlp.down_proj
+	model.layers.3.mlp.act_fn
+	model.layers.3.input_layernorm
+	model.layers.3.post_attention_layernorm
+	model.layers.4
+	model.layers.4.self_attn
+	model.layers.4.self_attn.q_proj
+	model.layers.4.self_attn.k_proj
+	model.layers.4.self_attn.v_proj
+	model.layers.4.self_attn.o_proj
+	model.layers.4.mlp
+	model.layers.4.mlp.gate_proj
+	model.layers.4.mlp.up_proj
+	model.layers.4.mlp.down_proj
+	model.layers.4.mlp.act_fn
+	model.layers.4.input_layernorm
+	model.layers.4.post_attention_layernorm
+	model.layers.5
+	model.layers.5.self_attn
+	model.layers.5.self_attn.q_proj
+	model.layers.5.self_attn.k_proj
+	model.layers.5.self_attn.v_proj
+	model.layers.5.self_attn.o_proj
+	model.layers.5.mlp
+	model.layers.5.mlp.gate_proj
+	model.layers.5.mlp.up_proj
+	model.layers.5.mlp.down_proj
+	model.layers.5.mlp.act_fn
+	model.layers.5.input_layernorm
+	model.layers.5.post_attention_layernorm
+	model.layers.6
+	model.layers.6.self_attn
+	model.layers.6.self_attn.q_proj
+	model.layers.6.self_attn.k_proj
+	model.layers.6.self_attn.v_proj
+	model.layers.6.self_attn.o_proj
+	model.layers.6.mlp
+	model.layers.6.mlp.gate_proj
+	model.layers.6.mlp.up_proj
+	model.layers.6.mlp.down_proj
+	model.layers.6.mlp.act_fn
+	model.layers.6.input_layernorm
+	model.layers.6.post_attention_layernorm
+	model.layers.7
+	model.layers.7.self_attn
+	model.layers.7.self_attn.q_proj
+	model.layers.7.self_attn.k_proj
+	model.layers.7.self_attn.v_proj
+	model.layers.7.self_attn.o_proj
+	model.layers.7.mlp
+	model.layers.7.mlp.gate_proj
+	model.layers.7.mlp.up_proj
+	model.layers.7.mlp.down_proj
+	model.layers.7.mlp.act_fn
+	model.layers.7.input_layernorm
+	model.layers.7.post_attention_layernorm
+	model.layers.8
+	model.layers.8.self_attn
+	model.layers.8.self_attn.q_proj
+	model.layers.8.self_attn.k_proj
+	model.layers.8.self_attn.v_proj
+	model.layers.8.self_attn.o_proj
+	model.layers.8.mlp
+	model.layers.8.mlp.gate_proj
+	model.layers.8.mlp.up_proj
+	model.layers.8.mlp.down_proj
+	model.layers.8.mlp.act_fn
+	model.layers.8.input_layernorm
+	model.layers.8.post_attention_layernorm
+	model.layers.9
+	model.layers.9.self_attn
+	model.layers.9.self_attn.q_proj
+	model.layers.9.self_attn.k_proj
+	model.layers.9.self_attn.v_proj
+	model.layers.9.self_attn.o_proj
+	model.layers.9.mlp
+	model.layers.9.mlp.gate_proj
+	model.layers.9.mlp.up_proj
+	model.layers.9.mlp.down_proj
+	model.layers.9.mlp.act_fn
+	model.layers.9.input_layernorm
+	model.layers.9.post_attention_layernorm
+	model.layers.10
+	model.layers.10.self_attn
+	model.layers.10.self_attn.q_proj
+	model.layers.10.self_attn.k_proj
+	model.layers.10.self_attn.v_proj
+	model.layers.10.self_attn.o_proj
+	model.layers.10.mlp
+	model.layers.10.mlp.gate_proj
+	model.layers.10.mlp.up_proj
+	model.layers.10.mlp.down_proj
+	model.layers.10.mlp.act_fn
+	model.layers.10.input_layernorm
+	model.layers.10.post_attention_layernorm
+	model.layers.11
+	model.layers.11.self_attn
+	model.layers.11.self_attn.q_proj
+	model.layers.11.self_attn.k_proj
+	model.layers.11.self_attn.v_proj
+	model.layers.11.self_attn.o_proj
+	model.layers.11.mlp
+	model.layers.11.mlp.gate_proj
+	model.layers.11.mlp.up_proj
+	model.layers.11.mlp.down_proj
+	model.layers.11.mlp.act_fn
+	model.layers.11.input_layernorm
+	model.layers.11.post_attention_layernorm
+	model.layers.12
+	model.layers.12.self_attn
+	model.layers.12.self_attn.q_proj
+	model.layers.12.self_attn.k_proj
+	model.layers.12.self_attn.v_proj
+	model.layers.12.self_attn.o_proj
+	model.layers.12.mlp
+	model.layers.12.mlp.gate_proj
+	model.layers.12.mlp.up_proj
+	model.layers.12.mlp.down_proj
+	model.layers.12.mlp.act_fn
+	model.layers.12.input_layernorm
+	model.layers.12.post_attention_layernorm
+	model.layers.13
+	model.layers.13.self_attn
+	model.layers.13.self_attn.q_proj
+	model.layers.13.self_attn.k_proj
+	model.layers.13.self_attn.v_proj
+	model.layers.13.self_attn.o_proj
+	model.layers.13.mlp
+	model.layers.13.mlp.gate_proj
+	model.layers.13.mlp.up_proj
+	model.layers.13.mlp.down_proj
+	model.layers.13.mlp.act_fn
+	model.layers.13.input_layernorm
+	model.layers.13.post_attention_layernorm
+	model.layers.14
+	model.layers.14.self_attn
+	model.layers.14.self_attn.q_proj
+	model.layers.14.self_attn.k_proj
+	model.layers.14.self_attn.v_proj
+	model.layers.14.self_attn.o_proj
+	model.layers.14.mlp
+	model.layers.14.mlp.gate_proj
+	model.layers.14.mlp.up_proj
+	model.layers.14.mlp.down_proj
+	model.layers.14.mlp.act_fn
+	model.layers.14.input_layernorm
+	model.layers.14.post_attention_layernorm
+	model.layers.15
+	model.layers.15.self_attn
+	model.layers.15.self_attn.q_proj
+	model.layers.15.self_attn.k_proj
+	model.layers.15.self_attn.v_proj
+	model.layers.15.self_attn.o_proj
+	model.layers.15.mlp
+	model.layers.15.mlp.gate_proj
+	model.layers.15.mlp.up_proj
+	model.layers.15.mlp.down_proj
+	model.layers.15.mlp.act_fn
+	model.layers.15.input_layernorm
+	model.layers.15.post_attention_layernorm
+	model.layers.16
+	model.layers.16.self_attn
+	model.layers.16.self_attn.q_proj
+	model.layers.16.self_attn.k_proj
+	model.layers.16.self_attn.v_proj
+	model.layers.16.self_attn.o_proj
+	model.layers.16.mlp
+	model.layers.16.mlp.gate_proj
+	model.layers.16.mlp.up_proj
+	model.layers.16.mlp.down_proj
+	model.layers.16.mlp.act_fn
+	model.layers.16.input_layernorm
+	model.layers.16.post_attention_layernorm
+	model.layers.17
+	model.layers.17.self_attn
+	model.layers.17.self_attn.q_proj
+	model.layers.17.self_attn.k_proj
+	model.layers.17.self_attn.v_proj
+	model.layers.17.self_attn.o_proj
+	model.layers.17.mlp
+	model.layers.17.mlp.gate_proj
+	model.layers.17.mlp.up_proj
+	model.layers.17.mlp.down_proj
+	model.layers.17.mlp.act_fn
+	model.layers.17.input_layernorm
+	model.layers.17.post_attention_layernorm
+	model.layers.18
+	model.layers.18.self_attn
+	model.layers.18.self_attn.q_proj
+	model.layers.18.self_attn.k_proj
+	model.layers.18.self_attn.v_proj
+	model.layers.18.self_attn.o_proj
+	model.layers.18.mlp
+	model.layers.18.mlp.gate_proj
+	model.layers.18.mlp.up_proj
+	model.layers.18.mlp.down_proj
+	model.layers.18.mlp.act_fn
+	model.layers.18.input_layernorm
+	model.layers.18.post_attention_layernorm
+	model.layers.19
+	model.layers.19.self_attn
+	model.layers.19.self_attn.q_proj
+	model.layers.19.self_attn.k_proj
+	model.layers.19.self_attn.v_proj
+	model.layers.19.self_attn.o_proj
+	model.layers.19.mlp
+	model.layers.19.mlp.gate_proj
+	model.layers.19.mlp.up_proj
+	model.layers.19.mlp.down_proj
+	model.layers.19.mlp.act_fn
+	model.layers.19.input_layernorm
+	model.layers.19.post_attention_layernorm
+	model.layers.20
+	model.layers.20.self_attn
+	model.layers.20.self_attn.q_proj
+	model.layers.20.self_attn.k_proj
+	model.layers.20.self_attn.v_proj
+	model.layers.20.self_attn.o_proj
+	model.layers.20.mlp
+	model.layers.20.mlp.gate_proj
+	model.layers.20.mlp.up_proj
+	model.layers.20.mlp.down_proj
+	model.layers.20.mlp.act_fn
+	model.layers.20.input_layernorm
+	model.layers.20.post_attention_layernorm
+	model.layers.21
+	model.layers.21.self_attn
+	model.layers.21.self_attn.q_proj
+	model.layers.21.self_attn.k_proj
+	model.layers.21.self_attn.v_proj
+	model.layers.21.self_attn.o_proj
+	model.layers.21.mlp
+	model.layers.21.mlp.gate_proj
+	model.layers.21.mlp.up_proj
+	model.layers.21.mlp.down_proj
+	model.layers.21.mlp.act_fn
+	model.layers.21.input_layernorm
+	model.layers.21.post_attention_layernorm
+	model.layers.22
+	model.layers.22.self_attn
+	model.layers.22.self_attn.q_proj
+	model.layers.22.self_attn.k_proj
+	model.layers.22.self_attn.v_proj
+	model.layers.22.self_attn.o_proj
+	model.layers.22.mlp
+	model.layers.22.mlp.gate_proj
+	model.layers.22.mlp.up_proj
+	model.layers.22.mlp.down_proj
+	model.layers.22.mlp.act_fn
+	model.layers.22.input_layernorm
+	model.layers.22.post_attention_layernorm
+	model.layers.23
+	model.layers.23.self_attn
+	model.layers.23.self_attn.q_proj
+	model.layers.23.self_attn.k_proj
+	model.layers.23.self_attn.v_proj
+	model.layers.23.self_attn.o_proj
+	model.layers.23.mlp
+	model.layers.23.mlp.gate_proj
+	model.layers.23.mlp.up_proj
+	model.layers.23.mlp.down_proj
+	model.layers.23.mlp.act_fn
+	model.layers.23.input_layernorm
+	model.layers.23.post_attention_layernorm
+	model.layers.24
+	model.layers.24.self_attn
+	model.layers.24.self_attn.q_proj
+	model.layers.24.self_attn.k_proj
+	model.layers.24.self_attn.v_proj
+	model.layers.24.self_attn.o_proj
+	model.layers.24.mlp
+	model.layers.24.mlp.gate_proj
+	model.layers.24.mlp.up_proj
+	model.layers.24.mlp.down_proj
+	model.layers.24.mlp.act_fn
+	model.layers.24.input_layernorm
+	model.layers.24.post_attention_layernorm
+	model.layers.25
+	model.layers.25.self_attn
+	model.layers.25.self_attn.q_proj
+	model.layers.25.self_attn.k_proj
+	model.layers.25.self_attn.v_proj
+	model.layers.25.self_attn.o_proj
+	model.layers.25.mlp
+	model.layers.25.mlp.gate_proj
+	model.layers.25.mlp.up_proj
+	model.layers.25.mlp.down_proj
+	model.layers.25.mlp.act_fn
+	model.layers.25.input_layernorm
+	model.layers.25.post_attention_layernorm
+	model.layers.26
+	model.layers.26.self_attn
+	model.layers.26.self_attn.q_proj
+	model.layers.26.self_attn.k_proj
+	model.layers.26.self_attn.v_proj
+	model.layers.26.self_attn.o_proj
+	model.layers.26.mlp
+	model.layers.26.mlp.gate_proj
+	model.layers.26.mlp.up_proj
+	model.layers.26.mlp.down_proj
+	model.layers.26.mlp.act_fn
+	model.layers.26.input_layernorm
+	model.layers.26.post_attention_layernorm
+	model.layers.27
+	model.layers.27.self_attn
+	model.layers.27.self_attn.q_proj
+	model.layers.27.self_attn.k_proj
+	model.layers.27.self_attn.v_proj
+	model.layers.27.self_attn.o_proj
+	model.layers.27.mlp
+	model.layers.27.mlp.gate_proj
+	model.layers.27.mlp.up_proj
+	model.layers.27.mlp.down_proj
+	model.layers.27.mlp.act_fn
+	model.layers.27.input_layernorm
+	model.layers.27.post_attention_layernorm
+	model.norm
+	model.rotary_emb
+	lm_head
+
+******************************
+LORA adapted model summary:
+trainable params: 40,370,176 || all params: 7,655,986,688 || trainable%: 0.5273
+
+******************************
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  29475 MiB |  29475 MiB | 390962 MiB | 361486 MiB |
+|       from large pool |  29416 MiB |  29416 MiB | 212958 MiB | 183542 MiB |
+|       from small pool |     59 MiB |     80 MiB | 178003 MiB | 177944 MiB |
+|---------------------------------------------------------------------------|
+| Active memory         |  29475 MiB |  29475 MiB | 390962 MiB | 361486 MiB |
+|       from large pool |  29416 MiB |  29416 MiB | 212958 MiB | 183542 MiB |
+|       from small pool |     59 MiB |     80 MiB | 178003 MiB | 177944 MiB |
+|---------------------------------------------------------------------------|
+| Requested memory      |  29451 MiB |  29451 MiB | 388110 MiB | 358659 MiB |
+|       from large pool |  29392 MiB |  29392 MiB | 210655 MiB | 181262 MiB |
+|       from small pool |     59 MiB |     80 MiB | 177455 MiB | 177396 MiB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |  29502 MiB |  29502 MiB |  30168 MiB | 681984 KiB |
+|       from large pool |  29420 MiB |  29420 MiB |  29950 MiB | 542720 KiB |
+|       from small pool |     82 MiB |     82 MiB |    218 MiB | 139264 KiB |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |  27212 KiB |  13487 MiB | 362785 MiB | 362759 MiB |
+|       from large pool |   3808 KiB |  13487 MiB | 157673 MiB | 157670 MiB |
+|       from small pool |  23404 KiB |     25 MiB | 205112 MiB | 205089 MiB |
+|---------------------------------------------------------------------------|
+| Allocations           |    1276    |    1277    |    4880 K  |    4879 K  |
+|       from large pool |     555    |     555    |      60 K  |      60 K  |
+|       from small pool |     721    |     806    |    4819 K  |    4818 K  |
+|---------------------------------------------------------------------------|
+| Active allocs         |    1276    |    1277    |    4880 K  |    4879 K  |
+|       from large pool |     555    |     555    |      60 K  |      60 K  |
+|       from small pool |     721    |     806    |    4819 K  |    4818 K  |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      68    |      68    |     145    |      77    |
+|       from large pool |      27    |      27    |      36    |       9    |
+|       from small pool |      41    |      41    |     109    |      68    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      46    |      63    |    2519 K  |    2519 K  |
+|       from large pool |       2    |      25    |       8 K  |       8 K  |
+|       from small pool |      44    |      51    |    2510 K  |    2510 K  |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+Resetting singleton states for BaselineData and its dependencies
+Collecting 3 C++ records for LORA NL->C++ training (records 3 to 5)...
+Resetting dataset streams and iterators...
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Skipped 3 records. Starting LORA training data collection from record 4...
+Processing C++ records for LORA NL->C++ data 0/3: 0it [00:00, ?it/s]Processing C++ records for LORA NL->C++ data 0/3: 1it [00:09,  9.47s/it]Processing C++ records for LORA NL->C++ data 0/3: 3it [00:20,  6.36s/it]Processing C++ records for LORA NL->C++ data 0/3: 5it [00:28,  5.17s/it]Processing C++ records for LORA NL->C++ data 0/3: 5it [00:28,  5.62s/it]
+Marking code as processable for C++
+Processed 1 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 2 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 3 C++ records for LORA NL->C++
+Marking code as processable for Python
+Reached max records for LORA NL->C++ training: 3
+Successfully created training_dataset with 3 examples for NL->C++.
+Map:   0%|          | 0/3 [00:00<?, ? examples/s]Map: 100%|██████████| 3/3 [00:00<00:00, 107.71 examples/s]
+[transformers] `logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Created Training arguments for LORA
+
+==============================
+
+Created Trainer for LORA
+Starting LORA training for Phase 1 NL->PL1...
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:01<00:02,  1.29s/it] 67%|██████▋   | 2/3 [00:05<00:02,  2.98s/it]100%|██████████| 3/3 [00:08<00:00,  2.90s/it]                                             100%|██████████| 3/3 [00:09<00:00,  2.90s/it]100%|██████████| 3/3 [00:09<00:00,  3.29s/it]
+{'train_runtime': '9.879', 'train_samples_per_second': '0.911', 'train_steps_per_second': '0.304', 'train_loss': '1.192', 'epoch': '3'}
+LORA training for Phase 1 NL->PL1 complete.
+
+==============================
+
+LORA adapter model saved to '../model/Qwen_NL_to_PL_LORA_Adapter'.
+
+==============================
+
+Generating LORA training dataset for C++ to Python translation...
+Unloading qwen_generator...
+GPU cache cleared.
+qwen_generator unloaded and memory cleared.
+Unloading graphcodebert...
+GPU cache cleared.
+graphcodebert unloaded and memory cleared.
+Unloading ast...
+GPU cache cleared.
+ast unloaded and memory cleared.
+Loading support models for LORA training...
+	Loaded QwenCodeGenerator...
+Support models for LORA training loaded.
+Resetting dataset streams and iterators...
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Skipped 3 records. Starting Phase 2 LORA training data collection from record 4...
+Processing C++ records for C++ to Python data: 0it [00:00, ?it/s]Processing C++ records for C++ to Python data: 1it [00:52, 52.83s/it]Processing C++ records for C++ to Python data: 3it [02:05, 40.64s/it]Processing C++ records for C++ to Python data: 5it [03:23, 39.67s/it]Processing C++ records for C++ to Python data: 5it [03:23, 40.62s/it]
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f1ee99281ef141d42a038f41cd1ddb9cc86f312. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f1f9c94faf168d934635377c7452b874521c7fe. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.8
+Marking code as processable for Python
+Marking code as processable for C++
+Warning: C++ documentation not found in record 4f203c48428c692de98f2b0fdd812268d388a572. Re-generating for this record as a fallback.
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+Marking code as processable for Python
+Reached max records for C++ to Python LORA training: 3
+Successfully created pl1_to_pl2_training_dataset with 3 examples.
+First training example for Python to C++:
+{'pl1_code_prompt': 'assistant\n```python\nclass Variant:\n    def __init__(self, value=None):\n        self._godot_variant = None\n        if value is not None:\n            self.set_value(value)\n\n    def set_value(self, value):\n        # Assuming godot_variant is a placeholder for actual Godot variant handling\n        if isinstance(value, bool):\n            self._godot_variant = int(value)\n        elif isinstance(value, int):\n            self._godot_variant = value\n        elif isinstance(value, float):\n            self._godot_variant = value\n        elif isinstance(value, str):\n            self._godot_variant = value.encode(\'utf-8\')\n        else:\n            raise TypeError(f"Unsupported type: {type(value)}")\n\n    def get_value(self):\n        if self._godot_variant is None:\n            return None\n        elif isinstance(self._godot_variant, int):\n            return bool(self._godot_variant) if self._godot_variant == 0 or self._godot_variant == 1 else self._godot_variant\n        elif isinstance(self._godot_variant, bytes):\n            return self._godot_variant.decode(\'utf-8\')\n        else:\n            return self._godot_variant\n\n    def __eq__(self, other):\n        if isinstance(other, Variant):\n            return self.get_value() == other.get_value()\n        return self.get_value() == other\n\n    def __ne__(self, other):\n        return not self.__eq__(other)\n\n    def __str__(self):\n        return str(self.get_value())\n\n    def __repr__(self):\n        return f"Variant({self.get_value()})"\n```\n\nThis Python code defines a `Variant` class that mimics the behavior of a versatile container for various data types, similar to the `Variant` class in C++. The class includes methods for setting and getting values, as well as comparison operators. The `set_value` method handles different data types and converts them appropriately, while the `get_value` method retrieves the value in its original form. The class also includes string representation methods for better usability.', 'pl2_code_target': '#include "Variant.hpp"\n\n#include <gdnative/variant.h>\n\n#include "CoreTypes.hpp"\n#include "Defs.hpp"\n#include "GodotGlobal.hpp"\n#include "Object.hpp"\n\n#include <iostream>\n#include <stdexcept>\n\n#ifndef NO_IMPORT_ARRAY\n#define NO_IMPORT_ARRAY\n#endif\n#include "PythonGlobal.hpp"\n#include <_lib/godot/core/types.hpp>\n\nnamespace godot {\n\nVariant::Variant() {\n\tgodot::api->godot_variant_new_nil(&_godot_variant);\n}\n\nVariant::Variant(const Variant &v) {\n\tgodot::api->godot_variant_new_copy(&_godot_variant, &v._godot_variant);\n}\n\nVariant::Variant(bool p_bool) {\n\tgodot::api->godot_variant_new_bool(&_godot_variant, p_bool);\n}\n\nVariant::Variant(signed int p_int) // real one\n{\n\tgodot::api->godot_variant_new_int(&_godot_variant, p_int);\n}\n\nVariant::Variant(unsigned int p_int) {\n\tgodot::api->godot_variant_new_uint(&_godot_variant, p_int);\n}\n\nVariant::Variant(signed short p_short) // real one\n{\n\tgodot::api->godot_variant_new_int(&_godot_variant, (int)p_short);\n}\n\nVariant::Variant(int64_t p_char) // real one\n{\n\tgodot::api->godot_variant_new_int(&_godot_variant, p_char);\n}\n\nVariant::Variant(uint64_t p_char) {\n\tgodot::api->godot_variant_new_uint(&_godot_variant, p_char);\n}\n\nVariant::Variant(float p_float) {\n\tgodot::api->godot_variant_new_real(&_godot_variant, p_float);\n}\n\nVariant::Variant(double p_double) {\n\tgodot::api->godot_variant_new_real(&_godot_variant, p_double);\n}\n\nVariant::Variant(const String &p_string) {\n\tgodot::api->godot_variant_new_string(&_godot_variant, (godot_string *)&p_string);\n}\n\nVariant::Variant(const char *const p_cstring) {\n\tString s = String(p_cstring);\n\tgodot::api->godot_variant_new_string(&_godot_variant, (godot_string *)&s);\n}\n\nVariant::Variant(const wchar_t *p_wstring) {\n\tString s = p_wstring;\n\tgodot::api->godot_variant_new_string(&_godot_variant, (godot_string *)&s);\n}\n\nVariant::Variant(const Vector2 &p_vector2) {\n\tgodot::api->godot_variant_new_vector2(&_godot_variant, (godot_vector2 *)&p_vector2);\n}\n\nVariant::Variant(const Rect2 &p_rect2) {\n\tgodot::api->godot_variant_new_rect2(&_godot_variant, (godot_rect2 *)&p_rect2);\n}\n\nVariant::Variant(const Vector3 &p_vector3) {\n\tgodot::api->godot_variant_new_vector3(&_godot_variant, (godot_vector3 *)&p_vector3);\n}\n\nVariant::Variant(const Plane &p_plane) {\n\tgodot::api->godot_variant_new_plane(&_godot_variant, (godot_plane *)&p_plane);\n}\n\nVariant::Variant(const AABB &p_aabb) {\n\tgodot::api->godot_variant_new_aabb(&_godot_variant, (godot_aabb *)&p_aabb);\n}\n\nVariant::Variant(const Quat &p_quat) {\n\tgodot::api->godot_variant_new_quat(&_godot_variant, (godot_quat *)&p_quat);\n}\n\nVariant::Variant(const Basis &p_transform) {\n\tgodot::api->godot_variant_new_basis(&_godot_variant, (godot_basis *)&p_transform);\n}\n\nVariant::Variant(const Transform2D &p_transform) {\n\tgodot::api->godot_variant_new_transform2d(&_godot_variant, (godot_transform2d *)&p_transform);\n}\n\nVariant::Variant(const Transform &p_transform) {\n\tgodot::api->godot_variant_new_transform(&_godot_variant, (godot_transform *)&p_transform);\n}\n\nVariant::Variant(const Color &p_color) {\n\tgodot::api->godot_variant_new_color(&_godot_variant, (godot_color *)&p_color);\n}\n\nVariant::Variant(const NodePath &p_path) {\n\tgodot::api->godot_variant_new_node_path(&_godot_variant, (godot_node_path *)&p_path);\n}\n\nVariant::Variant(const RID &p_rid) {\n\tgodot::api->godot_variant_new_rid(&_godot_variant, (godot_rid *)&p_rid);\n}\n\nVariant::Variant(const Object *p_object) {\n\tif (p_object)\n\t\tgodot::api->godot_variant_new_object(&_godot_variant, p_object->_owner);\n\telse\n\t\tgodot::api->godot_variant_new_nil(&_godot_variant);\n}\n\nVariant::Variant(const Dictionary &p_dictionary) {\n\tgodot::api->godot_variant_new_dictionary(&_godot_variant, (godot_dictionary *)&p_dictionary);\n}\n\nVariant::Variant(const Array &p_array) {\n\tgodot::api->godot_variant_new_array(&_godot_variant, (godot_array *)&p_array);\n}\n\nVariant::Variant(const PoolByteArray &p_raw_array) {\n\tgodot::api->godot_variant_new_pool_byte_array(&_godot_variant, (godot_pool_byte_array *)&p_raw_array);\n}\n\nVariant::Variant(const PoolIntArray &p_int_array) {\n\tgodot::api->godot_variant_new_pool_int_array(&_godot_variant, (godot_pool_int_array *)&p_int_array);\n}\n\nVariant::Variant(const PoolRealArray &p_real_array) {\n\tgodot::api->godot_variant_new_pool_real_array(&_godot_variant, (godot_pool_real_array *)&p_real_array);\n}\n\nVariant::Variant(const PoolStringArray &p_string_array) {\n\tgodot::api->godot_variant_new_pool_string_array(&_godot_variant, (godot_pool_string_array *)&p_string_array);\n}\n\nVariant::Variant(const PoolVector2Array &p_vector2_array) {\n\tgodot::api->godot_variant_new_pool_vector2_array(&_godot_variant, (godot_pool_vector2_array *)&p_vector2_array);\n}\n\nVariant::Variant(const PoolVector3Array &p_vector3_array) {\n\tgodot::api->godot_variant_new_pool_vector3_array(&_godot_variant, (godot_pool_vector3_array *)&p_vector3_array);\n}\n\nVariant::Variant(const PoolColorArray &p_color_array) {\n\tgodot::api->godot_variant_new_pool_color_array(&_godot_variant, (godot_pool_color_array *)&p_color_array);\n}\n\nVariant::Variant(const PyObject *p_python_object) {\n\tif (p_python_object == Py_None) {\n\t\t// Py_XDECREF(p_python_object); // XXX\n\t\tgodot::api->godot_variant_new_nil(&_godot_variant);\n\n\t} else if (PyBool_Check(p_python_object)) {\n\t\tgodot::api->godot_variant_new_bool(&_godot_variant, PyLong_AsLong((PyObject *)p_python_object));\n\n\t} else if (PyLong_Check(p_python_object)) {\n\t\tgodot::api->godot_variant_new_int(&_godot_variant, PyLong_AsLong((PyObject *)p_python_object));\n\n\t} else if (PyFloat_Check(p_python_object)) {\n\t\tconst double p_double = PyFloat_AsDouble((PyObject *)p_python_object);\n\t\tgodot::api->godot_variant_new_real(&_godot_variant, p_double);\n\n\t} else if (PyUnicode_Check(p_python_object) || PyBytes_Check(p_python_object)) {\n\t\tString s = String(p_python_object);\n\t\tgodot::api->godot_variant_new_string(&_godot_variant, (godot_string *)&s);\n\n\t} else if (PyByteArray_Check(p_python_object)) {\n\t\tgodot_pool_byte_array *p;\n\t\tgodot::api->godot_pool_byte_array_new(p);\n\t\tgodot::api->godot_pool_byte_array_resize(p, PyByteArray_GET_SIZE(p_python_object));\n\t\tgodot_pool_byte_array_write_access *_write_access = godot::api->godot_pool_byte_array_write(p);\n\n\t\tconst uint8_t *ptr = godot::api->godot_pool_byte_array_write_access_ptr(_write_access);\n\t\tmemcpy((void *)ptr, (void *)PyByteArray_AS_STRING(p_python_object), PyByteArray_GET_SIZE(p_python_object));\n\n\t\tgodot::api->godot_variant_new_pool_byte_array(&_godot_variant, p);\n\n\t\tgodot::api->godot_pool_byte_array_write_access_destroy(_write_access);\n\t\tgodot::api->godot_pool_byte_array_destroy(p);\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_AABB) {\n\t\tgodot_aabb *p = _python_wrapper_to_aabb((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_aabb(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Array) {\n\t\tgodot_array *p = _python_wrapper_to_godot_array((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tgodot::api->godot_variant_new_nil(&_godot_variant);\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Basis) {\n\t\tgodot_basis *p = _python_wrapper_to_basis((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_basis(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Color) {\n\t\tgodot_color *p = _python_wrapper_to_color((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_color(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Dictionary) {\n\t\tgodot_dictionary *p = _python_wrapper_to_godot_dictionary((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_dictionary(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_NodePath) {\n\t\tgodot_node_path *p = _python_wrapper_to_nodepath((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_node_path(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Plane) {\n\t\tgodot_plane *p = _python_wrapper_to_plane((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_plane(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolByteArray) {\n\t\tgodot_pool_byte_array *p = _python_wrapper_to_poolbytearray((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_byte_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolIntArray) {\n\t\tgodot_pool_int_array *p = _python_wrapper_to_poolintarray((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_int_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolRealArray) {\n\t\tgodot_pool_real_array *p = _python_wrapper_to_poolrealarray((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_real_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolStringArray) {\n\t\tgodot_pool_string_array *p = _python_wrapper_to_poolstringarray((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_string_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolVector2Array) {\n\t\tgodot_pool_vector2_array *p = _python_wrapper_to_poolvector2array((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_vector2_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolVector3Array) {\n\t\tgodot_pool_vector3_array *p = _python_wrapper_to_poolvector3array((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_vector3_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_PoolColorArray) {\n\t\tgodot_pool_color_array *p = _python_wrapper_to_poolcolorarray((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_pool_color_array(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Quat) {\n\t\tgodot_quat *p = _python_wrapper_to_quat((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_quat(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Rect2) {\n\t\tgodot_rect2 *p = _python_wrapper_to_rect2((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_rect2(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_RID) {\n\t\tgodot_rid *p = _python_wrapper_to_rid((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_rid(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_String) {\n\t\tgodot_string *p = _python_wrapper_to_godot_string((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_string(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Transform) {\n\t\tgodot_transform *p = _python_wrapper_to_transform((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_transform(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Transform2D) {\n\t\tgodot_transform2d *p = _python_wrapper_to_transform2d((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_transform2d(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Vector2) {\n\t\tgodot_vector2 *p = _python_wrapper_to_vector2((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_vector2(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (Py_TYPE(p_python_object) == PyGodotWrapperType_Vector3) {\n\t\tgodot_vector3 *p = _python_wrapper_to_vector3((PyObject *)p_python_object);\n\t\tif (p) {\n\t\t\tgodot::api->godot_variant_new_vector3(&_godot_variant, p);\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert Python object to Variant");\n\t\t}\n\n\t} else if (PyObject_IsInstance((PyObject *)p_python_object, (PyObject *)PyGodotType__Wrapped)) {\n\t\tgodot_object *p = _cython_binding_to_godot_object((PyObject *)p_python_object);\n\t\tgodot::api->godot_variant_new_object(&_godot_variant, p);\n\n\t\t// TODO: dict -> Dictionary, other iterables -> Array, array.Array -> PoolArray*, numpy.array -> PoolArray*\n\n\t} else if (PyArray_Check((PyObject *)p_python_object)) {\n\t\tPyArrayObject *arr = (PyArrayObject *)p_python_object;\n\n\t\tif (PyArray_NDIM(arr) == 1 && PyArray_TYPE(arr) == NPY_UINT8) {\n\t\t\tPoolByteArray _arr = PoolByteArray(arr);\n\t\t\tgodot::api->godot_variant_new_pool_byte_array(&_godot_variant, (godot_pool_byte_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 1 && PyArray_ISINTEGER(arr)) {\n\t\t\tPoolIntArray _arr(arr);\n\t\t\tgodot::api->godot_variant_new_pool_int_array(&_godot_variant, (godot_pool_int_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 1 && PyArray_ISFLOAT(arr)) {\n\t\t\tPoolRealArray _arr(arr);\n\t\t\tgodot::api->godot_variant_new_pool_real_array(&_godot_variant, (godot_pool_real_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 1 && PyArray_ISSTRING(arr)) {\n\t\t\tPoolStringArray _arr(arr);\n\t\t\tgodot::api->godot_variant_new_pool_string_array(&_godot_variant, (godot_pool_string_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 1) {\n\t\t\tArray _arr;\n\n\t\t\tfor (int idx = 0; idx < PyArray_SIZE(arr); idx++) {\n\t\t\t\tPyObject *item = PyArray_GETITEM(arr, (const char *)PyArray_GETPTR1(arr, idx));\n\t\t\t\t// TODO: Check NULL pointer\n\t\t\t\t_arr.append(Variant(item));\n\t\t\t}\n\n\t\t\tgodot::api->godot_variant_new_array(&_godot_variant, (godot_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 2 && PyArray_ISNUMBER(arr) && PyArray_DIM(arr, 1) == 2) {\n\t\t\tPoolVector2Array _arr = PoolVector2Array(arr);\n\t\t\tgodot::api->godot_variant_new_pool_vector2_array(&_godot_variant, (godot_pool_vector2_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 2 && PyArray_ISNUMBER(arr) && PyArray_DIM(arr, 1) == 3) {\n\t\t\tPoolVector3Array _arr = PoolVector3Array(arr);\n\t\t\tgodot::api->godot_variant_new_pool_vector3_array(&_godot_variant, (godot_pool_vector3_array *)&_arr);\n\n\t\t} else if (PyArray_NDIM(arr) == 2 && PyArray_ISNUMBER(arr) && PyArray_DIM(arr, 1) == 4) {\n\t\t\tPoolColorArray _arr = PoolColorArray(arr);\n\t\t\tgodot::api->godot_variant_new_pool_color_array(&_godot_variant, (godot_pool_color_array *)&_arr);\n\n\t\t} else {\n\t\t\tthrow std::invalid_argument("could not convert NumPy array");\n\t\t}\n\n\t} else if (PySequence_Check((PyObject *)p_python_object)) {\n\t\tArray arr = Array(p_python_object);\n\t\tgodot::api->godot_variant_new_array(&_godot_variant, (godot_array *)&arr);\n\n\t} else if (PyMapping_Check((PyObject *)p_python_object)) {\n\t\tDictionary dict = Dictionary(p_python_object);\n\t\tgodot::api->godot_variant_new_dictionary(&_godot_variant, (godot_dictionary *)&dict);\n\n\t} else if (PyIndex_Check((PyObject *)p_python_object)) {\n\t\tconst Py_ssize_t p_num = PyNumber_AsSsize_t((PyObject *)p_python_object, NULL);\n\t\tgodot::api->godot_variant_new_int(&_godot_variant, p_num);\n\n\t} else if (PyNumber_Check((PyObject *)p_python_object)) {\n\t\tPyObject *p_num = PyNumber_Float((PyObject *)p_python_object);\n\t\tconst double p_double = PyFloat_AsDouble((PyObject *)p_num);\n\t\tgodot::api->godot_variant_new_real(&_godot_variant, p_double);\n\n\t} else if (PyObject_CheckBuffer((PyObject *)p_python_object)) {\n\t\tthrow std::invalid_argument("generic Python buffer support is not implemented yet");\n\n\t} else {\n\n\t\t// raises ValueError in Cython/Python context\n\t\tthrow std::invalid_argument("could not cast Python object to Godot Variant");\n\t}\n}\n\nVariant &Variant::operator=(const Variant &v) {\n\tgodot::api->godot_variant_new_copy(&_godot_variant, &v._godot_variant);\n\treturn *this;\n}\n\nVariant::operator bool() const {\n\treturn booleanize();\n}\nVariant::operator signed int() const {\n\treturn godot::api->godot_variant_as_int(&_godot_variant);\n}\nVariant::operator unsigned int() const // this is the real one\n{\n\treturn godot::api->godot_variant_as_uint(&_godot_variant);\n}\nVariant::operator signed short() const {\n\treturn godot::api->godot_variant_as_int(&_godot_variant);\n}\nVariant::operator unsigned short() const {\n\treturn godot::api->godot_variant_as_uint(&_godot_variant);\n}\nVariant::operator signed char() const {\n\treturn godot::api->godot_variant_as_int(&_godot_variant);\n}\nVariant::operator unsigned char() const {\n\treturn godot::api->godot_variant_as_uint(&_godot_variant);\n}\nVariant::operator int64_t() const {\n\treturn godot::api->godot_variant_as_int(&_godot_variant);\n}\nVariant::operator uint64_t() const {\n\treturn godot::api->godot_variant_as_uint(&_godot_variant);\n}\n\nVariant::operator wchar_t() const {\n\treturn godot::api->godot_variant_as_int(&_godot_variant);\n}\n\nVariant::operator float() const {\n\treturn godot::api->godot_variant_as_real(&_godot_variant);\n}\n\nVariant::operator double() const {\n\treturn godot::api->godot_variant_as_real(&_godot_variant);\n}\nVariant::operator String() const {\n\tString ret;\n\t*(godot_string *)&ret = godot::api->godot_variant_as_string(&_godot_variant);\n\treturn ret;\n}\nVariant::operator Vector2() const {\n\tgodot_vector2 s = godot::api->godot_variant_as_vector2(&_godot_variant);\n\treturn *(Vector2 *)&s;\n}\nVariant::operator Rect2() const {\n\tgodot_rect2 s = godot::api->godot_variant_as_rect2(&_godot_variant);\n\treturn *(Rect2 *)&s;\n}\nVariant::operator Vector3() const {\n\tgodot_vector3 s = godot::api->godot_variant_as_vector3(&_godot_variant);\n\treturn *(Vector3 *)&s;\n}\nVariant::operator Plane() const {\n\tgodot_plane s = godot::api->godot_variant_as_plane(&_godot_variant);\n\treturn *(Plane *)&s;\n}\nVariant::operator AABB() const {\n\tgodot_aabb s = godot::api->godot_variant_as_aabb(&_godot_variant);\n\treturn *(AABB *)&s;\n}\nVariant::operator Quat() const {\n\tgodot_quat s = godot::api->godot_variant_as_quat(&_godot_variant);\n\treturn *(Quat *)&s;\n}\nVariant::operator Basis() const {\n\tgodot_basis s = godot::api->godot_variant_as_basis(&_godot_variant);\n\treturn *(Basis *)&s;\n}\nVariant::operator Transform() const {\n\tgodot_transform s = godot::api->godot_variant_as_transform(&_godot_variant);\n\treturn *(Transform *)&s;\n}\nVariant::operator Transform2D() const {\n\tgodot_transform2d s = godot::api->godot_variant_as_transform2d(&_godot_variant);\n\treturn *(Transform2D *)&s;\n}\n\nVariant::operator Color() const {\n\tgodot_color s = godot::api->godot_variant_as_color(&_godot_variant);\n\treturn *(Color *)&s;\n}\nVariant::operator NodePath() const {\n\tNodePath ret;\n\t*(godot_node_path *)&ret = godot::api->godot_variant_as_node_path(&_godot_variant);\n\treturn ret;\n}\nVariant::operator RID() const {\n\tgodot_rid s = godot::api->godot_variant_as_rid(&_godot_variant);\n\treturn *(RID *)&s;\n}\n\nVariant::operator Dictionary() const {\n\tDictionary ret;\n\t*(godot_dictionary *)&ret = godot::api->godot_variant_as_dictionary(&_godot_variant);\n\treturn ret;\n}\n\nVariant::operator Array() const {\n\tArray ret;\n\t*(godot_array *)&ret = godot::api->godot_variant_as_array(&_godot_variant);\n\treturn ret;\n}\n\nVariant::operator PoolByteArray() const {\n\tPoolByteArray ret;\n\t*(godot_pool_byte_array *)&ret = godot::api->godot_variant_as_pool_byte_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolIntArray() const {\n\tPoolIntArray ret;\n\t*(godot_pool_int_array *)&ret = godot::api->godot_variant_as_pool_int_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolRealArray() const {\n\tPoolRealArray ret;\n\t*(godot_pool_real_array *)&ret = godot::api->godot_variant_as_pool_real_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolStringArray() const {\n\tPoolStringArray ret;\n\t*(godot_pool_string_array *)&ret = godot::api->godot_variant_as_pool_string_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolVector2Array() const {\n\tPoolVector2Array ret;\n\t*(godot_pool_vector2_array *)&ret = godot::api->godot_variant_as_pool_vector2_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolVector3Array() const {\n\tPoolVector3Array ret;\n\t*(godot_pool_vector3_array *)&ret = godot::api->godot_variant_as_pool_vector3_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator PoolColorArray() const {\n\tPoolColorArray ret;\n\t*(godot_pool_color_array *)&ret = godot::api->godot_variant_as_pool_color_array(&_godot_variant);\n\treturn ret;\n}\nVariant::operator godot_object *() const {\n\treturn godot::api->godot_variant_as_object(&_godot_variant);\n}\n\nVariant::operator PyObject *() const {\n\tPyObject *obj;\n\n\tswitch (get_type()) {\n\t\tcase NIL:\n\t\t\tobj = Py_None;\n\t\t\tbreak;\n\n\t\tcase BOOL:\n\t\t\tobj = booleanize() ? Py_True : Py_False;\n\t\t\tbreak;\n\n\t\tcase INT:\n\t\t\tobj = PyLong_FromSsize_t(godot::api->godot_variant_as_int(&_godot_variant));\n\t\t\tbreak;\n\n\t\tcase REAL:\n\t\t\tobj = PyFloat_FromDouble(godot::api->godot_variant_as_real(&_godot_variant));\n\t\t\tbreak;\n\n\t\tcase STRING: {\n\t\t\tString s = *this;\n\t\t\tobj = PyUnicode_FromWideChar(s.unicode_str(), s.length());\n\t\t\tbreak;\n\t\t}\n\n\t\tcase VECTOR2: {\n\t\t\tVector2 cpp_obj = *this;\n\t\t\treturn _vector2_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase RECT2: {\n\t\t\tRect2 cpp_obj = *this;\n\t\t\treturn _rect2_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase VECTOR3: {\n\t\t\tVector3 cpp_obj = *this;\n\t\t\treturn _vector3_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase TRANSFORM2D: {\n\t\t\tTransform2D cpp_obj = *this;\n\t\t\treturn _transform2d_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase PLANE: {\n\t\t\tPlane cpp_obj = *this;\n\t\t\treturn _plane_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase QUAT: {\n\t\t\tQuat cpp_obj = *this;\n\t\t\treturn _quat_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase RECT3: {\n\t\t\tAABB cpp_obj = *this;\n\t\t\treturn _aabb_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase BASIS: {\n\t\t\tBasis cpp_obj = *this;\n\t\t\treturn _basis_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase TRANSFORM: {\n\t\t\tTransform cpp_obj = *this;\n\t\t\treturn _transform_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase COLOR: {\n\t\t\tColor cpp_obj = *this;\n\t\t\treturn _color_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase NODE_PATH: {\n\t\t\tNodePath cpp_obj = *this;\n\t\t\treturn _nodepath_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase _RID: {\n\t\t\tRID cpp_obj = *this;\n\t\t\treturn _rid_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase OBJECT: {\n\t\t\tgodot_object *c_obj = godot::api->godot_variant_as_object(&_godot_variant);\n\t\t\treturn _godot_object_to_python_binding(c_obj);\n\t\t}\n\n\t\tcase DICTIONARY: {\n\t\t\tconst Dictionary dict = *this;\n\t\t\tconst Array keys = dict.keys();\n\t\t\tobj = PyDict_New();\n\n\t\t\tfor (int i = 0; i < keys.size(); i++) {\n\t\t\t\tVariant _key = keys[i];\n\t\t\t\tPyObject *key = _key;\n\t\t\t\tPyObject *val = dict[_key];\n\t\t\t\t// TODO: Check unlikely NULL pointers\n\t\t\t\tPyDict_SetItem(obj, key, val);\n\t\t\t}\n\t\t\tbreak;\n\t\t}\n\n\t\tcase ARRAY: {\n\t\t\tconst Array arr = *this;\n\t\t\tobj = PyTuple_New(arr.size());\n\n\t\t\tfor (int i = 0; i < arr.size(); i++) {\n\t\t\t\tPyObject *item = arr[i];\n\t\t\t\t// TODO: Check unlikely NULL pointers\n\t\t\t\tPyTuple_SET_ITEM(obj, i, item);\n\t\t\t}\n\t\t\tbreak;\n\t\t}\n\n\t\tcase POOL_BYTE_ARRAY: {\n\t\t\tPoolByteArray cpp_obj = *this;\n\t\t\treturn _poolbytearray_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase POOL_INT_ARRAY: {\n\t\t\tPoolIntArray cpp_obj = *this;\n\t\t\treturn _poolintarray_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase POOL_REAL_ARRAY: {\n\t\t\tPoolRealArray cpp_obj = *this;\n\t\t\treturn _poolrealarray_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase POOL_STRING_ARRAY: {\n\t\t\tPoolStringArray cpp_obj = *this;\n\t\t\treturn _poolstringarray_to_numpy(cpp_obj);\n\t\t}\n\n\t\tcase POOL_VECTOR2_ARRAY: {\n\t\t\tPoolVector2Array cpp_obj = *this;\n\t\t\treturn _poolvector2array_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase POOL_VECTOR3_ARRAY: {\n\t\t\tPoolVector3Array cpp_obj = *this;\n\t\t\treturn _poolvector3array_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tcase POOL_COLOR_ARRAY: {\n\t\t\tPoolColorArray cpp_obj = *this;\n\t\t\treturn _poolcolorarray_to_python_wrapper(cpp_obj);\n\t\t}\n\n\t\tdefault:\n\t\t\t// raises ValueError in Cython/Python context\n\t\t\tthrow std::invalid_argument("could not cast Python object to Godot Variant");\n\t}\n\n\tPy_XINCREF(obj);\n\treturn obj;\n}\n\nVariant::Type Variant::get_type() const {\n\treturn (Type)godot::api->godot_variant_get_type(&_godot_variant);\n}\n\nVariant Variant::call(const String &method, const Variant **args, const int arg_count) {\n\tVariant v;\n\t*(godot_variant *)&v = godot::api->godot_variant_call(&_godot_variant, (godot_string *)&method, (const godot_variant **)args, arg_count, nullptr);\n\treturn v;\n}\n\nbool Variant::has_method(const String &method) {\n\treturn godot::api->godot_variant_has_method(&_godot_variant, (godot_string *)&method);\n}\n\nbool Variant::operator==(const Variant &b) const {\n\treturn godot::api->godot_variant_operator_equal(&_godot_variant, &b._godot_variant);\n}\n\nbool Variant::operator!=(const Variant &b) const {\n\treturn !(*this == b);\n}\n\nbool Variant::operator<(const Variant &b) const {\n\treturn godot::api->godot_variant_operator_less(&_godot_variant, &b._godot_variant);\n}\n\nbool Variant::operator<=(const Variant &b) const {\n\treturn (*this < b) || (*this == b);\n}\n\nbool Variant::operator>(const Variant &b) const {\n\treturn !(*this <= b);\n}\n\nbool Variant::operator>=(const Variant &b) const {\n\treturn !(*this < b);\n}\n\nbool Variant::hash_compare(const Variant &b) const {\n\treturn godot::api->godot_variant_hash_compare(&_godot_variant, &b._godot_variant);\n}\n\nbool Variant::booleanize() const {\n\treturn godot::api->godot_variant_booleanize(&_godot_variant);\n}\n\nVariant::~Variant() {\n\tgodot::api->godot_variant_destroy(&_godot_variant);\n}\n\n} // namespace godot\n'}
+Map:   0%|          | 0/3 [00:00<?, ? examples/s]Map: 100%|██████████| 3/3 [00:00<00:00, 126.31 examples/s]
+[transformers] `logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+Creating fresh LORA model for Phase 2 (Python to C++)...
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   0%|          | 1/339 [00:00<01:43,  3.25it/s]Loading weights:   1%|          | 2/339 [00:00<01:08,  4.91it/s]Loading weights:   7%|▋         | 24/339 [00:00<00:04, 66.47it/s]Loading weights:  12%|█▏        | 40/339 [00:00<00:03, 84.06it/s]Loading weights:  19%|█▉        | 64/339 [00:00<00:02, 118.83it/s]Loading weights:  23%|██▎       | 78/339 [00:00<00:02, 118.78it/s]Loading weights:  29%|██▉       | 100/339 [00:01<00:01, 125.12it/s]Loading weights:  37%|███▋      | 124/339 [00:01<00:01, 145.69it/s]Loading weights:  41%|████▏     | 140/339 [00:01<00:01, 143.31it/s]Loading weights:  47%|████▋     | 160/339 [00:01<00:01, 139.19it/s]Loading weights:  54%|█████▍    | 184/339 [00:01<00:01, 154.26it/s]Loading weights:  59%|█████▉    | 200/339 [00:01<00:00, 150.57it/s]Loading weights:  65%|██████▍   | 220/339 [00:01<00:00, 141.28it/s]Loading weights:  72%|███████▏  | 244/339 [00:02<00:00, 143.90it/s]Loading weights:  79%|███████▉  | 268/339 [00:02<00:00, 151.52it/s]Loading weights:  86%|████████▌ | 292/339 [00:02<00:00, 159.40it/s]Loading weights:  91%|█████████ | 309/339 [00:02<00:00, 154.75it/s]Loading weights:  97%|█████████▋| 328/339 [00:02<00:00, 156.23it/s]Loading weights: 100%|██████████| 339/339 [00:02<00:00, 130.91it/s]
+trainable params: 40,370,176 || all params: 7,655,986,688 || trainable%: 0.5273
+
+==============================
+
+Starting LORA training for Python to C++ translation...
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.08it/s] 67%|██████▋   | 2/3 [00:03<00:01,  1.83s/it]100%|██████████| 3/3 [00:05<00:00,  2.13s/it]                                             100%|██████████| 3/3 [00:07<00:00,  2.13s/it]100%|██████████| 3/3 [00:07<00:00,  2.49s/it]
+{'train_runtime': '7.465', 'train_samples_per_second': '1.206', 'train_steps_per_second': '0.402', 'train_loss': '0.5858', 'epoch': '3'}
+LORA training for Python to C++ complete.
+
+==============================
+
+LORA adapter model saved to '../model/Qwen_Python_to_CPP_LORA_Adapter'.
+
+==============================
+
+
+==============================
+
+Starting LORA model validation phase...
+Reloading models needed for validation...
+	Loading AST processor...
+	Loading GraphCodeBERT scorer...
+Initializing GraphCodeBERTScorer...
+Using device: cuda
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]Loading weights: 100%|██████████| 197/197 [00:00<00:00, 54107.65it/s]
+[transformers] [1mRobertaModel LOAD REPORT[0m from: microsoft/graphcodebert-base
+Key                       | Status     | 
+--------------------------+------------+-
+lm_head.bias              | UNEXPECTED | 
+lm_head.dense.bias        | UNEXPECTED | 
+lm_head.layer_norm.bias   | UNEXPECTED | 
+lm_head.dense.weight      | UNEXPECTED | 
+lm_head.layer_norm.weight | UNEXPECTED | 
+lm_head.decoder.bias      | UNEXPECTED | 
+lm_head.decoder.weight    | UNEXPECTED | 
+pooler.dense.bias         | MISSING    | 
+pooler.dense.weight       | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+GraphCodeBERTScorer initialized successfully.
+Loading fine-tuned LORA model for validation...
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   1%|          | 2/339 [00:00<01:51,  3.03it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 507.97it/s]
+Some parameters are on the meta device because they were offloaded to the cpu.
+Fine-tuned LORA model loaded from '../model/Qwen_Python_to_CPP_LORA_Adapter'
+Loading weights:   0%|          | 0/339 [00:00<?, ?it/s]Loading weights:   1%|          | 2/339 [00:00<01:50,  3.05it/s]Loading weights: 100%|██████████| 339/339 [00:00<00:00, 511.29it/s]
+Some parameters are on the meta device because they were offloaded to the cpu.
+NL->PL LORA model loaded from '../model/Qwen_NL_to_PL_LORA_Adapter'
+FineTunedGenerator using device: cpu
+
+Debug: Checking dataset languages from index 6...
+Found 1 C++ records in validation range
+Other languages: {'python': 2}
+Unprocessable records in range: 0
+
+Starting computation for 3 records (starting from index 6, each with 3 tries per phase)...
+
+Synchronizing CUDA and empty cache
+Using cached dataset with 10 samples...
+DEBUG: First record language: 'C++', is_processable: True
+Processing record 1/3 (language: C++)...
+  Generating documentation for 4f203c48...
+  Generating code from documentation for C++...
+*************
+Documentation:
+### Overview
+
+This C++ code defines a simple logging utility using a class `LogStream`. The primary purpose of this utility is to provide a flexible way to construct log messages by appending various data types and then outputting them to a specified destination. The code includes a global output function `g_out` and a global flush function `g_flush`, which default to writing to standard output (`stdout`) and flushing it, respectively.
+
+### Classes and Structs
+
+#### Class: `LogStream`
+
+The `LogStream` class is designed to build log messages dynamically. It provides overloaded insertion operators (`<<`) for different data types such as integers, floating-point numbers, strings, and booleans. These operators allow you to chain together multiple insertions to form a complete log message.
+
+##### Fields/Member Variables
+
+- **`buf_`:** A character array used as the internal buffer to store the log message being constructed.
+- **`buf_pointer_:** An index indicating the current position within the buffer where new characters should be written.
+- **`buf_size_:** The total size of the buffer.
+
+##### Methods
+
+- **Constructor:** Initializes the buffer and its pointer.
+- **Destructor:** Ensures the buffer is properly terminated before destruction.
+- **`buf(char**
+*************
+Code:
+#include <iostream>
+#include <cstring>
+
+class LogStream {
+private:
+    char buf_[1024]; // Buffer to store log message
+    int buf_pointer_; // Index of next available position in the buffer
+    const int buf_size_; // Total size of the buffer
+
+public:
+    // Constructor initializes the buffer and its pointer
+    LogStream() : buf_pointer_(0), buf_size_(sizeof(buf_)) {}
+
+    // Destructor ensures the buffer is properly terminated before destruction
+    ~LogStream() { buf_[buf_pointer_] = '\0'; }
+
+    // Overloaded insertion operator for integer values
+    LogStream& operator<<(int value) {
+        snprintf(buf_ + buf_pointer_, buf_size_ - buf_pointer_, "%d", value);
+        buf_pointer_ += strlen(buf_ + buf_pointer_);
+        return *this;
+    }
+
+    // Overloaded insertion operator for double values
+    LogStream& operator<<(double value) {
+        snprintf(buf_ + buf_pointer_, buf_size_ - buf_pointer_, "%.2f", value);
+        buf_pointer_ += strlen(buf_ + buf_pointer_);
+        return *this;
+    }
+
+    // Overloaded insertion operator for string values
+    LogStream& operator<<(const
+***************
+  Comparing ASTs...
+  Computing semantic similarity GraphCodeBERTScore...
+	 AST Similarity Score: 0.4000, GraphCodeBERTScore: 0.9292, Average: 0.6646
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Info: Qwen code generation max new tokens: 16384
+LLM Judge Score: 0.9
+	Clear GPU cache after each record to prevent memory fragmentation
+	Recording result: 'hexsha': 4f203c4842, 'nl_pl_best_ast_score': 0.4000, 'nl_pl_best_graphcodebert_score': 0.9292, 'nl_pl_best_average_score': 0.6646
+	Recording NL->PL1->PL2 result: 'hexsha': 4f203c4842, 'nl_pl1_pl2_best_ast_score': 0.3265, 'nl_pl1_pl2_best_average_score': 0.5912
+
+Processed 2/3 records. Current record 4f203c4842... NL->PL Avg Score: 0.6646, NL->C++->Py Avg Score: 0.5912
+
+==============================
+
+
+
+******************************
+
+
+Baseline Summary:
+  Total records processed: 2
+	- Python records: 1
+	- C++ records: 1
+NL->PL Average Score: 0.8333
+	NL->PL AST Score: 0.7152
+	NL->PL GCB Score: 0.9514
+	Python NL->PL Average Score: 0.8472 (n=1)
+	C++ NL->PL Average Score: 0.8194 (n=1)
+	NL->PL1->PL2 Average Score: 0.7706 (n=1)
+
+
+******************************
+
+
+Validation Summary (using fine-tuned LORA model - C++ records only):
+	Total C++ records processed: 1
+	NL->PL Average Score: 0.6646
+	NL->PL AST Score: 0.4000
+	NL->PL GCB Score: 0.9292
+	PL1->PL2 (Python->C++) Average Score: 0.5912 (n=1)

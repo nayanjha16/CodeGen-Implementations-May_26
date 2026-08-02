@@ -1,0 +1,719 @@
+Log started at: 2026-07-14 09:10:01
+==================================================
+Active Options:
+  - Baseline (-b)             : Disabled
+  - Training (-t)             : Enabled
+  - Validation (-v)           : Disabled
+  - Number of records to cache: 1000
+  - Purge Cached Dataset      : False
+==================================================
+Resetting singleton states for BaselineData and its dependencies...
+Singleton states reset.
+Using dataset with 1000 records
+Initializing BaselineData singleton using device: cuda...
+Initializing FilteredDataset singleton...
+Cached dataset loaded with 1000 samples from ./cached_data/filtered_subset_1000.
+FilteredDataset initialized successfully.
+BaselineData initialized successfully.
+Loading all models...
+QwenModelBase using device: cuda for model Qwen/Qwen2.5-Coder-7B-Instruct
+CodeDocumentationGenerator using device: cuda
+QwenCodeGenerator using device: cuda
+Initializing GraphCodeBERTScorer...
+Using device: cuda
+GraphCodeBERTScorer initialized successfully.
+LLMJudge using device: cuda
+All models loaded.
+Processing 500 records for LORA training
+Printing modules in Qwen2.5-Coder-7B-Instruct model
+	
+	model
+	model.embed_tokens
+	model.layers
+	model.layers.0
+	model.layers.0.self_attn
+	model.layers.0.self_attn.q_proj
+	model.layers.0.self_attn.k_proj
+	model.layers.0.self_attn.v_proj
+	model.layers.0.self_attn.o_proj
+	model.layers.0.mlp
+	model.layers.0.mlp.gate_proj
+	model.layers.0.mlp.up_proj
+	model.layers.0.mlp.down_proj
+	model.layers.0.mlp.act_fn
+	model.layers.0.input_layernorm
+	model.layers.0.post_attention_layernorm
+	model.layers.1
+	model.layers.1.self_attn
+	model.layers.1.self_attn.q_proj
+	model.layers.1.self_attn.k_proj
+	model.layers.1.self_attn.v_proj
+	model.layers.1.self_attn.o_proj
+	model.layers.1.mlp
+	model.layers.1.mlp.gate_proj
+	model.layers.1.mlp.up_proj
+	model.layers.1.mlp.down_proj
+	model.layers.1.mlp.act_fn
+	model.layers.1.input_layernorm
+	model.layers.1.post_attention_layernorm
+	model.layers.2
+	model.layers.2.self_attn
+	model.layers.2.self_attn.q_proj
+	model.layers.2.self_attn.k_proj
+	model.layers.2.self_attn.v_proj
+	model.layers.2.self_attn.o_proj
+	model.layers.2.mlp
+	model.layers.2.mlp.gate_proj
+	model.layers.2.mlp.up_proj
+	model.layers.2.mlp.down_proj
+	model.layers.2.mlp.act_fn
+	model.layers.2.input_layernorm
+	model.layers.2.post_attention_layernorm
+	model.layers.3
+	model.layers.3.self_attn
+	model.layers.3.self_attn.q_proj
+	model.layers.3.self_attn.k_proj
+	model.layers.3.self_attn.v_proj
+	model.layers.3.self_attn.o_proj
+	model.layers.3.mlp
+	model.layers.3.mlp.gate_proj
+	model.layers.3.mlp.up_proj
+	model.layers.3.mlp.down_proj
+	model.layers.3.mlp.act_fn
+	model.layers.3.input_layernorm
+	model.layers.3.post_attention_layernorm
+	model.layers.4
+	model.layers.4.self_attn
+	model.layers.4.self_attn.q_proj
+	model.layers.4.self_attn.k_proj
+	model.layers.4.self_attn.v_proj
+	model.layers.4.self_attn.o_proj
+	model.layers.4.mlp
+	model.layers.4.mlp.gate_proj
+	model.layers.4.mlp.up_proj
+	model.layers.4.mlp.down_proj
+	model.layers.4.mlp.act_fn
+	model.layers.4.input_layernorm
+	model.layers.4.post_attention_layernorm
+	model.layers.5
+	model.layers.5.self_attn
+	model.layers.5.self_attn.q_proj
+	model.layers.5.self_attn.k_proj
+	model.layers.5.self_attn.v_proj
+	model.layers.5.self_attn.o_proj
+	model.layers.5.mlp
+	model.layers.5.mlp.gate_proj
+	model.layers.5.mlp.up_proj
+	model.layers.5.mlp.down_proj
+	model.layers.5.mlp.act_fn
+	model.layers.5.input_layernorm
+	model.layers.5.post_attention_layernorm
+	model.layers.6
+	model.layers.6.self_attn
+	model.layers.6.self_attn.q_proj
+	model.layers.6.self_attn.k_proj
+	model.layers.6.self_attn.v_proj
+	model.layers.6.self_attn.o_proj
+	model.layers.6.mlp
+	model.layers.6.mlp.gate_proj
+	model.layers.6.mlp.up_proj
+	model.layers.6.mlp.down_proj
+	model.layers.6.mlp.act_fn
+	model.layers.6.input_layernorm
+	model.layers.6.post_attention_layernorm
+	model.layers.7
+	model.layers.7.self_attn
+	model.layers.7.self_attn.q_proj
+	model.layers.7.self_attn.k_proj
+	model.layers.7.self_attn.v_proj
+	model.layers.7.self_attn.o_proj
+	model.layers.7.mlp
+	model.layers.7.mlp.gate_proj
+	model.layers.7.mlp.up_proj
+	model.layers.7.mlp.down_proj
+	model.layers.7.mlp.act_fn
+	model.layers.7.input_layernorm
+	model.layers.7.post_attention_layernorm
+	model.layers.8
+	model.layers.8.self_attn
+	model.layers.8.self_attn.q_proj
+	model.layers.8.self_attn.k_proj
+	model.layers.8.self_attn.v_proj
+	model.layers.8.self_attn.o_proj
+	model.layers.8.mlp
+	model.layers.8.mlp.gate_proj
+	model.layers.8.mlp.up_proj
+	model.layers.8.mlp.down_proj
+	model.layers.8.mlp.act_fn
+	model.layers.8.input_layernorm
+	model.layers.8.post_attention_layernorm
+	model.layers.9
+	model.layers.9.self_attn
+	model.layers.9.self_attn.q_proj
+	model.layers.9.self_attn.k_proj
+	model.layers.9.self_attn.v_proj
+	model.layers.9.self_attn.o_proj
+	model.layers.9.mlp
+	model.layers.9.mlp.gate_proj
+	model.layers.9.mlp.up_proj
+	model.layers.9.mlp.down_proj
+	model.layers.9.mlp.act_fn
+	model.layers.9.input_layernorm
+	model.layers.9.post_attention_layernorm
+	model.layers.10
+	model.layers.10.self_attn
+	model.layers.10.self_attn.q_proj
+	model.layers.10.self_attn.k_proj
+	model.layers.10.self_attn.v_proj
+	model.layers.10.self_attn.o_proj
+	model.layers.10.mlp
+	model.layers.10.mlp.gate_proj
+	model.layers.10.mlp.up_proj
+	model.layers.10.mlp.down_proj
+	model.layers.10.mlp.act_fn
+	model.layers.10.input_layernorm
+	model.layers.10.post_attention_layernorm
+	model.layers.11
+	model.layers.11.self_attn
+	model.layers.11.self_attn.q_proj
+	model.layers.11.self_attn.k_proj
+	model.layers.11.self_attn.v_proj
+	model.layers.11.self_attn.o_proj
+	model.layers.11.mlp
+	model.layers.11.mlp.gate_proj
+	model.layers.11.mlp.up_proj
+	model.layers.11.mlp.down_proj
+	model.layers.11.mlp.act_fn
+	model.layers.11.input_layernorm
+	model.layers.11.post_attention_layernorm
+	model.layers.12
+	model.layers.12.self_attn
+	model.layers.12.self_attn.q_proj
+	model.layers.12.self_attn.k_proj
+	model.layers.12.self_attn.v_proj
+	model.layers.12.self_attn.o_proj
+	model.layers.12.mlp
+	model.layers.12.mlp.gate_proj
+	model.layers.12.mlp.up_proj
+	model.layers.12.mlp.down_proj
+	model.layers.12.mlp.act_fn
+	model.layers.12.input_layernorm
+	model.layers.12.post_attention_layernorm
+	model.layers.13
+	model.layers.13.self_attn
+	model.layers.13.self_attn.q_proj
+	model.layers.13.self_attn.k_proj
+	model.layers.13.self_attn.v_proj
+	model.layers.13.self_attn.o_proj
+	model.layers.13.mlp
+	model.layers.13.mlp.gate_proj
+	model.layers.13.mlp.up_proj
+	model.layers.13.mlp.down_proj
+	model.layers.13.mlp.act_fn
+	model.layers.13.input_layernorm
+	model.layers.13.post_attention_layernorm
+	model.layers.14
+	model.layers.14.self_attn
+	model.layers.14.self_attn.q_proj
+	model.layers.14.self_attn.k_proj
+	model.layers.14.self_attn.v_proj
+	model.layers.14.self_attn.o_proj
+	model.layers.14.mlp
+	model.layers.14.mlp.gate_proj
+	model.layers.14.mlp.up_proj
+	model.layers.14.mlp.down_proj
+	model.layers.14.mlp.act_fn
+	model.layers.14.input_layernorm
+	model.layers.14.post_attention_layernorm
+	model.layers.15
+	model.layers.15.self_attn
+	model.layers.15.self_attn.q_proj
+	model.layers.15.self_attn.k_proj
+	model.layers.15.self_attn.v_proj
+	model.layers.15.self_attn.o_proj
+	model.layers.15.mlp
+	model.layers.15.mlp.gate_proj
+	model.layers.15.mlp.up_proj
+	model.layers.15.mlp.down_proj
+	model.layers.15.mlp.act_fn
+	model.layers.15.input_layernorm
+	model.layers.15.post_attention_layernorm
+	model.layers.16
+	model.layers.16.self_attn
+	model.layers.16.self_attn.q_proj
+	model.layers.16.self_attn.k_proj
+	model.layers.16.self_attn.v_proj
+	model.layers.16.self_attn.o_proj
+	model.layers.16.mlp
+	model.layers.16.mlp.gate_proj
+	model.layers.16.mlp.up_proj
+	model.layers.16.mlp.down_proj
+	model.layers.16.mlp.act_fn
+	model.layers.16.input_layernorm
+	model.layers.16.post_attention_layernorm
+	model.layers.17
+	model.layers.17.self_attn
+	model.layers.17.self_attn.q_proj
+	model.layers.17.self_attn.k_proj
+	model.layers.17.self_attn.v_proj
+	model.layers.17.self_attn.o_proj
+	model.layers.17.mlp
+	model.layers.17.mlp.gate_proj
+	model.layers.17.mlp.up_proj
+	model.layers.17.mlp.down_proj
+	model.layers.17.mlp.act_fn
+	model.layers.17.input_layernorm
+	model.layers.17.post_attention_layernorm
+	model.layers.18
+	model.layers.18.self_attn
+	model.layers.18.self_attn.q_proj
+	model.layers.18.self_attn.k_proj
+	model.layers.18.self_attn.v_proj
+	model.layers.18.self_attn.o_proj
+	model.layers.18.mlp
+	model.layers.18.mlp.gate_proj
+	model.layers.18.mlp.up_proj
+	model.layers.18.mlp.down_proj
+	model.layers.18.mlp.act_fn
+	model.layers.18.input_layernorm
+	model.layers.18.post_attention_layernorm
+	model.layers.19
+	model.layers.19.self_attn
+	model.layers.19.self_attn.q_proj
+	model.layers.19.self_attn.k_proj
+	model.layers.19.self_attn.v_proj
+	model.layers.19.self_attn.o_proj
+	model.layers.19.mlp
+	model.layers.19.mlp.gate_proj
+	model.layers.19.mlp.up_proj
+	model.layers.19.mlp.down_proj
+	model.layers.19.mlp.act_fn
+	model.layers.19.input_layernorm
+	model.layers.19.post_attention_layernorm
+	model.layers.20
+	model.layers.20.self_attn
+	model.layers.20.self_attn.q_proj
+	model.layers.20.self_attn.k_proj
+	model.layers.20.self_attn.v_proj
+	model.layers.20.self_attn.o_proj
+	model.layers.20.mlp
+	model.layers.20.mlp.gate_proj
+	model.layers.20.mlp.up_proj
+	model.layers.20.mlp.down_proj
+	model.layers.20.mlp.act_fn
+	model.layers.20.input_layernorm
+	model.layers.20.post_attention_layernorm
+	model.layers.21
+	model.layers.21.self_attn
+	model.layers.21.self_attn.q_proj
+	model.layers.21.self_attn.k_proj
+	model.layers.21.self_attn.v_proj
+	model.layers.21.self_attn.o_proj
+	model.layers.21.mlp
+	model.layers.21.mlp.gate_proj
+	model.layers.21.mlp.up_proj
+	model.layers.21.mlp.down_proj
+	model.layers.21.mlp.act_fn
+	model.layers.21.input_layernorm
+	model.layers.21.post_attention_layernorm
+	model.layers.22
+	model.layers.22.self_attn
+	model.layers.22.self_attn.q_proj
+	model.layers.22.self_attn.k_proj
+	model.layers.22.self_attn.v_proj
+	model.layers.22.self_attn.o_proj
+	model.layers.22.mlp
+	model.layers.22.mlp.gate_proj
+	model.layers.22.mlp.up_proj
+	model.layers.22.mlp.down_proj
+	model.layers.22.mlp.act_fn
+	model.layers.22.input_layernorm
+	model.layers.22.post_attention_layernorm
+	model.layers.23
+	model.layers.23.self_attn
+	model.layers.23.self_attn.q_proj
+	model.layers.23.self_attn.k_proj
+	model.layers.23.self_attn.v_proj
+	model.layers.23.self_attn.o_proj
+	model.layers.23.mlp
+	model.layers.23.mlp.gate_proj
+	model.layers.23.mlp.up_proj
+	model.layers.23.mlp.down_proj
+	model.layers.23.mlp.act_fn
+	model.layers.23.input_layernorm
+	model.layers.23.post_attention_layernorm
+	model.layers.24
+	model.layers.24.self_attn
+	model.layers.24.self_attn.q_proj
+	model.layers.24.self_attn.k_proj
+	model.layers.24.self_attn.v_proj
+	model.layers.24.self_attn.o_proj
+	model.layers.24.mlp
+	model.layers.24.mlp.gate_proj
+	model.layers.24.mlp.up_proj
+	model.layers.24.mlp.down_proj
+	model.layers.24.mlp.act_fn
+	model.layers.24.input_layernorm
+	model.layers.24.post_attention_layernorm
+	model.layers.25
+	model.layers.25.self_attn
+	model.layers.25.self_attn.q_proj
+	model.layers.25.self_attn.k_proj
+	model.layers.25.self_attn.v_proj
+	model.layers.25.self_attn.o_proj
+	model.layers.25.mlp
+	model.layers.25.mlp.gate_proj
+	model.layers.25.mlp.up_proj
+	model.layers.25.mlp.down_proj
+	model.layers.25.mlp.act_fn
+	model.layers.25.input_layernorm
+	model.layers.25.post_attention_layernorm
+	model.layers.26
+	model.layers.26.self_attn
+	model.layers.26.self_attn.q_proj
+	model.layers.26.self_attn.k_proj
+	model.layers.26.self_attn.v_proj
+	model.layers.26.self_attn.o_proj
+	model.layers.26.mlp
+	model.layers.26.mlp.gate_proj
+	model.layers.26.mlp.up_proj
+	model.layers.26.mlp.down_proj
+	model.layers.26.mlp.act_fn
+	model.layers.26.input_layernorm
+	model.layers.26.post_attention_layernorm
+	model.layers.27
+	model.layers.27.self_attn
+	model.layers.27.self_attn.q_proj
+	model.layers.27.self_attn.k_proj
+	model.layers.27.self_attn.v_proj
+	model.layers.27.self_attn.o_proj
+	model.layers.27.mlp
+	model.layers.27.mlp.gate_proj
+	model.layers.27.mlp.up_proj
+	model.layers.27.mlp.down_proj
+	model.layers.27.mlp.act_fn
+	model.layers.27.input_layernorm
+	model.layers.27.post_attention_layernorm
+	model.norm
+	model.rotary_emb
+	lm_head
+
+******************************
+LORA adapted model summary:
+trainable params: 40,370,176 || all params: 7,655,986,688 || trainable%: 0.5273
+
+******************************
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  29468 MiB |  29468 MiB |  58725 MiB |  29256 MiB |
+|       from large pool |  29409 MiB |  29409 MiB |  58588 MiB |  29179 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| Active memory         |  29468 MiB |  29468 MiB |  58725 MiB |  29256 MiB |
+|       from large pool |  29409 MiB |  29409 MiB |  58588 MiB |  29179 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| Requested memory      |  29443 MiB |  29443 MiB |  58696 MiB |  29253 MiB |
+|       from large pool |  29383 MiB |  29383 MiB |  58559 MiB |  29176 MiB |
+|       from small pool |     59 MiB |     80 MiB |    136 MiB |     77 MiB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |  29512 MiB |  29512 MiB |  29514 MiB |   2048 KiB |
+|       from large pool |  29430 MiB |  29430 MiB |  29430 MiB |      0 KiB |
+|       from small pool |     82 MiB |     82 MiB |     84 MiB |   2048 KiB |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |  44876 KiB |  13484 MiB |  27467 MiB |  27423 MiB |
+|       from large pool |  21472 KiB |  13484 MiB |  27321 MiB |  27300 MiB |
+|       from small pool |  23404 KiB |     22 MiB |    146 MiB |    123 MiB |
+|---------------------------------------------------------------------------|
+| Allocations           |    1275    |    1276    |    1872    |     597    |
+|       from large pool |     554    |     554    |     631    |      77    |
+|       from small pool |     721    |     806    |    1241    |     520    |
+|---------------------------------------------------------------------------|
+| Active allocs         |    1275    |    1276    |    1872    |     597    |
+|       from large pool |     554    |     554    |     631    |      77    |
+|       from small pool |     721    |     806    |    1241    |     520    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      70    |      70    |      71    |       1    |
+|       from large pool |      29    |      29    |      29    |       0    |
+|       from small pool |      41    |      41    |      42    |       1    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      47    |      48    |     151    |     104    |
+|       from large pool |       3    |      19    |      50    |      47    |
+|       from small pool |      44    |      45    |     101    |      57    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+Collecting 500 C++ records for LORA NL->C++ training (records 250 to 749)...
+Resetting dataset streams and iterators...
+Loading Python dataset...
+Loading C++ dataset...
+Python dataset length: streaming
+C++ dataset length: streaming
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Skipped 100 records for baseline...
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Skipped 200 records for baseline...
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Marking code as processable for Python
+Marking code as processable for C++
+Skipped 250 records. Starting LORA training data collection from record 251...
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++
+Processed 1 C++ records for LORA NL->C++
+Marking code as processable for Python
+Record not processable for language python
+Marking code as processable for C++

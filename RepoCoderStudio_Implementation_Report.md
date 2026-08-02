@@ -1180,6 +1180,31 @@ depend on hidden state or optional cells raise errors. The final notebook makes
 profiles visible, restores state from artifacts, skips optional experiments
 cleanly and launches the UI only after results are saved.
 
+## 13.12 A fine-tuned model can be less receptive to RAG evidence than the base model
+
+Manual Gradio testing on a free-typed LedgerFlow query (email validation)
+showed the pretrained baseline reproducing the repository's exact
+`validate_email` regex and `.strip()` call verbatim under RAG, while the
+fine-tuned model, given the identical retrieved context, ignored it and
+invented an unrelated implementation. The cause is a prompt-format gap: the
+LoRA fine-tuning corpus was built only with the plain
+`Instruction -> Input -> Response` template and never included the
+`### Retrieved Context` / `### Evidence Policy` sections that
+`build_rag_inference_prompt` adds at inference time. Completion-only
+fine-tuning narrows the model toward the exact prompt shape it was trained on,
+so at RAG inference time the fine-tuned model meets a structure it has never
+conditioned on and falls back to its trained completion habit instead of using
+the injected evidence, whereas the untouched pretrained model's general
+instruction-following ability lets it read and follow that unfamiliar section
+correctly. Fine-tuning and RAG were validated independently by the four-arm
+design, but this shows they can interact negatively on prompts outside the
+curated hidden-policy benchmark: a model over-specialized on non-RAG
+completions can be less receptive to injected context than the base model it
+was tuned from. Closing this gap would require including RAG-formatted
+examples in the fine-tuning corpus so the adapter learns to condition on
+retrieved evidence, which is noted as follow-up work rather than fixed within
+this run.
+
 ---
 
 # 14. Limitations

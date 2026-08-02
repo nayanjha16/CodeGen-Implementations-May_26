@@ -1,0 +1,82 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+package com.example.s3.transfermanager;
+
+// snippet-start:[s3.tm.java2.uploadadirectory.import]
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryUpload;
+import software.amazon.awssdk.transfer.s3.model.DirectoryUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+// snippet-end:[s3.tm.java2.uploadadirectory.import]
+
+/**
+ * Before running this Java V2 code example, set up your development
+ * environment, including your credentials.
+ *
+ * For more information, see the following documentation topic:
+ *
+ * https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/get-started.html
+ */
+
+public class UploadADirectory {
+    private static final Logger logger = LoggerFactory.getLogger(UploadADirectory.class);
+
+    public static void main(String[] args) {
+        String bucketName = "amzn-s3-demo-bucket"; // Replace with your bucket name.
+        URI sourceDirectory = getSourceDirectoryURI();
+
+        S3ClientFactory.s3Client.createBucket(b -> b.bucket(bucketName));
+        try {
+            UploadADirectory upload = new UploadADirectory();
+            Integer numFailedUploads = upload.uploadDirectory(S3ClientFactory.transferManager, sourceDirectory, bucketName);
+            logger.info("Number of failed transfers [{}].", numFailedUploads);
+        } finally {
+            cleanUp(bucketName);
+        }
+    }
+
+    // snippet-start:[s3.tm.java2.uploadadirectory.main]
+    public Integer uploadDirectory(S3TransferManager transferManager,
+            URI sourceDirectory, String bucketName) {
+        DirectoryUpload directoryUpload = transferManager.uploadDirectory(UploadDirectoryRequest.builder()
+                .source(Paths.get(sourceDirectory))
+                .bucket(bucketName)
+                .build());
+
+        CompletedDirectoryUpload completedDirectoryUpload = directoryUpload.completionFuture().join();
+        completedDirectoryUpload.failedTransfers()
+                .forEach(fail -> logger.warn("Object [{}] failed to transfer", fail.toString()));
+        return completedDirectoryUpload.failedTransfers().size();
+    }
+    // snippet-end:[s3.tm.java2.uploadadirectory.main]
+
+    public static URI getSourceDirectoryURI() {
+        URL dirResource = UploadADirectory.class.getClassLoader().getResource("uploadDirectory");
+        try {
+            return dirResource.toURI();
+        } catch (URISyntaxException | NullPointerException e) {
+            logger.error("Error getting file path URI: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void cleanUp(String bucketName) {
+        S3ClientFactory.s3Client.deleteObjects(b -> b
+                .bucket(bucketName)
+                .delete(b1 -> b1
+                        .objects(
+                                ObjectIdentifier.builder().key("file1.txt").build(),
+                                ObjectIdentifier.builder().key("file2.txt").build(),
+                                ObjectIdentifier.builder().key("file3.txt").build())));
+        S3ClientFactory.s3Client.deleteBucket(b -> b.bucket(bucketName));
+    }
+}

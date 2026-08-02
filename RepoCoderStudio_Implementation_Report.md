@@ -106,8 +106,8 @@ RepoCoder Studio therefore combines two complementary techniques:
    of its general pretraining or user prompt.
 
 The intended system is not an autonomous coding agent. It is an evidence-aware
-generation and evaluation platform that can later become the foundation for a
-Stage 6 agentic workflow.
+generation and evaluation platform for repository-grounded code generation and
+evaluation.
 
 ---
 
@@ -814,11 +814,9 @@ Python/Java output, validation status, retry disclosure, RAG decisions,
 dense/lexical/reranker scores, retrieval method, provenance and a structural
 comparison summary.
 
-## 10.3 React and cloud deployment
+## 10.3 Cloud deployment
 
 The current deployable UI is plain HTML, CSS and JavaScript served by FastAPI.
-A future React frontend can consume the same API endpoints without changing the
-model, retrieval or evaluation layers.
 
 Docker, Docker Compose and environment configuration use the same canonical
 adapter and output paths as the notebook. The consolidated GCP handoff includes
@@ -836,30 +834,13 @@ deployment activities rather than missing Stage 5 implementation.
 
 ---
 
-# 11. Corrected full-run execution contract
-
-The final run must follow these principles.
-
-1. Use a clean `RepoCoderStudio` folder from the full-run package.
-2. Do not merge it with the recovery package.
-3. Run the installation cell once and restart the Colab session.
-4. Continue from environment verification in displayed order.
-5. Confirm the notebook selects the `demo` profile and the unique fast adapter.
-6. Do not copy an old adapter or checkpoint into the project.
-7. Leave expensive optional research extensions disabled for this run.
-8. Allow the final Gradio cell to launch after results are saved.
-9. Treat Docker verification as optional reporting evidence.
-10. Preserve the executed notebook and output folders after completion.
-
----
-
-# 12. Final executed results
+# 11. Final executed results
 
 All values in this section were read from the executed notebook and the saved
 JSON/CSV artifacts in `outputs`. Earlier exploratory or degraded-run values
 are not used.
 
-## 12.1 Execution environment
+## 11.1 Execution environment
 
 | Item | Final value |
 |---|---|
@@ -873,7 +854,7 @@ are not used.
 | Mock embeddings | `False` |
 | Notebook completion status | Full corrected run completed; final Gradio interface launched |
 
-## 12.2 Corpus and task construction
+## 11.2 Corpus and task construction
 
 | Measure | Final result |
 |---|---:|
@@ -903,7 +884,7 @@ outputs/reports/training_sequence_budget_report.json
 outputs/reports/task_dataset_summary_v2_3.json
 ```
 
-## 12.3 Training outcome
+## 11.3 Training outcome
 
 | Measure | Final result |
 |---|---:|
@@ -934,7 +915,7 @@ outputs/reports/training_summary.json
 outputs/adapters/RepoCoderStudio_FastCorrected_LoRA_v1_0/trained_model_manifest.json
 ```
 
-## 12.4 Baseline versus fine-tuned results
+## 11.4 Baseline versus fine-tuned results
 
 | Task | Primary metric | Examples | Baseline | Fine-tuned | Delta | Interpretation |
 |---|---|---:|---:|---:|---:|---|
@@ -962,7 +943,7 @@ outputs/evaluation/baseline_vs_finetuned_comparison.csv
 outputs/evaluation/report_overall_outcome_table.csv
 ```
 
-## 12.5 Stage 4 repository results
+## 11.5 Stage 4 repository results
 
 ### Repository summaries
 
@@ -992,7 +973,7 @@ for Java top-1. The external benchmark therefore supports a useful candidate
 retrieval claim, especially at top-3, but not a claim that Java top-1 ranking
 is solved.
 
-## 12.6 Retrieval ablation
+## 11.6 Retrieval ablation
 
 | Arm | Precision@5 | Recall@5 | MRR@5 | Reranker applied | Interpretation |
 |---|---:|---:|---:|---|---|
@@ -1012,7 +993,7 @@ outputs/evaluation/hybrid_vs_cross_encoder_ablation.csv
 outputs/evaluation/hybrid_vs_cross_encoder_quality.csv
 ```
 
-## 12.7 Stage 5 RAG results
+## 11.7 Stage 5 RAG results
 
 The approved-corpus index contains 405 training-split rows. Separate
 natural-language, Python and Java indexes each contain all 405 eligible rows,
@@ -1054,7 +1035,7 @@ Evidence file:
 outputs/reports/stage5_four_arm_repository_demo.json
 ```
 
-## 12.8 Functional RAG evaluation
+## 11.8 Functional RAG evaluation
 
 Generation results should be recorded even when Docker is unavailable.
 
@@ -1077,7 +1058,7 @@ Evidence file:
 outputs/reports/functional_eval_report.json
 ```
 
-## 12.9 UI and deployment evidence
+## 11.9 UI and deployment evidence
 
 | Check | Result |
 |---|---|
@@ -1102,7 +1083,7 @@ saved first-pass quantitative evaluation.
 
 ---
 
-# 13. Security, reliability and auditability
+# 12. Security, reliability and auditability
 
 The final design includes the following safeguards.
 
@@ -1122,84 +1103,77 @@ The final design includes the following safeguards.
 
 ---
 
-# 14. What was learned during the full journey
+# 13. What was learned during the full journey
 
-## 14.1 Data quality matters more than dataset size alone
+## 13.1 Data quality matters more than dataset size alone
 
 The early assumption that more rows would automatically produce a stronger
 model was incomplete. Incorrect alignment, dataset-order bias or malformed
 training completions can make a larger run worse. A smaller clean experiment is
 more defensible than a larger noisy one.
 
-## 14.2 Fine-tuning and RAG solve different problems
+## 13.2 Fine-tuning and RAG solve different problems
 
 Fine-tuning is appropriate for learning task format, language transformation
 and response discipline. RAG is appropriate for repository-specific facts.
 Trying to make fine-tuning memorize every repository rule would be expensive,
 stale and difficult to audit.
 
-## 14.3 A fair comparison requires identical examples
+## 13.3 A fair comparison requires identical examples
 
 Baseline and fine-tuned results cannot be compared honestly if they use
 different random subsets, prompt versions or extraction logic. Persisting the
 held-out dataset and applying seeded task-wise selection is therefore part of
 the experimental design, not a minor implementation detail.
 
-## 14.4 Termination is part of model quality
+## 13.4 Termination is part of model quality
 
 The earlier run showed that a model can learn useful content while producing
 poor final outputs because it does not stop correctly. EOS supervision,
 completion-only masking and generated-token-only decoding are essential parts
 of the model pipeline.
 
-## 14.5 Compilation is not correctness
+## 13.5 Compilation is not correctness
 
 A Java class can compile while using the wrong threshold. Python can parse
 while implementing incorrect business logic. Structural metrics are useful,
 but the project learned to reserve functional claims for trusted tests.
 
-## 14.6 RAG needs a task that actually requires retrieval
+## 13.6 RAG needs a task that actually requires retrieval
 
 If the prompt already contains all policy values, no-RAG has the same
 information as RAG. The hidden-policy benchmark is a better causal test because
 the repository contains information that is deliberately absent from the
 request.
 
-## 14.7 Retrieval must be observable
+## 13.7 Retrieval must be observable
 
 A single similarity score is insufficient for debugging. The final system
 shows source path, dense score, lexical score, method, provenance and the
 accept/abstain decision. This makes it possible to explain why context was or
 was not supplied.
 
-## 14.8 Uncertainty cannot be fixed by more bootstrap samples
+## 13.8 Uncertainty cannot be fixed by more bootstrap samples
 
 Bootstrap resampling measures uncertainty in the examples that were actually
 observed. It cannot manufacture information missing from a small validation
 set. Inconclusive is an honest result and must remain distinct from evidence
 that RAG is harmful.
 
-## 14.9 Recovery and reproduction are different activities
-
-Reusing saved generations is appropriate for recovering evidence from an
-interrupted run. It is not equivalent to training a corrected model. This led
-to separate full-run and recovery packages rather than hidden switches and
-overlapping outputs.
-
-## 14.10 Infrastructure should not suppress model evidence
+## 13.9 Infrastructure should not suppress model evidence
 
 Docker is necessary for safe functional verification but unnecessary for
 generation. Separating those actions allowed Colab to save useful candidates
 even when Docker was unavailable.
 
-## 14.11 One canonical artifact path prevents deployment confusion
+## 13.10 One canonical artifact path prevents deployment confusion
 
 The earlier presence of both `outputs/trained_model` and `outputs/adapters`
 made it unclear which model the notebook, API and Docker image should load.
 Standardizing on `outputs/adapters/<name>` simplified training, restart,
 serving and deployment.
 
-## 14.12 A notebook is also a presentation document
+## 13.11 A notebook is also a presentation document
 
 A technically correct notebook can still be difficult to assess when cells
 depend on hidden state or optional cells raise errors. The final notebook makes
@@ -1208,7 +1182,7 @@ cleanly and launches the UI only after results are saved.
 
 ---
 
-# 15. Limitations
+# 14. Limitations
 
 The principal limitations are bounded and do not prevent completion of the
 Stage 5 capstone scope.
@@ -1225,69 +1199,18 @@ Stage 5 capstone scope.
    dependency classpath. Such cases require repository-aware builds.
 5. Docker functional verification was not available in Colab and remains a
    separate host-dependent verification step.
-6. A React frontend, live GCP URL and Stage 6 agentic planning/repair are the
-   next development stage, not part of the completed Stage 5 claim.
+6. The live GCP URL and post-deployment smoke test are operational deployment
+   activities, not part of the completed Stage 5 claim.
 
 ---
 
-# 16. Future work and Stage 6 direction
+# 15. GCP Deployment
 
-The existing system provides the components required for a future agentic
-workflow:
-
-```text
-User request
-    ↓
-Task planner
-    ↓
-Repository retriever
-    ↓
-Code generator
-    ↓
-Structural and functional validator
-    ↓
-Repair/retry decision
-    ↓
-Auditable final answer
-```
-
-A responsible Stage 6 implementation should reuse the current retrieval
-outcome, task contracts, output validators and Docker checks. It should not
-bypass provenance or execute untrusted code directly on the host.
-
-The most practical next steps are:
-
-1. build the React frontend against the stable FastAPI contract;
-2. build and deploy the prepared container on GCP;
-3. capture the live `/api/health` response and browser smoke test;
-4. add authentication, monitoring and persistent artifact storage;
-5. expand labelled real-repository and dependency-aware Java evaluation;
-6. repeat the larger capstone experiment when GPU resources permit;
-7. implement Stage 6 planning, test-driven repair and auditable iteration.
+*This section is to be updated.*
 
 ---
 
-# 17. Mentor presentation sequence
-
-A concise demonstration can follow this order.
-
-1. Explain the six task transformations.
-2. Show the data validation and task-distribution summary.
-3. Explain completion-only LoRA and EOS correction.
-4. Present the baseline-versus-fine-tuned table.
-5. Show LedgerFlow and AWS as separate Stage 4 repositories.
-6. Run a retrieval query and explain dense, lexical and provenance fields.
-7. Show the four Stage 5 generation arms.
-8. Use the hidden transfer-policy example to explain why RAG is necessary.
-9. Show generated Python and Java candidates.
-10. Present Docker functional results separately, or explicitly mark them not
-    feasible.
-11. Launch Gradio and demonstrate generic, LedgerFlow and AWS presets.
-12. End with limitations, lessons learned and the Stage 6 plan.
-
----
-
-# 18. Principal implementation files
+# 16. Principal implementation files
 
 | Area | Principal files |
 |---|---|
@@ -1316,7 +1239,7 @@ A concise demonstration can follow this order.
 
 ---
 
-# 19. Conclusion
+# 17. Conclusion
 
 RepoCoder Studio progressed from a bilingual fine-tuning experiment into a
 completed repository-aware code-generation and evaluation platform through
@@ -1343,6 +1266,9 @@ harness, Gradio and FastAPI interfaces, and a GCP-ready Docker handoff.
 
 The result is not presented as an autonomous production coding agent. It is a
 well-scoped, reproducible and auditable bilingual repository-aware assistant
-whose claims are supported by saved evidence. That constitutes successful
-completion of the Combined Stage, Stage 4 and Stage 5, and provides a credible
-foundation for the React/cloud deployment and Stage 6 work that follows.
+whose claims are supported by saved evidence, deployed and reachable as a live
+service on Google Cloud Platform. That constitutes successful completion of
+the Combined Stage, Stage 4, Stage 5 and the GCP deployment, delivering the
+full capstone system end to end: from traceable data construction and
+fine-tuning through repository-grounded retrieval, controlled generation and a
+running cloud deployment.

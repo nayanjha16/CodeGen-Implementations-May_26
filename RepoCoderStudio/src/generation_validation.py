@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 from typing import Any, Dict
 
 from src.code_extraction import extract_code, extract_natural_language
@@ -12,6 +13,38 @@ from src.python_validator import PythonValidator
 PYTHON_TASKS = {"T1", "T4"}
 JAVA_TASKS = {"T2", "T3"}
 NL_TASKS = {"T5", "T6"}
+
+
+def _is_trivial_python_expression(code: str) -> bool:
+    """Return whether code is only a bare name or literal placeholder."""
+
+    try:
+        tree = ast.parse(code)
+    except (SyntaxError, ValueError, TypeError):
+        return False
+    if len(tree.body) != 1 or not isinstance(tree.body[0], ast.Expr):
+        return False
+    return isinstance(tree.body[0].value, (ast.Name, ast.Constant))
+
+
+def _is_import_only_python(code: str) -> bool:
+    """Return whether parseable output contains imports but no implementation."""
+
+    try:
+        tree = ast.parse(code)
+    except (SyntaxError, ValueError, TypeError):
+        return False
+    meaningful = [
+        node
+        for node in tree.body
+        if not isinstance(node, (ast.Import, ast.ImportFrom))
+        and not (
+            isinstance(node, ast.Expr)
+            and isinstance(node.value, ast.Constant)
+            and isinstance(node.value.value, str)
+        )
+    ]
+    return bool(tree.body) and not meaningful
 
 
 class GenerationOutputValidator:
@@ -28,6 +61,10 @@ class GenerationOutputValidator:
         if task_id in PYTHON_TASKS:
             code = extract_code(output, "python")
             result = self.python.validate(code)
+            if result.get("status") == "PASS" and _is_trivial_python_expression(code):
+                result = {"status": "FAIL", "reason": "trivial_python_expression"}
+            elif result.get("status") == "PASS" and _is_import_only_python(code):
+                result = {"status": "FAIL", "reason": "python_no_implementation"}
             return {
                 "target": "python",
                 "valid": result.get("status") == "PASS",

@@ -73,6 +73,26 @@ def test_eligibility_comes_from_config():
     assert not engine.is_eligible("UNKNOWN")
 
 
+def test_repo_only_top_one_returns_one_source():
+    engine = RetrievalEngine(Explorer(), config())
+    engine.storage = NoopStorage()
+    outcome = engine.resolve("payments", task_id="T1", top_k=1, sources=("repo",))
+    assert outcome.used
+    assert len(outcome.sources) == 1
+    assert outcome.sources[0]["name"] == "pay"
+
+
+def test_unknown_source_selector_fails_loudly():
+    engine = RetrievalEngine(Explorer(), config())
+    engine.storage = NoopStorage()
+    try:
+        engine.resolve("payments", task_id="T1", sources=("repository",))
+    except ValueError as exc:
+        assert "Unknown retrieval source" in str(exc)
+    else:
+        raise AssertionError("An unknown retrieval source must fail loudly")
+
+
 class JavaCorpus:
     def search(self, query, top_k=5, field="python"):
         assert field == "java"

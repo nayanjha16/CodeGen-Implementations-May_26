@@ -2,14 +2,16 @@
 
 ## Combined Stage (Stages 1–3), Stage 4 and Stage 5
 
-### Corrected Full-Run Implementation Report
+### Final Full-Run and RAG-Aware Implementation Report
 
 **Document status:** Capstone implementation through Stage 5 completed and evaluated  
 **Full-run notebook:** `notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb`  
+**RAG-aware extension notebook:** `notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb`  
 **Full-run profile:** Complete pipeline using a time-bounded, corrected demo data profile  
 **Student model:** `Qwen/Qwen2.5-Coder-0.5B-Instruct`  
-**Final adapter name:** `RepoCoderStudio_FastCorrected_LoRA_v1_0`  
-**Report date:** 2 August 2026
+**Combined-stage adapter:** `RepoCoderStudio_FastCorrected_LoRA_v1_0`  
+**Final RAG-aware adapter:** `RepoCoderStudio_RAGAware_LoRA_v1_2`  
+**Report date:** 6 August 2026
 
 ---
 
@@ -57,6 +59,19 @@ and 0.980 MRR@5. External RepoBench evaluation covered 100 Python and 100 Java
 rows, while the controlled Stage 5 demonstration retrieved the exact hidden
 transfer policy as the top source with real embeddings and explicit
 provenance.
+
+The final Stage 5 refinement addressed an important interaction discovered
+during UI testing: the first LoRA adapter had learned only the plain task
+prompt and had never been trained to consume a `Retrieved Context` section.
+The project therefore added RAG-formatted training examples for approximately
+35% of eligible T1–T4 training rows, response-safe budgeting for the longer
+prompts, and a separate RAG-aware adapter. The resulting
+`RepoCoderStudio_RAGAware_LoRA_v1_2` trained successfully on 2,877 retained
+rows for 359 steps. It then passed two repository-grounded qualitative
+benchmarks: exact LedgerFlow email-validation behaviour and the hidden
+transfer-risk policy. In both cases the correct repository function was the
+single top-ranked source and the fine-tuned-with-RAG arm reproduced the
+repository-specific details that were absent from the user request.
 
 The central research question is not simply whether the system can print code.
 It is:
@@ -176,6 +191,12 @@ Repository/corpus RAG
         ↓
 Four-arm controlled generation
         ↓
+RAG prompt-contract diagnosis
+        ↓
+Grounded RAG-aware LoRA refinement
+        ↓
+Repository-specific semantic verification
+        ↓
 Python/Java functional verification
         ↓
 Gradio and FastAPI demonstrations
@@ -200,7 +221,7 @@ RepoCoder Studio uses a layered architecture.
 | Alignment | Builds semantically matched NL–Python–Java records |
 | Validation | Checks structure, quality, duplication and provenance |
 | Task construction | Expands approved records into six supervised tasks |
-| Training | Applies completion-only LoRA to the student model |
+| Training | Applies completion-only LoRA, then a separately versioned RAG-aware refinement using grounded evidence prompts |
 | Evaluation | Generates held-out predictions and calculates task-specific metrics |
 | Repository explorer | Parses repositories, extracts symbols and builds indexes |
 | Retrieval engine | Combines dense, lexical, dependency and corpus retrieval |
@@ -741,6 +762,53 @@ The EC2 merge step is reporting-only. It replaces only the Docker-dependent
 sections of `functional_eval_report.json`. Skipping the merge does not affect
 the adapter, generated code, RAG index, Gradio interface or FastAPI service.
 
+## 8.13 RAG-aware fine-tuning
+
+The first fine-tuned adapter improved the six task contracts, but it had been
+trained only on the plain prompt structure:
+
+```text
+Instruction → Input → Response
+```
+
+At inference time, Stage 5 adds `Retrieved Context` and an evidence policy.
+That prompt shape was unfamiliar to the first adapter. A controlled email
+example showed that the base model could sometimes follow the evidence while
+the fine-tuned model ignored it. This was treated as a design gap rather than
+hidden as an isolated bad generation.
+
+The correction introduced three focused components:
+
+- `RAGPromptBuilder` renders the same evidence contract during training that
+  is used during inference;
+- `RAGAugmentedTaskDatasetBuilder` adds real retrieved evidence to about 35%
+  of eligible T1–T4 training examples while excluding self-matches;
+- `response_safe_training_rag.py` truncates only the input/context portion,
+  never the supervised response, and rejects a row if the response still
+  cannot fit within the 1,024-token training window.
+
+Training context is capped at 2,000 characters, compared with the larger
+inference allowance, to reduce overflow risk. Each augmented row records its
+retrieved context and prompt hash. The new adapter is written to a separate
+versioned path, so the original combined-stage adapter remains reproducible.
+
+## 8.14 Focused repository-only evidence routing
+
+The general interface can combine repository and approved-corpus evidence.
+For demonstrations that explicitly ask for a private repository function,
+however, unrelated corpus examples can distract a 0.5B model. The final
+focused verification and UI route therefore use:
+
+```python
+top_k=1, sources=("repo",)
+```
+
+This keeps only the strongest repository result. The internal selector is
+named `repo`; `repository` is the human-facing provenance label. The retrieval
+engine now rejects an unknown selector with a clear error instead of silently
+returning `no_evidence`. This small validation guard prevents a configuration
+mistake from being misreported as a retrieval-quality failure.
+
 ---
 
 # 9. Generation and output validation
@@ -780,15 +848,19 @@ The final interface allows the user to select:
 - curated demonstrations for every repository and task.
 
 For code-to-natural-language tasks, real Python or Java snippets are preloaded.
-Outputs are formatted according to their target language. Retrieval decisions
-and evidence traces are displayed separately from syntax validation.
+Outputs are displayed in target-language-aware code components. The UI
+preserves the model's actual line layout instead of cosmetically rewriting an
+incorrect generation. Retrieval decisions and evidence traces are displayed
+separately from syntax validation.
 
 The curated catalogue contains 54 demonstrations: exactly three examples for
 each of the six tasks across Generic, LedgerFlow and AWS modes. An optional
 single validation-guided retry is clearly labelled when it succeeds; it is a
 serving reliability feature and is never counted as first-pass evaluation
-performance. A cold-session loader restores the saved adapter and repository
-indexes without rerunning training or evaluation.
+performance. Repository-specific demonstrations use the focused top-1
+repository route so unrelated corpus examples do not crowd out the requested
+private API. A cold-session loader restores the saved v1.2 adapter and
+repository indexes without rerunning training or evaluation.
 
 ## 10.2 FastAPI browser interface
 
@@ -809,8 +881,8 @@ reports the adapter error clearly.
 The health endpoint distinguishes repository-only RAG from repository-plus-
 corpus RAG through `rag_corpus_loaded`.
 
-The browser interface mirrors the Gradio comparison, including formatted
-Python/Java output, validation status, retry disclosure, RAG decisions,
+The browser interface mirrors the Gradio comparison, including code-aware
+Python/Java display, validation status, retry disclosure, RAG decisions,
 dense/lexical/reranker scores, retrieval method, provenance and a structural
 comparison summary.
 
@@ -836,9 +908,9 @@ deployment activities rather than missing Stage 5 implementation.
 
 # 11. Final executed results
 
-All values in this section were read from the executed notebook and the saved
-JSON/CSV artifacts in `outputs`. Earlier exploratory or degraded-run values
-are not used.
+Values in this section come from the executed notebooks, saved JSON/CSV
+artifacts and the final supplied verification outputs. Earlier exploratory,
+failed or superseded adapter runs are not used as success evidence.
 
 ## 11.1 Execution environment
 
@@ -853,6 +925,8 @@ are not used.
 | Tree-sitter Java validation | Passed; grammar 0.21.0 |
 | Mock embeddings | `False` |
 | Notebook completion status | Full corrected run completed; final Gradio interface launched |
+| RAG-aware extension status | Completed; v1.2 adapter trained, restored in a fresh runtime and verified |
+| Final focused retrieval mode | Repository-only top-1 with real embeddings and cross-encoder reranking |
 
 ## 11.2 Corpus and task construction
 
@@ -884,7 +958,9 @@ outputs/reports/training_sequence_budget_report.json
 outputs/reports/task_dataset_summary_v2_3.json
 ```
 
-## 11.3 Training outcome
+## 11.3 Training outcomes
+
+### 11.3.1 Combined-stage adapter
 
 | Measure | Final result |
 |---|---:|
@@ -913,6 +989,47 @@ Evidence files:
 outputs/reports/training_history.csv
 outputs/reports/training_summary.json
 outputs/adapters/RepoCoderStudio_FastCorrected_LoRA_v1_0/trained_model_manifest.json
+```
+
+### 11.3.2 RAG-aware adapter
+
+| Measure | Final result |
+|---|---:|
+| Adapter path | `outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2` |
+| Base model | `Qwen/Qwen2.5-Coder-0.5B-Instruct` |
+| Plain training rows before augmentation | 2,430 |
+| Added grounded RAG-formatted rows | 567 (35% of eligible T1–T4 training rows) |
+| Training rows before response-safe budgeting | 2,997 |
+| Retained training rows | 2,877 (approximately 96.0%) |
+| Rows excluded to protect the response boundary | 120 |
+| Validation rows | 366 |
+| Trainable parameters | 8,798,208 |
+| Total parameters | 502,830,976 |
+| Trainable percentage | 1.7497% |
+| Global training steps | 359 |
+| Training duration | 1,391 seconds (approximately 23.2 minutes) |
+| First logged loss | 1.5917 at step 10 |
+| Final logged loss | 0.8960 at step 350 |
+| Minimum logged loss | 0.7190 at step 330 |
+| Evaluation during training | Disabled to avoid Colab CUDA OOM; post-training verification used instead |
+| Loss masking | Completion tokens only |
+| Prompt contract | `rag_prompt_contract_v1.2` |
+| Training manifest | `training_manifest_rag_v1.2` |
+| Grounded task dataset | `task_dataset_rag_grounded.jsonl` |
+| Adapter isolation | New versioned path; combined-stage adapter not overwritten |
+
+The loss remained finite and generally declined while the adapter weights
+were confirmed finite. More importantly, the adapter was restored in a fresh
+runtime and used successfully by the unchanged generation and validation
+stack. Training loss is evidence that optimization ran correctly; the
+repository-grounded benchmarks below provide the behaviour-level evidence.
+
+Evidence files:
+
+```text
+outputs/reports/training_history.csv
+outputs/reports/training_summary.json
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/trained_model_manifest.json
 ```
 
 ## 11.4 Baseline versus fine-tuned results
@@ -1001,38 +1118,95 @@ using `sentence-transformers/all-MiniLM-L6-v2` with
 `mock_embeddings=False`. Validation and test records are excluded from the
 RAG corpus to prevent answer leakage.
 
-### Controlled four-arm demonstration
+### RAG-aware verification 1: repository email validation
 
-| Arm | Structural status | Relevant policy recovered? | Notes |
-|---|---|---|---|
-| Baseline, no RAG | PASS | No | Generated plausible but invented thresholds and countries |
-| Baseline + RAG | PASS | Yes | Recovered repository thresholds, countries and device rule |
-| Fine-tuned, no RAG | PASS | No | Followed the task shape but not repository policy |
-| Fine-tuned + RAG | PASS | Yes | Recovered the core repository-specific rules |
+The prompt requested LedgerFlow's `validate_email` implementation without
+including its exact regular expression. Repository-only top-1 retrieval
+returned:
 
-Required retrieval evidence:
+| Field | Final value |
+|---|---|
+| RAG context used | `True` |
+| Retrieval decision | `evidence_accepted` |
+| Top source | `validate_email` in `utils/validators.py` |
+| Top score | 0.8128 |
+| Score margin | 0.8128 |
+| Additional evidence | None; one complete repository block only |
+
+The four arms exposed a useful progression:
+
+| Arm | Observed result |
+|---|---|
+| Baseline, no RAG | Produced a generic valid regex, not the repository contract |
+| Baseline + RAG | Ended without usable Python in this run, even after guarded retry |
+| Fine-tuned, no RAG | Produced generic validation with a different function name and no repository-specific stripping behaviour |
+| Fine-tuned + RAG | Produced `validate_email`, the exact `^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$` pattern and `email.strip()` |
+
+The automated benchmark recorded:
+
+```text
+Fine-tuned/With RAG reproduces the repository's exact regex pattern: True
+Email benchmark success: True
+```
+
+This is stronger than a syntax-only comparison: the successful arm recovered
+specific implementation details available only in the retrieved repository
+evidence.
+
+### RAG-aware verification 2: hidden transfer-risk policy
+
+The second prompt requested `transfer_risk_score` but intentionally omitted
+all private thresholds, weights, restricted countries and the score cap.
+Repository-only top-1 retrieval returned:
 
 | Field | Final value |
 |---|---|
 | RAG context used | `True` |
 | Retrieval decision | `evidence_accepted` |
 | Top source | `transfer_risk_score` in `policies/transfer_policy.py` |
-| Top score | 0.9162 |
-| Retrieval method | `dense+lexical+cross_encoder` |
-| Reranker score | 1.0 |
+| Top score in notebook verification | 0.8836 |
+| Retrieval method shown in UI | `dense+lexical+cross_encoder` |
 | Provenance | `repository` |
 
-This controlled example demonstrates the intended division of labour. Without
-RAG, both models had to invent private policy details. With RAG, the prompt
-received the actual repository policy and the generations adopted its core
-thresholds and risk rules. The result is evidence of repository grounding; the
-PASS label remains structural and is not presented as a substitute for trusted
-functional tests.
+The final fine-tuned-with-RAG output preserved every checked repository rule:
 
-Evidence file:
+- amount thresholds of 100,000 and 250,000;
+- corresponding weights of 25 and 40;
+- customer-tenure weight of 20 for fewer than 30 days;
+- the exact high-risk set `IR`, `KP`, `SY` and weight 30;
+- the untrusted-device weight of 15;
+- input normalization with `strip().upper()`;
+- the final `min(score, 100.0)` cap.
+
+The automated benchmark recorded:
+
+```text
+Top retrieved source is policies/transfer_policy.py: True
+Exact policy constants/countries preserved: True
+```
+
+The Gradio four-arm view made the comparison visually clear. Baseline/no-RAG
+returned a placeholder, and fine-tuned/no-RAG produced a long syntactically
+valid but invented country policy. Fine-tuned-with-RAG produced the compact,
+correct repository implementation. Structural `PASS` labels in the UI are
+explicitly separated from semantic correctness; the repository-rule checks
+support the grounding claim.
+
+### Java demonstration boundary
+
+The Java `FraudDetector` example confirmed that the UI, Java retrieval,
+validation and retry paths operate, but the fine-tuned-with-RAG retry produced
+an unrelated one-line class. A compile/structural pass after retry therefore
+was not counted as a semantic RAG success. This result is retained as an honest
+model-capacity limitation, while the two Python cases above are the completed
+and reproducible Stage 5 grounding demonstrations.
+
+Evidence files:
 
 ```text
 outputs/reports/stage5_four_arm_repository_demo.json
+outputs/reports/rag_grounded_retrain_v1_2_verification.json
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/trained_model_manifest.json
 ```
 
 ## 11.8 Functional RAG evaluation
@@ -1067,10 +1241,14 @@ outputs/reports/functional_eval_report.json
 | LedgerFlow examples available | Yes |
 | AWS examples available | Yes |
 | Curated catalogue coverage | 54 examples; three per repository/task section |
-| Python output formatting | Passed |
-| Java output formatting | Passed |
+| Python code-aware display | Passed; complete multi-line validated output shown |
+| Java code-aware display | Implemented; raw model layout is preserved rather than cosmetically rewriting generated code |
 | Retrieval decision and provenance visible | Passed |
 | Cross-encoder scores visible | Passed |
+| Four-arm controlled comparison | Passed; selectable baseline/fine-tuned and no-RAG/RAG arms |
+| Guarded retry visibility | Passed; retries are labelled and remain UI-only |
+| Fine-tuned + RAG Python showcase | Passed for email validation and hidden transfer policy |
+| Java semantic showcase | Mixed; structural retry worked, but the tested fine-tuned output was not repository-correct |
 | Cold-session artifact restoration | Implemented in `src/gradio_runtime.py` |
 | FastAPI browser UI parity | Implemented |
 | FastAPI health endpoint | Implemented; deployment smoke test pending |
@@ -1180,30 +1358,45 @@ depend on hidden state or optional cells raise errors. The final notebook makes
 profiles visible, restores state from artifacts, skips optional experiments
 cleanly and launches the UI only after results are saved.
 
-## 13.12 A fine-tuned model can be less receptive to RAG evidence than the base model
+## 13.12 Fine-tuning and RAG must share the same prompt contract
 
-Manual Gradio testing on a free-typed LedgerFlow query (email validation)
-showed the pretrained baseline reproducing the repository's exact
-`validate_email` regex and `.strip()` call verbatim under RAG, while the
-fine-tuned model, given the identical retrieved context, ignored it and
-invented an unrelated implementation. The cause is a prompt-format gap: the
-LoRA fine-tuning corpus was built only with the plain
-`Instruction -> Input -> Response` template and never included the
-`### Retrieved Context` / `### Evidence Policy` sections that
-`build_rag_inference_prompt` adds at inference time. Completion-only
-fine-tuning narrows the model toward the exact prompt shape it was trained on,
-so at RAG inference time the fine-tuned model meets a structure it has never
-conditioned on and falls back to its trained completion habit instead of using
-the injected evidence, whereas the untouched pretrained model's general
-instruction-following ability lets it read and follow that unfamiliar section
-correctly. Fine-tuning and RAG were validated independently by the four-arm
-design, but this shows they can interact negatively on prompts outside the
-curated hidden-policy benchmark: a model over-specialized on non-RAG
-completions can be less receptive to injected context than the base model it
-was tuned from. Closing this gap would require including RAG-formatted
-examples in the fine-tuning corpus so the adapter learns to condition on
-retrieved evidence, which is noted as follow-up work rather than fixed within
-this run.
+Manual Gradio testing first revealed a negative interaction: the original
+fine-tuned adapter could follow the plain task prompt but ignored an unfamiliar
+`Retrieved Context` section. The base model sometimes used the same evidence
+more effectively. The failure was traced to a prompt-distribution mismatch,
+not to FAISS retrieval: the training corpus contained only
+`Instruction → Input → Response`, while inference added retrieved evidence and
+an evidence policy.
+
+The project corrected this rather than treating it as future work. The final
+training flow includes grounded RAG-formatted examples for eligible code tasks,
+stores the retrieved context in row metadata, preserves the supervised
+response during token budgeting, and trains a separate v1.2 adapter. Fresh
+runtime restoration then demonstrated that fine-tuned-with-RAG reproduced both
+the exact LedgerFlow email-validation pattern and the complete hidden transfer
+policy.
+
+The broader lesson is that fine-tuning and RAG are not independent modules at
+the prompt boundary. A model must be trained on the evidence structure it will
+encounter in production. Retrieval can be perfectly correct and still fail to
+improve generation when that contract is unfamiliar.
+
+## 13.13 Retrieval source names are part of the executable contract
+
+The retrieval selector uses `repo`, while result provenance is displayed as
+`repository`. Confusing those values once produced an empty result that looked
+like a retrieval miss. The final engine validates selectors and fails loudly
+on unknown values. Configuration vocabulary deserves the same validation as
+model and index manifests because a silent typo can invalidate an experiment.
+
+## 13.14 Structural validation must not be presented as semantic success
+
+The UI correctly showed that a placeholder Python function and an unrelated
+Java class can be syntactically valid. The final presentation therefore labels
+the comparison as structural, exposes retry status, preserves raw output and
+uses repository-specific semantic checks for the mentor-facing success claim.
+Formatting or compilation can support a result, but neither is allowed to
+convert incorrect business logic into a reported win.
 
 ---
 
@@ -1226,12 +1419,108 @@ Stage 5 capstone scope.
    separate host-dependent verification step.
 6. The live GCP URL and post-deployment smoke test are operational deployment
    activities, not part of the completed Stage 5 claim.
+7. The six-task quantitative table evaluates the combined-stage
+   `FastCorrected_LoRA_v1_0` adapter. The later RAG-aware v1.2 adapter was
+   validated with two focused Python repository-grounding cases rather than a
+   second full six-task sweep, because repeating the entire generation matrix
+   would exceed the remaining Colab GPU budget.
+8. Java retrieval, compilation and UI paths are implemented, but the tested
+   fine-tuned Java RAG example remained semantically unreliable. It is reported
+   as a model-capacity/generalization limitation, not as a successful Java RAG
+   claim.
+9. The email and transfer-policy demonstrations are controlled qualitative
+   evidence. They establish that the corrected integration can work, but they
+   do not replace a larger multi-repository statistical generation study.
 
 ---
 
 # 15. GCP Deployment
 
-*This section is to be updated.*
+The deployment target is Google Cloud Run using the existing FastAPI container.
+Deployment is deliberately separated from the completed modeling claim: Stage
+5 is complete and locally/cloud-notebook verified, while creation of a public
+GCP URL is an operational handoff.
+
+## 15.1 Deployment architecture
+
+The proposed production flow is:
+
+```text
+Browser
+  → Cloud Run HTTPS endpoint
+  → FastAPI application
+  → baseline model and RAG-aware LoRA adapter
+  → persisted LedgerFlow/corpus FAISS indexes
+  → structured generation, validation and provenance response
+```
+
+The same service supports the browser interface and JSON API, preventing a
+separate demonstration backend from diverging from deployment behaviour.
+
+## 15.2 Container contract
+
+The supplied Docker assets provide:
+
+- a deterministic application image;
+- Cloud Run's injected `PORT` environment variable;
+- a non-root runtime user;
+- `/api/health` readiness reporting;
+- explicit adapter and index paths under the project artifact root;
+- deployment defaults pinned to `RepoCoderStudio_RAGAware_LoRA_v1_2`,
+  `rag_prompt_contract_v1.2` and `training_manifest_rag_v1.2`;
+- image-build checks for the v1.2 weights and manifest, followed by runtime
+  manifest checks against the configured model and prompt contract;
+- baseline/fine-tuned and no-RAG/RAG request handling;
+- retrieval scores, method, provenance and decision metadata.
+
+The service must fail closed if the configured adapter, manifest or real
+embedding index is absent. Docker-based generated-code evaluation remains a
+separate sandboxed process and is not run inside the web request path.
+
+## 15.3 Artifact strategy
+
+Model and index artifacts are larger and more persistent than application
+source code. A deployment should therefore either bake a validated immutable
+artifact set into the image or download a versioned set from a private Google
+Cloud Storage bucket during controlled startup. The following paths must stay
+consistent:
+
+```text
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/
+outputs/repositories/ledgerflow/
+outputs/corpus_index/
+outputs/approved_corpus/
+```
+
+The manifest fingerprints are checked before service readiness so the API
+cannot silently combine an adapter with the wrong dataset or prompt contract.
+
+## 15.4 Operational deployment steps
+
+1. Create a GCP project and enable Artifact Registry and Cloud Run.
+2. Build the supplied Dockerfile and push the tagged image to Artifact
+   Registry.
+3. Provide the validated adapter/index artifacts through the chosen immutable
+   image or private-bucket strategy.
+4. Deploy the image to Cloud Run with sufficient memory and request timeout.
+5. Set only required environment variables and secrets through Cloud Run,
+   never in the image or repository.
+6. Verify `/api/health` reports the expected adapter, repository index,
+   corpus-index status and `mock_embeddings=False`.
+7. Run one no-RAG request and the two successful repository-grounded smoke
+   tests before publishing the endpoint.
+
+CPU-only serving is possible for the 0.5B model but may have higher latency.
+For an interactive production experience, an appropriate GPU-capable Cloud Run
+configuration or another GCP GPU service should be evaluated against cost and
+cold-start constraints.
+
+## 15.5 Current status
+
+The Dockerfile, FastAPI service, browser UI parity, health endpoint and
+artifact-loading paths are implemented. A public GCP URL and its post-deploy
+smoke-test evidence have not yet been added to the saved outputs. The report
+therefore describes the system as **GCP deployment-ready**, not already live.
 
 ---
 
@@ -1245,6 +1534,8 @@ Stage 5 capstone scope.
 | Semantic alignment | `src/semantic_alignment_engine.py` |
 | Validation | `src/validation_engine.py` |
 | Task and prompt construction | `src/task_builder.py`, `src/prompt_builder.py`, `src/registry.py` |
+| RAG-aware prompt and dataset construction | `src/prompt_builder_rag.py`, `src/task_builder_rag.py` |
+| RAG-aware response-safe budgeting | `src/response_safe_training_rag.py` |
 | Curriculum | `src/curriculum_builder.py` |
 | Training | `src/trainer.py`, `src/completion_collator.py` |
 | Checkpoints and manifests | `src/checkpoint_manager.py`, `src/artifact_manifest.py` |
@@ -1261,6 +1552,7 @@ Stage 5 capstone scope.
 | Curated demonstrations | `src/demo_showcases.py` |
 | Container deployment | `Dockerfile`, `.dockerignore`, `docker-compose.yml` |
 | Full-run notebook | `notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb` |
+| RAG-aware extension notebook | `notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb` |
 
 ---
 
@@ -1284,6 +1576,15 @@ cross-encoder reranking produced the strongest tested retrieval result at
 0.980 MRR@5. Stage 5 retrieved the hidden transfer policy as the top source and
 made the evidence, score, method and provenance visible to users.
 
+The final RAG-aware extension closed the prompt-contract gap discovered during
+UI testing. Its separately versioned v1.2 adapter trained on 2,877 retained
+rows and was restored successfully in a fresh runtime. With one complete
+repository evidence block, it reproduced the exact LedgerFlow email-validation
+behaviour and every checked hidden transfer-policy rule. These outcomes provide
+a concrete end-to-end demonstration of the intended design: fine-tuning teaches
+the task contract, retrieval supplies private repository knowledge, and the
+combined system uses that knowledge in generated code.
+
 The project also produces the artifacts expected of a complete engineering
 capstone: an executed notebook, validated datasets, a trained LoRA adapter,
 evaluation logs, repository and corpus indexes, an isolated functional-test
@@ -1291,9 +1592,7 @@ harness, Gradio and FastAPI interfaces, and a GCP-ready Docker handoff.
 
 The result is not presented as an autonomous production coding agent. It is a
 well-scoped, reproducible and auditable bilingual repository-aware assistant
-whose claims are supported by saved evidence, deployed and reachable as a live
-service on Google Cloud Platform. That constitutes successful completion of
-the Combined Stage, Stage 4, Stage 5 and the GCP deployment, delivering the
-full capstone system end to end: from traceable data construction and
-fine-tuning through repository-grounded retrieval, controlled generation and a
-running cloud deployment.
+whose claims are supported by saved evidence. The Combined Stage, Stage 4 and
+Stage 5 are complete. The FastAPI container and artifact contract are ready for
+GCP deployment; creation and verification of a public Cloud Run endpoint remain
+the final operational handoff rather than an unverified claim in this report.

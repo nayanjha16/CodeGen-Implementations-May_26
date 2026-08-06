@@ -26,10 +26,19 @@ COPY --chown=repocoder:repocoder outputs/approved_corpus/ /data/outputs/approved
 COPY --chown=repocoder:repocoder outputs/corpus_index/ /data/outputs/corpus_index/
 COPY --chown=repocoder:repocoder outputs/repositories/ /data/outputs/repositories/
 
+# The production image must contain the validated RAG-aware adapter. Do not
+# silently deploy a baseline-only service or fall back to the older adapter.
+RUN test -s /data/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/adapter_model.safetensors \
+    && test -s /data/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/trained_model_manifest.json
+
 RUN pip install --no-cache-dir --no-deps .
 
 ENV REPOCODER_PROJECT_ROOT=/data \
-    REPOCODER_ADAPTER_NAME=RepoCoderStudio_FastCorrected_LoRA_v1_0 \
+    REPOCODER_ADAPTER_NAME=RepoCoderStudio_RAGAware_LoRA_v1_2 \
+    REPOCODER_PROMPT_VERSION=rag_prompt_contract_v1.2 \
+    REPOCODER_TRAINING_MANIFEST_VERSION=training_manifest_rag_v1.2 \
+    REPOCODER_TRAINING_DATASET_FILENAME=task_dataset_rag_grounded.jsonl \
+    REPOCODER_MAX_CONTEXT_CHARS=2000 \
     PYTHONPATH=/app \
     PYTHONUNBUFFERED=1 \
     REPOCODER_PROFILE=production \

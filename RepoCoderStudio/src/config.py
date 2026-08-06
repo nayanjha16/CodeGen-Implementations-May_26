@@ -100,14 +100,18 @@ class ExperimentConfig:
     """
 
     experiment_version: str = "experiment_v2.6"
-    prompt_version: str = "prompt_contract_v2.6"
+    prompt_version: str = os.environ.get(
+        "REPOCODER_PROMPT_VERSION", "prompt_contract_v2.6"
+    )
     task_contract_version: str = "task_contract_v2.6"
     task_builder_version: str = "task_builder_v2.3"
     task_registry_version: str = "task_registry_v2.0"
     metric_registry_version: str = "metric_registry_v2.0"
     # v2.7 fingerprints the run profile, data limits, and training settings,
     # so a small demo checkpoint cannot be resumed by a capstone run.
-    training_manifest_version: str = "training_manifest_v2.7"
+    training_manifest_version: str = os.environ.get(
+        "REPOCODER_TRAINING_MANIFEST_VERSION", "training_manifest_v2.7"
+    )
 
 # ============================================================
 # 2. Runtime mode configuration
@@ -564,6 +568,12 @@ class TrainingConfig:
         "REPOCODER_ADAPTER_NAME", "RepoCoderStudio_FastCorrected_LoRA_v1_0"
     )
 
+    # The checkpoint fingerprint must hash the dataset that is actually fed
+    # to training. RAG-aware retraining uses a separate rendered dataset.
+    task_dataset_filename: str = os.environ.get(
+        "REPOCODER_TRAINING_DATASET_FILENAME", "task_dataset.jsonl"
+    )
+
 
 # ============================================================
 # 9. Evaluation configuration
@@ -671,7 +681,9 @@ class RetrievalConfig:
     top_k: int = 5
     candidate_pool_size: int = 20
     max_snippet_chars: int = 1600
-    max_context_chars: int = 7000
+    max_context_chars: int = int(
+        os.environ.get("REPOCODER_MAX_CONTEXT_CHARS", "7000")
+    )
     # Quantitative corpus-RAG evaluation deliberately uses compact top-1
     # evidence by default. A 0.5B model with a 1024-token window is easily
     # distracted by five full exemplars even when each is relevant.
@@ -845,6 +857,9 @@ class AppConfig:
         assert self.training.learning_rate > 0
         assert self.training.lora_rank > 0
         assert self.training.lora_alpha > 0
+        assert Path(self.training.task_dataset_filename).name == self.training.task_dataset_filename, (
+            "task_dataset_filename must be a filename inside outputs/task_datasets"
+        )
 
         assert self.models.max_seq_length > 0
         assert self.models.max_new_tokens > 0
@@ -986,6 +1001,7 @@ def print_config_summary(config: AppConfig = CONFIG):
     print(f"Training Enabled        : {config.training.enable_training}")
     print(f"Auto Checkpoint Resume  : {config.training.auto_resume_from_checkpoint}")
     print(f"Final Adapter Name      : {config.training.final_adapter_name}")
+    print(f"Training Dataset        : {config.training.task_dataset_filename}")
     print(f"Prompt Version          : {config.experiment.prompt_version}")
     print("=" * 72)
 

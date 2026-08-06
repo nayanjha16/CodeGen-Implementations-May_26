@@ -37,8 +37,9 @@ class CheckpointManager:
         task_dataset_path = (
             config.storage.project_root()
             / config.storage.task_datasets_dir
-            / "task_dataset.jsonl"
+            / config.training.task_dataset_filename
         )
+        self.task_dataset_path = task_dataset_path
         self._task_dataset_sha256 = (
             file_sha256(task_dataset_path) if task_dataset_path.exists() else None
         )
@@ -114,6 +115,8 @@ class CheckpointManager:
             "run_mode": self.config.runtime.run_mode,
             "random_seed": self.config.runtime.random_seed,
             "task_dataset_sha256": self._task_dataset_sha256,
+            "task_dataset_filename": self.config.training.task_dataset_filename,
+            "final_adapter_name": self.config.training.final_adapter_name,
             "normalizer_version": NORMALIZER_VERSION,
             "completion_termination": "supervised_eos_v1",
             "split_limits": {

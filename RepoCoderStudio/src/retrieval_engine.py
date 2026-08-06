@@ -156,6 +156,14 @@ class RetrievalEngine:
         whichever of the two isn't in `sources` comes back as []
         without being queried at all. corpus_field selects the NL, Python, or
         Java query-key embedding space in CorpusIndex."""
+        unknown_sources = set(sources) - set(DEFAULT_SOURCES)
+        if unknown_sources:
+            allowed = ", ".join(DEFAULT_SOURCES)
+            unknown = ", ".join(sorted(unknown_sources))
+            raise ValueError(
+                f"Unknown retrieval source(s): {unknown}. "
+                f"Expected one or more of: {allowed}."
+            )
         cache_key = (query, top_k, sources, corpus_field)
         with self._cache_lock:
             if cache_key == self._cache_key:

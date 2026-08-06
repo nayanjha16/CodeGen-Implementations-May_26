@@ -6,12 +6,15 @@ services:
     env_file: .env
     environment:
       REPOCODER_PROJECT_ROOT: /data
-      REPOCODER_ADAPTER_NAME: RepoCoderStudio_FastCorrected_LoRA_v1_0
+      REPOCODER_ADAPTER_NAME: RepoCoderStudio_RAGAware_LoRA_v1_2
+      REPOCODER_PROMPT_VERSION: rag_prompt_contract_v1.2
+      REPOCODER_TRAINING_MANIFEST_VERSION: training_manifest_rag_v1.2
+      REPOCODER_TRAINING_DATASET_FILENAME: task_dataset_rag_grounded.jsonl
+      REPOCODER_MAX_CONTEXT_CHARS: "2000"
+      REPOCODER_PROFILE: production
       REPOCODER_AUTO_DOWNLOAD_PUBLIC_REPOS: "true"
     ports:
       - "8000:8000"
-    volumes:
-      - repocoder-data:/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/api/health"]
@@ -19,6 +22,3 @@ services:
       timeout: 5s
       start_period: 180s
       retries: 3
-
-volumes:
-  repocoder-data:

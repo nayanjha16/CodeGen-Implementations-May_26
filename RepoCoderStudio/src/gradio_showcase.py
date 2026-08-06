@@ -197,7 +197,16 @@ def build_gradio_showcase(
                     "RAG requested, but this repository index is unavailable."
                 )
             else:
-                outcome = engine.resolve(input_text or "", task_id=task_id)
+                # A repository is explicitly selected in this UI. Keep the
+                # small model grounded on the single best repository symbol;
+                # generic corpus examples are evaluated through the separate
+                # corpus-RAG path and would be distractors here.
+                outcome = engine.resolve(
+                    input_text or "",
+                    task_id=task_id,
+                    top_k=1,
+                    sources=("repo",),
+                )
                 context = outcome.context
                 sources = outcome.sources
                 decision = outcome.decision

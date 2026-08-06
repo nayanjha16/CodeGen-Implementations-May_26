@@ -75,6 +75,11 @@ async def lifespan(app: FastAPI):
         # Either way the server should still come up and serve baseline-only.
         finetuned_error = str(exc)
         LOG.warning(f"Fine-tuned adapter unavailable, continuing without it: {exc}")
+        if CONFIG.retrieval.operational_profile == "production":
+            raise RuntimeError(
+                "Production startup requires the configured fine-tuned adapter; "
+                f"refusing baseline-only deployment: {exc}"
+            ) from exc
 
     app.state.engine = engine
     app.state.task_registry = TaskRegistry()
@@ -212,7 +217,15 @@ def _run_rag(
         return "", False, "task_not_eligible", None, []
     if not (input_text or "").strip():
         return "", False, "empty_query", None, []
-    outcome = retrieval_engine.resolve(input_text or "", task_id=task_id)
+    # repository_id is explicit for this endpoint. Use only the best symbol
+    # from that repository; generic validated-corpus RAG remains a separate
+    # evaluation/source mode and can distract a 0.5B model in repo tasks.
+    outcome = retrieval_engine.resolve(
+        input_text or "",
+        task_id=task_id,
+        top_k=1,
+        sources=("repo",),
+    )
     return outcome.context, outcome.used, outcome.decision.reason, outcome.decision.top_score, outcome.sources
 
 

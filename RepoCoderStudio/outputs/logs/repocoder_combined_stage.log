@@ -361,3 +361,55 @@
 22:08:01 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
 22:19:21 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
 22:20:11 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+07:22:45 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/approved_corpus/approved_corpus.jsonl (537 rows)
+07:22:55 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset.jsonl (3222 rows)
+07:22:56 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_distribution_v2_3.csv (18 rows)
+07:22:56 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_family_difficulty_v2_3.csv (18 rows)
+07:22:56 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_contribution_v2_3.csv (12 rows)
+07:22:57 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_summary_v2_3.json
+07:22:57 | INFO     | RepoCoderStudio.Main | RAG augmentation: 8 candidate rows had no complete validated target-language reference within the context budget and were left as plain examples.
+07:22:57 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset_rag_grounded.jsonl (3789 rows)
+07:22:57 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_rag_grounded_summary.json
+07:24:46 | INFO     | RepoCoderStudio.Main | Loaded model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+07:24:55 | INFO     | RepoCoderStudio.Main | No checkpoint found. Training will start fresh.
+07:48:43 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+07:48:47 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+07:48:50 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2
+07:49:08 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 21 files, 74 functions, 9 classes (mock_embeddings=False)
+07:49:11 | INFO     | RepoCoderStudio.Main | CorpusIndex: loaded cached NL/Python indexes (405 rows, 405 with a Java index) from /content/drive/MyDrive/RepoCoderStudio/outputs/corpus_index
+07:50:31 | WARNING  | RepoCoderStudio.Main | Inference prompt was token-budgeted to preserve the task contract and response header.
+08:02:51 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+08:02:55 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+08:02:58 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2
+08:03:00 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 21 files, 74 functions, 9 classes (mock_embeddings=False)
+08:03:00 | INFO     | RepoCoderStudio.Main | CorpusIndex: loaded cached NL/Python indexes (405 rows, 405 with a Java index) from /content/drive/MyDrive/RepoCoderStudio/outputs/corpus_index
+08:03:23 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+08:04:04 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+08:04:30 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+08:23:45 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+08:23:48 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+08:23:51 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2
+08:23:53 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 21 files, 74 functions, 9 classes (mock_embeddings=False)
+08:23:53 | INFO     | RepoCoderStudio.Main | CorpusIndex: loaded cached NL/Python indexes (405 rows, 405 with a Java index) from /content/drive/MyDrive/RepoCoderStudio/outputs/corpus_index
+08:24:41 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:11:50 | INFO     | RepoCoderStudio.Main | Loaded JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/approved_corpus/approved_corpus.jsonl (537 rows)
+09:12:20 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset.jsonl (3222 rows)
+09:12:21 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_distribution_v2_3.csv (18 rows)
+09:12:21 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_family_difficulty_v2_3.csv (18 rows)
+09:12:22 | INFO     | RepoCoderStudio.Main | Saved CSV: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_contribution_v2_3.csv (12 rows)
+09:12:22 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_summary_v2_3.json
+09:12:22 | INFO     | RepoCoderStudio.Main | RAG augmentation: 8 candidate rows had no complete validated target-language reference within the context budget and were left as plain examples.
+09:12:24 | INFO     | RepoCoderStudio.Main | Saved JSONL: /content/drive/MyDrive/RepoCoderStudio/outputs/task_datasets/task_dataset_rag_grounded.jsonl (3789 rows)
+09:12:24 | INFO     | RepoCoderStudio.Main | Saved JSON: /content/drive/MyDrive/RepoCoderStudio/outputs/reports/task_dataset_rag_grounded_summary.json
+09:14:33 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+09:15:08 | INFO     | RepoCoderStudio.Main | Loading base model: Qwen/Qwen2.5-Coder-0.5B-Instruct
+09:15:11 | INFO     | RepoCoderStudio.Main | Loading LoRA adapter from /content/drive/MyDrive/RepoCoderStudio/outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2
+09:15:31 | INFO     | RepoCoderStudio.Main | RepositoryExplorer ready: 21 files, 74 functions, 9 classes (mock_embeddings=False)
+09:15:34 | INFO     | RepoCoderStudio.Main | CorpusIndex: loaded cached NL/Python indexes (405 rows, 405 with a Java index) from /content/drive/MyDrive/RepoCoderStudio/outputs/corpus_index
+09:16:18 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:26:31 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:27:12 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:38:02 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:39:22 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:40:39 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.
+09:42:01 | WARNING  | RepoCoderStudio.Main | Code generation ended before an implementation was produced; retrying once with a guarded minimum completion length.

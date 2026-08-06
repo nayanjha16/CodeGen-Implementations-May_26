@@ -11,16 +11,24 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SPACE_DIR = PROJECT_ROOT / "deploy" / "hf_space"
-DEFAULT_LOCAL = PROJECT_ROOT / "models" / "qwen_multitask" / "merged"
-HF_DEFAULT = "Saikrishna2511/qwen-multitask"
+
+# Shared resolver: local models/qwen_multitask/merged → Saikrishna2511/qwen-multitask
+sys.path.insert(0, str(PROJECT_ROOT))
+from inference.generator import HF_FT_MODEL, local_merged_path, resolve_codegen_model_id  # noqa: E402
 
 
 def resolve_model_id(explicit: str | None) -> str:
+    """CLI wrapper around shared FT model resolution."""
+    # Ignore ambient MODEL_ID when choosing the launch default so --model-id /
+    # local merged / Hub FT take precedence unless the user set --model-id.
     if explicit:
-        return explicit
-    if DEFAULT_LOCAL.exists():
-        return str(DEFAULT_LOCAL.resolve())
-    return HF_DEFAULT
+        return resolve_codegen_model_id(explicit=explicit)
+    saved = os.environ.pop("MODEL_ID", None)
+    try:
+        return resolve_codegen_model_id()
+    finally:
+        if saved is not None:
+            os.environ["MODEL_ID"] = saved
 
 
 def main() -> int:
@@ -28,7 +36,10 @@ def main() -> int:
     parser.add_argument(
         "--model-id",
         default=None,
-        help="Model path or Hugging Face repo id (default: local merged checkpoint)",
+        help=(
+            "Model path or Hugging Face repo id "
+            f"(default: local merged, else {HF_FT_MODEL})"
+        ),
     )
     parser.add_argument("--port", type=int, default=7860, help="Gradio server port")
     args = parser.parse_args()
@@ -38,8 +49,9 @@ def main() -> int:
         return 1
 
     model_id = resolve_model_id(args.model_id)
-    if model_id == str(DEFAULT_LOCAL.resolve()) and not DEFAULT_LOCAL.exists():
-        print(f"Local model not found at {DEFAULT_LOCAL}", file=sys.stderr)
+    merged = local_merged_path()
+    if model_id == str(merged.resolve()) and not merged.exists():
+        print(f"Local model not found at {merged}", file=sys.stderr)
         return 1
 
     env = os.environ.copy()

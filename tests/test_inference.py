@@ -1,5 +1,6 @@
 """Tests for inference generator and API."""
 
+import os
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -42,6 +43,25 @@ class TestCodeGenerator:
         assert path == merged
         assert base is None
 
+    def test_resolve_codegen_model_id_prefers_local_merged(self, tmp_path):
+        from generator import MULTITASK_MODEL_DIR, resolve_codegen_model_id
+
+        merged = tmp_path / MULTITASK_MODEL_DIR / "merged"
+        merged.mkdir(parents=True)
+        with patch.dict("os.environ", {}, clear=False):
+            os.environ.pop("MODEL_ID", None)
+            resolved = resolve_codegen_model_id(models_dir=tmp_path)
+        assert resolved == str(merged.resolve())
+
+    def test_resolve_codegen_model_id_hub_fallback(self, tmp_path):
+        from generator import HF_FT_MODEL, resolve_codegen_model_id
+
+        with patch.dict("os.environ", {}, clear=False):
+            os.environ.pop("MODEL_ID", None)
+            resolved = resolve_codegen_model_id(models_dir=tmp_path)
+        assert resolved == HF_FT_MODEL
+        assert "Qwen2.5-Coder" not in resolved
+
     @patch.dict("os.environ", {"MODEL_ID": "user/qwen-multitask"})
     @patch("generator.CodeGenerator")
     def test_load_generator_uses_model_id_env(self, mock_gen_cls, tmp_path):
@@ -49,6 +69,15 @@ class TestCodeGenerator:
 
         load_generator("nl2py", models_dir=tmp_path)
         mock_gen_cls.assert_called_once_with(model_path="user/qwen-multitask")
+
+    @patch("generator.CodeGenerator")
+    def test_load_generator_falls_back_to_hub_ft(self, mock_gen_cls, tmp_path):
+        from generator import HF_FT_MODEL, load_generator
+
+        with patch.dict("os.environ", {}, clear=False):
+            os.environ.pop("MODEL_ID", None)
+            load_generator("nl2py", models_dir=tmp_path)
+        mock_gen_cls.assert_called_once_with(model_path=HF_FT_MODEL)
 
     @patch("generator.AutoModelForCausalLM")
     @patch("generator.AutoTokenizer")

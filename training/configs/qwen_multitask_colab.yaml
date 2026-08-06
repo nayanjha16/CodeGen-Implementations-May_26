@@ -1,5 +1,8 @@
 # Stage-2 multi-task LoRA fine-tune (Google Colab / CUDA)
 # Starts from the stage-1 Java2Py merged checkpoint.
+# Dataset: full AVATAR-TC + ClassEval + design_patterns + CoDocBench
+#          + MBPP (NL2Py only; no Spider/Bird) + DocuMint
+# Prefer A100 40GB (fast). L4/A10 good. T4: lower batch to 4.
 model_name: models/java2py_qwen/merged
 task: multitask
 dataset_path: data/processed/qwen_multitask
@@ -25,7 +28,7 @@ gradient_accumulation_steps: 4
 learning_rate: 5.0e-5
 warmup_ratio: 0.03
 weight_decay: 0.01
-max_seq_length: 512
+max_seq_length: 1024
 fp16: true
 bf16: false
 logging_steps: 10

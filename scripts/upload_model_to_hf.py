@@ -17,8 +17,8 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from hf_auth import require_hf_auth
 
 
-def build_model_card(repo_id: str, space_id: str | None) -> str:
-    template = MODEL_CARD_TEMPLATE.read_text()
+def build_model_card(repo_id: str, space_id: str | None, card_path: Path) -> str:
+    template = card_path.read_text()
     space_url = (
         f"https://huggingface.co/spaces/{space_id}"
         if space_id
@@ -32,7 +32,7 @@ def build_model_card(repo_id: str, space_id: str | None) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Upload qwen_multitask merged model to HF Hub")
+    parser = argparse.ArgumentParser(description="Upload a merged model checkpoint to HF Hub")
     parser.add_argument(
         "--repo-id",
         required=True,
@@ -43,6 +43,12 @@ def main() -> int:
         type=Path,
         default=DEFAULT_MODEL_DIR,
         help="Path to merged checkpoint directory",
+    )
+    parser.add_argument(
+        "--model-card",
+        type=Path,
+        default=MODEL_CARD_TEMPLATE,
+        help="Path to model card README template",
     )
     parser.add_argument(
         "--space-id",
@@ -92,7 +98,11 @@ def main() -> int:
         shutil.rmtree(staging)
     shutil.copytree(model_dir, staging)
 
-    card_text = build_model_card(args.repo_id, args.space_id)
+    card_path = args.model_card.resolve()
+    if not card_path.exists():
+        print(f"Model card not found: {card_path}", file=sys.stderr)
+        return 1
+    card_text = build_model_card(args.repo_id, args.space_id, card_path)
     (staging / "README.md").write_text(card_text)
 
     print(f"Uploading {staging} -> {args.repo_id} ...")

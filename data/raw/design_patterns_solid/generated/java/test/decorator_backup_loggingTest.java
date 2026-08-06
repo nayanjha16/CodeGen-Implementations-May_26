@@ -1,0 +1,9 @@
+package org.example.patterns;
+public class BackupDecoratorTest {
+    public static void main(String[] args) {
+        BackupComponent c = new BackupUpperDecorator(new BackupCore());
+        String out = c.process("ab");
+        if (!out.equals("BACKUP:AB")) throw new AssertionError(out);
+        System.out.println("ok");
+    }
+}

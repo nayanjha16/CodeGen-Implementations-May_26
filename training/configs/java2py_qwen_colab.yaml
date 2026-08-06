@@ -1,18 +1,13 @@
-# Qwen2.5-Coder-0.5B-Instruct LoRA fine-tune on AVATAR-TC (Java->Python)
-# Google Colab (NVIDIA GPU / CUDA) config. Trains on the 1/4 train subset
-# produced by data/scripts/preprocess_avatar_tc.py and evaluates on the
-# AVATAR-TC valid split.
-#
-# Uses fp16 (not bf16): fp16 is supported on every Colab GPU including the
-# free-tier T4, whereas bf16 is only available on A100/L4. Device is left as
-# "auto" so utils.device picks CUDA on Colab, MPS on Mac, CPU otherwise.
+# Qwen2.5-Coder-0.5B-Instruct LoRA fine-tune on combined Java→Python data
+# (full AVATAR-TC + ClassEval-T + design_patterns_solid + CoDocBench).
+# Google Colab (NVIDIA GPU / CUDA). Prefer A100 40GB or L4 for speed;
+# T4 works with smaller batch (override per_device_train_batch_size=4).
 model_name: Qwen/Qwen2.5-Coder-0.5B-Instruct
 task: java2py
-dataset_path: data/processed/java2py_avatar
+dataset_path: data/processed/java2py_combined
 output_dir: models/java2py_qwen
 device: auto
 
-# LoRA (Qwen2.5 is Llama-style: q/k/v/o + gate/up/down projections)
 lora_r: 16
 lora_alpha: 32
 lora_dropout: 0.05
@@ -25,15 +20,14 @@ lora_target_modules:
   - up_proj
   - down_proj
 
-# Training (GPU-friendly batch sizes; Colab GPUs have more memory than MPS)
-num_train_epochs: 3
+num_train_epochs: 2
 per_device_train_batch_size: 8
 per_device_eval_batch_size: 8
 gradient_accumulation_steps: 4
 learning_rate: 2.0e-4
 warmup_ratio: 0.03
 weight_decay: 0.01
-max_seq_length: 512
+max_seq_length: 1024
 fp16: true
 bf16: false
 logging_steps: 10

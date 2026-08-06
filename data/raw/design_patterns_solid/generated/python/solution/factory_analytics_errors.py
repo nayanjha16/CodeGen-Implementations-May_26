@@ -1,0 +1,26 @@
+"""DesignPatternsSolid | kind=design_pattern | label=factory | domain=analytics | tier=errors"""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+class AnalyticsProduct(ABC):
+    @abstractmethod
+    def operate(self) -> str:
+        ...
+
+class AnalyticsBasicProduct(AnalyticsProduct):
+    def operate(self) -> str:
+        return "basic-analytics"
+
+class AnalyticsPremiumProduct(AnalyticsProduct):
+    def operate(self) -> str:
+        return "premium-analytics"
+
+class AnalyticsFactory:
+    def create(self, type_name: str) -> AnalyticsProduct:
+        if not type_name:
+            raise ValueError("type required")
+        print(f"[log] create {type_name}")
+        if type_name.lower() == "premium":
+            return AnalyticsPremiumProduct()
+        return AnalyticsBasicProduct()

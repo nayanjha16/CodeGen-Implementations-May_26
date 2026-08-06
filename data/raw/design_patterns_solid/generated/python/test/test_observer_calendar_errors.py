@@ -1,0 +1,22 @@
+"""Pytest for observer_calendar_errors (observer / calendar)."""
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+
+def _load():
+    path = Path(__file__).resolve().parents[1] / "solution" / "observer_calendar_errors.py"
+    spec = importlib.util.spec_from_file_location("observer_calendar_errors", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_observer_calendar_errors():
+    mod = _load()
+    subj, lis = mod.CalendarSubject(), mod.CalendarListener()
+    subj.attach(lis)
+    subj.notify_all("e")
+    assert lis.last == "calendar:e"

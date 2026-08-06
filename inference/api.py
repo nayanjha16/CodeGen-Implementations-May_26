@@ -113,6 +113,11 @@ class AgentSolveRequest(BaseModel):
     problem_id: str = Field("", description="Optional problem-pack id to load defaults from")
 
 
+class AgentMigrateRequest(BaseModel):
+    path: str = Field(..., description="Path to a Java file or folder of Java files")
+    max_files: int = Field(5, description="Max files to convert")
+    max_retries: int = Field(3, description="Max fix attempts per file")
+
 class CodeResponse(BaseModel):
     code: str
     task: str
@@ -148,9 +153,20 @@ class AgentSolveResponse(BaseModel):
 
 
 class AgentGenerateRequest(BaseModel):
-    prompt: str = Field(..., description="Natural language request for Generate Agent")
+    prompt: str = Field(
+        ...,
+        description="Request / specification: natural language, pseudocode, or pattern goal",
+    )
     unit: Literal["function", "class"] = Field("function")
     use_rag: bool = Field(False)
+    input_type: Literal["nl", "pseudocode"] | None = Field(
+        None,
+        description="Router input type; leave null to auto-classify the input",
+    )
+    pattern: str = Field(
+        "",
+        description="Optional design-pattern name (e.g. Singleton); leave blank to auto-detect",
+    )
 
 
 class AgentGenerateResponse(BaseModel):
@@ -329,6 +345,23 @@ async def agent_solve(request: AgentSolveRequest):
     )
 
 
+@app.post("/agent/migrate")
+def api_agent_migrate(req: AgentMigrateRequest) -> dict[str, Any]:
+    """Repo Migration Agent: Convert a folder of Java files to Python."""
+    try:
+        from agent.repo_migrate import run_migrate_java_path
+        
+        result = run_migrate_java_path(
+            path=req.path,
+            max_files=req.max_files,
+            max_retries=req.max_retries,
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Migration error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/agent/problems")
 async def agent_problems():
     """List Phase-2 problem pack entries."""
@@ -339,11 +372,15 @@ async def agent_problems():
 
 @app.post("/agent/generate", response_model=AgentGenerateResponse)
 async def agent_generate(request: AgentGenerateRequest):
-    """Generate Agent only: NL → Java → Python (no execute/judge/fix)."""
+    """Generate Agent: NL / pseudocode / pattern → Java → Python (no execute/judge/fix)."""
     if _generator is None:
         raise HTTPException(status_code=503, detail="codegen model not loaded")
     if not request.prompt.strip():
         raise HTTPException(status_code=400, detail="prompt must not be empty")
+
+    unit = request.unit
+    if request.pattern.strip():
+        unit = "class"
 
     from agent.llms import set_codegen_generator
     from agent.ui_runners import run_generate_agent
@@ -352,8 +389,10 @@ async def agent_generate(request: AgentGenerateRequest):
     try:
         result = run_generate_agent(
             request.prompt,
-            unit=request.unit,
+            unit=unit,
             use_rag=request.use_rag,
+            input_type=request.input_type,
+            pattern=request.pattern,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"generate agent failed: {e}") from e

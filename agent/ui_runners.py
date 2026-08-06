@@ -4,8 +4,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from agent.nodes import attach_ast, fix_python, java_to_python, maybe_retrieve, nl_to_java
-from agent.state import UnitType, initial_state
+from agent.nodes import (
+    attach_ast,
+    fix_python,
+    java_to_python,
+    maybe_retrieve,
+    nl_to_java,
+    pattern_to_java,
+    pseudocode_to_java,
+    route_input,
+)
+from agent.state import InputType, UnitType, _detect_unit, initial_state
 
 
 def _merge(state: dict[str, Any], update: dict[str, Any]) -> dict[str, Any]:
@@ -20,16 +29,38 @@ def run_generate_agent(
     *,
     unit: UnitType = "function",
     use_rag: bool = False,
+    input_type: InputType | None = None,
+    pattern: str = "",
 ) -> dict[str, Any]:
-    """Generate Agent only: NL → Java → Python (no execute / judge / fix)."""
+    """Generate Agent: NL / pseudocode / pattern → Java → Python (no execute/judge/fix).
+
+    ``input_type`` defaults to ``None`` so the router auto-classifies the input
+    (and extracts a design-pattern name) unless a caller forces a specific type.
+    """
     if not (nl_prompt or "").strip():
         raise ValueError("nl_prompt is required for Generate Agent")
 
-    state: dict[str, Any] = dict(initial_state(nl_prompt, unit=unit, use_rag=use_rag))
+    state: dict[str, Any] = dict(
+        initial_state(
+            nl_prompt,
+            unit=unit,
+            use_rag=use_rag,
+            input_type=input_type,
+            pattern=pattern or "",
+        )
+    )
+    state = _merge(state, route_input(state))
     if use_rag:
         state = _merge(state, maybe_retrieve(state))
 
-    state = _merge(state, nl_to_java(state))
+    route = state.get("route") or "text_to_pl"
+    if route == "pattern":
+        state = _merge(state, pattern_to_java(state))
+    elif route == "pseudocode_to_fn":
+        state = _merge(state, pseudocode_to_java(state))
+    else:
+        state = _merge(state, nl_to_java(state))
+
     state = _merge(state, java_to_python(state))
 
     return {
@@ -37,7 +68,7 @@ def run_generate_agent(
         "java_code": state.get("java_code") or "",
         "python_code": state.get("python_code") or "",
         "unit": state.get("unit") or unit,
-        "route": "text_to_pl",
+        "route": state.get("route") or "text_to_pl",
         "trace": list(state.get("trace") or []),
         "task": "agent_generate",
     }
@@ -53,6 +84,10 @@ def run_fix_agent(
     """Fix Agent only: repair Python given NL + code + runtime/error."""
     if not (python_code or "").strip():
         raise ValueError("python_code is required for Fix Agent")
+
+    # Auto-detect the unit from the code (and request) unless explicitly set.
+    if unit == "auto":
+        unit = _detect_unit(f"{python_code}\n{nl_prompt or ''}")
 
     state: dict[str, Any] = dict(initial_state(nl_prompt or "Fix the Python code.", unit=unit))
     state["python_code"] = python_code

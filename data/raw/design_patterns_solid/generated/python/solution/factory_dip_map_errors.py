@@ -1,0 +1,26 @@
+"""DesignPatternsSolid | kind=combo | label=factory+dip | domain=map | tier=errors"""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+class MapProduct(ABC):
+    @abstractmethod
+    def operate(self) -> str:
+        ...
+
+class MapBasicProduct(MapProduct):
+    def operate(self) -> str:
+        return "basic-map"
+
+class MapPremiumProduct(MapProduct):
+    def operate(self) -> str:
+        return "premium-map"
+
+class MapFactory:
+    def create(self, type_name: str) -> MapProduct:
+        if not type_name:
+            raise ValueError("type required")
+        print(f"[log] create {type_name}")
+        if type_name.lower() == "premium":
+            return MapPremiumProduct()
+        return MapBasicProduct()

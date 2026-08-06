@@ -1,23 +1,36 @@
 # Code Generation Capstone
 
-A two-task code synthesis system that fine-tunes **codegen-350M-multi** for:
+Multi-task code synthesis built on fine-tuned **Qwen2.5-Coder-0.5B-Instruct**, plus a **LangGraph** agent that routes, generates, executes, judges, and fixes code.
 
-1. **NL → Python** — natural language to Python code (Spider, BirdBench, BigQuery/Python, Pile)
-2. **Java → Python** — cross-language translation (CoDocBench, CodeParrot)
+**Tasks (single multitask checkpoint):**
 
-Includes RAG inference, Docker-based code execution sandbox, and evaluation with BLEU, BERTScore, CodeBLEU, CodeBERTScore, and execution accuracy.
+1. **NL → Python** — natural language to Python (MBPP)
+2. **Java → Python** — cross-language translation (AVATAR-TC, CoDocBench)
+3. **Code → Documentation** — Python doc generation (DocuMint)
+4. **Code comments** — add comments to Python
+
+**Agentic pipeline:** NL / Java / pseudocode / design-pattern → Java → Python → sandbox execute → LLM judge → Fix loop (AST-aware).
+
+Also includes RAG few-shot inference, a Docker execution sandbox, FastAPI + Gradio demos, and evaluation with BLEU, BERTScore, CodeBLEU, CodeBERTScore, and execution accuracy.
+
+Live demo: https://huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo  
+Model: https://huggingface.co/Saikrishna2511/qwen-multitask
 
 ## Project Structure
 
 ```
-PRAgenticAI/
+codegen26/
+├── agent/              # LangGraph agent (route → codegen → execute → judge → fix)
 ├── data/scripts/       # Dataset download & preprocessing
 ├── training/           # LoRA fine-tuning scripts & configs
 ├── inference/          # RAG pipeline, generator, FastAPI
-├── evaluation/         # Metrics & benchmark runner
+├── evaluation/         # Metrics, multitask / agent / baseline runners
 ├── sandbox/            # Docker execution environment
+├── deploy/             # HF Space Gradio app + model card
+├── scripts/            # Deploy, local Gradio, smoke tests
 ├── tests/              # Pytest suite
-└── notebooks/        # Dataset exploration
+├── notebooks/          # Colab fine-tune & baseline eval
+└── langgraph.json      # LangGraph CLI graph entrypoint
 ```
 
 ## Quick Start
@@ -33,14 +46,14 @@ pip install -r requirements.txt
 pip install -r requirements-train.txt
 ```
 
-**Mac (Apple Silicon / MPS):** PyTorch will automatically use the Mac GPU via MPS (Metal). No CUDA install needed — `pip install torch` is sufficient.
+**Mac (Apple Silicon / MPS):** PyTorch uses the Mac GPU via MPS. No CUDA install needed — `pip install torch` is sufficient.
 
 ```bash
-# Verify MPS is available
 python -c "import torch; print('MPS:', torch.backends.mps.is_available())"
 ```
 
-**Linux/Windows (NVIDIA GPU):** Install CUDA-enabled PyTorch if needed:
+**Linux/Windows (NVIDIA GPU):**
+
 ```bash
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 ```
@@ -48,51 +61,98 @@ pip install torch --index-url https://download.pytorch.org/whl/cu121
 ### 2. Download & Preprocess Data
 
 ```bash
+# Optional local extras (CoDocBench). Spider/Bird are off by default (DOWNLOAD_SQL=1 to fetch).
 bash data/scripts/download.sh
-python data/scripts/preprocess_nl2py.py
+python data/scripts/preprocess_nl2py.py   # MBPP-only NL2Py by default
 python data/scripts/preprocess_java2py.py
+
+# Qwen Stage 1 — AVATAR-TC Java→Python
+# Place under data/raw/: avatar_tc, classeval_t, design_patterns_solid
+# (+ optional codocbench/). DocuMint + MBPP come from Hugging Face at preprocess.
+
+# Stage 1 Java→Python mix: full AVATAR-TC + ClassEval-T + design patterns (+ CoDocBench)
+python data/scripts/preprocess_java_oop.py --avatar-fraction 1.0 --design-upsample 2
+
+# Stage 2 multitask: same Java2Py sources + MBPP (NL2Py) + DocuMint
+python data/scripts/preprocess_multitask.py --avatar-fraction 1.0 --design-upsample 2
 ```
 
-### 3. Fine-tune Models
+### 3. Fine-tune (Qwen two-stage LoRA)
 
-**Mac (MPS — recommended on Apple Silicon):**
+**Mac (MPS):**
+
 ```bash
-python training/train_nl2py.py --config training/configs/nl2py_mps.yaml
-python training/train_java2py.py --config training/configs/java2py_mps.yaml
+# Stage 1: specialize on Java→Python (use combined data after preprocess_java_oop)
+python training/train_java2py.py --config training/configs/java2py_qwen_colab.yaml
+# or lighter local: training/configs/java2py_qwen_mps.yaml (avatar-only path)
+
+# Stage 2: multitask from the Stage-1 merged checkpoint
+python training/train_multitask.py --config training/configs/qwen_multitask_mps.yaml
 ```
 
-**CUDA GPU:**
+**Colab / CUDA (recommended: A100 40GB; L4/A10 good; T4 OK with batch 4):**
+
 ```bash
-python training/train_nl2py.py --config training/configs/nl2py.yaml
-python training/train_java2py.py --config training/configs/java2py.yaml
+python training/train_java2py.py --config training/configs/java2py_qwen_colab.yaml
+python training/train_multitask.py --config training/configs/qwen_multitask_colab.yaml
 ```
 
-Device selection order is automatic: CUDA → MPS (Mac GPU) → CPU. MPS configs use `bf16` and smaller batch sizes tuned for unified memory.
+Or run `notebooks/finetune_qwen.ipynb` end-to-end (includes Hugging Face push cell).
+
+Device selection order is automatic: CUDA → MPS → CPU. Merged weights land in `models/java2py_qwen/merged` then `models/qwen_multitask/merged`.
 
 ## Run on Google Colab
 
-The project also runs on Google Colab (NVIDIA GPU). Device selection is automatic, so the same code targets CUDA on Colab, MPS on Mac, and CPU otherwise.
+Works from the browser or the **Cursor Colab extension** (Select Kernel → Colab → GPU). The Colab VM cannot read your Mac path — sync this workspace (or a zip) so `PROJECT_ROOT` resolves under Drive/`/content`.
 
-1. **Upload the project to Google Drive.** Copy the whole project folder (including `data/raw/avatar_tc` and any `data/processed`) to e.g. `MyDrive/PRAgenticAI`. The `data/` and `models/` folders are gitignored, so they must be uploaded manually.
-2. **Open a notebook in Colab** — `notebooks/finetune_qwen.ipynb` (preprocess + train + eval) or `notebooks/baseline_qwen_eval.ipynb` (baseline eval only).
-3. **Select a GPU runtime:** Runtime → Change runtime type → GPU.
-4. **Run the two "Colab setup" cells first.** They mount Drive, point `PROJECT_ROOT` at your uploaded folder (edit `DRIVE_PROJECT_PATH` if you used a different location), and install dependencies. Colab already ships a CUDA-enabled PyTorch.
-5. **Run the rest of the notebook top to bottom.**
+1. Open `notebooks/finetune_qwen.ipynb` in Cursor or Colab and select a **GPU** runtime (**A100** preferred).
+2. Run the **GitHub clone** cell — pulls [krishnasaicareer/codegen26](https://github.com/krishnasaicareer/codegen26.git) `main` into **`/content/codegenQwen/codegen26`** (source of truth; not an old Drive zip).
+3. Run PROJECT_ROOT → inventory → optional `download.sh` for `codocbench` → install. NL2Py = **MBPP only** (HF); DocuMint on HF.
+4. Set `RUN_PREPROCESS` / `RUN_TRAINING` / `RUN_MULTITASK_*` / `RUN_HF_PUSH` as needed.
+5. Store `HF_TOKEN` (and optional `GITHUB_TOKEN` for private clone) in Colab Secrets before publishing.
 
-For CLI training on Colab, use the Colab/CUDA config:
+Colab covers preprocess, LoRA fine-tune, Hub upload, and similarity metrics. The Docker sandbox and FastAPI server are **not** supported on Colab.
+
+## LangGraph Agent
+
+The agent (`agent/`) implements:
+
+`route → retrieve? → (NL / Java / pseudocode / pattern / repo) → Java→Python → execute → judge → (fix → execute)*`
 
 ```bash
-python data/scripts/preprocess_avatar_tc.py
-python training/train_java2py.py --config training/configs/java2py_qwen_colab.yaml
+# API (loads multitask model; wires agent on startup)
+uvicorn inference.api:app --host 0.0.0.0 --port 8000
+
+# Full solve loop
+curl -X POST http://localhost:8000/agent/solve \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"Write a function that checks if a string is a palindrome","max_retries":3}'
+
+# Generate only (no execute/judge/fix)
+curl -X POST http://localhost:8000/agent/generate \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"Implement a Singleton logger class","unit":"class"}'
+
+# Fix only
+curl -X POST http://localhost:8000/agent/fix \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"factorial of n","python_code":"def fac(n): return n","runtime":"AssertionError"}'
 ```
 
-`java2py_qwen_colab.yaml` sets `device: auto` and `fp16: true` (valid on every Colab GPU including the free T4; on A100/L4 you can switch to `bf16: true`).
+Optional env vars:
 
-**Colab scope and limitations:**
-- Colab supports the notebook flow only: preprocess, LoRA fine-tune, and the BLEU / CodeBLEU / BERTScore / CodeBERTScore eval. This covers `notebooks/finetune_qwen.ipynb` and `notebooks/baseline_qwen_eval.ipynb`.
-- The Docker sandbox execution-accuracy eval (section 5) and the FastAPI / uvicorn server (section 4) are **not** supported on Colab — Colab has no Docker daemon, and serving an API would require external tunneling.
-- The `data/raw/avatar_tc` dataset is bundled with the project and must be uploaded to Drive along with the rest of the folder. `data/scripts/download.sh` does **not** fetch AVATAR-TC (it only handles Spider / BirdBench / CoDocBench).
-- After the dependency-install cell upgrades `transformers` / `peft` / `trl` over Colab's preinstalled versions, you may need to restart the runtime (Runtime -> Restart session) and re-run from the setup cell.
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MODEL_ID` | local `models/qwen_multitask/merged` or Hub `Saikrishna2511/qwen-multitask` | Codegen checkpoint |
+| `JUDGE_MODEL_ID` | `Qwen/Qwen2.5-1.5B-Instruct` | Separate judge LLM (`ft` reuses codegen) |
+
+LangGraph CLI entrypoint is defined in `langgraph.json` (`codegen_agent` → `agent/graph.py:build_agent_graph`).
+
+Agent vs single-shot eval:
+
+```bash
+python evaluation/run_agent_eval.py --limit 5
+```
 
 ### 4. Build RAG Index & Start API
 
@@ -102,7 +162,7 @@ python inference/rag_pipeline.py --task java2py --build-index
 uvicorn inference.api:app --host 0.0.0.0 --port 8000
 ```
 
-Automated **NL → Java → Python** pipeline (one natural-language prompt):
+Single-shot **NL → Java → Python** (no agent loop):
 
 ```bash
 curl -X POST http://localhost:8000/nl2java2py \
@@ -110,15 +170,16 @@ curl -X POST http://localhost:8000/nl2java2py \
   -d '{"prompt":"Write a function that checks if a string is a palindrome"}'
 ```
 
-Response includes both `java_code` and `python_code`.
 ### 5. Run Evaluation
 
 ```bash
-# Build sandbox image first
 docker build -t code-sandbox sandbox/
 
 python evaluation/run_eval.py --task nl2py --split test --max-samples 100
 python evaluation/run_eval.py --task java2py --split test --max-samples 100
+python evaluation/run_multitask_eval.py
+python evaluation/run_baseline_qwen.py
+python evaluation/run_agent_eval.py --limit 5
 ```
 
 ### 6. Run Tests
@@ -129,23 +190,16 @@ pytest tests/ -v
 
 ## Deploy to Hugging Face
 
-Upload the merged multi-task checkpoint and launch a Gradio Space demo.
-
 ```bash
 .venv/bin/pip install -r requirements-deploy.txt
 hf auth login
 
-# Upload model + push Space (defaults to Saikrishna2511)
 .venv/bin/python scripts/deploy_to_hf.py --hardware cpu-basic
 ```
 
-Space source lives in `deploy/hf_space/`. Set `MODEL_ID` in Space Settings if the variable was not applied automatically.
+Space source: `deploy/hf_space/`. Set `MODEL_ID` in Space Settings if it was not applied automatically.
 
-Live demo: https://huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo
-
-## Run locally
-
-Launch the same Gradio UI on your machine (uses `models/qwen_multitask/merged` by default):
+## Run Gradio Locally
 
 ```bash
 source .venv/bin/activate
@@ -155,23 +209,15 @@ python scripts/run_local_gradio.py
 
 Open **http://127.0.0.1:7860**. On Apple Silicon, inference uses MPS automatically.
 
-Options:
-
 ```bash
-# Hugging Face Hub model instead of local weights
+# Hub model instead of local weights
 python scripts/run_local_gradio.py --model-id Saikrishna2511/qwen-multitask
 
-# Different port if 7860 is in use
+# Different port
 python scripts/run_local_gradio.py --port 7861
 ```
 
-Troubleshooting:
-
-- **Model not found** — ensure `models/qwen_multitask/merged` exists (from training) or pass `--model-id` for a Hub repo
-- **Slow first request** — normal; ~988MB loads into memory once at startup
-- **Port already in use** — rerun with `--port 7861`
-
-Smoke-test handlers without loading the model:
+Smoke-test Space handlers without loading the model:
 
 ```bash
 python scripts/smoke_test_space.py
@@ -179,36 +225,44 @@ python scripts/smoke_test_space.py
 
 ## API Endpoints
 
-| Method | Path           | Body                                              | Response                          |
-|--------|----------------|---------------------------------------------------|-----------------------------------|
-| POST   | `/nl2java2py`  | `{"prompt": "check if a string is a palindrome"}` | `java_code` + `python_code`       |
-| POST   | `/nl2py`       | `{"query": "sort a list"}`                        | Python code                       |
-| POST   | `/java2py`     | `{"java_code": "..."}`                            | Python code                       |
-| POST   | `/code2doc`    | `{"python_code": "..."}`                          | Documentation                     |
-| POST   | `/comments`    | `{"python_code": "..."}`                          | Commented Python                  |
-| GET    | `/health`      | —                                                 | status + model_path               |
+| Method | Path               | Body (summary)                                      | Response                                      |
+|--------|--------------------|-----------------------------------------------------|-----------------------------------------------|
+| POST   | `/nl2java2py`      | `{"prompt": "..."}`                                 | `java_code` + `python_code`                   |
+| POST   | `/nl2py`           | `{"query": "...", "use_rag": true}`                 | Python code                                   |
+| POST   | `/java2py`         | `{"java_code": "...", "use_rag": true}`             | Python code                                   |
+| POST   | `/code2doc`        | `{"python_code": "..."}`                            | Documentation                                 |
+| POST   | `/comments`        | `{"python_code": "..."}`                            | Commented Python                              |
+| POST   | `/agent/solve`     | `{"prompt": "...", "max_retries": 3}`               | codes + judge + trace (full loop)             |
+| POST   | `/agent/generate`  | `{"prompt": "...", "unit": "function\|class"}`      | Java + Python (no execute)                    |
+| POST   | `/agent/fix`       | `{"prompt": "...", "python_code": "...", ...}`      | Fixed Python + AST info                       |
+| GET    | `/agent/problems`  | —                                                   | Problem-pack list                             |
+| GET    | `/health`          | —                                                   | status, `model_path`, `agent_ready`           |
 
 ## Datasets
 
-| Dataset      | Task    | Source                                      |
-|--------------|---------|---------------------------------------------|
-| Spider       | NL2Py   | https://spider2-sql.github.io/              |
-| BirdBench    | NL2Py   | https://bird-bench.github.io/               |
-| CoDocBench   | Java2Py | https://github.com/kunpai/codocbench        |
-| CodeParrot   | Both    | HuggingFace `codeparrot/github-code`        |
-| BigQuery/Py  | NL2Py   | HuggingFace datasets                        |
+| Dataset      | Task              | Source / notes                                      |
+|--------------|-------------------|-----------------------------------------------------|
+| AVATAR-TC    | Java2Py (Stage 1) | Bundled under `data/raw/avatar_tc`                  |
+| MBPP         | NL2Py             | HuggingFace `mbpp` (default NL2Py source)           |
+| DocuMint     | Code2Doc          | HuggingFace `documint/DocuMint` (no local folder)   |
+| CoDocBench   | Java2Py           | `data/raw/codocbench` via `download.sh` (optional)  |
+| Spider/Bird  | (unused)          | Opt-in only: `DOWNLOAD_SQL=1` + `preprocess_nl2py.py --include-sql` |
+| CodeParrot   | Both (legacy)     | HuggingFace `codeparrot/github-code`                |
 
 ## Evaluation Metrics
 
 - **BLEU / BERTScore** — natural language similarity
 - **CodeBLEU / CodeBERTScore** — code similarity vs ground truth
 - **Execution Accuracy** — sandbox pass rate on test cases
+- **Agent eval** — judge-YES rate vs single-shot pipeline (`evaluation/run_agent_eval.py`)
 
 ## References
 
-- [codegen-350M-multi](https://huggingface.co/Salesforce/codegen-350M-multi)
+- [Qwen2.5-Coder-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct)
+- [Saikrishna2511/qwen-multitask](https://huggingface.co/Saikrishna2511/qwen-multitask)
+- [LangGraph](https://langchain-ai.github.io/langgraph/)
 - [CoDocBench](https://github.com/kunpai/codocbench)
-- [Spider](https://spider2-sql.github.io/)
+- [Spider](https://yale-lily.github.io/spider/)
 - [BirdBench](https://bird-bench.github.io/)
 - [CodeBLEU](https://arxiv.org/abs/2009.10297)
 - [CodeBERTScore](https://arxiv.org/abs/2302.05527)

@@ -431,6 +431,7 @@
       <span class="badge">NL → Python</span>
       <span class="badge">Code → Documentation</span>
       <span class="badge">LoRA Fine-Tuning</span>
+      <span class="badge">LangGraph Agent</span>
     </div>
     <div class="team-block">
       <div class="team-label">Team</div>
@@ -448,7 +449,7 @@
   <section class="slide" data-slide="1">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">02 / 12</span>
+      <span class="slide-num">02 / 13</span>
     </div>
     <h2>The Problem</h2>
     <div class="content">
@@ -475,7 +476,7 @@
   <section class="slide" data-slide="2">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">03 / 12</span>
+      <span class="slide-num">03 / 13</span>
     </div>
     <h2>Project Evolution</h2>
     <div class="content">
@@ -503,7 +504,7 @@
   <section class="slide" data-slide="3">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">04 / 12</span>
+      <span class="slide-num">04 / 13</span>
     </div>
     <h2>Why Qwen2.5-Coder-0.5B-Instruct?</h2>
     <div class="content">
@@ -538,7 +539,7 @@
   <section class="slide" data-slide="4">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">05 / 12</span>
+      <span class="slide-num">05 / 13</span>
     </div>
     <h2>Why These Datasets?</h2>
     <div class="content">
@@ -569,7 +570,7 @@
   <section class="slide" data-slide="5">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">06 / 12</span>
+      <span class="slide-num">06 / 13</span>
     </div>
     <h2>Was Qwen Already Trained on These Datasets?</h2>
     <div class="content">
@@ -620,7 +621,7 @@
   <section class="slide" data-slide="6">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">07 / 12</span>
+      <span class="slide-num">07 / 13</span>
     </div>
     <h2>Methodology — Two-Stage LoRA Pipeline</h2>
     <div class="content">
@@ -667,7 +668,7 @@
   <section class="slide" data-slide="7">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">08 / 12</span>
+      <span class="slide-num">08 / 13</span>
     </div>
     <h2>Evaluation Framework</h2>
     <div class="content">
@@ -706,7 +707,7 @@
   <section class="slide" data-slide="8">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">09 / 12</span>
+      <span class="slide-num">09 / 13</span>
     </div>
     <h2>Results — Baseline vs Fine-Tuned</h2>
     <div class="content">
@@ -775,7 +776,7 @@
   <section class="slide" data-slide="9">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">10 / 12</span>
+      <span class="slide-num">10 / 13</span>
     </div>
     <h2>Value Added — What We Built Beyond the Base Model</h2>
     <div class="content">
@@ -788,6 +789,7 @@
             <li><strong>Parameter-efficient training</strong> — Full pipeline on Mac MPS / Colab T4 (no A100 required)</li>
             <li><strong>Execution-grounded evaluation</strong> — Docker sandbox with real I/O test cases, not just string similarity</li>
             <li><strong>Two-stage curriculum</strong> — Specialize then multitask without catastrophic forgetting (AVATAR replay)</li>
+            <li><strong>Agentic codegen loop</strong> — LangGraph route → generate → execute → judge → AST-aware fix</li>
           </ul>
         </div>
         <div>
@@ -823,7 +825,7 @@
   <section class="slide" data-slide="10">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
-      <span class="slide-num">11 / 12</span>
+      <span class="slide-num">11 / 13</span>
     </div>
     <h2>System Architecture</h2>
     <div class="content">
@@ -840,9 +842,11 @@
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
           <div class="flow-box">Eval<br/><small>BLEU, CodeBLEU, Exec</small></div>
           <span class="flow-arrow">→</span>
-          <div class="flow-box">Gradio UI<br/><small>Local + HF Space</small></div>
+          <div class="flow-box">Gradio + API<br/><small>Local + HF Space</small></div>
           <span class="flow-arrow">→</span>
           <div class="flow-box">Docker Sandbox<br/><small>Code execution</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">LangGraph Agent<br/><small>route → judge → fix</small></div>
         </div>
       </div>
 
@@ -860,8 +864,7 @@
           <h3>Future Work</h3>
           <ul>
             <li>Scale to Qwen2.5-Coder-1.5B or 7B with more compute</li>
-            <li><strong>FastAPI serving</strong> with RAG few-shot retrieval (FAISS + codegen embeddings)</li>
-            <li><strong>Agentic approach</strong> — autonomous multi-step code synthesis with tool use and self-correction</li>
+            <li>Richer repo-aware edits beyond the current toy package path</li>
             <li>RLHF / DPO on execution feedback</li>
             <li>More languages beyond Java→Python</li>
           </ul>
@@ -870,8 +873,77 @@
     </div>
   </section>
 
-  <!-- SLIDE 12: Thank You -->
-  <section class="slide title-slide qa-slide" data-slide="11">
+  <!-- SLIDE 12: Agentic Approach -->
+  <section class="slide" data-slide="11">
+    <div class="header">
+      <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+      <span class="slide-num">12 / 13</span>
+    </div>
+    <h2>Agentic Approach — LangGraph Codegen Loop</h2>
+    <div class="content">
+      <p style="font-size:1.05rem; color:var(--muted); margin-bottom:0.75rem;">
+        Built on the fine-tuned multitask checkpoint: auto-routes the input, synthesizes code, executes it, judges intent, and self-corrects.
+      </p>
+
+      <div class="flow" style="flex-direction:column; align-items:stretch; gap:0.65rem;">
+        <div style="display:flex; gap:0.45rem; flex-wrap:wrap; justify-content:center; align-items:center;">
+          <div class="flow-box">Route<br/><small>NL / Java / pseudo / pattern / repo</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Retrieve?<br/><small>optional RAG</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Codegen<br/><small>→ Java → Python</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Execute<br/><small>sandbox</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Judge<br/><small>intent LLM</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Fix loop<br/><small>AST → repair → re-run</small></div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem">
+        <div class="card">
+          <h3>Generate Agent</h3>
+          <p>Input → Java → Python only. No execute / judge / fix. Used for fast synthesis in the Gradio Agent tab and <code>/agent/generate</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Fix Agent</h3>
+          <p>Repairs Python given the original request, failing code, and runtime error — AST-aware, standalone <code>/agent/fix</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Full Agent Loop</h3>
+          <p>End-to-end <code>solve</code>: route → generate → execute → judge → (attach AST → fix → execute)* up to <code>max_retries</code>.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem">
+        <div class="card">
+          <h3>Router paths</h3>
+          <ul>
+            <li><strong>text_to_pl</strong> — NL → Java → Python</li>
+            <li><strong>pl_to_pl</strong> — Java → Python directly</li>
+            <li><strong>pseudocode_to_fn</strong> — steps → Java → Python</li>
+            <li><strong>pattern</strong> — design pattern → class → Python</li>
+            <li><strong>repo</strong> — list files → NL edit goal → codegen</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Tools &amp; integration</h3>
+          <ul>
+            <li><strong>LangGraph</strong> StateGraph in <code>agent/</code></li>
+            <li><strong>Sandbox execute</strong> + optional FAISS RAG</li>
+            <li><strong>Separate judge LLM</strong> for pass / retry</li>
+            <li><strong>API + Gradio</strong> — Generate / Fix / Full modes</li>
+            <li><strong>Agent eval</strong> — judge-YES vs single-shot</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Self-correction closes the loop: failed judge → attach AST → Fix Agent → re-execute until YES or retry budget exhausted.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 13: Thank You -->
+  <section class="slide title-slide qa-slide" data-slide="12">
     <div class="header">
       <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
     </div>

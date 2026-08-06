@@ -76,7 +76,7 @@ def codegen_generate(
 def judge_generate(prompt: str) -> str:
     gen = get_judge_generator()
     # Judge should return plain text, not extracted code fences only
-    raw = gen.generate(prompt, temperature=0.0, max_new_tokens=64, do_sample=False, response_type="doc")
+    raw = gen.generate(prompt, temperature=0.0, max_new_tokens=64, response_type="doc")
     return raw
 
 

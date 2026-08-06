@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -16,9 +17,17 @@ from agent.prompts import (
     format_judge_prompt,
     format_pattern_java,
     format_pseudocode_to_java,
+    format_route_prompt,
     parse_judge_response,
+    parse_route_response,
 )
-from agent.state import AgentState
+from agent.state import (
+    AgentState,
+    _detect_pattern,
+    _detect_unit,
+    _looks_like_java,
+    _looks_like_pseudocode,
+)
 from agent.tools import list_repo_files, parse_ast, retrieve_examples, run_python_dict
 
 from prompt_templates import (
@@ -31,25 +40,97 @@ def _trace(step: str, detail: str = "") -> list[dict[str, Any]]:
     return [{"step": step, "detail": detail[:500]}]
 
 
-def route_input(state: AgentState) -> dict[str, Any]:
-    """Thin router (problem B): choose text_to_pl | pl_to_pl | pseudocode_to_fn | pattern | repo."""
-    if state.get("repo_root"):
-        route = "repo"
-    elif state.get("pattern"):
-        route = "pattern"
-    elif state.get("input_type") == "java" or (
-        state.get("java_code") and not state.get("nl_prompt")
-    ):
-        route = "pl_to_pl"
-    elif state.get("input_type") == "pseudocode":
-        route = "pseudocode_to_fn"
-    else:
-        route = "text_to_pl"
+def _is_ambiguous(text: str) -> bool:
+    """Weak/conflicting signals that warrant an LLM classification fallback."""
+    raw = text or ""
+    codeish = "{" in raw or ";" in raw or "()" in raw
+    stepish = bool(re.search(r"(?m)^\s*(step\s*\d+|\d+[.)])\s+", raw))
+    return codeish or stepish
 
-    return {
-        "route": route,
-        "trace": _trace("route", route),
-    }
+
+def classify_input(state: AgentState) -> tuple[str, str, str]:
+    """Classify raw input into (label, pattern_name, detail).
+
+    ``label`` is one of ``nl | java | pseudocode | pattern``. Fast heuristics run
+    first; the judge LLM is consulted only when signals are weak/ambiguous.
+    """
+    text = state.get("nl_prompt") or ""
+    if not text.strip():
+        return "nl", "", "nl (empty)"
+
+    if _looks_like_java(text):
+        return "java", "", "java (heuristic)"
+
+    pattern_name = _detect_pattern(text)
+    if pattern_name:
+        return "pattern", pattern_name, f"pattern (heuristic: {pattern_name})"
+
+    if _looks_like_pseudocode(text):
+        return "pseudocode", "", "pseudocode (heuristic)"
+
+    if not _is_ambiguous(text):
+        return "nl", "", "nl (heuristic)"
+
+    # Ambiguous: fall back to the judge LLM classifier.
+    try:
+        raw = judge_generate(format_route_prompt(text))
+        label, name = parse_route_response(raw)
+        return label, name, f"{label} (llm)"
+    except Exception as exc:  # pragma: no cover - defensive
+        return "nl", "", f"nl (fallback: {exc})"
+
+
+def route_input(state: AgentState) -> dict[str, Any]:
+    """Router: auto-classify the input and choose the downstream route.
+
+    Explicit signals (``repo_root``, an explicit ``pattern`` name, or a forced
+    ``input_type``) always win for backward compatibility; otherwise the raw
+    text is classified via :func:`classify_input`.
+    """
+    if state.get("repo_root"):
+        return {"route": "repo", "trace": _trace("route", "repo")}
+    if state.get("pattern"):
+        return {
+            "route": "pattern",
+            "unit": "class",
+            "trace": _trace("route", "pattern (explicit)"),
+        }
+
+    input_type = state.get("input_type")
+    pattern_name = ""
+    if input_type in (None, ""):
+        input_type, pattern_name, detail = classify_input(state)
+    else:
+        detail = f"{input_type} (forced)"
+
+    updates: dict[str, Any] = {}
+    if input_type == "pattern" or pattern_name:
+        updates["route"] = "pattern"
+        updates["unit"] = "class"
+        if pattern_name:
+            updates["pattern"] = pattern_name
+    elif input_type == "java" or (state.get("java_code") and not state.get("nl_prompt")):
+        updates["route"] = "pl_to_pl"
+        # If Java arrived in the prompt box (no java_code yet), promote it so
+        # java_to_python has source to translate.
+        if not state.get("java_code") and state.get("nl_prompt"):
+            updates["java_code"] = state.get("nl_prompt") or ""
+    elif input_type == "pseudocode":
+        updates["route"] = "pseudocode_to_fn"
+    else:
+        updates["route"] = "text_to_pl"
+
+    # Resolve the code unit (function vs class). An explicit user choice wins;
+    # otherwise (unit unset or "auto") infer it from the request text. The
+    # pattern route already pinned "class" above.
+    if updates.get("unit") != "class":
+        requested_unit = state.get("unit") or "auto"
+        if requested_unit == "auto":
+            src = state.get("nl_prompt") or state.get("java_code") or ""
+            updates["unit"] = _detect_unit(src)
+
+    updates["trace"] = _trace("route", detail or updates["route"])
+    return updates
 
 
 def maybe_retrieve(state: AgentState) -> dict[str, Any]:

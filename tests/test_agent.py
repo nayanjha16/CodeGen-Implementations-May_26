@@ -18,7 +18,8 @@ class TestAgentState:
 
         s = initial_state("print hello")
         assert s["unit"] == "function"
-        assert s["input_type"] == "nl"
+        # Classification is deferred to the router; unset text stays None (auto).
+        assert s["input_type"] is None
         assert s["max_retries"] == 3
 
     def test_initial_state_java_route(self):
@@ -27,11 +28,12 @@ class TestAgentState:
         s = initial_state("", java_code="class A {}")
         assert s["input_type"] == "java"
 
-    def test_initial_state_pseudocode(self):
+    def test_initial_state_defers_pseudocode(self):
         from agent.state import initial_state
 
+        # initial_state no longer classifies free text — the router does.
         s = initial_state("Algorithm: Foo\nBegin\n  End if\n")
-        assert s["input_type"] == "pseudocode"
+        assert s["input_type"] is None
 
     def test_unit_class_supported(self):
         from agent.state import initial_state
@@ -39,6 +41,65 @@ class TestAgentState:
         s = initial_state("Singleton logger", unit="class", pattern="Singleton")
         assert s["unit"] == "class"
         assert s["pattern"] == "Singleton"
+
+
+class TestRouterClassify:
+    def _state(self, prompt="", **kw):
+        from agent.state import initial_state
+
+        return dict(initial_state(prompt, **kw))
+
+    def test_classify_nl(self):
+        from agent.nodes import classify_input
+
+        label, name, _ = classify_input(self._state("Write a function that adds two numbers"))
+        assert label == "nl"
+        assert name == ""
+
+    def test_classify_pseudocode(self):
+        from agent.nodes import classify_input
+
+        label, _, _ = classify_input(self._state("Algorithm: Foo\nBegin\n  End if\nEnd"))
+        assert label == "pseudocode"
+
+    def test_classify_pattern_extracts_name(self):
+        from agent.nodes import classify_input
+
+        label, name, _ = classify_input(self._state("Create a Singleton Logger class"))
+        assert label == "pattern"
+        assert name == "Singleton"
+
+    def test_classify_java(self):
+        from agent.nodes import classify_input
+
+        java = (
+            "public class Main { public static void main(String[] a){ "
+            "System.out.println(1);} }"
+        )
+        label, _, _ = classify_input(self._state(java))
+        assert label == "java"
+
+    def test_classify_ambiguous_uses_llm(self):
+        from agent.llms import set_judge_generator
+        from agent.nodes import classify_input
+
+        judge = MagicMock()
+        judge.generate.return_value = "pseudocode"
+        set_judge_generator(judge)
+
+        # Code-ish text with no strong markers -> ambiguous -> LLM fallback.
+        label, _, detail = classify_input(self._state("foo(); bar();"))
+        assert label == "pseudocode"
+        assert "llm" in detail
+        judge.generate.assert_called_once()
+
+    def test_route_input_auto_pattern_sets_class(self):
+        from agent.nodes import route_input
+
+        update = route_input(self._state("Implement a Factory to build shapes"))
+        assert update["route"] == "pattern"
+        assert update["unit"] == "class"
+        assert update.get("pattern")
 
 
 class TestPrompts:
@@ -247,11 +308,56 @@ class TestUIRunners:
         assert out["task"] == "agent_generate"
         assert out["java_code"]
         assert out["python_code"] == "print(5)"
+        assert out["route"] == "text_to_pl"
         steps = [t["step"] for t in out["trace"]]
+        assert "route" in steps
         assert "nl_to_java" in steps
         assert "java_to_python" in steps
         assert "execute" not in steps
         assert codegen.generate.call_count == 2
+
+    def test_run_generate_agent_pseudocode(self):
+        from agent.llms import set_codegen_generator
+        from agent.ui_runners import run_generate_agent
+
+        codegen = MagicMock()
+        codegen.generate.side_effect = [
+            "public class Main { public static void main(String[] a) {} }",
+            "print(120)",
+        ]
+        set_codegen_generator(codegen)
+        # No input_type passed — the router should detect pseudocode from the text.
+        out = run_generate_agent(
+            "Algorithm: Factorial\nBegin\n  Print 120\nEnd",
+            unit="function",
+        )
+        assert out["task"] == "agent_generate"
+        assert out["route"] == "pseudocode_to_fn"
+        steps = [t["step"] for t in out["trace"]]
+        assert "pseudocode_to_java" in steps
+        assert "nl_to_java" not in steps
+        assert "java_to_python" in steps
+        assert "execute" not in steps
+
+    def test_run_generate_agent_pattern(self):
+        from agent.llms import set_codegen_generator
+        from agent.ui_runners import run_generate_agent
+
+        codegen = MagicMock()
+        codegen.generate.side_effect = [
+            "public class Logger { }",
+            "class Logger:\n    pass\n",
+        ]
+        set_codegen_generator(codegen)
+        # No pattern/unit passed — the router should detect the Singleton pattern.
+        out = run_generate_agent("Create a Singleton Logger")
+        assert out["task"] == "agent_generate"
+        assert out["route"] == "pattern"
+        assert out["unit"] == "class"
+        steps = [t["step"] for t in out["trace"]]
+        assert "pattern_to_java" in steps
+        assert "nl_to_java" not in steps
+        assert "java_to_python" in steps
 
     def test_run_fix_agent(self):
         from agent.llms import set_codegen_generator

@@ -1,0 +1,24 @@
+// DesignPatternsSolid | kind=combo | label=observer+srp | domain=review | tier=minimal
+package org.example.patterns;
+
+import java.util.*;
+
+interface ReviewObserver {
+    void update(String event);
+}
+
+public class ReviewSubject {
+    private final List<ReviewObserver> observers = new ArrayList<>();
+    private final List<String> events = new ArrayList<>();
+    public void attach(ReviewObserver o) { observers.add(o); }
+    public void notifyAllObservers(String event) {
+        events.add(event);
+        for (ReviewObserver o : observers) o.update(event);
+    }
+    public String last() { return events.isEmpty() ? "" : events.get(events.size()-1); }
+}
+
+class ReviewListener implements ReviewObserver {
+    String last = "";
+    public void update(String event) { last = "review:" + event; }
+}

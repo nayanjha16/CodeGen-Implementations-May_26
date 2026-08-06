@@ -49,6 +49,94 @@ ROUTER_HINTS = {
     "pseudocode": "pseudocode_to_fn",
 }
 
+# Design patterns the router can recognize/extract from a free-form request.
+KNOWN_PATTERNS = (
+    "singleton",
+    "factory",
+    "abstract factory",
+    "builder",
+    "prototype",
+    "adapter",
+    "bridge",
+    "composite",
+    "decorator",
+    "facade",
+    "flyweight",
+    "proxy",
+    "chain of responsibility",
+    "command",
+    "interpreter",
+    "iterator",
+    "mediator",
+    "memento",
+    "observer",
+    "state",
+    "strategy",
+    "template method",
+    "visitor",
+)
+
+ROUTE_CLASSIFY_PROMPT = """### Instruction: Classify the input below into exactly one category.
+### Categories:
+- nl: a natural-language description of a program to write
+- pseudocode: step-by-step algorithm-style text (begin/end, loops written out)
+- pattern: a request to implement a named software design pattern
+- java: raw Java source code to translate
+### Input:
+{text}
+### Answer with only one word (nl, pseudocode, pattern, or java). If pattern, add the pattern name after a comma.
+### Response:
+"""
+
+
+def format_route_prompt(text: str) -> str:
+    return ROUTE_CLASSIFY_PROMPT.format(text=(text or "").strip()[:2000])
+
+
+def parse_route_response(text: str) -> tuple[str, str]:
+    """Parse the LLM route classifier output into (input_type, pattern_name).
+
+    Returns one of ``nl | pseudocode | pattern | java`` and, for the pattern
+    label, an optional extracted pattern name (else ``""``).
+    """
+    cleaned = (text or "").strip().lower()
+    if not cleaned:
+        return "nl", ""
+    # Take the first non-empty line, split off an optional pattern name.
+    first = cleaned.split("\n", 1)[0].strip()
+    label, _, rest = first.partition(",")
+    label = label.strip(" .:-\t")
+    pattern_name = rest.strip(" .:-\t")
+
+    if label.startswith("pseudo"):
+        return "pseudocode", ""
+    if label.startswith("java"):
+        return "java", ""
+    if label.startswith("pattern"):
+        name = pattern_name or _first_known_pattern(cleaned)
+        return "pattern", name
+    if label.startswith("nl"):
+        return "nl", ""
+    # Fallback: scan the whole response for any signal.
+    name = _first_known_pattern(cleaned)
+    if name:
+        return "pattern", name
+    if "pseudo" in cleaned:
+        return "pseudocode", ""
+    if "java" in cleaned:
+        return "java", ""
+    return "nl", ""
+
+
+def _first_known_pattern(text: str) -> str:
+    """Return the first KNOWN_PATTERNS name mentioned in ``text`` (or "")."""
+    lower = (text or "").lower()
+    # Prefer longer names first so "abstract factory" wins over "factory".
+    for name in sorted(KNOWN_PATTERNS, key=len, reverse=True):
+        if name in lower:
+            return name.title()
+    return ""
+
 
 def format_judge_prompt(nl_prompt: str, stdout: str, stderr: str, exit_code: int) -> str:
     return JUDGE_PROMPT.format(

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import os
 import re
 from typing import Any, cast
@@ -9,7 +10,9 @@ from typing import Any, cast
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-DEFAULT_MODEL_ID = os.environ.get("MODEL_ID", "Saikrishna2511/qwen-multitask")
+# Same FT weights as local models/qwen_multitask/merged (Space sets MODEL_ID).
+HF_FT_MODEL = "Saikrishna2511/qwen-multitask"
+DEFAULT_MODEL_ID = os.environ.get("MODEL_ID", HF_FT_MODEL)
 
 
 def _get_best_device() -> str:
@@ -26,6 +29,30 @@ def _get_inference_dtype(device: str) -> torch.dtype:
     if device == "mps":
         return torch.bfloat16
     return torch.float32
+
+
+def _is_probably_python(text: str) -> bool:
+    """Distinguish real Python from prose/markdown left in the model output."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    body = getattr(tree, "body", [])
+    if not body:
+        return False
+    # A lone bare name/literal ("Sure", "python") is prose, not code.
+    if len(body) == 1 and isinstance(body[0], ast.Expr):
+        if isinstance(body[0].value, (ast.Name, ast.Constant)):
+            return False
+    return True
+
+
+def _strip_language_tag(code: str) -> str:
+    """Drop a stray leading ``python``/``py``/``java`` line echoed by the model."""
+    parts = code.split("\n", 1)
+    if len(parts) > 1 and parts[0].strip().lower() in ("python", "py", "java"):
+        return parts[1].strip()
+    return code
 
 
 class CodeGenerator:
@@ -72,8 +99,12 @@ class CodeGenerator:
         top_p = self.top_p if top_p is None else top_p
         do_sample = temperature > 0
 
-        inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024)
+        max_input_length = 3072 if response_type == "doc" else 1024
+        inputs = self.tokenizer(
+            prompt, return_tensors="pt", truncation=True, max_length=max_input_length
+        )
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        input_len = inputs["input_ids"].shape[1]
 
         with torch.no_grad():
             outputs = self.model.generate(
@@ -86,10 +117,9 @@ class CodeGenerator:
                 eos_token_id=self.tokenizer.eos_token_id,
             )
 
-        generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        if generated.startswith(prompt):
-            generated = generated[len(prompt):]
-        generated = generated.strip()
+        generated = self.tokenizer.decode(
+            outputs[0][input_len:], skip_special_tokens=True
+        ).strip()
 
         if response_type == "doc":
             return self._extract_documentation(generated)
@@ -97,23 +127,52 @@ class CodeGenerator:
 
     @staticmethod
     def _extract_documentation(text: str) -> str:
-        closing_fence = re.search(r"```", text)
+        """Extract plain documentation (Code2Doc / folder Q&A)."""
+        raw = (text or "").strip()
+        if not raw:
+            return ""
+        # Drop a trailing code fence if the model starts one after the answer.
+        closing_fence = re.search(r"\n```", raw)
         if closing_fence:
-            return text[: closing_fence.start()].strip()
-        return text.strip()
+            return raw[: closing_fence.start()].strip()
+        return raw
 
     @staticmethod
     def _extract_code(text: str) -> str:
-        closing = re.search(r"```", text)
-        if closing and not re.match(r"\s*```", text):
-            return text[: closing.start()].strip()
+        """Extract generated Python, tolerating prose and unclosed fences.
 
-        py_match = re.search(r"```python\s*(.*?)```", text, re.DOTALL)
-        if py_match:
-            return py_match.group(1).strip()
+        The prompts end with an OPEN ```python fence, so the continuation
+        normally starts with raw code and stops at a closing fence. Leading
+        prose, missing closing fences and stray language tags are all handled so
+        leftover markdown never reaches the AST/sandbox stages.
+        """
+        raw = (text or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+        if not raw:
+            return ""
 
-        generic_match = re.search(r"```\s*(.*?)```", text, re.DOTALL)
-        if generic_match:
-            return generic_match.group(1).strip()
+        first = raw.find("```")
 
-        return text.strip()
+        # Continuation of an already-open fence: code precedes the first
+        # (closing) fence. Trust that prefix only when it really is Python.
+        if first > 0:
+            prefix = raw[:first].strip()
+            if prefix and _is_probably_python(prefix):
+                return _strip_language_tag(prefix)
+
+        # A complete ```lang ... ``` block, skipping any leading prose.
+        block = re.search(r"```[ \t]*\w*[ \t]*\n(.*?)```", raw, re.DOTALL)
+        if block:
+            return _strip_language_tag(block.group(1).strip())
+
+        # An unclosed opening fence: drop the fence line, keep what follows.
+        opening = re.search(r"```[ \t]*\w*[ \t]*\n", raw)
+        if opening:
+            return _strip_language_tag(raw[opening.end():].split("```")[0].strip())
+
+        # Fence present but nothing usable after it.
+        if first > 0:
+            return _strip_language_tag(raw[:first].strip())
+        if first == 0:
+            return _strip_language_tag(raw.lstrip("`").strip())
+
+        return _strip_language_tag(raw)

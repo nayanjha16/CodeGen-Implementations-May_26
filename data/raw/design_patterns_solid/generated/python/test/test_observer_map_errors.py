@@ -1,0 +1,22 @@
+"""Pytest for observer_map_errors (observer / map)."""
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+
+def _load():
+    path = Path(__file__).resolve().parents[1] / "solution" / "observer_map_errors.py"
+    spec = importlib.util.spec_from_file_location("observer_map_errors", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_observer_map_errors():
+    mod = _load()
+    subj, lis = mod.MapSubject(), mod.MapListener()
+    subj.attach(lis)
+    subj.notify_all("e")
+    assert lis.last == "map:e"

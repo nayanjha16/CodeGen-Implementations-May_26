@@ -1,0 +1,14 @@
+// DesignPatternsSolid | kind=design_pattern | label=flyweight | domain=game | tier=errors
+package org.example.patterns;
+
+import java.util.*;
+
+public class GameFlyweightFactory {
+    private final Map<String, String> cache = new HashMap<>();
+
+    public String intern(String key) {
+        return cache.computeIfAbsent(key, k -> "fw-game-" + k);
+    }
+
+    public int size() { return cache.size(); }
+}

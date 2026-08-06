@@ -1,0 +1,19 @@
+"""DesignPatternsSolid | kind=design_pattern | label=decorator | domain=todo | tier=logging"""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+class TodoComponent(ABC):
+    @abstractmethod
+    def process(self, input: str) -> str: ...
+
+class TodoCore(TodoComponent):
+    def process(self, input: str) -> str:
+        return f"todo:{input}"
+
+class TodoUpperDecorator(TodoComponent):
+    def __init__(self, inner: TodoComponent) -> None:
+        self.inner = inner
+
+    def process(self, input: str) -> str:
+        return self.inner.process(input).upper()

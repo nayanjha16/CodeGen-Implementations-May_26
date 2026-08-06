@@ -1,0 +1,24 @@
+"""DesignPatternsSolid | kind=design_pattern | label=factory | domain=email | tier=logging"""
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+class EmailProduct(ABC):
+    @abstractmethod
+    def operate(self) -> str:
+        ...
+
+class EmailBasicProduct(EmailProduct):
+    def operate(self) -> str:
+        return "basic-email"
+
+class EmailPremiumProduct(EmailProduct):
+    def operate(self) -> str:
+        return "premium-email"
+
+class EmailFactory:
+    def create(self, type_name: str) -> EmailProduct:
+        print(f"[log] create {type_name}")
+        if type_name.lower() == "premium":
+            return EmailPremiumProduct()
+        return EmailBasicProduct()

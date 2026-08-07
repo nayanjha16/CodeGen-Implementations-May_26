@@ -2,9 +2,11 @@
 
 ## Project Title
 
-**CodeGen Fine-Tuning with PEFT & LoRA**
+**AI-Powered Database Intelligence**
 
-Fine-tuning `Salesforce/codegen-350M-multi` with Parameter-Efficient Fine-Tuning (PEFT) via LoRA on three database query tasks: Text→SQL, SQL→MongoDB, and NoSQL→Documentation — plus deployment on Cloud Run and an AI Database Agent capstone demo.
+*Bridging Natural Language, SQL, NoSQL & AI Agents using PEFT & LoRA*
+
+Fine-tuned `Salesforce/codegen-350M-multi` with Parameter-Efficient Fine-Tuning (PEFT) via LoRA on three database query tasks: Text→SQL, SQL→MongoDB, and NoSQL→Documentation — plus deployment on Cloud Run and an AI Database Agent capstone demo.
 
 ---
 

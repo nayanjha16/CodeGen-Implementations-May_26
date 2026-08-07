@@ -8,7 +8,7 @@ Simplified copy-paste commands for **Spider gold validation** eval → compare �
 | --- | --- |
 | [version-tracker.md](version-tracker.md) | LoRA v1–v3 training hyperparameters and metrics |
 | [evaluation-and-deploy-runbook.md](evaluation-and-deploy-runbook.md) | Full publish + Cloud Run redeploy |
-| [../project-demo/README.md](../project-demo/README.md) | Live demo — presentation + reviewer package |
+| [../project-demo/README.md](../project-demo/README.md) | Live demo — **AI-Powered Database Intelligence** presentation + reviewer package |
 | [../README.md](../../README.md) | Project setup, training, agent overview |
 | [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | LoRA v1–v3 vs baseline presentation |
 | [../agent/README.md](../../agent/README.md) | Agent demo (uses Cloud Run v3 API) |

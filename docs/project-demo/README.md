@@ -1,41 +1,58 @@
-# Project Demo — CodeGen Fine-Tuning with PEFT & LoRA
+# Project Demo — AI-Powered Database Intelligence
 
-Presentation and supporting docs for **Group-44 · Codegen-11 · IIITH**.  
-**Team:** K.Bhavani · Sai Hemanta · Narayanan
+Presentation and supporting docs for **Group-44 · Codegen-11 · IIIT Hyderabad · TalentSprint**.  
+**Team:** K.Bhavani · Sai Hemanta · Narayanan · **August 2026**
 
 **Repository:** [github.com/nayanjha16/CodeGen-Implementations-May_26](https://github.com/nayanjha16/CodeGen-Implementations-May_26.git) · branch **`Group-44`**
 
-All facts match the root repo. **Metrics:** [../reference/version-tracker.md](../reference/version-tracker.md)
+Metrics source of truth: [../reference/version-tracker.md](../reference/version-tracker.md)
 
 ---
 
-## Files in this folder (lean set)
+## Start here
 
 | File | Purpose |
 |------|---------|
-| **[presentation.html](presentation.html)** | **Live slide deck** — open in browser for demo |
-| **[09-reviewer-submission.md](09-reviewer-submission.md)** | **Reviewer guide** — team, TEND, folder map, verify steps |
+| **[presentation.html](presentation.html)** | **Live slide deck** (7 slides) — open in browser; use ← → to navigate |
+
+### Slide outline
+
+| # | Slide |
+|---|-------|
+| 1 | Title — AI-Powered Database Intelligence |
+| 2 | Problem → Solution |
+| 3 | System Architecture |
+| 4 | Results — LoRA v3 vs baseline |
+| 5 | Deploy — Cloud Run + Hugging Face |
+| 6 | AI Database Agent — live demo |
+| 7 | Thank you + links |
+
+---
+
+## Files in this folder
+
+| File | Purpose |
+|------|---------|
+| [presentation.html](presentation.html) | Browser slide deck |
+| [09-reviewer-submission.md](09-reviewer-submission.md) | Full reviewer walkthrough (repo map, verify steps) |
 | [01-executive-summary.md](01-executive-summary.md) | One-page problem → approach → v3 results |
-| [02-system-architecture.md](02-system-architecture.md) | Architecture diagrams (training, eval, agent, Cloud Run) |
+| [02-system-architecture.md](02-system-architecture.md) | Architecture diagrams |
 | [03-methodology.md](03-methodology.md) | Training, evaluation, validation protocol |
 | [04-data-and-datasets.md](04-data-and-datasets.md) | TEND corpus and gold validation set |
-| [05-results-and-analysis.md](05-results-and-analysis.md) | Baseline vs v2 vs v3 metrics |
-| [06-tech-stack-reproducibility.md](06-tech-stack-reproducibility.md) | Dependencies, config, reproduce train/eval/deploy/**agent demo** |
-
-Removed (redundant with deck + docs above): ~~`07-presentation-guide.md`~~, ~~`08-final-presentation-detailed.md`~~, ~~`final-presentation.html`~~.
+| [05-results-and-analysis.md](05-results-and-analysis.md) | Baseline vs v2 vs v3 metrics narrative |
+| [06-tech-stack-reproducibility.md](06-tech-stack-reproducibility.md) | Reproduce train / eval / deploy / **agent demo (§5.6)** |
 
 ---
 
 ## What to use when
 
-| Audience | Read |
-|----------|------|
+| Audience | Use |
+|----------|-----|
 | **Committee / live demo** | [presentation.html](presentation.html) |
-| **Reviewers** | [09-reviewer-submission.md](09-reviewer-submission.md) |
+| **Reviewers (deep dive)** | [09-reviewer-submission.md](09-reviewer-submission.md) |
 | **Quick intro** | [01-executive-summary.md](01-executive-summary.md) |
 | **Exact numbers** | [../reference/version-tracker.md](../reference/version-tracker.md) |
 | **Commands** | [../reference/gold-set-commands.md](../reference/gold-set-commands.md) · [../reference/evaluation-and-deploy-runbook.md](../reference/evaluation-and-deploy-runbook.md) |
-| **Reproduce agent demo** | [06-tech-stack-reproducibility.md §5.6](06-tech-stack-reproducibility.md#56-run-ai-database-agent-demo) |
 
 ---
 
@@ -47,9 +64,9 @@ Removed (redundant with deck + docs above): ~~`07-presentation-guide.md`~~, ~~`0
 | **LoRA v3 (prod)** | r=32 + FFN, 10 epochs, full TEND ~8,040/task · [`configs/default.yaml`](../../configs/default.yaml) |
 | Hub | `codegenstudio/codegen-350M-*-lora` |
 | API | `fastapi-deploy/codegen_api` on Cloud Run (`checkpoint_version: v3`) |
-| Demo | `agent/` — LangGraph + MCP + Web UI |
+| Agent | `agent/` — LangGraph + MCP + Web UI |
 
-### Hugging Face links
+### Hugging Face
 
 | Artifact | URL |
 |----------|-----|
@@ -60,26 +77,18 @@ Removed (redundant with deck + docs above): ~~`07-presentation-guide.md`~~, ~~`0
 
 ### Headline metrics (gold n=50, TEND execution, greedy)
 
-| Task | Baseline v3 | LoRA v3 |
-|------|-------------|---------|
+| Task | Baseline | LoRA v3 |
+|------|----------|---------|
 | Text2SQL exec | 14% | **66%** |
 | SQL2NoSQL exec | 22% | **86%** |
 | Doc judge /10 | 8.33 | **8.82** |
 
-### LoRA ladder
-
-| Version | Train | Epochs | Role |
-|---------|-------|--------|------|
-| v1 | 50 rows/task | 10 | Smoke |
-| v2 | ~8,040 TEND, r=16 | 5 | Full corpus |
-| **v3** | ~8,040 TEND, r=32+FFN | 10 | **Production** |
-
 ---
 
-## Root project docs
+## Related
 
-- [../../README.md](../../README.md)
-- [../../agent/README.md](../../agent/README.md)
-- [../../fastapi-deploy/README.md](../../fastapi-deploy/README.md)
-- [../reference/](reference/) — version tracker, runbooks, PPTX
+- [../../README.md](../../README.md) — project setup
+- [../../agent/README.md](../../agent/README.md) — AI Database Agent
+- [../../fastapi-deploy/README.md](../../fastapi-deploy/README.md) — Cloud Run API
 - [../README.md](../README.md) — documentation index
+- [../reference/](../reference/) — runbooks and PPTX charts

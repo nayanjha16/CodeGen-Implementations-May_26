@@ -1,12 +1,12 @@
 # Documentation
 
-**Group-44 · Codegen-11 · IIITH**
+**AI-Powered Database Intelligence · Group-44 · Codegen-11 · IIITH · August 2026**
 
 ---
 
 ## Project demo — start here
 
-**[project-demo/](project-demo/)** — live presentation, reviewer guide, and capstone narrative.
+**[project-demo/](project-demo/)** — **AI-Powered Database Intelligence** live presentation and capstone narrative.
 
 | File | Use |
 |------|-----|

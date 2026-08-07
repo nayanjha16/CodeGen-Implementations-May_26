@@ -2,7 +2,7 @@
 
 Technical runbooks, metrics, and reproducibility guides for the CodeGen fine-tuning project.
 
-**Demo package:** [../project-demo/](../project-demo/) — presentation and reviewer docs.
+**Demo package:** [../project-demo/](../project-demo/) — **AI-Powered Database Intelligence** presentation and reviewer docs.
 
 ---
 
@@ -23,6 +23,5 @@ Technical runbooks, metrics, and reproducibility guides for the CodeGen fine-tun
 |------|---------|
 | [lora-v1-v3-vs-baseline-comparison.pptx](lora-v1-v3-vs-baseline-comparison.pptx) | Full LoRA v1–v3 vs baseline deck |
 | [lora-v1-v3-vs-baseline-comparison-short.pptx](lora-v1-v3-vs-baseline-comparison-short.pptx) | Short deck (generated) |
-| [CodeGen-IIIT-Presentation.pptx](CodeGen-IIIT-Presentation.pptx) | IIITH course presentation (archived) |
 
 Regenerate charts and PPTX: `python scripts/generate_v1_v3_comparison_charts.py` then `python scripts/generate_lora_v1_v3_presentation.py`.

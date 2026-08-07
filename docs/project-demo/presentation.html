@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CodeGen Capstone Demo · Group-44</title>
+  <title>AI-Powered Database Intelligence · Group-44</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -128,6 +128,7 @@
       font-family: var(--serif); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05;
     }
     h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); max-width: 14ch; }
+    .hero h1 { max-width: none; white-space: nowrap; font-size: clamp(1.8rem, 4vw, 3.2rem); }
     h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); margin-bottom: 0.5rem; }
     .subtitle {
       font-size: clamp(1rem, 1.8vw, 1.2rem); color: var(--muted);
@@ -228,6 +229,8 @@
       background: var(--teal-dim); color: var(--teal);
     }
     .flow-arrow { color: var(--muted); font-size: 1rem; padding: 0 0.15rem; }
+    .flow-node small { display: block; font-weight: 400; font-size: 0.66rem; color: var(--muted); margin-top: 0.15rem; }
+    .flow-node.core small { color: color-mix(in srgb, var(--teal) 70%, var(--muted)); }
 
     /* Results chart */
     .chart-wrap { height: 260px; margin-top: 0.75rem; position: relative; }
@@ -285,7 +288,7 @@
   <header class="nav">
     <div class="brand">
       <span class="brand-dot" aria-hidden="true"></span>
-      <span>CodeGen Capstone<small>Group-44 · Codegen-11 · July 2026</small></span>
+      <span>AI-Powered Database Intelligence<small>Group-44 · Codegen-11 · August 2026</small></span>
     </div>
     <div class="nav-mid">
       <div class="progress" aria-hidden="true"><span id="bar"></span></div>
@@ -303,118 +306,114 @@
     <!-- 1 TITLE -->
     <section class="slide active" data-title="Title">
       <div class="wrap hero">
-        <div class="tag">Project demo</div>
+        <div class="tag">IIIT Hyderabad · TalentSprint · Capstone Project</div>
         <div class="hero-row">
           <div>
-            <h1>CodeGen Fine-Tuning with PEFT &amp; LoRA</h1>
-            <p class="subtitle">Interactive Database Querying Using Small Code Language Models</p>
-            <p class="lead">One frozen <strong>Salesforce/codegen-350M-multi</strong> base, three production LoRA adapters, execution-validated TEND training, a Cloud Run API, and an AI Database Agent for live demos.</p>
+            <h1>AI-Powered Database Intelligence</h1>
+            <p class="subtitle">Bridging Natural Language, SQL, NoSQL &amp; AI Agents using PEFT &amp; LoRA</p>
+            <p class="lead">Fine-tuned CodeGen-350M with three LoRA adapters, a Cloud Run API, and an AI agent that turns plain English into live SQL and MongoDB answers.</p>
             <div class="chips">
               <span class="chip teal">LoRA v3 · Production</span>
               <span class="chip">Text→SQL</span>
-              <span class="chip">SQL→NoSQL</span>
-              <span class="chip">NoSQL→Docs</span>
-            </div>
-            <div class="grid-4" style="margin-top:1.75rem">
-              <div class="card metric glow-teal"><div class="num">66%</div><div class="lbl">Text2SQL exec</div><div class="delta">+52 pp vs baseline</div></div>
-              <div class="card metric glow-violet"><div class="num">86%</div><div class="lbl">SQL2NoSQL exec</div><div class="delta">+64 pp vs baseline</div></div>
-              <div class="card metric glow-amber"><div class="num">8.82</div><div class="lbl">Doc judge /10</div><div class="delta">gold n=50</div></div>
-              <div class="card metric"><div class="num">3</div><div class="lbl">PEFT adapters</div><div class="delta">~40 MB each</div></div>
+              <span class="chip">SQL→MongoDB</span>
+              <span class="chip">Documentation</span>
             </div>
           </div>
           <div class="pipeline">
             <div class="pipe-step">
               <div class="pipe-icon">NL</div>
-              <div><strong>Natural language + schema</strong><span>text2sql LoRA → SQL query</span></div>
+              <div><strong>Natural language</strong><span>AI Database Agent — LangGraph orchestration</span></div>
             </div>
             <div class="pipe-step">
-              <div class="pipe-icon">SQL</div>
-              <div><strong>SQL + Mongo schema</strong><span>sql2nosql LoRA → Mongo shell</span></div>
+              <div class="pipe-icon">AI</div>
+              <div><strong>LoRA models on Cloud Run</strong><span>text2sql · sql2nosql · nosql2doc</span></div>
             </div>
             <div class="pipe-step">
-              <div class="pipe-icon">DOC</div>
-              <div><strong>Mongo query</strong><span>nosql2doc LoRA → plain-English docs</span></div>
+              <div class="pipe-icon">DB</div>
+              <div><strong>SQL / MongoDB execution</strong><span>live results → natural-language answer</span></div>
             </div>
           </div>
         </div>
         <div class="team-bar">
           <strong>K.Bhavani</strong> · <strong>Sai Hemanta</strong> · <strong>Narayanan</strong>
-          <span>· IIITH · PG Certification in AI &amp; ML</span>
+          <span>· PG Certification in AI &amp; ML · Group-44 · Codegen-11 · August 2026</span>
         </div>
       </div>
     </section>
 
-    <!-- 2 PROBLEM -->
-    <section class="slide" data-title="Problem">
+    <!-- 2 PROBLEM → SOLUTION -->
+    <section class="slide" data-title="Problem → Solution">
       <div class="wrap">
-        <div class="tag">Slide 2 · Motivation</div>
-        <h2>Why this project?</h2>
-        <p class="lead">Production data systems span SQL and NoSQL. Small code models are cheap to run, but zero-shot CodeGen-350M is weak on structured database tasks without task-specific adapters.</p>
-        <div class="grid-2">
+        <div class="tag">Slide 2 · Problem → Solution</div>
+        <h2>Problem → Solution</h2>
+        <div class="grid-3">
+          <div class="card glow-amber">
+            <h3>🔴 The problem</h3>
+            <p>Database expertise is required for every query. Large LLMs are prohibitively expensive at scale. Zero-shot CodeGen-350M achieves only <strong>14% Text→SQL</strong> and <strong>22% SQL→MongoDB</strong> accuracy — far below production thresholds.</p>
+          </div>
           <div class="card">
-            <h3>The gap</h3>
-            <ul>
-              <li>Spider &amp; BIRD stop at NL→SQL — no aligned Mongo or documentation</li>
-              <li>Full fine-tuning is too costly on student / research hardware</li>
-              <li>IDEs and agents need an OpenAI-compatible deployed endpoint</li>
-              <li>Metrics must prove <em>execution</em>, not string match alone</li>
-            </ul>
+            <h3>🟡 The gap</h3>
+            <p>No lightweight, fine-tuned model existed that could bridge natural language to <strong>both SQL and MongoDB</strong> simultaneously, with live execution and enterprise-grade deployment.</p>
           </div>
           <div class="card glow-teal">
-            <h3>Our approach</h3>
-            <ul>
-              <li><strong>PEFT / LoRA</strong> — one frozen 350M base, three swappable adapters</li>
-              <li><strong>TEND</strong> — aligned NL · SQL · Mongo · docs on the same row</li>
-              <li><strong>Gold-50 benchmark</strong> — frozen <code>spider_gold_validation.jsonl</code></li>
-              <li><strong>Independent tasks</strong> — no chained predictions during eval</li>
-            </ul>
+            <h3>🟢 The solution</h3>
+            <p><strong>TEND Dataset + PEFT/LoRA + CodeGen-350M + Cloud Run + LangGraph AI Agent</strong> with live PostgreSQL &amp; MongoDB execution. Efficient, accurate, enterprise-ready.</p>
           </div>
+        </div>
+        <h3 style="margin-top:1.75rem;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)">Solution stack</h3>
+        <div class="grid-3" style="margin-top:0.75rem">
+          <div class="card">
+            <h3>TEND Dataset</h3>
+            <p>Custom dataset derived from Spider + BIRD benchmarks — <strong>10,697 rows</strong> covering Text→SQL, SQL→MongoDB, and Documentation tasks. Published on <a href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">Hugging Face</a>.</p>
+          </div>
+          <div class="card glow-violet">
+            <h3>PEFT / LoRA fine-tuning</h3>
+            <p>Parameter-efficient fine-tuning of CodeGen-350M — dramatically lower cost than GPT-4 or full fine-tuning, with competitive accuracy. Three swappable adapters, ~40 MB each.</p>
+          </div>
+          <div class="card glow-teal">
+            <h3>LangGraph AI Agent + Cloud Run</h3>
+            <p>Orchestrated multi-step agent for intent detection, schema retrieval, query generation, validation, and natural-language answers — backed by a FastAPI service on Google Cloud Run.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 SYSTEM ARCHITECTURE -->
+    <section class="slide" data-title="Architecture">
+      <div class="wrap">
+        <div class="tag">Slide 3 · System architecture</div>
+        <h2>System Architecture</h2>
+        <p class="lead">End-to-end pipeline from natural language to live database execution and back to a natural-language answer — validated by 88 automated tests.</p>
+        <div class="flow" style="margin-bottom:1.25rem">
+          <span class="flow-node">Input<br/><small>natural language</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node core">Agent<br/><small>LangGraph orchestration</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Intent<br/><small>classify task</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Schema<br/><small>retrieve data model</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node core">CodeGen + LoRA<br/><small>Cloud Run API</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Execute<br/><small>PostgreSQL / MongoDB</small></span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">Answer<br/><small>natural language</small></span>
         </div>
         <div class="grid-3">
-          <div class="card"><h3>Train</h3><p><code>src/</code> + <code>scripts/train_all_lora.py</code><br/>TEND spider+bird · ~10,697 HF train rows</p></div>
-          <div class="card glow-violet"><h3>Serve</h3><p><code>fastapi-deploy/codegen_api</code><br/>Cloud Run · PEFT hot-swap · <code>/v1/chat/completions</code></p></div>
-          <div class="card glow-amber"><h3>Demo</h3><p><code>agent/</code> — LangGraph + MCP + Web UI<br/>Chinook on TEND Docker · live execution</p></div>
-        </div>
-        <p class="slide-footer">Objectives 1–6 complete · see docs/project-demo/01-executive-summary.md</p>
-      </div>
-    </section>
-
-    <!-- 3 TEND -->
-    <section class="slide" data-title="TEND">
-      <div class="wrap">
-        <div class="tag">Slide 3 · Dataset</div>
-        <h2>TEND — Translation · Evaluation · NL · Document</h2>
-        <p class="lead">Companion dataset on Hugging Face extending Spider + BIRD into aligned question · SQL · Mongo · docs — filtered by PostgreSQL vs MongoDB execution match.</p>
-        <div class="grid-4">
-          <div class="card metric"><div class="num">10,697</div><div class="lbl">HF train rows</div></div>
-          <div class="card metric"><div class="num">~8,040</div><div class="lbl">LoRA rows / task</div></div>
-          <div class="card metric glow-teal"><div class="num">50</div><div class="lbl">Gold eval set</div></div>
-          <div class="card metric"><div class="num">3</div><div class="lbl">Adapter tasks</div></div>
-        </div>
-        <div class="grid-2">
           <div class="card">
-            <h3>SQL → NoSQL cascade</h3>
-            <div class="flow">
-              <span class="flow-node">Spider / BIRD</span>
-              <span class="flow-arrow">→</span>
-              <span class="flow-node">Rules</span>
-              <span class="flow-arrow">→</span>
-              <span class="flow-node">Python tool</span>
-              <span class="flow-arrow">→</span>
-              <span class="flow-node">Ollama fallback</span>
-              <span class="flow-arrow">→</span>
-              <span class="flow-node core">Exec gate</span>
-              <span class="flow-arrow">→</span>
-              <span class="flow-node">HF publish</span>
-            </div>
-            <p style="margin-top:0.75rem">Pass at any converter → validation gate. PG result must equal Mongo result.</p>
+            <h3>🧠 LangGraph orchestration</h3>
+            <p>Multi-step stateful agent using Ollama locally. Handles intent classification, schema context injection, and query routing.</p>
+          </div>
+          <div class="card glow-violet">
+            <h3>⚙️ CodeGen + LoRA on Cloud Run</h3>
+            <p>FastAPI microservice hosted on Google Cloud Run. Selects the correct LoRA adapter (Text→SQL, SQL→Mongo, or Docs) per request via <code>/v1/chat/completions</code>.</p>
           </div>
           <div class="card glow-teal">
-            <h3>Public artifact</h3>
-            <p style="margin-bottom:0.5rem"><a href="https://huggingface.co/datasets/care2achieve/tend" target="_blank" rel="noopener">huggingface.co/datasets/care2achieve/tend</a></p>
-            <p>Each row: <code>question</code>, <code>sql</code>, <code>nosql_query</code>, <code>documentation</code>, schemas, <code>db_id</code>.</p>
+            <h3>🗄️ Live DB execution</h3>
+            <p>Queries run against real PostgreSQL and MongoDB instances. Results are returned as validated, human-readable answers.</p>
           </div>
         </div>
+        <p class="slide-footer">✅ 88 automated tests — unit, integration, and end-to-end validation of the full agent pipeline</p>
       </div>
     </section>
 
@@ -556,7 +555,7 @@
         </div>
         <div class="team-bar" style="justify-content:center;border:0;margin-top:1.5rem">
           <strong>K.Bhavani</strong> · <strong>Sai Hemanta</strong> · <strong>Narayanan</strong>
-          <span>· Group-44 · Codegen-11 · July 2026</span>
+          <span>· Group-44 · Codegen-11 · August 2026</span>
         </div>
       </div>
     </section>

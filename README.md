@@ -20,7 +20,7 @@ Natural language  →  SQL  →  MongoDB  →  Documentation
 
 | Doc | Purpose |
 | --- | --- |
-| **[docs/project-demo/](docs/project-demo/)** | **Live demo** — [presentation.html](docs/project-demo/presentation.html) + reviewer package (Group-44 · Codegen-11) |
+| **[docs/project-demo/](docs/project-demo/)** | **AI-Powered Database Intelligence** — [presentation.html](docs/project-demo/presentation.html) (Group-44 · Codegen-11 · August 2026) |
 | [docs/reference/](docs/reference/) | Runbooks, metrics, training, deployment ([version-tracker](docs/reference/version-tracker.md), [gold-set commands](docs/reference/gold-set-commands.md)) |
 | [docs/README.md](docs/README.md) | Full documentation index |
 | [agent/README.md](agent/README.md) | AI Database Agent — CLI, MCP, Web UI |
@@ -42,7 +42,7 @@ Natural language  →  SQL  →  MongoDB  →  Documentation
 | ------ | ---- |
 | Baseline metrics | `results/spider_gold_validation_codegen-350M-multi_baseline-v3/` |
 | LoRA metrics | `results/spider_gold_validation_codegen-350M-multi_lora-v3/` |
-| Presentation | [docs/project-demo/presentation.html](docs/project-demo/presentation.html) · [PPTX](docs/reference/lora-v1-v3-vs-baseline-comparison.pptx) |
+| Presentation | [docs/project-demo/presentation.html](docs/project-demo/presentation.html) · [PPTX](docs/reference/lora-v1-v3-vs-baseline-comparison.pptx) · project **AI-Powered Database Intelligence** |
 
 ### LoRA v2 (n=50)
 

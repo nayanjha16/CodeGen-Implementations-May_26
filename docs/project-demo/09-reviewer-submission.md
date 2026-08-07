@@ -1,12 +1,12 @@
 # Capstone Reviewer Submission Guide
 
-**Project:** Interactive Database Querying Using Small Code Language Models  
-**Also known as:** CodeGen Fine-Tuning with PEFT & LoRA  
+**Project:** AI-Powered Database Intelligence  
+**Subtitle:** Bridging Natural Language, SQL, NoSQL & AI Agents using PEFT & LoRA  
 **Group:** Capstone Group-44 · Codegen-11  
 **Repository:** [github.com/nayanjha16/CodeGen-Implementations-May_26](https://github.com/nayanjha16/CodeGen-Implementations-May_26.git) · branch **`Group-44`**
 **Institution:** International Institute of Information Technology Hyderabad (IIITH)  
 **Program:** PG Certification in Artificial Intelligence and Machine Learning  
-**Presentation:** Project demo · **July 2026**  
+**Presentation:** Project demo · **August 2026**  
 **Current production adapters:** LoRA **v3** (`fastapi-deploy/manifest.yaml` → `checkpoint_version: v3`)  
 **Live deck:** [presentation.html](presentation.html)
 
@@ -43,7 +43,7 @@ This document is written for **capstone reviewers**. It explains the team, the d
 | Branch               | **`Group-44`**                            |
 | Institution          | IIITH                                     |
 | Program              | PG Certification in AI & Machine Learning |
-| Project demo         | Live presentation · **July 2026**     |
+| Project demo         | Live presentation · **August 2026**     |
 
 
 
@@ -64,7 +64,7 @@ All members contributed across dataset construction, LoRA training, evaluation, 
 
 ### One-line project pitch (from the title slide)
 
-CodeGen fine-tuning with **PEFT & LoRA** — three adapters on one **350M** base model, an **execution-validated** multi-task dataset (**TEND**), an **OpenAI-compatible** multi-adapter API on **Cloud Run**, and an **AI Database Agent** (LangGraph + MCP + Web UI).
+Fine-tuned **CodeGen-350M** with **three LoRA adapters**, a **Cloud Run API**, and an **AI agent** that turns plain English into live SQL and MongoDB answers — built on the **TEND** execution-validated dataset.
 
 ---
 
@@ -832,7 +832,7 @@ Internal workflow: research → planning → implementation → validation. Incl
 | nosql2doc LoRA | [codegenstudio/codegen-350M-nosql2doc-lora](https://huggingface.co/codegenstudio/codegen-350M-nosql2doc-lora) |
 | Cloud Run API | `fastapi-deploy/codegen_api` — see [../../fastapi-deploy/README.md](../../fastapi-deploy/README.md) |
 | Agent Web UI | `python -m agent.web` — see [../../agent/README.md](../../agent/README.md) |
-| Final presentation (HTML) | `docs/project-demo/presentation.html` |
+| Live presentation (HTML) | [presentation.html](../project-demo/presentation.html) — **AI-Powered Database Intelligence** |
 
 
 ---
@@ -908,4 +908,4 @@ Expected v3 on gold-50 with TEND execution: Text2SQL exec ≈ **66%**, SQL2NoSQL
 
 ---
 
-*End of reviewer submission guide — Capstone Group-44 · Codegen-11 · IIITH PG Certification in AI & ML · July 2026*
+*End of reviewer submission guide — AI-Powered Database Intelligence · Capstone Group-44 · Codegen-11 · IIITH PG Certification in AI & ML · August 2026*

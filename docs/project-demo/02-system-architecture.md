@@ -1,6 +1,6 @@
 # System Architecture
 
-High-level architecture diagrams for the CodeGen Fine-Tuning with PEFT & LoRA capstone project: system overview, training, evaluation, validation, and testing.
+High-level architecture diagrams for **AI-Powered Database Intelligence**: system overview, training, evaluation, validation, and testing.
 
 ---
 

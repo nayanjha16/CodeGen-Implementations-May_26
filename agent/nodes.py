@@ -11,7 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "data" / "scripts"))
 
-from agent.llms import codegen_generate, judge_generate
+from agent.llms import codegen_generate, fix_generate, judge_generate
 from agent.prompts import (
     format_fix_prompt,
     format_judge_prompt,
@@ -284,7 +284,7 @@ def fix_python(state: AgentState) -> dict[str, Any]:
         unit=state.get("unit", "function"),
         ast_info=state.get("ast_info") or "",
     )
-    fixed = codegen_generate(prompt, temperature=temperature)
+    fixed = fix_generate(prompt, attempts=attempts, temperature=temperature)
     return {
         "python_code": fixed,
         "trace": _trace("fix_python", fixed[:200]),

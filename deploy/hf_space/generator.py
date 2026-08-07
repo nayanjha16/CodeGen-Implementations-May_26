@@ -5,10 +5,20 @@ from __future__ import annotations
 import ast
 import os
 import re
+import sys
+from pathlib import Path
 from typing import Any, cast
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+_SPACE_DIR = Path(__file__).resolve().parent
+_repo_root = _SPACE_DIR.parent.parent
+_PROJECT_ROOT = _repo_root if (_repo_root / "agent").is_dir() else _SPACE_DIR
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from utils.text_sanitize import truncate_roleplay_continuation
 
 # Same FT weights as local models/qwen_multitask/merged (Space sets MODEL_ID).
 HF_FT_MODEL = "Saikrishna2511/qwen-multitask"
@@ -92,12 +102,14 @@ class CodeGenerator:
         max_new_tokens: int | None = None,
         temperature: float | None = None,
         top_p: float | None = None,
+        do_sample: bool | None = None,
+        repetition_penalty: float | None = None,
         response_type: str = "code",
     ) -> str:
         max_new_tokens = max_new_tokens or self.max_new_tokens
         temperature = self.temperature if temperature is None else temperature
         top_p = self.top_p if top_p is None else top_p
-        do_sample = temperature > 0
+        do_sample = (temperature > 0) if do_sample is None else do_sample
 
         max_input_length = 3072 if response_type == "doc" else 1024
         inputs = self.tokenizer(
@@ -113,6 +125,7 @@ class CodeGenerator:
                 temperature=temperature,
                 top_p=top_p,
                 do_sample=do_sample,
+                repetition_penalty=repetition_penalty or 1.0,
                 pad_token_id=self.tokenizer.pad_token_id,
                 eos_token_id=self.tokenizer.eos_token_id,
             )
@@ -128,7 +141,7 @@ class CodeGenerator:
     @staticmethod
     def _extract_documentation(text: str) -> str:
         """Extract plain documentation (Code2Doc / folder Q&A)."""
-        raw = (text or "").strip()
+        raw = truncate_roleplay_continuation(text)
         if not raw:
             return ""
         # Drop a trailing code fence if the model starts one after the answer.

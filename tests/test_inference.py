@@ -33,6 +33,19 @@ class TestCodeGenerator:
         assert "sum" in result
         assert "```" not in result
 
+    def test_extract_documentation_truncates_roleplay(self):
+        from generator import CodeGenerator
+
+        text = (
+            "The class loads repositories from disk.\n\n"
+            "Human: Tell me more about MiniGit.\n"
+            "AI: MiniGit is designed for embedded devices."
+        )
+        result = CodeGenerator._extract_documentation(text)
+        assert "loads repositories" in result
+        assert "Human:" not in result
+        assert "embedded" not in result
+
     def test_resolve_multitask_path(self, tmp_path):
         from generator import _resolve_model_path, MULTITASK_MODEL_DIR
 

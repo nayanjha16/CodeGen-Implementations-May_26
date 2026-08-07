@@ -8,12 +8,30 @@ from pathlib import Path
 
 import gradio as gr
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-# Ensure project root is on path so `agent` and local packages import when
-# launched from deploy/hf_space via scripts/run_local_gradio.py
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+_SPACE_DIR = Path(__file__).resolve().parent
+# Local layout: deploy/hf_space/app.py → repo root is parents[2].
+# HF Space layout: app.py sits next to vendorized agent/inference/utils/data.
+_repo_root = _SPACE_DIR.parent.parent
+PROJECT_ROOT = _repo_root if (_repo_root / "agent").is_dir() else _SPACE_DIR
+for _path in (PROJECT_ROOT, _SPACE_DIR):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
+
+
+def _load_project_env() -> None:
+    """Load repo .env (LangSmith keys, model ids) when not started via langgraph dev."""
+    env_path = PROJECT_ROOT / ".env"
+    if not env_path.is_file():
+        return
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(env_path, override=False)
+    except ImportError:
+        pass
+
+
+_load_project_env()
 
 from generator import CodeGenerator
 from prompt_templates import (
@@ -49,9 +67,11 @@ def get_generator() -> CodeGenerator:
 
 
 def _wire_codegen() -> None:
-    from agent.llms import set_codegen_generator
+    from agent.llms import set_codegen_generator, set_planner_generator
 
-    set_codegen_generator(get_generator())
+    gen = get_generator()
+    set_codegen_generator(gen)
+    set_planner_generator(gen)
 
 
 def _normalize_chat_history(history) -> list[dict[str, str]]:
@@ -166,7 +186,7 @@ def on_repo_mode_change(mode: str):
         if is_ask
         else 'python: add login API — or select .java files and say "convert selected"'
         if is_code
-        else "scan — fix @file.py — fix all migrated (uses Max fix retries slider)"
+        else "Describe the bug, paste a traceback, or type `scan` / `fix @file.py`"
     )
     return (
         gr.update(placeholder=placeholder),
@@ -181,7 +201,8 @@ def _file_index_extensions(mode: str) -> str:
         return ".py"
     if mode == MODE_CODE:
         return ".java"
-    return ".java,.py"
+    # Ask mode can answer questions about docs, so expose them in the picker.
+    return ".java,.py,.md"
 
 
 def refresh_repo_file_index(repo_root: str, mode: str, current_value=None):
@@ -315,7 +336,7 @@ def build_ui() -> gr.Blocks:
                     "Set a **project root** folder and chat:\n"
                     "- **Ask Agent** — summarize/explain repo contents (read-only)\n"
                     "- **Code Agent** — generate or edit Java/Python files in the repo\n"
-                    "- **Debug Agent** — scan and fix Python validation errors\n\n"
+                    "- **Debug Agent** — diagnose and fix Python bugs in selected files\n\n"
                     "Select context files from the picker, or mention `@path/to/file.java` in chat — "
                     "selections sync automatically. "
                     "Code and Debug agents queue writes for **Review → Keep All / Undo All**."
@@ -351,12 +372,19 @@ def build_ui() -> gr.Blocks:
                     step=1,
                     label="Max files to scan",
                 )
+                agent_rag_top_k = gr.Slider(
+                    1,
+                    20,
+                    value=5,
+                    step=1,
+                    label="RAG top-k (repo-wide Ask retrieval)",
+                )
                 agent_retries = gr.Slider(
                     0,
                     5,
                     value=3,
                     step=1,
-                    label="Max fix retries (Code Agent)",
+                    label="Max fix retries (Debug/Code Agent)",
                 )
 
                 repo_chatbot = gr.Chatbot(height=400, label="Repo Agent")
@@ -378,7 +406,7 @@ def build_ui() -> gr.Blocks:
                 repo_session_state = gr.State({})
 
                 def _handle_repo_chat(
-                    mode, repo_root, selected_files, msg, history, state, max_ret, max_files
+                    mode, repo_root, selected_files, msg, history, state, max_ret, max_files, rag_top_k
                 ):
                     history = _normalize_chat_history(history)
                     if state is None:
@@ -389,7 +417,12 @@ def build_ui() -> gr.Blocks:
                         if mode == MODE_ASK:
                             from agent.repo_ask_chat import chat_ask_generator
                             gen = chat_ask_generator(
-                                msg, history, state, repo_root or "", int(max_files)
+                                msg,
+                                history,
+                                state,
+                                repo_root or "",
+                                int(max_files),
+                                int(rag_top_k),
                             )
                         elif mode == MODE_CODE:
                             from agent.repo_code_chat import chat_code_generator
@@ -441,8 +474,10 @@ def build_ui() -> gr.Blocks:
                     return state
 
                 def _clear_context(state):
+                    from agent.repo_utils import clear_ask_session_context
+
                     state = state or {}
-                    state["active_files"] = []
+                    clear_ask_session_context(state)
                     return state, gr.update(value=[])
 
                 def _render_review(review_data):
@@ -495,6 +530,7 @@ def build_ui() -> gr.Blocks:
                     repo_session_state,
                     agent_retries,
                     agent_max_files,
+                    agent_rag_top_k,
                 ]
                 chat_outputs = [
                     repo_chat_input,

@@ -15,6 +15,12 @@ JUDGE_PROMPT = """### Instruction: Did this program satisfy the user request?
 """
 
 FIX_PROMPT = """### Instruction: Fix the Python so it satisfies the user request.
+The output must be valid Python that passes ast.parse (no markdown fences in the body).
+Fix incomplete expressions: every operator (+, -, *, /, etc.) needs operands on both sides.
+Do not only add closing parentheses — restore the intended computation.
+For runtime errors: preserve the program's intent and structure (functions, classes, and main flow).
+Use the traceback to fix the failing line or its root cause — do not delete statements, calls, or tests just to silence the error.
+Prefer guards, validation, correct names/keys/indices, initialization, and exception handling over removing code.
 ### User request:
 {nl_prompt}
 ### Unit: {unit}

@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Code Generation Capstone — Demo Presentation</title>
+<style>
+  :root {
+    --primary: #0f4c81;
+    --primary-light: #1a6fad;
+    --primary-dark: #0c2d4a;
+    --accent: #0d9488;
+    --accent-light: #14b8a6;
+    --bg: #e8f1f8;
+    --slide-bg: #f8fbfd;
+    --text: #1e3a5f;
+    --muted: #5a6f82;
+    --card: #e8f4f8;
+    --border: rgba(15, 76, 129, 0.2);
+    --green: #059669;
+    --red: #dc2626;
+    --amber: #b45309;
+    --blue: #0369a1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .deck { width: 100vw; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: 1.6rem 2.6rem 4.4rem;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(26, 111, 173, 0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 10% 90%, rgba(13, 148, 136, 0.06) 0%, transparent 50%),
+      var(--slide-bg);
+    animation: fadeIn 0.3s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    flex: 0 0 auto;
+  }
+
+  .logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 5px 12px 5px 7px;
+    box-shadow: 0 2px 12px rgba(15, 76, 129, 0.14);
+    border: 2px solid rgba(13, 148, 136, 0.4);
+  }
+  .header img { height: 52px; width: auto; display: block; }
+  .title-slide .logo-wrap { padding: 10px 20px 10px 12px; }
+  .title-slide .header img { height: 92px; }
+
+  .header-right { display: flex; align-items: center; gap: 0.85rem; }
+
+  .section-tag {
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+  }
+  .section-tag.t2 { background: var(--accent); }
+  .section-tag.t3 { background: #7c3aed; }
+  .section-tag.t4 { background: var(--blue); }
+  .section-tag.t5 { background: var(--amber); }
+
+  .slide-num { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.05em; }
+
+  h1 { font-size: 2.5rem; font-weight: 700; color: var(--primary-dark); line-height: 1.2; margin-bottom: 0.5rem; }
+  h2 {
+    font-size: 1.6rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 0.7rem; border-left: 5px solid var(--accent-light); padding-left: 0.85rem;
+    flex: 0 0 auto;
+  }
+  h2 small { display: block; font-size: 0.82rem; font-weight: 500; color: var(--muted); margin-top: 0.15rem; }
+  h3 { font-size: 1rem; color: var(--primary); margin: 0 0 0.4rem; }
+
+  .subtitle { font-size: 1.3rem; color: var(--muted); margin-bottom: 1.2rem; }
+  .content { flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 0.4rem; }
+
+  ul { list-style: none; }
+  ul li { position: relative; padding: 0.3rem 0 0.3rem 1.4rem; font-size: 1rem; line-height: 1.45; }
+  ul li::before { content: "\25B8"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.85rem 1rem; box-shadow: 0 1px 6px rgba(15, 76, 129, 0.06);
+  }
+  .card p, .card li { font-size: 0.88rem; color: var(--muted); }
+  .card ul li { padding: 0.2rem 0 0.2rem 1rem; }
+  .card.accent { border-left: 4px solid var(--accent); }
+  .card.warn   { border-left: 4px solid var(--amber); }
+  .card.good   { border-left: 4px solid var(--green); }
+  .card.bad    { border-left: 4px solid var(--red); }
+
+  .stat { text-align: center; }
+  .stat .big-number { font-size: 1.75rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
+  .stat .metric-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  th, td { padding: 0.42rem 0.7rem; text-align: left; border-bottom: 1px solid rgba(15,76,129,0.12); }
+  th { background: #dbeafe; color: var(--primary); font-weight: 600; font-size: 0.8rem; }
+  td.num { font-variant-numeric: tabular-nums; }
+
+  .badge {
+    display: inline-block; background: #dbeafe; border: 1px solid var(--border); color: var(--primary);
+    padding: 0.2rem 0.65rem; border-radius: 20px; font-size: 0.76rem; margin: 0.15rem; font-weight: 500;
+  }
+  .badge.g { background: #d1fae5; color: #065f46; border-color: rgba(5,150,105,0.3); }
+  .badge.p { background: #ede9fe; color: #5b21b6; border-color: rgba(124,58,237,0.3); }
+
+  code { background: #dbeafe; color: var(--primary-dark); padding: 0.06rem 0.3rem; border-radius: 4px; font-size: 0.88em; }
+  strong { color: var(--primary-dark); }
+  .note { font-size: 0.76rem; color: var(--muted); font-style: italic; margin-top: 0.5rem; }
+  .up { color: var(--green); font-weight: 700; }
+  .down { color: var(--red); font-weight: 700; }
+
+  /* ---------- diagram helpers ---------- */
+  .svg-wrap { width: 100%; display: flex; justify-content: center; }
+  .svg-wrap svg { width: 100%; height: auto; max-height: 100%; }
+
+  svg .box       { fill: #ffffff; stroke: #0f4c81; stroke-width: 1.8; }
+  svg .box-acc   { fill: #e6fffb; stroke: #0d9488; stroke-width: 1.8; }
+  svg .box-model { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.8; }
+  svg .box-run   { fill: #fef3c7; stroke: #b45309; stroke-width: 1.8; }
+  svg .box-ok    { fill: #d1fae5; stroke: #059669; stroke-width: 1.8; }
+  svg .box-fix   { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.8; }
+  svg .box-in    { fill: #dbeafe; stroke: #0369a1; stroke-width: 1.8; }
+  svg .box-dash  { fill: #f8fafc; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 5 4; }
+
+  svg .grp { fill: rgba(15,76,129,0.035); stroke: rgba(15,76,129,0.35); stroke-width: 1.2; stroke-dasharray: 6 4; }
+
+  svg text { font-family: "Segoe UI", system-ui, sans-serif; }
+  svg .t   { font-size: 13px; font-weight: 600; fill: #0c2d4a; }
+  svg .ts  { font-size: 10.5px; fill: #5a6f82; }
+  svg .tl  { font-size: 10.5px; font-weight: 600; fill: #0f4c81; }
+  svg .tl-g{ font-size: 10.5px; font-weight: 700; fill: #059669; }
+  svg .tl-r{ font-size: 10.5px; font-weight: 700; fill: #dc2626; }
+  svg .th  { font-size: 12px; font-weight: 700; fill: #0f4c81; letter-spacing: 0.06em; }
+  svg .tbig{ font-size: 14px; font-weight: 700; fill: #0c2d4a; }
+
+  svg .e     { fill: none; stroke: #0f4c81; stroke-width: 1.8; marker-end: url(#ar); }
+  svg .e-n   { fill: none; stroke: #0f4c81; stroke-width: 1.8; }
+  svg .e-g   { fill: none; stroke: #059669; stroke-width: 2.2; marker-end: url(#ar-g); }
+  svg .e-r   { fill: none; stroke: #dc2626; stroke-width: 2.2; marker-end: url(#ar-r); }
+  svg .e-d   { fill: none; stroke: #64748b; stroke-width: 1.5; stroke-dasharray: 5 4; marker-end: url(#ar-s); }
+  svg .life  { stroke: #94a3b8; stroke-width: 1.4; stroke-dasharray: 4 4; }
+
+  /* sequence-diagram messages */
+  svg .m  { fill: none; stroke: #0f4c81; stroke-width: 1.7; marker-end: url(#ar); }
+  svg .mr { fill: none; stroke: #64748b; stroke-width: 1.5; stroke-dasharray: 5 4; marker-end: url(#ar-s); }
+  svg .mx { fill: none; stroke: #dc2626; stroke-width: 2; marker-end: url(#ar-r); }
+  svg .mg { fill: none; stroke: #059669; stroke-width: 2; marker-end: url(#ar-g); }
+  svg .lbl { font-size: 11.5px; fill: #0c2d4a; font-weight: 600; }
+  svg .lbs { font-size: 11.5px; fill: #5a6f82; }
+  svg .lbl.r { fill: #dc2626; }
+  svg .lbl.g { fill: #059669; }
+
+  /* layered architecture (HTML) */
+  .layer {
+    display: grid; grid-template-columns: 132px 1fr; align-items: stretch;
+    border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; background: #fff;
+  }
+  .layer + .layer { margin-top: 0.55rem; }
+  .layer-name {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    padding: 0.6rem 0.8rem; color: #fff; font-weight: 700; font-size: 0.92rem; line-height: 1.2;
+  }
+  .layer-name span { font-weight: 500; font-size: 0.74rem; opacity: 0.85; margin-top: 0.15rem; }
+  .layer-body { display: flex; gap: 0.5rem; padding: 0.55rem 0.6rem; flex-wrap: wrap; align-items: stretch; }
+  .chip {
+    flex: 1 1 0; min-width: 130px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.88rem; font-weight: 600; color: var(--primary-dark);
+  }
+  .chip em { display: block; font-style: normal; font-weight: 400; font-size: 0.76rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.35; }
+  .l1 { background: var(--primary); }
+  .l2 { background: var(--accent); }
+  .l3 { background: #7c3aed; }
+  .l4 { background: var(--blue); }
+  .l5 { background: var(--amber); }
+  .layer-arrow { text-align: center; color: var(--primary); font-size: 1.05rem; line-height: 0.5; margin: 0.15rem 0; }
+  .layer-name.l1, .layer-name.l2, .layer-name.l3, .layer-name.l4, .layer-name.l5 { min-width: 132px; }
+
+  /* video slide */
+  .video-stage {
+    flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center;
+    background: #0c2d4a; border-radius: 14px; border: 2px solid var(--border); overflow: hidden; position: relative;
+  }
+  .video-stage video { width: 100%; height: 100%; object-fit: contain; background: #0c2d4a; }
+  .video-fallback { text-align: center; color: #cbd5e1; padding: 1.5rem; }
+  .video-fallback .play {
+    width: 76px; height: 76px; border-radius: 50%; border: 3px solid var(--accent-light);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem;
+    font-size: 1.7rem; color: var(--accent-light);
+  }
+  .video-fallback code { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+
+  .title-slide { justify-content: center; align-items: center; text-align: center; }
+  .title-slide .header { border: none; justify-content: center; margin-bottom: 1.4rem; }
+  .title-slide h1 { font-size: 2.9rem; }
+  .title-slide .subtitle { font-size: 1.35rem; max-width: 760px; }
+  .title-slide .meta { margin-top: 1.4rem; color: var(--muted); font-size: 1rem; }
+
+  .team-block { margin-top: 1.3rem; padding: 0.9rem 1.6rem; background: #e8f4f8; border: 1px solid var(--border); border-radius: 14px; }
+  .team-label { font-size: 0.78rem; color: var(--primary); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 600; }
+  .team-names { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center; }
+  .team-member { font-size: 1.05rem; font-weight: 600; color: var(--primary-dark); padding: 0.3rem 0.9rem; background: #fff; border-radius: 8px; border: 1px solid var(--border); }
+
+  .agenda { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; margin-top: 1.6rem; width: 100%; max-width: 1000px; }
+  .agenda .step { background: #fff; border: 1px solid var(--border); border-top: 4px solid var(--primary); border-radius: 10px; padding: 0.6rem 0.5rem; }
+  .agenda .step b { display: block; font-size: 0.82rem; color: var(--primary-dark); }
+  .agenda .step span { font-size: 0.7rem; color: var(--muted); }
+  .agenda .step:nth-child(2) { border-top-color: var(--accent); }
+  .agenda .step:nth-child(3) { border-top-color: #7c3aed; }
+  .agenda .step:nth-child(4) { border-top-color: var(--blue); }
+  .agenda .step:nth-child(5) { border-top-color: var(--amber); }
+
+  .nav {
+    position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center;
+    justify-content: space-between; padding: 0.6rem 1.6rem; background: rgba(255,255,255,0.96);
+    border-top: 1px solid var(--border); box-shadow: 0 -2px 12px rgba(15,76,129,0.08); z-index: 100;
+  }
+  .nav button { background: var(--primary); color: #fff; border: none; padding: 0.45rem 1.2rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+  .nav button:hover { background: var(--primary-light); }
+  .nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .progress-dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 60%; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(15,76,129,0.2); cursor: pointer; transition: all 0.2s; }
+  .dot.active { background: var(--primary); transform: scale(1.3); }
+
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<!-- Shared arrowhead markers: defined once, referenced by every diagram. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <marker id="ar"   markerWidth="9"  markerHeight="9"  refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z"  fill="#0f4c81"/></marker>
+  <marker id="ar-g" markerWidth="10" markerHeight="10" refX="9" refY="5"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#059669"/></marker>
+  <marker id="ar-r" markerWidth="10" markerHeight="10" refX="9" refY="5"   orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+  <marker id="ar-s" markerWidth="9"  markerHeight="9"  refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z"  fill="#64748b"/></marker>
+</defs></svg>
+
+<div class="deck" id="deck">
+
+<!-- ============================ 01 TITLE ============================ -->
+<section class="slide active title-slide" data-slide="0">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+  </div>
+  <h1>Agentic Code Generation Capstone</h1>
+  <p class="subtitle">A fine-tuned <strong>0.5B</strong> code model wrapped in a <strong>self-correcting LangGraph agent</strong> that reads, writes, runs and repairs real repositories</p>
+  <div>
+    <span class="badge">Qwen2.5-Coder-0.5B-Instruct</span>
+    <span class="badge">Two-Stage LoRA</span>
+    <span class="badge p">LangGraph Agent</span>
+    <span class="badge">Repo RAG (FAISS)</span>
+    <span class="badge g">Execute → Judge → Fix</span>
+  </div>
+  <div class="agenda">
+    <div class="step"><b>1 · Problem</b><span>Why & what solution</span></div>
+    <div class="step"><b>2 · Demo</b><span>What we built + video</span></div>
+    <div class="step"><b>3 · Architecture</b><span>Agent & sequence</span></div>
+    <div class="step"><b>4 · Tech Spec</b><span>Model, data, training</span></div>
+    <div class="step"><b>5 · Learnings</b><span>Limits & next steps</span></div>
+  </div>
+  <div class="team-block">
+    <div class="team-label">Team</div>
+    <div class="team-names">
+      <span class="team-member">Kavita</span>
+      <span class="team-member">Saikrishna</span>
+      <span class="team-member">Ashok</span>
+      <span class="team-member">Mohit</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 02 PROBLEM ============================ -->
+<section class="slide" data-slide="1">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag">1 · Problem</span><span class="slide-num">02</span></div>
+  </div>
+  <h2>The Problem <small>Legacy Java migration and code chores are slow, and generic LLMs stop at "here is some code"</small></h2>
+  <div class="content">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1340 344" role="img" aria-label="Problem to solution diagram">
+        <!-- PAIN -->
+        <rect class="grp" x="8" y="8" width="400" height="328" rx="14"/>
+        <text class="th" x="24" y="34">TODAY&#8217;S PAIN</text>
+        <rect class="box-fix" x="26" y="48" width="364" height="62" rx="9"/>
+        <text class="t"  x="42" y="72">Java &#8594; Python migration is manual</text>
+        <text class="ts" x="42" y="90">file-by-file rewrite, dependencies missed,</text>
+        <text class="ts" x="42" y="104">weeks of effort per service</text>
+
+        <rect class="box-fix" x="26" y="120" width="364" height="62" rx="9"/>
+        <text class="t"  x="42" y="144">Docs &amp; comments rot</text>
+        <text class="ts" x="42" y="162">written last, reviewed never, out of date</text>
+        <text class="ts" x="42" y="176">the moment the code changes</text>
+
+        <rect class="box-fix" x="26" y="192" width="364" height="62" rx="9"/>
+        <text class="t"  x="42" y="216">Generic LLMs emit unverified code</text>
+        <text class="ts" x="42" y="234">no execution, no repo context,</text>
+        <text class="ts" x="42" y="248">hallucinated APIs you only find at runtime</text>
+
+        <rect class="box-fix" x="26" y="264" width="364" height="62" rx="9"/>
+        <text class="t"  x="42" y="288">7B+ models are costly &amp; not private</text>
+        <text class="ts" x="42" y="306">GPU bills, your code leaves the org,</text>
+        <text class="ts" x="42" y="320">hard to self-host on developer hardware</text>
+
+        <path class="e" d="M416,172 H470"/>
+
+        <!-- OUR SOLUTION -->
+        <rect class="grp" x="480" y="8" width="852" height="328" rx="14"/>
+        <text class="th" x="498" y="34">OUR SOLUTION &#8212; A SMALL MODEL THAT CHECKS ITS OWN WORK</text>
+
+        <rect class="box-in" x="500" y="58" width="150" height="72" rx="10"/>
+        <text class="t" x="516" y="88">Repo / NL /</text>
+        <text class="t" x="516" y="108">Java input</text>
+
+        <rect class="box-model" x="682" y="58" width="176" height="72" rx="10"/>
+        <text class="t"  x="698" y="84">Fine-tuned 0.5B</text>
+        <text class="ts" x="698" y="102">multitask LoRA</text>
+        <text class="ts" x="698" y="118">4 code tasks</text>
+
+        <rect class="box-run" x="890" y="58" width="150" height="72" rx="10"/>
+        <text class="t"  x="906" y="84">Execute in</text>
+        <text class="t"  x="906" y="104">sandbox</text>
+        <text class="ts" x="906" y="121">real stdout, real errors</text>
+
+        <rect class="box-acc" x="1072" y="58" width="150" height="72" rx="10"/>
+        <text class="t"  x="1088" y="84">LLM judge</text>
+        <text class="ts" x="1088" y="102">did it actually do</text>
+        <text class="ts" x="1088" y="118">what was asked?</text>
+
+        <rect class="box-ok" x="1072" y="230" width="150" height="66" rx="10"/>
+        <text class="t"  x="1088" y="258">Verified code</text>
+        <text class="ts" x="1088" y="276">queued for your review</text>
+
+        <rect class="box-fix" x="800" y="230" width="196" height="66" rx="10"/>
+        <text class="t"  x="816" y="258">AST-aware auto-fix</text>
+        <text class="ts" x="816" y="276">up to 3 retries, then stop</text>
+
+        <path class="e" d="M650,94 H676"/>
+        <path class="e" d="M858,94 H884"/>
+        <path class="e" d="M1040,94 H1066"/>
+        <path class="e-g" d="M1147,130 V224"/>
+        <text class="tl-g" x="1155" y="182">JUDGE: YES</text>
+        <path class="e-r" d="M1072,118 H1054 Q1040,118 1040,134 V263 H1002"/>
+        <text class="tl-r" x="1006" y="196">NO</text>
+        <path class="e-r" d="M898,230 V140"/>
+        <text class="tl-r" x="906" y="190">re-run</text>
+
+        <rect class="box-dash" x="500" y="230" width="264" height="66" rx="10"/>
+        <text class="t"  x="516" y="256">Repo RAG (FAISS)</text>
+        <text class="ts" x="516" y="274">AST chunks of your own codebase,</text>
+        <text class="ts" x="516" y="288">retrieved as grounding context</text>
+        <path class="e-d" d="M632,230 V136"/>
+      </svg>
+    </div>
+    <div class="grid-3" style="margin-top:0.7rem">
+      <div class="card accent"><h3>Research question</h3><p>Can a <strong>0.5B</strong> code model, parameter-efficiently fine-tuned and placed inside a verify-and-repair agent, do useful repository work that the base model cannot?</p></div>
+      <div class="card good"><h3>Key insight</h3><p>Reliability comes from the <strong>loop</strong>, not the parameter count. Execution + judging + AST-guided repair recovers what a small model gets wrong on the first try.</p></div>
+      <div class="card"><h3>Constraint we honoured</h3><p>Everything must run on a <strong>laptop or free CPU Space</strong> — Apple-Silicon MPS, CUDA or CPU, no code leaving the machine.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 03 WHAT WE BUILT ============================ -->
+<section class="slide" data-slide="2">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t2">2 · What we built</span><span class="slide-num">03</span></div>
+  </div>
+  <h2>What We Built <small>One fine-tuned checkpoint + one agent runtime, surfaced through three interfaces</small></h2>
+  <div class="content">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1340 376" role="img" aria-label="Capability map">
+        <!-- four model tasks (top) -->
+        <text class="th" x="24" y="26">MODEL CAPABILITIES &#8212; 4 tasks, 1 checkpoint</text>
+        <rect class="box-acc" x="24" y="40" width="300" height="56" rx="9"/>
+        <text class="t"  x="40" y="64">1 &#183; NL &#8594; Python</text>
+        <text class="ts" x="40" y="82">plain English to a runnable function or class</text>
+
+        <rect class="box-acc" x="348" y="40" width="300" height="56" rx="9"/>
+        <text class="t"  x="364" y="64">2 &#183; Java &#8594; Python</text>
+        <text class="ts" x="364" y="82">method, class and OOP-pattern translation</text>
+
+        <rect class="box-acc" x="692" y="40" width="300" height="56" rx="9"/>
+        <text class="t"  x="708" y="64">3 &#183; Code &#8594; Documentation</text>
+        <text class="ts" x="708" y="82">docstrings and API descriptions</text>
+
+        <rect class="box-acc" x="1016" y="40" width="300" height="56" rx="9"/>
+        <text class="t"  x="1032" y="64">4 &#183; Code &#8594; Comments</text>
+        <text class="ts" x="1032" y="82">inline explanation of existing Python</text>
+
+        <path class="e" d="M174,96  V170 H544"/>
+        <path class="e" d="M498,96  V200 H544"/>
+        <path class="e" d="M842,96  V170 H796"/>
+        <path class="e" d="M1166,96 V200 H796"/>
+
+        <!-- model core -->
+        <rect class="box-model" x="548" y="150" width="244" height="80" rx="14"/>
+        <text class="tbig" x="570" y="180">qwen-multitask</text>
+        <text class="ts"   x="570" y="199">single merged LoRA checkpoint</text>
+        <text class="ts"   x="570" y="215">Qwen2.5-Coder-0.5B-Instruct base</text>
+
+        <!-- three repo agents (bottom) -->
+        <text class="th" x="24" y="288">REPO AGENTS &#8212; what the model is used for</text>
+        <rect class="box-run" x="24" y="298" width="410" height="66" rx="10"/>
+        <text class="t"  x="40" y="320">ASK &#8212; understand a codebase</text>
+        <text class="ts" x="40" y="337">planner classifies the intent &#8594; repo RAG retrieval</text>
+        <text class="ts" x="40" y="353">&#8594; grounded answer that cites real files</text>
+
+        <rect class="box-run" x="458" y="298" width="410" height="66" rx="10"/>
+        <text class="t"  x="474" y="320">CODE / MIGRATE &#8212; write &amp; convert</text>
+        <text class="ts" x="474" y="337">generate files; batch Java&#8594;Python with dependency scan</text>
+        <text class="ts" x="474" y="353">&#8594; every write queued for review / keep / undo</text>
+
+        <rect class="box-run" x="892" y="298" width="424" height="66" rx="10"/>
+        <text class="t"  x="908" y="320">DEBUG &#8212; scan, diagnose, repair</text>
+        <text class="ts" x="908" y="337">whole-repo error scan, then a static + runtime fix loop</text>
+        <text class="ts" x="908" y="353">that rejects &#8220;delete the code to silence the error&#8221; fixes</text>
+
+        <path class="e" d="M229,298  V262 H600 V234"/>
+        <path class="e" d="M663,298  V234"/>
+        <path class="e" d="M1104,298 V262 H740 V234"/>
+      </svg>
+    </div>
+    <div class="grid-4" style="margin-top:0.7rem">
+      <div class="card"><h3>Interfaces</h3><p>Gradio app (4 tabs) on a Hugging Face Space, FastAPI with <strong>11 endpoints</strong>, and a LangGraph CLI graph.</p></div>
+      <div class="card"><h3>Safety rails</h3><p>Every generated file goes to a <strong>pending-writes queue</strong> — review, keep all, or undo all. Nothing is silently overwritten.</p></div>
+      <div class="card"><h3>Verification</h3><p><code>ast.parse</code> + semantic checks + pyflakes, then sandboxed execution with a <strong>10&nbsp;s</strong> timeout.</p></div>
+      <div class="card"><h3>Reproducibility</h3><p>Preprocess &#8594; train &#8594; evaluate &#8594; deploy scripted end-to-end, plus a Colab notebook and a pytest suite.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 04 DEMO VIDEO ============================ -->
+<section class="slide" data-slide="3">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t2">2 · Demo</span><span class="slide-num">04</span></div>
+  </div>
+  <h2>Live Walkthrough <small>Ask a repo &#8594; migrate Java to Python &#8594; break it &#8594; let the Debug agent repair it</small></h2>
+  <div class="video-stage">
+    <video id="demoVideo" controls preload="metadata" playsinline>
+      <source src="demo.mp4" type="video/mp4" />
+    </video>
+    <div class="video-fallback" id="videoFallback" style="display:none">
+      <div class="play">&#9654;</div>
+      <p style="font-size:1.05rem;font-weight:600;color:#e2e8f0">Recorded demo</p>
+      <p style="margin-top:0.5rem">Drop the recording at <code>presentation/demo.mp4</code> and it plays inline here.</p>
+      <p style="margin-top:0.7rem;font-size:0.85rem">Fallback: run <code>python scripts/run_local_gradio.py</code> &#8594; <code>http://127.0.0.1:7860</code></p>
+    </div>
+  </div>
+  <div class="grid-4" style="margin-top:0.6rem;flex:0 0 auto">
+    <div class="card"><h3>1 · Ask</h3><p>&#8220;What does this repo do?&#8221; &#8212; planner picks overview retrieval, answer cites real files.</p></div>
+    <div class="card"><h3>2 · Migrate</h3><p>Point at a Java folder &#8594; dependency scan &#8594; converted Python queued for review.</p></div>
+    <div class="card"><h3>3 · Debug</h3><p>Repo scan finds the broken file, static + runtime loop produces a working fix.</p></div>
+    <div class="card"><h3>4 · Review</h3><p>Diff shown, then Keep All or Undo All &#8212; the developer stays in control.</p></div>
+  </div>
+</section>
+
+<!-- ============================ 05 AGENTIC ARCHITECTURE ============================ -->
+<section class="slide" data-slide="4">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t3">3 · Architecture</span><span class="slide-num">05</span></div>
+  </div>
+  <h2>Agentic Architecture &#8212; the LangGraph Solve Loop <small>Classify the request &#8594; take one of five paths &#8594; always land in Python &#8594; run it &#8594; judge it &#8594; repair and re-run</small></h2>
+  <div class="content">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1360 560" role="img" aria-label="LangGraph agent architecture">
+        <!-- ===== STAGE HEADERS ===== -->
+        <rect class="grp" x="6" y="6" width="418" height="418" rx="12"/>
+        <text class="th" x="22" y="28">STEP 1 &#8212; UNDERSTAND</text>
+        <rect class="grp" x="436" y="6" width="234" height="418" rx="12"/>
+        <text class="th" x="452" y="28">STEP 2 &#8212; ROUTE</text>
+        <rect class="grp" x="682" y="6" width="672" height="418" rx="12"/>
+        <text class="th" x="698" y="28">STEP 3 &#8212; BUILD, RUN, VERIFY, REPAIR</text>
+
+        <!-- ===== INPUT ===== -->
+        <rect class="box-in" x="22" y="176" width="130" height="66" rx="10"/>
+        <text class="t" x="38" y="202">User request</text>
+        <text class="ts" x="38" y="219">NL &#183; Java &#183; pseudocode</text>
+        <text class="ts" x="38" y="234">&#183; pattern &#183; repo path</text>
+
+        <!-- route -->
+        <rect class="box" x="180" y="176" width="112" height="66" rx="10"/>
+        <text class="t" x="196" y="202">route</text>
+        <text class="ts" x="196" y="219">classify input;</text>
+        <text class="ts" x="196" y="234">judge LLM if unsure</text>
+
+        <!-- retrieve -->
+        <rect class="box-dash" x="316" y="176" width="94" height="66" rx="10"/>
+        <text class="t" x="330" y="202">retrieve</text>
+        <text class="ts" x="330" y="219">few-shot</text>
+        <text class="ts" x="330" y="234">FAISS top-k</text>
+
+        <path class="e" d="M152,209 H176"/>
+        <path class="e" d="M292,209 H312"/>
+
+        <!-- ===== FIVE ROUTES ===== -->
+        <rect class="box" x="452" y="40" width="202" height="58" rx="9"/>
+        <text class="t"  x="466" y="60">repo_prepare</text>
+        <text class="tl" x="466" y="76">route = repo</text>
+        <text class="ts" x="466" y="90">list repo files, then NL path</text>
+
+        <rect class="box" x="452" y="114" width="202" height="58" rx="9"/>
+        <text class="t"  x="466" y="134">nl_to_java</text>
+        <text class="tl" x="466" y="150">route = text_to_pl</text>
+        <text class="ts" x="466" y="164">English &#8594; Java scaffold</text>
+
+        <rect class="box" x="452" y="188" width="202" height="58" rx="9"/>
+        <text class="t"  x="466" y="208">pseudocode_to_java</text>
+        <text class="tl" x="466" y="224">route = pseudocode_to_fn</text>
+        <text class="ts" x="466" y="238">algorithm sketch &#8594; Java</text>
+
+        <rect class="box" x="452" y="262" width="202" height="58" rx="9"/>
+        <text class="t"  x="466" y="282">pattern_to_java</text>
+        <text class="tl" x="466" y="298">route = pattern</text>
+        <text class="ts" x="466" y="312">GoF / SOLID pattern &#8594; Java</text>
+
+        <rect class="box-dash" x="452" y="336" width="202" height="58" rx="9"/>
+        <text class="t"  x="466" y="356">direct pass-through</text>
+        <text class="tl" x="466" y="372">route = pl_to_pl</text>
+        <text class="ts" x="466" y="386">Java supplied, skip generation</text>
+
+        <!-- fan-out bus from retrieve to the five routes -->
+        <path class="e-n" d="M410,209 H430"/>
+        <path class="e-n" d="M430,69 V365"/>
+        <path class="e" d="M430,69  H448"/>
+        <path class="e" d="M430,143 H448"/>
+        <path class="e" d="M430,217 H448"/>
+        <path class="e" d="M430,291 H448"/>
+        <path class="e" d="M430,365 H448"/>
+
+        <!-- repo_prepare feeds the NL path -->
+        <path class="e" d="M553,98 V110"/>
+
+        <!-- all four generators merge onto one bus into java_to_python -->
+        <path class="e-n" d="M654,143 H676 V187"/>
+        <path class="e-n" d="M654,217 H676 V187"/>
+        <path class="e-n" d="M654,291 H676 V187"/>
+        <path class="e-n" d="M654,365 H676 V187"/>
+        <path class="e"   d="M676,187 H696"/>
+
+        <!-- ===== CORE PIPELINE ===== -->
+        <rect class="box-model" x="700" y="152" width="152" height="70" rx="10"/>
+        <text class="t" x="714" y="178">java_to_python</text>
+        <text class="ts" x="714" y="195">fine-tuned 0.5B</text>
+        <text class="ts" x="714" y="211">the one mandatory hop</text>
+
+        <rect class="box-run" x="890" y="152" width="146" height="70" rx="10"/>
+        <text class="t" x="904" y="178">execute</text>
+        <text class="ts" x="904" y="195">sandbox, 10 s cap</text>
+        <text class="ts" x="904" y="211">attempts += 1</text>
+
+        <rect class="box-acc" x="1074" y="152" width="146" height="70" rx="10"/>
+        <text class="t" x="1088" y="178">judge</text>
+        <text class="ts" x="1088" y="195">Qwen2.5-1.5B</text>
+        <text class="ts" x="1088" y="211">intent satisfied?</text>
+
+        <rect class="box-ok" x="1258" y="164" width="80" height="46" rx="10"/>
+        <text class="t" x="1276" y="192">END</text>
+
+        <path class="e" d="M852,187 H886"/>
+        <path class="e" d="M1036,187 H1070"/>
+        <path class="e-g" d="M1220,187 H1254"/>
+        <text class="tl-g" x="1224" y="152">YES</text>
+
+        <!-- ===== FIX LOOP ===== -->
+        <rect class="box-fix" x="1074" y="304" width="146" height="62" rx="10"/>
+        <text class="t" x="1088" y="328">attach_ast</text>
+        <text class="ts" x="1088" y="345">structural summary</text>
+        <text class="ts" x="1088" y="359">of the broken code</text>
+
+        <rect class="box-fix" x="890" y="304" width="146" height="62" rx="10"/>
+        <text class="t" x="904" y="328">fix_python</text>
+        <text class="ts" x="904" y="345">repair with AST +</text>
+        <text class="ts" x="904" y="359">stderr, temp &#8595;</text>
+
+        <path class="e-r" d="M1147,222 V300"/>
+        <text class="tl-r" x="1155" y="256">NO &#8212; and</text>
+        <text class="tl-r" x="1155" y="270">attempts &lt; 3</text>
+        <path class="e-r" d="M1074,335 H1040"/>
+        <path class="e-r" d="M963,304 V226"/>
+        <text class="tl-r" x="972" y="262">re-run the</text>
+        <text class="tl-r" x="972" y="276">repaired code</text>
+
+        <rect class="box-dash" x="700" y="304" width="152" height="62" rx="10"/>
+        <text class="t" x="714" y="328">loop guard</text>
+        <text class="ts" x="714" y="345">max_retries = 3</text>
+        <text class="ts" x="714" y="359">temp 0.30 &#8594; 0.05</text>
+
+        <text class="ts" x="700" y="398">Non-zero exit code short-circuits to &#8220;fail&#8221; without spending a judge call.</text>
+        <text class="ts" x="700" y="414">Every node appends to an append-only <tspan style="font-weight:700">trace</tspan>, so the whole run is replayable.</text>
+
+        <!-- ===== SHARED SERVICES BAND ===== -->
+        <rect class="grp" x="6" y="436" width="1348" height="116" rx="12"/>
+        <text class="th" x="22" y="458">SHARED SERVICES USED BY EVERY NODE</text>
+
+        <rect class="box-model" x="22" y="468" width="252" height="70" rx="9"/>
+        <text class="t" x="36" y="490">Models</text>
+        <text class="ts" x="36" y="506">codegen = fine-tuned qwen-multitask</text>
+        <text class="ts" x="36" y="521">judge / ask / planner = Qwen2.5-1.5B</text>
+        <text class="ts" x="36" y="534">swap via MODEL_ID, JUDGE_MODEL_ID &#8230;</text>
+
+        <rect class="box-dash" x="290" y="468" width="252" height="70" rx="9"/>
+        <text class="t" x="304" y="490">Retrieval</text>
+        <text class="ts" x="304" y="506">few-shot FAISS over training pairs</text>
+        <text class="ts" x="304" y="521">repo FAISS over AST chunks</text>
+        <text class="ts" x="304" y="534">min score 0.35 &#183; weak score 0.55</text>
+
+        <rect class="box-run" x="558" y="468" width="252" height="70" rx="9"/>
+        <text class="t" x="572" y="490">Sandbox</text>
+        <text class="ts" x="572" y="506">isolated subprocess, 10 s timeout</text>
+        <text class="ts" x="572" y="521">Docker image for evaluation:</text>
+        <text class="ts" x="572" y="534">256 MB, no network, read-only FS</text>
+
+        <rect class="box" x="826" y="468" width="252" height="70" rx="9"/>
+        <text class="t" x="840" y="490">Tools (11)</text>
+        <text class="ts" x="840" y="506">run_python &#183; parse_ast &#183; validate_python</text>
+        <text class="ts" x="840" y="521">read / write file &#183; list repo sources</text>
+        <text class="ts" x="840" y="534">find_local_java_dependencies</text>
+
+        <rect class="box-in" x="1094" y="468" width="244" height="70" rx="9"/>
+        <text class="t" x="1108" y="490">State</text>
+        <text class="ts" x="1108" y="506">prompt &#183; java_code &#183; python_code</text>
+        <text class="ts" x="1108" y="521">stdout / stderr / exit_code &#183; ast_info</text>
+        <text class="ts" x="1108" y="534">judge verdict &#183; attempts &#183; trace</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 06 SYSTEM LAYERS ============================ -->
+<section class="slide" data-slide="5">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t3">3 · Architecture</span><span class="slide-num">06</span></div>
+  </div>
+  <h2>System Architecture <small>Five layers &#8212; the agent loop from the previous slide is layer 2</small></h2>
+  <div class="content">
+    <div class="layer">
+      <div class="layer-name l1">1 · Interfaces<span>how users arrive</span></div>
+      <div class="layer-body">
+        <div class="chip">Gradio app<em>NL&#8594;Py &#183; Java&#8594;Py &#183; Code&#8594;Doc &#183; Agent workspace</em></div>
+        <div class="chip">FastAPI<em>11 routes incl. /agent/solve, /agent/migrate, /agent/fix</em></div>
+        <div class="chip">LangGraph CLI<em>codegen_agent graph entrypoint</em></div>
+        <div class="chip">HF Space<em>public demo, Gradio 5.9.1</em></div>
+      </div>
+    </div>
+    <div class="layer-arrow">&#9660;</div>
+    <div class="layer">
+      <div class="layer-name l2">2 · Agents<span>orchestration</span></div>
+      <div class="layer-body">
+        <div class="chip">LangGraph solve loop<em>11 nodes, 5 routes, execute&#8594;judge&#8594;fix</em></div>
+        <div class="chip">Ask agent<em>plan intent &#8594; retrieve &#8594; grounded answer</em></div>
+        <div class="chip">Code / Migrate agent<em>generate, dependency scan, batch convert, review</em></div>
+        <div class="chip">Debug agent<em>repo scan, static then runtime repair</em></div>
+      </div>
+    </div>
+    <div class="layer-arrow">&#9660;</div>
+    <div class="layer">
+      <div class="layer-name l3">3 · Tools<span>what agents can do</span></div>
+      <div class="layer-body">
+        <div class="chip">run_python<em>sandboxed execution</em></div>
+        <div class="chip">parse_ast<em>structure for repair</em></div>
+        <div class="chip">validate_python_code<em>ast + semantics + pyflakes</em></div>
+        <div class="chip">repo file I/O<em>list &#183; read &#183; write</em></div>
+        <div class="chip">java dependency scan<em>follow local imports</em></div>
+      </div>
+    </div>
+    <div class="layer-arrow">&#9660;</div>
+    <div class="layer">
+      <div class="layer-name l4">4 · Models<span>the intelligence</span></div>
+      <div class="layer-body">
+        <div class="chip">qwen-multitask (ours)<em>fine-tuned 0.5B &#8212; all code generation and fixing</em></div>
+        <div class="chip">Judge LLM<em>Qwen2.5-1.5B-Instruct &#8212; verdict + ambiguous routing</em></div>
+        <div class="chip">Ask + Planner LLM<em>Qwen2.5-1.5B-Instruct &#8212; prose answers, intent plan</em></div>
+        <div class="chip">Device auto-select<em>CUDA fp16 &#8594; MPS bf16 &#8594; CPU fp32</em></div>
+      </div>
+    </div>
+    <div class="layer-arrow">&#9660;</div>
+    <div class="layer">
+      <div class="layer-name l5">5 · Data &amp; Runtime<span>grounding + safety</span></div>
+      <div class="layer-body">
+        <div class="chip">Few-shot FAISS index<em>training pairs, cosine top-k</em></div>
+        <div class="chip">Repo FAISS index<em>AST chunks + file summaries + README</em></div>
+        <div class="chip">Execution sandbox<em>subprocess 10 s; Docker for eval</em></div>
+        <div class="chip">Pending-write queue<em>review / keep all / undo all</em></div>
+      </div>
+    </div>
+    <p class="note">Any side model can be pointed back at the fine-tuned checkpoint by setting its env var to <code>ft</code> — useful for measuring how much of the quality comes from the judge versus the generator.</p>
+
+    <h3 style="margin-top:0.6rem">One request, top to bottom</h3>
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1340 96" role="img" aria-label="Request path through the five layers">
+        <rect class="box-in" x="4" y="20" width="196" height="56" rx="10"/>
+        <text class="t"  x="18" y="44">1 &#183; You press Send</text>
+        <text class="ts" x="18" y="61">in the Gradio Agent tab</text>
+        <path class="e" d="M200,48 H228"/>
+
+        <rect class="box-acc" x="232" y="20" width="196" height="56" rx="10"/>
+        <text class="t"  x="246" y="44">2 &#183; Agent picks a mode</text>
+        <text class="ts" x="246" y="61">Ask, Code / Migrate or Debug</text>
+        <path class="e" d="M428,48 H456"/>
+
+        <rect class="box" x="460" y="20" width="196" height="56" rx="10"/>
+        <text class="t"  x="474" y="44">3 &#183; Tools gather evidence</text>
+        <text class="ts" x="474" y="61">read files, retrieve, parse AST</text>
+        <path class="e" d="M656,48 H684"/>
+
+        <rect class="box-model" x="688" y="20" width="196" height="56" rx="10"/>
+        <text class="t"  x="702" y="44">4 &#183; Model generates</text>
+        <text class="ts" x="702" y="61">fine-tuned 0.5B writes the code</text>
+        <path class="e" d="M884,48 H912"/>
+
+        <rect class="box-run" x="916" y="20" width="196" height="56" rx="10"/>
+        <text class="t"  x="930" y="44">5 &#183; Sandbox verifies</text>
+        <text class="ts" x="930" y="61">run it; repair and repeat</text>
+        <path class="e-g" d="M1112,48 H1140"/>
+
+        <rect class="box-ok" x="1144" y="20" width="192" height="56" rx="10"/>
+        <text class="t"  x="1158" y="44">6 &#183; You approve</text>
+        <text class="ts" x="1158" y="61">review the diff, keep or undo</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 07 SEQUENCE ============================ -->
+<section class="slide" data-slide="6">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t3">3 · Architecture</span><span class="slide-num">07</span></div>
+  </div>
+  <h2>Sequence &#8212; One "Solve" Request End to End <small>What actually happens between pressing Send and seeing verified code</small></h2>
+  <div class="content">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1340 556" role="img" aria-label="Sequence diagram">
+        <!-- actors -->
+        <rect class="box-in"    x="20"   y="10" width="150" height="38" rx="9"/><text class="t" x="54"  y="34">Developer</text>
+        <rect class="box"       x="212"  y="10" width="150" height="38" rx="9"/><text class="t" x="250" y="34">Gradio UI</text>
+        <rect class="box-acc"   x="404"  y="10" width="160" height="38" rx="9"/><text class="t" x="422" y="34">LangGraph agent</text>
+        <rect class="box-dash"  x="606"  y="10" width="150" height="38" rx="9"/><text class="t" x="638" y="34">FAISS index</text>
+        <rect class="box-model" x="798"  y="10" width="160" height="38" rx="9"/><text class="t" x="812" y="34">Fine-tuned 0.5B</text>
+        <rect class="box-run"   x="1000" y="10" width="150" height="38" rx="9"/><text class="t" x="1042" y="34">Sandbox</text>
+        <rect class="box-acc"   x="1192" y="10" width="132" height="38" rx="9"/><text class="t" x="1220" y="34">Judge LLM</text>
+
+        <!-- lifelines -->
+        <line class="life" x1="95"   y1="48" x2="95"   y2="546"/>
+        <line class="life" x1="287"  y1="48" x2="287"  y2="546"/>
+        <line class="life" x1="484"  y1="48" x2="484"  y2="546"/>
+        <line class="life" x1="681"  y1="48" x2="681"  y2="546"/>
+        <line class="life" x1="878"  y1="48" x2="878"  y2="546"/>
+        <line class="life" x1="1075" y1="48" x2="1075" y2="546"/>
+        <line class="life" x1="1258" y1="48" x2="1258" y2="546"/>
+
+        <!-- setup -->
+        <path class="m" d="M95,82 H283"/>
+        <text class="lbl" x="105" y="76">prompt + repo path</text>
+
+        <path class="m" d="M287,116 H480"/>
+        <text class="lbl" x="297" y="110">solve(prompt, max_retries = 3)</text>
+
+        <path class="m" d="M484,144 H524 V162 H492"/>
+        <text class="lbl" x="534" y="158">route &#8212; classify NL / Java / pseudocode / pattern / repo</text>
+
+        <path class="m"  d="M484,194 H677"/>
+        <text class="lbl" x="494" y="188">retrieve top-k similar examples</text>
+        <path class="mr" d="M681,218 H488"/>
+        <text class="lbs" x="494" y="212">few-shot context (cosine &#8805; 0.35)</text>
+
+        <path class="m"  d="M484,248 H874"/>
+        <text class="lbl" x="494" y="242">generate Java scaffold (unit = function | class)</text>
+        <path class="mr" d="M878,272 H488"/>
+        <text class="lbs" x="494" y="266">java_code</text>
+
+        <path class="m"  d="M484,302 H874"/>
+        <text class="lbl" x="494" y="296">translate Java &#8594; Python</text>
+        <path class="mr" d="M878,326 H488"/>
+        <text class="lbs" x="494" y="320">python_code</text>
+
+        <!-- verify / repair loop -->
+        <rect x="452" y="342" width="856" height="160" rx="10" fill="rgba(220,38,38,0.045)" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <rect x="452" y="342" width="292" height="19" rx="4" fill="#dc2626"/>
+        <text x="462" y="356" style="font-size:11.5px;font-weight:700;fill:#fff">loop  [judge = NO  and  attempts &lt; 3]</text>
+
+        <path class="m"  d="M484,388 H1071"/>
+        <text class="lbl" x="494" y="382">run_python(code, timeout = 10 s) &#183; attempts += 1</text>
+        <path class="mr" d="M1075,412 H488"/>
+        <text class="lbs" x="494" y="406">stdout &#183; stderr &#183; exit_code</text>
+
+        <path class="m"  d="M484,440 H1254"/>
+        <text class="lbl" x="494" y="434">judge_intent(prompt, code, output)</text>
+        <path class="mr" d="M1258,464 H488"/>
+        <text class="lbs" x="494" y="458">verdict + reason</text>
+
+        <path class="mx" d="M484,478 H520 V494 H492"/>
+        <text class="lbl r" x="530" y="490">on NO &#8594; attach_ast &#8594; fix_python (temperature 0.30 &#8594; 0.05) &#8594; re-run</text>
+
+        <path class="mg" d="M484,520 H291"/>
+        <text class="lbl g" x="500" y="514">verified python_code + java_code + full trace</text>
+        <path class="mg" d="M287,544 H99"/>
+        <text class="lbl g" x="115" y="538">result &#183; diff &#183; keep or undo</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 08 MODEL + TRAINING ============================ -->
+<section class="slide" data-slide="7">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t4">4 · Technical spec</span><span class="slide-num">08</span></div>
+  </div>
+  <h2>Model &amp; Training Technique <small>Two-stage LoRA: first make it fluent in Java&#8594;Python, then broaden it without forgetting</small></h2>
+  <div class="content">
+    <div class="grid-4" style="margin-bottom:0.6rem">
+      <div class="card stat"><div class="big-number">0.5 B</div><div class="metric-label">Qwen2.5-Coder-0.5B-Instruct base<br/>502,830,976 total params</div></div>
+      <div class="card stat"><div class="big-number">8.8 M</div><div class="metric-label">trainable LoRA params<br/><strong>1.75 %</strong> of the network</div></div>
+      <div class="card stat"><div class="big-number">2 stages</div><div class="metric-label">specialise &#8594; generalise<br/>merged into one checkpoint</div></div>
+      <div class="card stat"><div class="big-number">4 tasks</div><div class="metric-label">served by a single set<br/>of merged weights</div></div>
+    </div>
+
+    <div class="svg-wrap" style="margin-bottom:0.55rem">
+      <svg viewBox="0 0 1340 132" role="img" aria-label="Two stage training pipeline">
+        <rect class="box-in" x="8" y="30" width="188" height="72" rx="10"/>
+        <text class="t" x="22" y="56">Base checkpoint</text>
+        <text class="ts" x="22" y="73">Qwen2.5-Coder-0.5B</text>
+        <text class="ts" x="22" y="88">-Instruct (frozen)</text>
+
+        <path class="e" d="M196,66 H228"/>
+
+        <rect class="box-model" x="232" y="20" width="330" height="92" rx="10"/>
+        <text class="t" x="248" y="44">STAGE 1 &#183; Java &#8594; Python specialisation</text>
+        <text class="ts" x="248" y="63">AVATAR-TC + ClassEval-T + design patterns</text>
+        <text class="ts" x="248" y="79">LR 2e-4 &#183; 2 epochs &#183; LoRA r=16, &#945;=32</text>
+        <text class="ts" x="248" y="95">Colab A100 40GB &#183; &#8594; models/java2py_qwen</text>
+
+        <path class="e" d="M562,66 H594"/>
+
+        <rect class="box-model" x="598" y="20" width="360" height="92" rx="10"/>
+        <text class="t" x="614" y="44">STAGE 2 &#183; Multitask broadening</text>
+        <text class="ts" x="614" y="63">same Java2Py mix + MBPP + DocuMint</text>
+        <text class="ts" x="614" y="79">LR 5e-5 &#183; 2 epochs &#183; LoRA r=16, &#945;=32</text>
+        <text class="ts" x="614" y="95">Colab A100 40GB &#183; &#8594; models/qwen_multitask</text>
+
+        <path class="e" d="M958,66 H990"/>
+
+        <rect class="box-ok" x="994" y="30" width="338" height="72" rx="10"/>
+        <text class="t" x="1010" y="56">Shipped checkpoint</text>
+        <text class="ts" x="1010" y="73">Saikrishna2511/qwen-multitask &#183; served on</text>
+        <text class="ts" x="1010" y="88">a Hugging Face Space and used by every agent</text>
+      </svg>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <h3>Hyperparameters &#8212; Google Colab A100 40GB</h3>
+        <table>
+          <tr><th>Setting</th><th>Stage 1 &#8212; Java2Py</th><th>Stage 2 &#8212; Multitask</th></tr>
+          <tr><td>Hardware</td><td colspan="2">NVIDIA A100 40GB (Google Colab, CUDA)</td></tr>
+          <tr><td>LoRA rank / alpha / dropout</td><td class="num">16 / 32 / 0.05</td><td class="num">16 / 32 / 0.05</td></tr>
+          <tr><td>Target modules</td><td colspan="2">q, k, v, o, gate, up, down projections (all 7)</td></tr>
+          <tr><td>Learning rate</td><td class="num"><strong>2.0e-4</strong></td><td class="num"><strong>5.0e-5</strong></td></tr>
+          <tr><td>Epochs</td><td class="num">2</td><td class="num">2</td></tr>
+          <tr><td>Batch &#215; grad-accum</td><td class="num">8 &#215; 4 = 32</td><td class="num">8 &#215; 4 = 32</td></tr>
+          <tr><td>Max sequence length</td><td class="num">1024</td><td class="num">1024</td></tr>
+          <tr><td>Precision</td><td class="num">fp16</td><td class="num">fp16</td></tr>
+          <tr><td>Warmup / weight decay</td><td class="num">0.03 / 0.01</td><td class="num">0.03 / 0.01</td></tr>
+          <tr><td>Selection</td><td colspan="2">best <code>eval_loss</code>, evaluated each epoch, seed 42</td></tr>
+          <tr><td>Output checkpoint</td><td><code>models/java2py_qwen/merged</code></td><td><code>models/qwen_multitask/merged</code></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Techniques that mattered</h3>
+        <div class="card accent" style="margin-bottom:0.45rem"><h3>Curriculum, not one big mix</h3><p>Stage 1 teaches the hard structural skill (Java semantics &#8594; Python). Stage 2 adds NL and documentation at a <strong>4&#215; lower learning rate</strong> so the translation ability survives.</p></div>
+        <div class="card accent" style="margin-bottom:0.45rem"><h3>Replay + upsampling</h3><p>Java2Py data is replayed into Stage 2 and the design-pattern set is <strong>upsampled 2&#215;</strong>, because OOP-pattern examples are rare but disproportionately useful for real repositories.</p></div>
+        <div class="card accent" style="margin-bottom:0.45rem"><h3>Instruction templates</h3><p>Every task uses a fixed delimiter format (<code>### Translate Java to Python:</code> &#8230; <code>### Python:</code>), so one checkpoint can be steered per task at inference without a task head.</p></div>
+        <div class="card accent"><h3>Merge, don't stack adapters</h3><p>Each stage is merged back into dense weights, so inference needs no PEFT runtime and the Space loads a plain causal LM.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 09 DATASETS ============================ -->
+<section class="slide" data-slide="8">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t4">4 · Technical spec</span><span class="slide-num">09</span></div>
+  </div>
+  <h2>Datasets &amp; Evaluation <small>What the model learned from, and how we proved it improved</small></h2>
+  <div class="content">
+    <div class="grid-2">
+      <div>
+        <h3>Training corpora</h3>
+        <table>
+          <tr><th>Dataset</th><th>Task</th><th>Train pairs</th><th>Why it is in the mix</th></tr>
+          <tr><td><strong>AVATAR-TC</strong></td><td>Java&#8594;Py</td><td class="num">55,179</td><td>test-case-verified translation pairs &#8212; the backbone</td></tr>
+          <tr><td><strong>ClassEval-T</strong></td><td>Java&#8594;Py</td><td class="num">84</td><td>whole-class translation, not just methods</td></tr>
+          <tr><td><strong>Design patterns / SOLID</strong></td><td>Java&#8594;Py</td><td class="num">1,500 &#215;2</td><td>generated GoF + SOLID corpus for real OOP shapes</td></tr>
+          <tr><td><strong>MBPP</strong></td><td>NL&#8594;Py</td><td class="num">~1.0k</td><td>natural-language programming problems with tests</td></tr>
+          <tr><td><strong>DocuMint</strong></td><td>Code&#8594;Doc</td><td class="num">&#8804; 5,000</td><td>high-quality Python docstring supervision</td></tr>
+          <tr><td>CoDocBench</td><td>Java&#8594;Py</td><td class="num">0 usable</td><td>fetched, but records are docstring diffs &#8212; excluded</td></tr>
+          <tr><td>Spider / BIRD</td><td>SQL</td><td class="num">off</td><td>deliberately dropped; SQL diluted the code tasks</td></tr>
+        </table>
+        <p class="note">Stage 1 mix &#8776; 58.3k train / 653 validation pairs. Validation split 10 %, seed 42. Design-pattern corpus is our own: 23 GoF + 5 SOLID principles across 48 domains, with 8 domains held out so evaluation is never on a seen domain.</p>
+
+        <h3 style="margin-top:0.5rem">How the mix is assembled</h3>
+        <div class="svg-wrap">
+          <svg viewBox="0 0 660 240" role="img" aria-label="Dataset assembly pipeline">
+            <rect class="box-dash" x="4" y="10" width="150" height="70" rx="9"/>
+            <text class="t"  x="18" y="32">Raw sources</text>
+            <text class="ts" x="18" y="48">7 candidate datasets</text>
+            <text class="ts" x="18" y="63">HF hub + local corpora</text>
+
+            <path class="e" d="M154,45 H186"/>
+
+            <rect class="box-fix" x="190" y="10" width="164" height="70" rx="9"/>
+            <text class="t"  x="204" y="32">Curation filters</text>
+            <text class="ts" x="204" y="48">drop SQL proxies</text>
+            <text class="ts" x="204" y="63">drop unusable CoDocBench</text>
+
+            <path class="e" d="M354,45 H386"/>
+
+            <rect class="box-model" x="390" y="10" width="266" height="70" rx="9"/>
+            <text class="t"  x="404" y="32">Templated + upsampled</text>
+            <text class="ts" x="404" y="48">one fixed instruction format per task;</text>
+            <text class="ts" x="404" y="63">design patterns &#215;2, Java2Py replayed</text>
+
+            <!-- Stage 1 composition bar -->
+            <text class="th" x="4" y="112">STAGE 1 TRAIN COMPOSITION &#8212; 58,263 PAIRS</text>
+            <rect x="4"   y="120" width="596" height="26" rx="4" fill="#0f4c81"/>
+            <rect x="600" y="120" width="34"  height="26"      fill="#0d9488"/>
+            <rect x="634" y="120" width="6"   height="26"      fill="#b45309"/>
+            <text x="14"  y="137" style="font-size:11px;font-weight:700;fill:#fff">AVATAR-TC &#8212; 55,179 (94.7 %)</text>
+
+            <rect x="4" y="156" width="10" height="10" rx="2" fill="#0d9488"/>
+            <text class="ts" x="20" y="165">design patterns 3,000 (5.1 %, upsampled &#215;2)</text>
+            <rect x="270" y="156" width="10" height="10" rx="2" fill="#b45309"/>
+            <text class="ts" x="286" y="165">ClassEval-T 84 (0.2 %)</text>
+
+            <!-- Stage 2 composition bar -->
+            <text class="th" x="4" y="192">STAGE 2 TRAIN MIX &#8212; STAGE 1 REPLAY + NEW TASKS</text>
+            <rect x="4"   y="200" width="520" height="26" rx="4" fill="#0f4c81"/>
+            <rect x="524" y="200" width="58"  height="26" rx="4" fill="#7c3aed"/>
+            <rect x="582" y="200" width="58"  height="26" rx="4" fill="#0369a1"/>
+            <text x="14"  y="217" style="font-size:11px;font-weight:700;fill:#fff">Stage 1 Java2Py replay (~58k pairs)</text>
+            <rect x="4" y="228" width="10" height="10" rx="2" fill="#7c3aed"/>
+            <text class="ts" x="20" y="237">MBPP ~1k (NL&#8594;Py)</text>
+            <rect x="170" y="228" width="10" height="10" rx="2" fill="#0369a1"/>
+            <text class="ts" x="186" y="237">DocuMint &#8804;5k (Code&#8594;Doc) &#183; LR 5e-5 on Colab A100</text>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <h3>Evaluation stack &#8212; six complementary signals</h3>
+        <div class="grid-2" style="margin-bottom:0.5rem">
+          <div class="card"><h3>Surface similarity</h3><p><strong>BLEU</strong> and <strong>BERTScore</strong> &#8212; does it read like the reference?</p></div>
+          <div class="card"><h3>Code-aware similarity</h3><p><strong>CodeBLEU</strong> (n-gram + syntax + dataflow) and <strong>CodeBERTScore</strong> &#8212; is the structure right?</p></div>
+          <div class="card"><h3>Execution accuracy</h3><p>Does it actually run and pass tests in the Docker sandbox?</p></div>
+          <div class="card"><h3>Output match</h3><p>Strictest signal &#8212; identical stdout to the reference program.</p></div>
+        </div>
+
+        <h3 style="margin-top:0.55rem">Base model vs our fine-tunes &#8212; AVATAR-TC Java&#8594;Python</h3>
+        <table>
+          <tr><th>Metric</th><th>Base Qwen2.5-Coder-0.5B</th><th>Stage 1 &#8212; Java2Py</th><th>Stage 2 &#8212; Multitask (final)</th><th>&#916; vs base</th></tr>
+          <tr><td>BLEU</td><td class="num">33.24</td><td class="num"><strong>48.60</strong></td><td class="num">36.66</td><td class="num up">+3.42</td></tr>
+          <tr><td>CodeBLEU</td><td class="num">0.388</td><td class="num"><strong>0.525</strong></td><td class="num">0.454</td><td class="num up">+0.066</td></tr>
+          <tr><td>BERTScore F1</td><td class="num">0.882</td><td class="num"><strong>0.931</strong></td><td class="num">0.916</td><td class="num up">+0.034</td></tr>
+          <tr><td>CodeBERTScore F1</td><td class="num">0.886</td><td class="num"><strong>0.931</strong></td><td class="num">0.920</td><td class="num up">+0.034</td></tr>
+          <tr><td>Execution accuracy</td><td class="num">&#8212;</td><td class="num">0.40</td><td class="num">&#8212;</td><td class="num">sandbox pass rate</td></tr>
+        </table>
+        <p class="note">Same protocol for all rows: AVATAR-TC valid, n = 10, shuffle seed 42. Stage 1 = <code>java2py_qwen/merged</code>; Stage 2 = shipped <code>Saikrishna2511/qwen-multitask</code> (eval saved in <code>results/stage2_qwen_multitask_valid_n10_seed42.json</code>). Stage 2 still beats base on Java2Py but scores below Stage 1 &#8212; expected trade-off from adding NL&#8594;Py and Code&#8594;Doc; replay + lower LR limits but does not eliminate the gap. &#916; column uses Stage 2 vs base. Stage 2 execution accuracy not yet measured on this subset.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 10 LEARNINGS ============================ -->
+<section class="slide" data-slide="9">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+    <div class="header-right"><span class="section-tag t5">5 · Learnings</span><span class="slide-num">10</span></div>
+  </div>
+  <h2>Learnings &amp; Limitations <small>What we would tell the next team on day one</small></h2>
+  <div class="content">
+    <div class="grid-3">
+      <div>
+        <h3 style="color:var(--green)">What worked</h3>
+        <div class="card good" style="margin-bottom:0.4rem"><h3>The loop beats the parameter count</h3><p>Execute &#8594; judge &#8594; AST-guided repair rescues a large share of first-attempt failures. A 0.5B model inside a verification loop is more useful than a bigger model answering once.</p></div>
+        <div class="card good" style="margin-bottom:0.4rem"><h3>Curriculum &gt; single mixed run</h3><p>Specialising on Java&#8594;Python first, then broadening at a lower learning rate, preserved translation quality while adding three more tasks.</p></div>
+        <div class="card good" style="margin-bottom:0.4rem"><h3>Give the fixer structure, not just stderr</h3><p>Passing an AST summary alongside the traceback made repairs markedly more targeted than error text alone.</p></div>
+        <div class="card good"><h3>Curate over collect</h3><p>Dropping SQL and unusable CoDocBench records, and generating a purpose-built OOP-pattern corpus, helped more than adding raw volume.</p></div>
+      </div>
+      <div>
+        <h3 style="color:var(--red)">Honest limitations</h3>
+        <div class="card bad" style="margin-bottom:0.4rem"><h3>Capacity ceiling</h3><p>0.5B degrades on long files and deep multi-class logic. The 1024-token window forces file-level chunking, so cross-file reasoning is shallow.</p></div>
+        <div class="card bad" style="margin-bottom:0.4rem"><h3>The judge is not ground truth</h3><p>A separate LLM verdict can pass plausible-but-wrong code. Only execution against real tests is trustworthy, and not every task has tests.</p></div>
+        <div class="card bad" style="margin-bottom:0.4rem"><h3>Latency cost</h3><p>Up to 3 fix cycles means several generation + execution round trips; on free CPU hardware a full solve can take tens of seconds.</p></div>
+        <div class="card bad" style="margin-bottom:0.4rem"><h3>Evaluation gaps</h3><p>The paired fine-tuned comparison is on a small sample, and execution accuracy of 0.40 shows correctness &#8212; not similarity &#8212; is the real remaining gap.</p></div>
+        <div class="card bad"><h3>Narrow language coverage</h3><p>Java&#8594;Python only. Sandbox isolation is a subprocess timeout locally; hard isolation exists only in the Docker evaluation path.</p></div>
+      </div>
+      <div>
+        <h3 style="color:var(--blue)">Where we would go next</h3>
+        <div class="card" style="margin-bottom:0.4rem"><h3>Close the evaluation loop</h3><p>Full-validation fine-tuned sweep and an agent-vs-single-shot execution-accuracy comparison, so the loop's benefit is a published number.</p></div>
+        <div class="card" style="margin-bottom:0.4rem"><h3>Train on repair, not just generation</h3><p>Harvest the agent's own (broken &#8594; fixed) traces into a preference dataset and fine-tune the fixer on them.</p></div>
+        <div class="card" style="margin-bottom:0.4rem"><h3>Test-first judging</h3><p>Generate unit tests before code and judge on test outcomes, replacing much of the LLM verdict with executable evidence.</p></div>
+        <div class="card" style="margin-bottom:0.4rem"><h3>Scale selectively</h3><p>Keep 0.5B for bulk translation, escalate to a larger model only when the loop exhausts its retries.</p></div>
+        <div class="card"><h3>Harden the sandbox</h3><p>Route the interactive path through the same locked-down container used for evaluation.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 11 CLOSING ============================ -->
+<section class="slide title-slide" data-slide="10">
+  <div class="header">
+    <div class="logo-wrap"><img src="iiit-h-logo.svg" alt="IIIT Hyderabad" /></div>
+  </div>
+  <h1 style="color:var(--primary)">Thank You</h1>
+  <p class="subtitle">Questions &amp; Discussion</p>
+  <div class="grid-4" style="max-width:1040px;width:100%;margin-top:0.4rem">
+    <div class="card stat"><div class="big-number">1.75 %</div><div class="metric-label">params trained</div></div>
+    <div class="card stat"><div class="big-number">+15.4</div><div class="metric-label">BLEU over base</div></div>
+    <div class="card stat"><div class="big-number">11</div><div class="metric-label">agent graph nodes</div></div>
+    <div class="card stat"><div class="big-number">4</div><div class="metric-label">tasks, one checkpoint</div></div>
+  </div>
+  <div class="team-block">
+    <div class="team-label">Presented by</div>
+    <div class="team-names">
+      <span class="team-member">Kavita</span>
+      <span class="team-member">Saikrishna</span>
+      <span class="team-member">Ashok</span>
+      <span class="team-member">Mohit</span>
+    </div>
+  </div>
+  <div style="margin-top:1.1rem;font-size:0.95rem">
+    <p><strong>Live demo:</strong> <a href="https://huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo">huggingface.co/spaces/Saikrishna2511/qwen-multitask-demo</a></p>
+    <p style="margin-top:0.3rem"><strong>Model:</strong> <a href="https://huggingface.co/Saikrishna2511/qwen-multitask">huggingface.co/Saikrishna2511/qwen-multitask</a></p>
+  </div>
+</section>
+
+</div>
+
+<nav class="nav">
+  <button id="prevBtn" disabled>&#8592; Previous</button>
+  <div class="progress-dots" id="dots"></div>
+  <button id="nextBtn">Next &#8594;</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('dots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+  const dots = dotsContainer.querySelectorAll('.dot');
+
+  function goTo(n) {
+    const target = Math.max(0, Math.min(n, total - 1));
+    if (target === current) return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = target;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    const numEl = slides[current].querySelector('.slide-num');
+    if (numEl) numEl.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    const video = document.getElementById('demoVideo');
+    if (video && !slides[current].contains(video)) video.pause();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target && ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+  });
+
+  // Show a styled placeholder when demo.mp4 has not been dropped in yet.
+  (function () {
+    const video = document.getElementById('demoVideo');
+    const fallback = document.getElementById('videoFallback');
+    if (!video || !fallback) return;
+    const showFallback = () => { video.style.display = 'none'; fallback.style.display = 'block'; };
+    const source = video.querySelector('source');
+    if (source) source.addEventListener('error', showFallback);
+    video.addEventListener('error', showFallback);
+    setTimeout(() => { if (video.readyState === 0) showFallback(); }, 1200);
+  })();
+</script>
+
+</body>
+</html>

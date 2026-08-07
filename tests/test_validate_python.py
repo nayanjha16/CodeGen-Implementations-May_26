@@ -12,6 +12,18 @@ def test_validate_syntax_error():
     assert "SyntaxError" in result
 
 
+def test_validate_syntax_error_trailing_operator_hint():
+    result = validate_python_code.invoke({"code": "print(2 +"})
+    assert "incomplete expression" in result
+    assert "+" in result
+
+
+def test_validate_syntax_error_dangling_operator_before_paren():
+    result = validate_python_code.invoke({"code": "print(2 + )"})
+    assert "incomplete expression" in result
+    assert "+" in result
+
+
 def test_validate_missing_return_annotation():
     code = "def get_total() -> int:\n    pass\n"
     result = validate_python_code.invoke({"code": code})

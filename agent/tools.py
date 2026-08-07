@@ -103,6 +103,21 @@ def parse_ast(code: str, language: str = "python") -> str:
     )
 
 
+_INCOMPLETE_EXPR_RE = re.compile(
+    r"(?P<trailing>[+\-*/%@^|&~]|//|<<|>>)\s*$"
+    r"|(?P<before_paren>[+\-*/%@^|&~]|//|<<|>>)\s*\)"
+)
+
+
+def _incomplete_expression_hint(offending: str) -> str:
+    """Return a hint when a line ends with a dangling operator."""
+    match = _INCOMPLETE_EXPR_RE.search(offending)
+    if not match:
+        return ""
+    op = match.group("trailing") or match.group("before_paren")
+    return f" (incomplete expression: add the missing operand after {op!r})"
+
+
 def _syntax_error_summary(code: str, exc: SyntaxError) -> str:
     """Describe a syntax error with the offending line so a retry is actionable.
 
@@ -122,6 +137,8 @@ def _syntax_error_summary(code: str, exc: SyntaxError) -> str:
         summary += " (leftover markdown fence, not Python)"
     elif any(m in code for m in ("public class", "public static", "System.out.print")):
         summary += " (looks like Java, not Python)"
+    else:
+        summary += _incomplete_expression_hint(offending)
     return summary
 
 

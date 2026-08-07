@@ -15,6 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from utils.device import describe_device, get_best_device, get_inference_dtype
+from utils.text_sanitize import truncate_roleplay_continuation
 
 DEFAULT_MODEL = "Salesforce/codegen-350M-multi"
 QWEN_DEFAULT_MODEL = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
@@ -133,7 +134,7 @@ class CodeGenerator:
     @staticmethod
     def _extract_documentation(text: str) -> str:
         """Extract plain documentation (Code2Doc task)."""
-        raw = (text or "").strip()
+        raw = truncate_roleplay_continuation(text)
         if not raw:
             return ""
         closing_fence = re.search(r"\n```", raw)

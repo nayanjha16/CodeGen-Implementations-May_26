@@ -1,7 +1,10 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "codegen_agent": "./agent/graph.py:build_agent_graph"
+    "codegen_agent": "./agent/graph.py:build_agent_graph",
+    "ask_agent": "./agent/ask_graph.py:build_ask_graph",
+    "code_agent": "./agent/code_graph.py:build_code_graph",
+    "debug_agent": "./agent/debug_graph.py:build_debug_graph"
   },
   "env": ".env"
 }

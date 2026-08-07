@@ -12,6 +12,22 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SPACE_DIR = PROJECT_ROOT / "deploy" / "hf_space"
 
+
+def _load_project_env() -> None:
+    """Load repo .env so LangSmith tracing works outside langgraph dev."""
+    env_path = PROJECT_ROOT / ".env"
+    if not env_path.is_file():
+        return
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(env_path, override=False)
+    except ImportError:
+        pass
+
+
+_load_project_env()
+
 # Shared resolver: local models/qwen_multitask/merged → Saikrishna2511/qwen-multitask
 sys.path.insert(0, str(PROJECT_ROOT))
 from inference.generator import HF_FT_MODEL, local_merged_path, resolve_codegen_model_id  # noqa: E402

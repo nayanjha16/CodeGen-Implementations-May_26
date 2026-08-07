@@ -143,10 +143,57 @@ Optional env vars:
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `MODEL_ID` | local `models/qwen_multitask/merged` or Hub `Saikrishna2511/qwen-multitask` | Codegen checkpoint |
+| `MODEL_ID` | local `models/qwen_multitask/merged` or Hub `Saikrishna2511/qwen-multitask` | Fine-tuned multitask model (codegen, Ask answers, planner when set to `ft`) |
 | `JUDGE_MODEL_ID` | `Qwen/Qwen2.5-1.5B-Instruct` | Separate judge LLM (`ft` reuses codegen) |
+| `ASK_MODEL_ID` | `Qwen/Qwen2.5-1.5B-Instruct` | Ask Agent Q&A prose model (`ft` reuses fine-tuned codegen) |
+| `ASK_PLANNER_MODEL_ID` | `Qwen/Qwen2.5-1.5B-Instruct` | Intent/retrieval planner for Ask Agent |
+| `RAG_MIN_SCORE` | `0.35` | Minimum cosine score for repo RAG chunks |
+| `RAG_WEAK_SCORE` | `0.55` | Below this, Ask Agent retries overview retrieval or reports low confidence |
 
-LangGraph CLI entrypoint is defined in `langgraph.json` (`codegen_agent` → `agent/graph.py:build_agent_graph`).
+Rebuild a repo index after index-builder changes (or when `.py`/`.java` duplicate stubs skew retrieval):
+
+```bash
+python scripts/build_repo_index.py --repo-root /path/to/your/repo
+```
+
+LangGraph CLI registers four graphs in [`langgraph.json`](langgraph.json):
+
+| Graph | Module | Purpose |
+|-------|--------|---------|
+| `codegen_agent` | `agent/graph.py` | NL→Java→Python codegen + execute + judge + fix loop |
+| `ask_agent` | `agent/ask_graph.py` | Repo Q&A with planner + RAG retrieval |
+| `code_agent` | `agent/code_graph.py` | NL→Python/Java generation and Java→Python migration |
+| `debug_agent` | `agent/debug_graph.py` | Scan, diagnose, and fix Python files |
+
+View and debug in **LangGraph Studio**:
+
+```bash
+pip install -U "langgraph-cli[inmem]"
+cp .env.example .env   # set MODEL_ID and optional LANGSMITH_* keys
+langgraph dev
+```
+
+Open the Studio URL printed in the terminal (typically `https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024`) and select a graph.
+
+Sample Studio inputs:
+
+```json
+{"nl_prompt": "Write a palindrome checker", "max_retries": 3, "unit": "function"}
+```
+
+```json
+{"user_message": "How does routing work?", "history": [], "session_state": {}, "repo_root": "/path/to/repo", "max_files": 20, "rag_top_k": 5}
+```
+
+```json
+{"user_message": "python: reverse a string", "history": [], "session_state": {}, "repo_root": "/path/to/repo", "max_retries": 3, "max_files": 20}
+```
+
+```json
+{"user_message": "scan", "history": [], "session_state": {}, "repo_root": "/path/to/repo", "max_files": 20, "max_retries": 3}
+```
+
+Enable LangSmith tracing by setting `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` in `.env`.
 
 Agent vs single-shot eval:
 

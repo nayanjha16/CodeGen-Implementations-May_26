@@ -1,0 +1,119 @@
+{
+  "model": "Saikrishna2511/qwen-multitask",
+  "task": "java2py",
+  "dataset": "avatar_tc/valid",
+  "split": "valid",
+  "num_samples": 10,
+  "fine_tuned": false,
+  "generation_seconds": 327.10059809684753,
+  "timestamp": "2026-08-07T14:54:52.965378+00:00",
+  "bleu": 36.662964928612816,
+  "bleu_details": "BLEU = 36.66 57.4/39.6/31.4/25.4 (BP = 1.000 ratio = 1.248 hyp_len = 1484 ref_len = 1189)",
+  "codebleu": 0.4538859838044417,
+  "codebleu_ngram": 0.3811160202318423,
+  "codebleu_weighted_ngram": 0.46879717682947936,
+  "codebleu_syntax": 0.4232142857142857,
+  "codebleu_dataflow": 0.5424164524421594,
+  "bertscore_precision": 0.9078727960586548,
+  "bertscore_recall": 0.9239675402641296,
+  "bertscore_f1": 0.9157570004463196,
+  "code_bertscore_precision": 0.9128362536430359,
+  "code_bertscore_recall": 0.9278255701065063,
+  "code_bertscore_f1": 0.9202275276184082,
+  "oop_breakdown": {
+    "general": {
+      "count": 9,
+      "codebleu": 0.4568,
+      "syntax": 0.4333,
+      "dataflow": 0.5406
+    },
+    "design_patterns": {
+      "count": 1,
+      "codebleu": 0.4254,
+      "syntax": 0.32,
+      "dataflow": 0.5625
+    }
+  },
+  "samples": [
+    {
+      "input_preview": "import java . util . Scanner ; import java . math . BigDecimal ; public class Main { public static void main ( String [ ] args ) { Scanner in = new Scanner ( System . in ) ; int x = in . nextInt ( ) ;",
+      "prediction_preview": "x , y = map ( int , input ( ) . split ( ) )\nprint ( ' { : . 6f } { } { } ' . format ( x / y , x % y , x // y ) , end = ' ' )\nprint ( x // y )",
+      "reference_preview": "a , b = map ( int , input ( ) . split ( ) )\nprint ( a // b , a % b , \" % .9f \" % ( a / b ) )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "import java . util . * ; import java . io . * ; import static java . lang . Math . * ; public class Practice { static Scanner scn ; static StringBuilder sb ; public static void main ( String [ ] Scoob",
+      "prediction_preview": "t = int ( input ( ) )\nfor _ in range ( t ) :\n    a , b , c , d = map ( int , input ( ) . split ( ) )\n    for i in range ( max ( a , c ) , min ( b , d ) + 1 ) :\n        if i not in ( a , c , b , d ) and i not in ( a , d , b , c ) and i not in ( c , d , b , a ) and i not in ( c , a , d , b ) and i not in ( b , a , c , d ) :\n            print ( i , end = ' ' )\n            break",
+      "reference_preview": "for _ in range ( int ( input ( ) ) ) :\n    a , b , c , d = map ( int , input ( ) . split ( ) )\n    if ( a == c and b == d ) :\n        print ( a , a + 1 )\n    elif ( a == c ) :\n        print ( a , a + 1 )\n    elif ( b == d ) :\n        print ( b - 1 , b )\n    else :\n        print ( a , c )",
+      "oop_categories": [
+        "design_patterns"
+      ]
+    },
+    {
+      "input_preview": "import java . util . * ; public class GFG { static double polyarea ( double n , double r ) { if ( r < 0 && n < 0 ) return - 1 ; double A = ( ( r * r * n ) * Math . sin ( ( 360 / n ) * 3.14159 / 180 ) ",
+      "prediction_preview": "def polyarea ( n , r ) :\n    if ( r < 0 and n < 0 ) :\n        return - 1 ;\n    A = ( ( r * r * n ) * math . sin ( ( 360 / n ) * 3.14159 / 180 ) ) / 2 ;\n    return A ;\nif __name__ == ' _ _ main _ _ ' :\n    r = 9 ; n = 6 ;\n    print ( round ( polyarea ( n , r ) , 3 ) ) ;",
+      "reference_preview": "from math import sin\ndef polyarea ( n , r ) :\n    if ( r < 0 and n < 0 ) :\n        return - 1\n    A = ( ( ( r * r * n ) * sin ( ( 360 / n ) * 3.14159 / 180 ) ) / 2 ) ;\n    return round ( A , 3 )\nif __name__ == \" _ _ main _ _ \" :\n    r , n = 9 , 6\n    print ( \" { : . 3 f } \" . format ( polyarea ( n , r ) ) )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "public final class p171 { public static void main ( String [ ] args ) { System . out . println ( new p171 ( ) . run ( ) ) ; } private static final int LENGTH = 20 ; private static final int BASE = 10 ",
+      "prediction_preview": "import sys\ndef compute ( ) :\n    MODULUS = 10 ** 9 + 7\n    LENGTH = 20\n    def _sum ( a , b ) :\n        if b == 0 : return a\n        return ( a + b ) % MODULUS\n    def _mul ( a , b ) :\n        return ( a * b ) % MODULUS\n    def _pow ( a , n ) :\n        res = 1\n        while n > 0 :\n            if n & 1 :\n                res = _mul ( res , a )\n            a = _mul ( a , a )\n            n >>= 1\n        return res\n    def _inv ( a ) :\n        return _pow ( a , MODULUS - 2 )\n    def _sqr ( a ) :\n   ",
+      "reference_preview": "import eulerlib , itertools\ndef compute ( ) :\n    LENGTH = 20\n    BASE = 10\n    MODULUS = 10 ** 9\n    MAX_SQR_DIGIT_SUM = ( BASE - 1 ) ** 2 * LENGTH\n    sqsum = [ ]\n    count = [ ]\n    for i in range ( LENGTH + 1 ) :\n        sqsum . append ( [ 0 ] * ( MAX_SQR_DIGIT_SUM + 1 ) )\n        count . append ( [ 0 ] * ( MAX_SQR_DIGIT_SUM + 1 ) )\n        if i == 0 :\n            count [ 0 ] [ 0 ] = 1\n        else :\n            for j in range ( BASE ) :\n                for k in itertools . count ( ) :\n     ",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "import java . io . * ; import java . util . StringTokenizer ; public final class cp { static class FastReader { BufferedReader br ; StringTokenizer st ; public FastReader ( ) { br = new BufferedReader",
+      "prediction_preview": "from collections import Counter\ndef solve ( s ) :\n    c = Counter ( )\n    l = len ( s )\n    for i in range ( l ) :\n        c [ s [ i ] ] += 1\n    ans = \" \"\n    for i in range ( l ) :\n        if c [ s [ i ] ] >= ( l // 2 ) and not ans or s [ i ] < ans [ - 1 ] :\n            ans += s [ i ]\n    return \" YES \" if ans else \" NO \"\nif __name__ == \" _ _ main _ _ \" :\n    n = int ( input ( ) )\n    s = input ( )\n    print ( solve ( s ) )",
+      "reference_preview": "n = int ( input ( ) )\ns = input ( )\nfor i in range ( n - 1 ) :\n    if ( s [ i ] != s [ i + 1 ] ) :\n        print ( \" YES \" )\n        print ( s [ i ] , s [ i + 1 ] , sep = \" \" )\n        exit ( 0 )\nprint ( \" NO \" )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "class Test { static int gcd ( int a , int b ) { if ( a == 0 ) return b ; return gcd ( b % a , a ) ; } static int lcm ( int a , int b ) { return ( a * b ) / gcd ( a , b ) ; } public static void main ( ",
+      "prediction_preview": "def gcd ( a , b ) :\n    if ( a == 0 ) :\n        return b ;\n    return gcd ( b % a , a )\ndef lcm ( a , b ) :\n    return ( a * b ) // gcd ( a , b )\na = 15\nb = 20\nprint ( \" LCM of \" , a , \" and \" , b , \" is \" , lcm ( a , b ) )",
+      "reference_preview": "def gcd ( a , b ) :\n    if a == 0 :\n        return b\n    return gcd ( b % a , a )\ndef lcm ( a , b ) :\n    return int ( ( a * b ) / gcd ( a , b ) )\na = 15\nb = 20\nprint ( ' LCM of ' , a , ' and ' , b , ' is ' , lcm ( a , b ) )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "import java . util . ArrayList ; import java . util . Scanner ; public class Main { public static void main ( String [ ] args ) { Scanner scanner = new Scanner ( System . in ) ; ArrayList < Integer > ",
+      "prediction_preview": "n = int ( input ( ) )\na = list ( map ( int , input ( ) . split ( ) ) )\nans = [ ]\nfor i in range ( n ) :\n    if a [ i ] == 1 :\n        ans . append ( i + 1 )\nif len ( ans ) == 2 :\n    print ( min ( ans ) * 2 )\nelif len ( ans ) == 3 :\n    print ( min ( ans ) * 2 + 1 )\nelse :\n    print ( min ( ans ) * 2 + 2 )",
+      "reference_preview": "n = int ( input ( ) )\na = list ( map ( int , input ( ) . split ( ) ) )\nx = a . index ( 1 ) + 1\ny = a . index ( n ) + 1\nprint ( max ( abs ( n - x ) , abs ( n - y ) , abs ( 1 - x ) , abs ( 1 - y ) ) )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "public class GFG { static int findSumofEle ( int [ ] arr1 , int m , int [ ] arr2 , int n , int k ) { float arraySum = 0 ; for ( int i = 0 ; i < n ; i ++ ) arraySum += arr2 [ i ] ; float mean = arraySu",
+      "prediction_preview": "def findSumofEle ( arr1 , m , arr2 , n , k ) :\n    arraySum = 0 ;\n    for i in range ( n ) :\n        arraySum += arr2 [ i ] ;\n    mean = arraySum / n ;\n    sumOfElements = 0 ;\n    difference = 0 ;\n    for i in range ( m ) :\n        difference = arr1 [ i ] - mean ;\n        if ( ( difference < 0 ) and ( k > abs ( difference ) ) ) :\n            sumOfElements += arr1 [ i ] ;\n        elif ( ( difference >= 0 ) and ( k > difference ) ) :\n            sumOfElements += arr1 [ i ] ;\n    return sumOfElemen",
+      "reference_preview": "def findSumofEle ( arr1 , m , arr2 , n , k ) :\n    arraySum = 0\n    for i in range ( n ) :\n        arraySum += arr2 [ i ]\n    mean = arraySum / n\n    sumOfElements = 0\n    difference = 0\n    for i in range ( m ) :\n        difference = arr1 [ i ] - mean\n        if ( ( difference < 0 ) and ( k > ( - 1 ) * difference ) ) :\n            sumOfElements += arr1 [ i ]\n        if ( ( difference >= 0 ) and ( k > difference ) ) :\n            sumOfElements += arr1 [ i ]\n    return sumOfElements\narr1 = [ 1 , ",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "import java . util . Scanner ; class Main { public static void main ( String args [ ] ) { Scanner scan = new Scanner ( System . in ) ; double x1 , y1 , x2 , y2 , xq , yq , ax , ay ; double m1 , m2 , l",
+      "prediction_preview": "def f ( p , q ) :\n    return ( p [ 0 ] * q [ 0 ] + p [ 1 ] * q [ 1 ] ) / ( p [ 0 ] ** 2 + p [ 1 ] ** 2 )\ndef g ( p , q ) :\n    return ( p [ 0 ] - q [ 0 ] ) * ( p [ 1 ] * q [ 0 ] - p [ 0 ] * q [ 1 ] ) / ( p [ 0 ] ** 2 + p [ 1 ] ** 2 )\nwhile True :\n    try :\n        a , b , c , d = map ( float , input ( ) . split ( ) )\n        e , f , g , h = map ( float , input ( ) . split ( ) )\n        print ( ' % .6f % .6f ' % ( f ( ( a , b ) , ( c , d ) ) , g ( ( a , b ) , ( e , f ) ) ) )\n        print ( ' % .",
+      "reference_preview": "def dot ( a , b ) : return a [ 0 ] * b [ 0 ] + a [ 1 ] * b [ 1 ]\ndef projection ( a , b ) : return [ x * dot ( a , b ) / dot ( a , a ) for x in a ]\nx1 , y1 , x2 , y2 = [ int ( i ) for i in input ( ) . split ( ) ]\na = [ x2 - x1 , y2 - y1 ]\nq = int ( input ( ) )\nfor i in range ( q ) :\n    x , y = [ int ( i ) for i in input ( ) . split ( ) ]\n    b = [ x - x1 , y - y1 ]\n    c = projection ( a , b )\n    print ( c [ 0 ] + x1 , c [ 1 ] + y1 )",
+      "oop_categories": [
+        "general"
+      ]
+    },
+    {
+      "input_preview": "import java . util . * ; public class GFG { static void reverse ( int a [ ] ) { int i , k , n = a . length ; int t ; for ( i = 0 ; i < n / 2 ; i ++ ) { t = a [ i ] ; a [ i ] = a [ n - i - 1 ] ; a [ n ",
+      "prediction_preview": "def reverse ( a ) :\n    n = len ( a )\n    for i in range ( n // 2 ) :\n        a [ i ] , a [ n - i - 1 ] = a [ n - i - 1 ] , a [ i ]\narr = [ 1 , 5 , 8 , 9 , 6 , 7 , 3 , 4 , 2 , 0 ]\nn = len ( arr )\nreverse ( arr )\nprint ( \" Array after sorting : \" )\nfor i in range ( n ) :\n    print ( arr [ i ] , end = \" \" )",
+      "reference_preview": "if __name__ == \" _ _ main _ _ \" :\n    arr = [ 1 , 5 , 8 , 9 , 6 , 7 , 3 , 4 , 2 , 0 ]\n    n = len ( arr )\n    arr . sort ( reverse = True )\n    print ( \" Array after sorting : \" )\n    for i in range ( n ) :\n        print ( arr [ i ] , end = \" \" )",
+      "oop_categories": [
+        "general"
+      ]
+    }
+  ]
+}

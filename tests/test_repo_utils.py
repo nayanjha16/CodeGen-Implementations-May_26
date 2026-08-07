@@ -6,8 +6,10 @@ from unittest import mock
 from agent.repo_utils import (
     AmbiguousFileMatch,
     apply_pending_writes,
+    build_codegen_few_shot,
     detect_ask_task,
     detect_code_task,
+    detect_repo_primary_language,
     discard_pending_writes,
     empty_session,
     extract_file_refs,
@@ -18,6 +20,7 @@ from agent.repo_utils import (
     list_repo_relative_files,
     pending_to_review_data,
     queue_write,
+    suggest_generated_path,
     resolve_active_file_queries,
     resolve_file_query,
     resolve_in_repo,
@@ -82,6 +85,24 @@ def test_pending_to_review_data():
     data = pending_to_review_data(s)
     assert data[0]["name"] == "App.py"
     assert "class App" in data[0]["python"]
+
+
+def test_extract_doc_file_refs():
+    from agent.repo_utils import extract_doc_file_refs
+
+    assert extract_doc_file_refs("give me overview of readme.md file") == ["readme.md"]
+    assert extract_doc_file_refs("explain notes.txt and spec.rst") == [
+        "notes.txt",
+        "spec.rst",
+    ]
+    # Like extract_file_refs, a path yields both the path and its basename.
+    assert extract_doc_file_refs("summarize @docs/ROADMAP.md") == [
+        "docs/ROADMAP.md",
+        "ROADMAP.md",
+    ]
+    # Source files stay out of the doc-ref channel, and vice versa.
+    assert extract_doc_file_refs("explain App.py") == []
+    assert extract_file_refs("overview of readme.md") == []
 
 
 def test_extract_file_refs():
@@ -287,6 +308,56 @@ def test_detect_code_task_nl_python_over_migrate():
     assert detect_code_task("convert string to int in python", ["A.java"]) == "gen_python"
 
 
+def test_detect_code_task_create_similar_not_migrate():
+    assert detect_code_task(
+        "create ExistingBranchException similar to the file selected in Java",
+        ["ExistingRepositoryException.java"],
+    ) == "gen_java"
+    assert detect_code_task(
+        "Can you create a new class ExistingBranchException similar to the file selected",
+        ["src/exceptions/ExistingRepositoryException.java"],
+    ) == "gen_java"
+    assert detect_code_task(
+        "create BarHandler similar to the selected file",
+        ["handlers/foo.py"],
+    ) == "gen_python"
+
+
+def test_suggest_generated_path_active_file_dir(tmp_path):
+    nested = tmp_path / "src" / "exceptions"
+    nested.mkdir(parents=True)
+    ref = nested / "ExistingRepositoryException.java"
+    ref.write_text("public class ExistingRepositoryException {}", encoding="utf-8")
+    path = suggest_generated_path(
+        str(tmp_path),
+        ".java",
+        "create ExistingBranchException",
+        code="public class ExistingBranchException {}",
+        active_files=["src/exceptions/ExistingRepositoryException.java"],
+    )
+    assert path.parent == nested
+    assert path.name == "ExistingBranchException.java"
+
+
+def test_build_codegen_few_shot_prefers_active_files(tmp_path):
+    nested = tmp_path / "src"
+    nested.mkdir()
+    selected = nested / "ExistingRepositoryException.java"
+    selected.write_text(
+        "public class ExistingRepositoryException extends RuntimeException {}",
+        encoding="utf-8",
+    )
+    (tmp_path / "Other.java").write_text("public class Other {}", encoding="utf-8")
+    few_shot = build_codegen_few_shot(
+        str(tmp_path),
+        "create ExistingBranchException similar to selected",
+        language="java",
+        active_files=["src/ExistingRepositoryException.java"],
+    )
+    assert "ExistingRepositoryException.java" in few_shot
+    assert "ExistingRepositoryException" in few_shot
+
+
 def test_detect_ask_task_explain():
     assert detect_ask_task("explain selected files") == "explain"
     assert detect_ask_task("what does Main.java do?") == "explain"
@@ -330,4 +401,67 @@ def test_detect_ask_task_gen_code():
     assert detect_ask_task("create a java class for users") == "gen_java"
     assert detect_ask_task("implement a servlet in java") == "gen_java"
     assert detect_ask_task("build a spring boot controller in java") == "gen_java"
+
+
+def test_detect_repo_primary_language(tmp_path):
+    assert detect_repo_primary_language(str(tmp_path)) == "mixed"
+    for name in ("A.java", "B.java", "C.java"):
+        (tmp_path / name).write_text(f"public class {name[:-5]} {{}}", encoding="utf-8")
+    assert detect_repo_primary_language(str(tmp_path)) == "java"
+    (tmp_path / "x.py").write_text("x = 1", encoding="utf-8")
+    assert detect_repo_primary_language(str(tmp_path)) == "java"
+    for name in ("d.py", "e.py", "f.py"):
+        (tmp_path / name).write_text(f"{name[0]} = 1", encoding="utf-8")
+    assert detect_repo_primary_language(str(tmp_path)) == "mixed"
+
+
+def test_detect_code_task_java_repo_default(tmp_path):
+    for name in ("App.java", "Util.java", "Service.java"):
+        (tmp_path / name).write_text(f"public class {name[:-5]} {{}}", encoding="utf-8")
+    root = str(tmp_path)
+    assert detect_code_task("generate singleton pattern", repo_root=root) == "gen_java"
+    assert detect_code_task("generate singleton in python", repo_root=root) == "gen_python"
+    assert detect_code_task("implement in java", repo_root=root) == "gen_java"
+
+
+def test_suggest_generated_path_pattern(tmp_path):
+    path = suggest_generated_path(str(tmp_path), ".py", "generate singleton pattern")
+    assert path.name == "singleton.py"
+
+
+def test_suggest_generated_path_explicit(tmp_path):
+    path = suggest_generated_path(
+        str(tmp_path), ".py", "create helper in @utils/helper.py"
+    )
+    assert path == tmp_path / "utils" / "helper.py"
+
+
+def test_suggest_generated_path_from_code(tmp_path):
+    code = "def factorial(n):\n    return 1\n"
+    path = suggest_generated_path(str(tmp_path), ".py", "write a function", code=code)
+    assert path.name == "factorial.py"
+
+
+def test_suggest_generated_path_collision(tmp_path):
+    (tmp_path / "singleton.py").write_text("pass", encoding="utf-8")
+    path = suggest_generated_path(str(tmp_path), ".py", "generate singleton pattern")
+    assert path.name == "singleton_2.py"
+
+
+def test_suggest_generated_path_fallback(tmp_path):
+    path = suggest_generated_path(str(tmp_path), ".py", "do it", code="x = 1\n")
+    assert path.name == "generated_1.py"
+
+
+def test_build_codegen_few_shot_from_repo_files(tmp_path):
+    (tmp_path / "Singleton.java").write_text(
+        "public class Singleton { private Singleton() {} }",
+        encoding="utf-8",
+    )
+    (tmp_path / "Other.java").write_text("public class Other {}", encoding="utf-8")
+    few_shot = build_codegen_few_shot(
+        str(tmp_path), "generate singleton pattern", language="java"
+    )
+    assert "Singleton.java" in few_shot
+    assert "public class Singleton" in few_shot
 

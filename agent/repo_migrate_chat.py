@@ -225,6 +225,8 @@ def chat_migrate_generator(
                 ))
                 fix_state["python_code"] = python_code
                 fix_state["stderr"] = val_res
+                fix_state["attempts"] = attempts - 1
+                fix_state["max_retries"] = max_retries
                 fix_state = _merge(fix_state, attach_ast(fix_state))
                 fix_state = _merge(fix_state, fix_python(fix_state))
                 python_code = fix_state.get("python_code") or python_code

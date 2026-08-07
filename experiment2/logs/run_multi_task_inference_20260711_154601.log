@@ -1,0 +1,49 @@
+2026-07-11 15:46:01,727 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/dev.json  total_raw=620  valid=620  skipped_incomplete=0  returned=620  limit_applied=False
+2026-07-11 15:46:01,743 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 15:46:12,064 [INFO   ] [inference] generate_nosql  latency_sec=2.3409  input_tokens=207  output_tokens=18
+2026-07-11 15:46:12,065 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### REFERENCE EXAMPLE ###
+Input SQL: SELECT name , age , country FROM artist ORDER BY Year_Join
+Target MQL: db.artist.find({}, { Name: 1, Age: 1, Country: 1}).sort({Year_Join: 1})
+#########################
+
+### TARGET TASK ###
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:46:12,065 [INFO   ]   >> OUTPUT : Output SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+2026-07-11 15:46:14,429 [INFO   ] [inference] generate_nosql  latency_sec=2.3405  input_tokens=207  output_tokens=18
+2026-07-11 15:46:14,430 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### REFERENCE EXAMPLE ###
+Input SQL: SELECT name , age , country FROM artist ORDER BY Year_Join
+Target MQL: db.artist.find({}, { Name: 1, Age: 1, Country: 1}).sort({Year_Join: 1})
+#########################
+
+### TARGET TASK ###
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:46:14,430 [INFO   ]   >> OUTPUT : Output SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+2026-07-11 15:46:29,576 [INFO   ] [inference] generate_nosql  latency_sec=15.118  input_tokens=266  output_tokens=150
+2026-07-11 15:46:29,577 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### REFERENCE EXAMPLE ###
+Input SQL: SELECT avg(age) , min(age) FROM artist WHERE country = 'United States'
+Target MQL: db.artist.aggregate([ { $match: { Country: "United States" } }, { $group: { _id: null, avgAge: { $avg: "$Age" }, minAge: { $min: "$Age" } }}, { $project: { avgAge:1, minAge:1 } } ])
+#########################
+
+### TARGET TASK ###
+Input SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = 'France'
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:46:29,577 [INFO   ]   >> OUTPUT : Output SQL: SELECT avg(age) , min(age) , max(age) FROM artist WHERE country = 'United States'
+Output MQL: db.artist.aggregate([ { $match: { Country: "United States" } }, { $group: { _id: null, avgAge: { $avg: "$Age" }, minAge: { $min: "$Age" } }}, { $project: { avgAge:1, minAge:1 } } ])
+
+### EXAMPLE ###
+Input SQL: SELECT avg(age) , min(age) , max(age) FROM artist WHERE country = 'United States'
+Target MQL: db.artist.aggregate

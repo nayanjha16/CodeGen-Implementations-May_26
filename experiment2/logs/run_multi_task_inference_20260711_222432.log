@@ -1,0 +1,50 @@
+2026-07-11 22:24:32,068 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/dev.json  total_raw=620  valid=620  skipped_incomplete=0  returned=620  limit_applied=False
+2026-07-11 22:24:32,084 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 22:24:54,964 [INFO   ] [inference] generate_nosql  latency_sec=14.5717  input_tokens=201  output_tokens=150
+2026-07-11 22:24:54,965 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### REFERENCE EXAMPLE ###
+Context Question: Return the characters for actors, ordered by age descending.
+Target MQL: db.actor.find({}, {Character: 1}).sort({age: -1})
+#########################
+
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:24:54,965 [INFO   ]   >> OUTPUT : Output: [Stadium_ID, Name, Stadium_Name, Song_Name, Song_Release_Year, _id] | _id: 0 | Name: 'Mountain View' | Stadium_Name: 'Mountain View' | Song_Name: 'Mountain View' | Song_Release_Year: '2015-01-01' | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id: 0 | _id:
+2026-07-11 22:25:02,238 [INFO   ] [inference] generate_nosql  latency_sec=6.9232  input_tokens=214  output_tokens=67
+2026-07-11 22:25:02,238 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### REFERENCE EXAMPLE ###
+Context Question: What are the famous titles and ages of each artist, listed in descending order by age?
+Target MQL: db.artist.find({}, {Famous_Title: 1, Age: 1}).sort({Age: -1})
+#########################
+
+### TARGET TASK ###
+Question: What are the names, countries, and ages for every singer in descending order of age?
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:25:02,238 [INFO   ]   >> OUTPUT : Output: db.singer.find({}, {Name: 1, Stadium_ID: 1, Theme: 1, Year: 1, _id: 1}).sort({Name: 1, Stadium_ID: 1, Theme: 1, Year: 1})
+
+### FILTER ###
+"""
+2026-07-11 22:25:12,912 [INFO   ] [inference] generate_nosql  latency_sec=10.2945  input_tokens=219  output_tokens=103
+2026-07-11 22:25:12,912 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### REFERENCE EXAMPLE ###
+Context Question: What is the average age of all artists?
+Target MQL: db.artist.aggregate([ { $group: { _id: null, averageAge: { $avg: "$Age" } } }, { $project: { averageAge: 1 } } ])
+#########################
+
+### TARGET TASK ###
+Question: What is the average, minimum, and maximum age of all singers from France?
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:25:12,912 [INFO   ]   >> OUTPUT : Answer: { _id: "db.concert", Average: "0.0", Minimum: "0.0", Maximum: "0.0", Name: "", Stadium_ID: "", Theme: "", Year: "", Is_male: "", Name: "", Singer_ID: "", Song_Name: "", Song_release_year: "", Concert_ID: "", Concert_Name: "" }
+
+### FILTER ###
+"""

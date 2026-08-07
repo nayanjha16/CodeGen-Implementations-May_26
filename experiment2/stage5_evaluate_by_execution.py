@@ -87,7 +87,7 @@ import re
 
 def evaluate_pipeline(pipeline_json_path):
     # 🌟 CROSS-REFERENCE MAP: Point this exactly to your local dev.json file
-    DEV_JSON_PATH = "./docspider/docspider_ground_truth_dataset/dev.json"  # Adjust this path if your dev.json is in a different folder
+    DEV_JSON_PATH = "./docspider/docspider_ground_truth_dataset/dev.json"  
     
     difficulty_lookup = {}
     if os.path.exists(DEV_JSON_PATH):
@@ -95,7 +95,6 @@ def evaluate_pipeline(pipeline_json_path):
         with open(DEV_JSON_PATH, "r", encoding="utf-8") as f:
             dev_data = json.load(f)
             for item in dev_data:
-                # Use the clean question text as a unique key
                 difficulty_lookup[item["question"].strip()] = item.get("difficulty", "medium").lower()
     else:
         print(f"⚠️ Warning: Could not find raw dev.json at {DEV_JSON_PATH}. Breakdown will default to medium.")
@@ -107,10 +106,11 @@ def evaluate_pipeline(pipeline_json_path):
     metrics = {cat: {"correct": 0, "total": 0} for cat in ["easy", "medium", "hard", "extra"]}
     total_correct = 0
     
+    # 🚨 NEW: Phase 1 -> Phase 2 Telemetry Bridge
+    failed_traces = [] 
+    
     for idx, item in enumerate(records):
         question_text = item.get("question", "").strip()
-        
-        # Pull difficulty from our lookup dictionary, fallback to medium if missing
         category = difficulty_lookup.get(question_text, "medium")
         if "extra" in category:
             category = "extra"
@@ -127,9 +127,19 @@ def evaluate_pipeline(pipeline_json_path):
             is_match = (len(gold_obj) == len(pred_obj) and set(gold_obj) == set(pred_obj))
             
         metrics[category]["total"] += 1
+        
         if is_match:
             metrics[category]["correct"] += 1
             total_correct += 1
+        else:
+            # 🚨 NEW: Capture the broken packet trace for the Teacher Model
+            failed_traces.append({
+                "db_id": item.get("db_id", "unknown"),
+                "question": question_text,
+                "gold_query": gold_mql,
+                "broken_draft": pred_mql, 
+                "raw_generation": item.get("raw_generation", "No raw trace available.")
+            })
             
     print("\n📊 OFFICIAL DOCSPIDER EXECUTION RESULTS SCORECARD")
     print("=" * 55)
@@ -141,42 +151,57 @@ def evaluate_pipeline(pipeline_json_path):
     overall_acc = (total_correct / len(records) * 100) if records else 0
     print("=" * 55)
     print(f"📈 TOTAL DATA EXECUTION ACCURACY: {overall_acc:.2f}%")
+    print(f"⚠️  FAILED TRACES CAPTURED: {len(failed_traces)}")
     print("=" * 55)
     
-# --- Generate Report Text ---
-    report_lines = []
-    report_lines.append("=======================================================")
-    report_lines.append("📊 OFFICIAL DOCSPIDER EXECUTION RESULTS REPORT")
-    report_lines.append("=======================================================")
-    report_lines.append(f"📅 Evaluation Run Date : 2026-06-22")
-    report_lines.append(f"📥 Predictions Source  : {pipeline_json_path}")
-    report_lines.append(f"📖 Reference Source    : {DEV_JSON_PATH}")
-    report_lines.append("-------------------------------------------------------")
+    # --- Report Generation ---
+    report_lines = [
+        "=======================================================",
+        "📊 OFFICIAL DOCSPIDER EXECUTION RESULTS REPORT",
+        "=======================================================",
+        f"📅 Evaluation Run Date : 2026-06-22",
+        f"📥 Predictions Source  : {pipeline_json_path}",
+        f"📖 Reference Source    : {DEV_JSON_PATH}",
+        "-------------------------------------------------------"
+    ]
     
     for cat in ["easy", "medium", "hard", "extra"]:
         data = metrics[cat]
         acc = (data["correct"] / data["total"] * 100) if data["total"] > 0 else 0
         report_lines.append(f"🔹 {cat.upper():<7} Accuracy : {data['correct']}/{data['total']} ({acc:.2f}%)")
     
-    overall_acc = (total_correct / len(records) * 100) if records else 0
-    report_lines.append("=======================================================")
-    report_lines.append(f"📈 TOTAL DATA EXECUTION ACCURACY: {overall_acc:.2f}%")
-    report_lines.append("=======================================================")
+    report_lines.extend([
+        "=======================================================",
+        f"📈 TOTAL DATA EXECUTION ACCURACY: {overall_acc:.2f}%",
+        f"⚠️  FAILED TRACES CAPTURED: {len(failed_traces)}",
+        "======================================================="
+    ])
     
-    # 1. Print to console for immediate visibility
     report_text = "\n".join(report_lines)
     print("\n" + report_text)
     
-    # 2. Save securely to a local file
+    # Save the standard text report
     output_dir = "outputs/evaluation_reports"
     os.makedirs(output_dir, exist_ok=True)
     report_file_path = os.path.join(output_dir, "stage5_baseline_execution_report.txt")
-    
     with open(report_file_path, "w", encoding="utf-8") as f:
         f.write(report_text)
         
-    print(f"💾 Evaluation report successfully archived to: {report_file_path}")
+    # 🚨 NEW: Export the isolated failure queue for Phase 2 Distillation
+    teacher_queue_path = os.path.join(output_dir, "teacher_calibration_queue.json")
+    if failed_traces:
+        with open(teacher_queue_path, "w", encoding="utf-8") as f:
+            json.dump(failed_traces, f, indent=2)
+        print(f"💾 Teacher Calibration Queue safely extracted to: {teacher_queue_path}")
 
 if __name__ == "__main__":
-    PIPELINE_PREDS = "outputs/experiment2_pipeline_results/pipeline_predictions.json"
-    evaluate_pipeline(PIPELINE_PREDS)
+    # Allowing dynamic execution from your inference runner
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+        evaluate_pipeline(sys.argv[1])
+    else:
+        PIPELINE_PREDS = "outputs/experiment2_pipeline_results/pipeline_predictions.json"
+        if os.path.exists(PIPELINE_PREDS):
+            evaluate_pipeline(PIPELINE_PREDS)
+        else:
+            print(f"Please provide a valid predictions JSON file.")

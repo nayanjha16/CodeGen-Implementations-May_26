@@ -1,0 +1,52 @@
+2026-07-11 15:36:20,877 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/dev.json  total_tasks=1034  returned=1034  limit_applied=False
+2026-07-11 15:36:20,899 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 15:36:37,385 [INFO   ] [inference] generate_sql  latency_sec=13.8755  input_tokens=122  output_tokens=150
+2026-07-11 15:36:37,386 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:36:37,387 [INFO   ]   >> OUTPUT : ### TARGET TASK ###
+Question: What is the average of the singers?
+Schema: singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+### TARGET TASK ###
+Question: What is the average of the singers?
+Schema: singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+### TARGET T
+2026-07-11 15:36:51,221 [INFO   ] [inference] generate_sql  latency_sec=13.831  input_tokens=123  output_tokens=150
+2026-07-11 15:36:51,221 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:36:51,221 [INFO   ]   >> OUTPUT : ### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Concert_ID)
+
+### SYSTEM RESPONSE ###
+### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest,
+2026-07-11 15:37:05,098 [INFO   ] [inference] generate_sql  latency_sec=13.8733  input_tokens=134  output_tokens=150
+2026-07-11 15:37:05,098 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:37:05,098 [INFO   ]   >> OUTPUT : ### TARGET TASK ###
+Question: Show the name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Concert_ID)
+
+### SYSTEM RESPONSE ###
+### TARGET TASK ###
+Question: Show the name, country, age for all singers ordered by age from the

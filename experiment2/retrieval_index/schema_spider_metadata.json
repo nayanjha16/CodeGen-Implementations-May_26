@@ -1,0 +1,4382 @@
+[
+  {
+    "db_id": "perpetrator",
+    "name": "perpetrator",
+    "table_str": "perpetrator Perpetrator_ID People_ID Date Year Location Country Killed Injured"
+  },
+  {
+    "db_id": "perpetrator",
+    "name": "people",
+    "table_str": "people People_ID Name Height Weight Home Town"
+  },
+  {
+    "db_id": "college_2",
+    "name": "classroom",
+    "table_str": "classroom building room_number capacity"
+  },
+  {
+    "db_id": "college_2",
+    "name": "department",
+    "table_str": "department dept_name building budget"
+  },
+  {
+    "db_id": "college_2",
+    "name": "course",
+    "table_str": "course course_id title dept_name credits"
+  },
+  {
+    "db_id": "college_2",
+    "name": "instructor",
+    "table_str": "instructor ID name dept_name salary"
+  },
+  {
+    "db_id": "college_2",
+    "name": "section",
+    "table_str": "section course_id sec_id semester year building room_number time_slot_id"
+  },
+  {
+    "db_id": "college_2",
+    "name": "teaches",
+    "table_str": "teaches ID course_id sec_id semester year"
+  },
+  {
+    "db_id": "college_2",
+    "name": "student",
+    "table_str": "student ID name dept_name tot_cred"
+  },
+  {
+    "db_id": "college_2",
+    "name": "takes",
+    "table_str": "takes ID course_id sec_id semester year grade"
+  },
+  {
+    "db_id": "college_2",
+    "name": "advisor",
+    "table_str": "advisor s_ID i_ID"
+  },
+  {
+    "db_id": "college_2",
+    "name": "time_slot",
+    "table_str": "time_slot time_slot_id day start_hr start_min end_hr end_min"
+  },
+  {
+    "db_id": "college_2",
+    "name": "prereq",
+    "table_str": "prereq course_id prereq_id"
+  },
+  {
+    "db_id": "flight_company",
+    "name": "airport",
+    "table_str": "airport id City Country IATA ICAO name"
+  },
+  {
+    "db_id": "flight_company",
+    "name": "operate_company",
+    "table_str": "operate_company id name Type Principal_activities Incorporated_in Group_Equity_Shareholding"
+  },
+  {
+    "db_id": "flight_company",
+    "name": "flight",
+    "table_str": "flight id Vehicle_Flight_number Date Pilot Velocity Altitude airport_id company_id"
+  },
+  {
+    "db_id": "icfp_1",
+    "name": "Inst",
+    "table_str": "Inst instID name country"
+  },
+  {
+    "db_id": "icfp_1",
+    "name": "Authors",
+    "table_str": "Authors authID lname fname"
+  },
+  {
+    "db_id": "icfp_1",
+    "name": "Papers",
+    "table_str": "Papers paperID title"
+  },
+  {
+    "db_id": "icfp_1",
+    "name": "Authorship",
+    "table_str": "Authorship authID instID paperID authOrder"
+  },
+  {
+    "db_id": "body_builder",
+    "name": "body_builder",
+    "table_str": "body_builder Body_Builder_ID People_ID Snatch Clean_Jerk Total"
+  },
+  {
+    "db_id": "body_builder",
+    "name": "people",
+    "table_str": "people People_ID Name Height Weight Birth_Date Birth_Place"
+  },
+  {
+    "db_id": "storm_record",
+    "name": "storm",
+    "table_str": "storm Storm_ID Name Dates_active Max_speed Damage_millions_USD Number_Deaths"
+  },
+  {
+    "db_id": "storm_record",
+    "name": "region",
+    "table_str": "region Region_id Region_code Region_name"
+  },
+  {
+    "db_id": "storm_record",
+    "name": "affected_region",
+    "table_str": "affected_region Region_id Storm_ID Number_city_affected"
+  },
+  {
+    "db_id": "pilot_record",
+    "name": "aircraft",
+    "table_str": "aircraft Aircraft_ID Order_Year Manufacturer Model Fleet_Series Powertrain Fuel_Propulsion"
+  },
+  {
+    "db_id": "pilot_record",
+    "name": "pilot",
+    "table_str": "pilot Pilot_ID Pilot_name Rank Age Nationality Position Join_Year Team"
+  },
+  {
+    "db_id": "pilot_record",
+    "name": "pilot_record",
+    "table_str": "pilot_record Record_ID Pilot_ID Aircraft_ID Date"
+  },
+  {
+    "db_id": "race_track",
+    "name": "race",
+    "table_str": "race Race_ID Name Class Date Track_ID"
+  },
+  {
+    "db_id": "race_track",
+    "name": "track",
+    "table_str": "track Track_ID Name Location Seating Year_Opened"
+  },
+  {
+    "db_id": "academic",
+    "name": "author",
+    "table_str": "author aid homepage name oid"
+  },
+  {
+    "db_id": "academic",
+    "name": "conference",
+    "table_str": "conference cid homepage name"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain",
+    "table_str": "domain did name"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain_author",
+    "table_str": "domain_author aid did"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain_conference",
+    "table_str": "domain_conference cid did"
+  },
+  {
+    "db_id": "academic",
+    "name": "journal",
+    "table_str": "journal homepage jid name"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain_journal",
+    "table_str": "domain_journal did jid"
+  },
+  {
+    "db_id": "academic",
+    "name": "keyword",
+    "table_str": "keyword keyword kid"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain_keyword",
+    "table_str": "domain_keyword did kid"
+  },
+  {
+    "db_id": "academic",
+    "name": "publication",
+    "table_str": "publication abstract cid citation_num jid pid reference_num title year"
+  },
+  {
+    "db_id": "academic",
+    "name": "domain_publication",
+    "table_str": "domain_publication did pid"
+  },
+  {
+    "db_id": "academic",
+    "name": "organization",
+    "table_str": "organization continent homepage name oid"
+  },
+  {
+    "db_id": "academic",
+    "name": "publication_keyword",
+    "table_str": "publication_keyword pid kid"
+  },
+  {
+    "db_id": "academic",
+    "name": "writes",
+    "table_str": "writes aid pid"
+  },
+  {
+    "db_id": "academic",
+    "name": "cite",
+    "table_str": "cite cited citing"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Addresses",
+    "table_str": "Addresses address_id address_details"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Staff",
+    "table_str": "Staff staff_id staff_gender staff_name"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Suppliers",
+    "table_str": "Suppliers supplier_id supplier_name supplier_phone"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Department_Store_Chain",
+    "table_str": "Department_Store_Chain dept_store_chain_id dept_store_chain_name"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Customers",
+    "table_str": "Customers customer_id payment_method_code customer_code customer_name customer_address customer_phone customer_email"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Products",
+    "table_str": "Products product_id product_type_code product_name product_price"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Supplier_Addresses",
+    "table_str": "Supplier_Addresses supplier_id address_id date_from date_to"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Customer_Addresses",
+    "table_str": "Customer_Addresses customer_id address_id date_from date_to"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Customer_Orders",
+    "table_str": "Customer_Orders order_id customer_id order_status_code order_date"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Department_Stores",
+    "table_str": "Department_Stores dept_store_id dept_store_chain_id store_name store_address store_phone store_email"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Departments",
+    "table_str": "Departments department_id dept_store_id department_name"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Order_Items",
+    "table_str": "Order_Items order_item_id order_id product_id"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Product_Suppliers",
+    "table_str": "Product_Suppliers product_id supplier_id date_supplied_from date_supplied_to total_amount_purchased total_value_purchased"
+  },
+  {
+    "db_id": "department_store",
+    "name": "Staff_Department_Assignments",
+    "table_str": "Staff_Department_Assignments staff_id department_id date_assigned_from job_title_code date_assigned_to"
+  },
+  {
+    "db_id": "music_4",
+    "name": "artist",
+    "table_str": "artist Artist_ID Artist Age Famous_Title Famous_Release_date"
+  },
+  {
+    "db_id": "music_4",
+    "name": "volume",
+    "table_str": "volume Volume_ID Volume_Issue Issue_Date Weeks_on_Top Song Artist_ID"
+  },
+  {
+    "db_id": "music_4",
+    "name": "music_festival",
+    "table_str": "music_festival ID Music_Festival Date_of_ceremony Category Volume Result"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Customers",
+    "table_str": "Customers Customer_ID Customer_name"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Services",
+    "table_str": "Services Service_ID Service_name"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Available_Policies",
+    "table_str": "Available_Policies Policy_ID policy_type_code Customer_Phone"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Customers_Policies",
+    "table_str": "Customers_Policies Customer_ID Policy_ID Date_Opened Date_Closed"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "First_Notification_of_Loss",
+    "table_str": "First_Notification_of_Loss FNOL_ID Customer_ID Policy_ID Service_ID"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Claims",
+    "table_str": "Claims Claim_ID FNOL_ID Effective_Date"
+  },
+  {
+    "db_id": "insurance_fnol",
+    "name": "Settlements",
+    "table_str": "Settlements Settlement_ID Claim_ID Effective_Date Settlement_Amount"
+  },
+  {
+    "db_id": "cinema",
+    "name": "film",
+    "table_str": "film Film_ID Rank_in_series Number_in_season Title Directed_by Original_air_date Production_code"
+  },
+  {
+    "db_id": "cinema",
+    "name": "cinema",
+    "table_str": "cinema Cinema_ID Name Openning_year Capacity Location"
+  },
+  {
+    "db_id": "cinema",
+    "name": "schedule",
+    "table_str": "schedule Cinema_ID Film_ID Date Show_times_per_day Price"
+  },
+  {
+    "db_id": "decoration_competition",
+    "name": "college",
+    "table_str": "college College_ID Name Leader_Name College_Location"
+  },
+  {
+    "db_id": "decoration_competition",
+    "name": "member",
+    "table_str": "member Member_ID Name Country College_ID"
+  },
+  {
+    "db_id": "decoration_competition",
+    "name": "round",
+    "table_str": "round Round_ID Member_ID Decoration_Theme Rank_in_Round"
+  },
+  {
+    "db_id": "phone_market",
+    "name": "phone",
+    "table_str": "phone Name Phone_ID Memory_in_G Carrier Price"
+  },
+  {
+    "db_id": "phone_market",
+    "name": "market",
+    "table_str": "market Market_ID District Num_of_employees Num_of_shops Ranking"
+  },
+  {
+    "db_id": "phone_market",
+    "name": "phone_market",
+    "table_str": "phone_market Market_ID Phone_ID Num_of_stock"
+  },
+  {
+    "db_id": "store_product",
+    "name": "product",
+    "table_str": "product product_id product dimensions dpi pages_per_minute_color max_page_size interface"
+  },
+  {
+    "db_id": "store_product",
+    "name": "store",
+    "table_str": "store Store_ID Store_Name Type Area_size Number_of_product_category Ranking"
+  },
+  {
+    "db_id": "store_product",
+    "name": "district",
+    "table_str": "district District_ID District_name Headquartered_City City_Population City_Area"
+  },
+  {
+    "db_id": "store_product",
+    "name": "store_product",
+    "table_str": "store_product Store_ID Product_ID"
+  },
+  {
+    "db_id": "store_product",
+    "name": "store_district",
+    "table_str": "store_district Store_ID District_ID"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Third_Party_Companies",
+    "table_str": "Third_Party_Companies company_id company_type company_name company_address other_company_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Maintenance_Contracts",
+    "table_str": "Maintenance_Contracts maintenance_contract_id maintenance_contract_company_id contract_start_date contract_end_date other_contract_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Parts",
+    "table_str": "Parts part_id part_name chargeable_yn chargeable_amount other_part_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Skills",
+    "table_str": "Skills skill_id skill_code skill_description"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Staff",
+    "table_str": "Staff staff_id staff_name gender other_staff_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Assets",
+    "table_str": "Assets asset_id maintenance_contract_id supplier_company_id asset_details asset_make asset_model asset_acquired_date asset_disposed_date other_asset_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Asset_Parts",
+    "table_str": "Asset_Parts asset_id part_id"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Maintenance_Engineers",
+    "table_str": "Maintenance_Engineers engineer_id company_id first_name last_name other_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Engineer_Skills",
+    "table_str": "Engineer_Skills engineer_id skill_id"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Fault_Log",
+    "table_str": "Fault_Log fault_log_entry_id asset_id recorded_by_staff_id fault_log_entry_datetime fault_description other_fault_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Engineer_Visits",
+    "table_str": "Engineer_Visits engineer_visit_id contact_staff_id engineer_id fault_log_entry_id fault_status visit_start_datetime visit_end_datetime other_visit_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Part_Faults",
+    "table_str": "Part_Faults part_fault_id part_id fault_short_name fault_description other_fault_details"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Fault_Log_Parts",
+    "table_str": "Fault_Log_Parts fault_log_entry_id part_fault_id fault_status"
+  },
+  {
+    "db_id": "assets_maintenance",
+    "name": "Skills_Required_To_Fix",
+    "table_str": "Skills_Required_To_Fix part_fault_id skill_id"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1 line_2 city zip_postcode state_province_county country"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "People",
+    "table_str": "People person_id first_name middle_name last_name cell_mobile_number email_address login_name password"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Students",
+    "table_str": "Students student_id student_details"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Courses",
+    "table_str": "Courses course_id course_name course_description other_details"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "People_Addresses",
+    "table_str": "People_Addresses person_address_id person_id address_id date_from date_to"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Student_Course_Registrations",
+    "table_str": "Student_Course_Registrations student_id course_id registration_date"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Student_Course_Attendance",
+    "table_str": "Student_Course_Attendance student_id course_id date_of_attendance"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Candidates",
+    "table_str": "Candidates candidate_id candidate_details"
+  },
+  {
+    "db_id": "student_assessment",
+    "name": "Candidate_Assessments",
+    "table_str": "Candidate_Assessments candidate_id qualification assessment_date asessment_outcome_code"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Breeds",
+    "table_str": "Breeds breed_code breed_name"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Charges",
+    "table_str": "Charges charge_id charge_type charge_amount"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Sizes",
+    "table_str": "Sizes size_code size_description"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Treatment_Types",
+    "table_str": "Treatment_Types treatment_type_code treatment_type_description"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Owners",
+    "table_str": "Owners owner_id first_name last_name street city state zip_code email_address home_phone cell_number"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Dogs",
+    "table_str": "Dogs dog_id owner_id abandoned_yn breed_code size_code name age date_of_birth gender weight date_arrived date_adopted date_departed"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Professionals",
+    "table_str": "Professionals professional_id role_code first_name street city state zip_code last_name email_address home_phone cell_number"
+  },
+  {
+    "db_id": "dog_kennels",
+    "name": "Treatments",
+    "table_str": "Treatments treatment_id dog_id professional_id treatment_type_code date_of_treatment cost_of_treatment"
+  },
+  {
+    "db_id": "music_1",
+    "name": "genre",
+    "table_str": "genre g_name rating most_popular_in"
+  },
+  {
+    "db_id": "music_1",
+    "name": "artist",
+    "table_str": "artist artist_name country gender preferred_genre"
+  },
+  {
+    "db_id": "music_1",
+    "name": "files",
+    "table_str": "files f_id artist_name file_size duration formats"
+  },
+  {
+    "db_id": "music_1",
+    "name": "song",
+    "table_str": "song song_name artist_name country f_id genre_is rating languages releasedate resolution"
+  },
+  {
+    "db_id": "company_employee",
+    "name": "people",
+    "table_str": "people People_ID Age Name Nationality Graduation_College"
+  },
+  {
+    "db_id": "company_employee",
+    "name": "company",
+    "table_str": "company Company_ID Name Headquarters Industry Sales_in_Billion Profits_in_Billion Assets_in_Billion Market_Value_in_Billion"
+  },
+  {
+    "db_id": "company_employee",
+    "name": "employment",
+    "table_str": "employment Company_ID People_ID Year_working"
+  },
+  {
+    "db_id": "farm",
+    "name": "city",
+    "table_str": "city City_ID Official_Name Status Area_km_2 Population Census_Ranking"
+  },
+  {
+    "db_id": "farm",
+    "name": "farm",
+    "table_str": "farm Farm_ID Year Total_Horses Working_Horses Total_Cattle Oxen Bulls Cows Pigs Sheep_and_Goats"
+  },
+  {
+    "db_id": "farm",
+    "name": "farm_competition",
+    "table_str": "farm_competition Competition_ID Year Theme Host_city_ID Hosts"
+  },
+  {
+    "db_id": "farm",
+    "name": "competition_record",
+    "table_str": "competition_record Competition_ID Farm_ID Rank"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Addresses",
+    "table_str": "Addresses Address_ID address_details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Locations",
+    "table_str": "Locations Location_ID Other_Details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Products",
+    "table_str": "Products Product_ID Product_Type_Code Product_Name Product_Price"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Parties",
+    "table_str": "Parties Party_ID Party_Details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Assets",
+    "table_str": "Assets Asset_ID Other_Details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Channels",
+    "table_str": "Channels Channel_ID Other_Details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Finances",
+    "table_str": "Finances Finance_ID Other_Details"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Events",
+    "table_str": "Events Event_ID Address_ID Channel_ID Event_Type_Code Finance_ID Location_ID"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Products_in_Events",
+    "table_str": "Products_in_Events Product_in_Event_ID Event_ID Product_ID"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Parties_in_Events",
+    "table_str": "Parties_in_Events Party_ID Event_ID Role_Code"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Agreements",
+    "table_str": "Agreements Document_ID Event_ID"
+  },
+  {
+    "db_id": "solvency_ii",
+    "name": "Assets_in_Events",
+    "table_str": "Assets_in_Events Asset_ID Event_ID"
+  },
+  {
+    "db_id": "city_record",
+    "name": "city",
+    "table_str": "city City_ID City Hanzi Hanyu_Pinyin Regional_Population GDP"
+  },
+  {
+    "db_id": "city_record",
+    "name": "match",
+    "table_str": "match Match_ID Date Venue Score Result Competition"
+  },
+  {
+    "db_id": "city_record",
+    "name": "temperature",
+    "table_str": "temperature City_ID Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec"
+  },
+  {
+    "db_id": "city_record",
+    "name": "hosting_city",
+    "table_str": "hosting_city Year Match_ID Host_City"
+  },
+  {
+    "db_id": "swimming",
+    "name": "swimmer",
+    "table_str": "swimmer ID name Nationality meter_100 meter_200 meter_300 meter_400 meter_500 meter_600 meter_700 Time"
+  },
+  {
+    "db_id": "swimming",
+    "name": "stadium",
+    "table_str": "stadium ID name Capacity City Country Opening_year"
+  },
+  {
+    "db_id": "swimming",
+    "name": "event",
+    "table_str": "event ID Name Stadium_ID Year"
+  },
+  {
+    "db_id": "swimming",
+    "name": "record",
+    "table_str": "record ID Result Swimmer_ID Event_ID"
+  },
+  {
+    "db_id": "flight_2",
+    "name": "airlines",
+    "table_str": "airlines uid Airline Abbreviation Country"
+  },
+  {
+    "db_id": "flight_2",
+    "name": "airports",
+    "table_str": "airports City AirportCode AirportName Country CountryAbbrev"
+  },
+  {
+    "db_id": "flight_2",
+    "name": "flights",
+    "table_str": "flights Airline FlightNo SourceAirport DestAirport"
+  },
+  {
+    "db_id": "election",
+    "name": "county",
+    "table_str": "county County_Id County_name Population Zip_code"
+  },
+  {
+    "db_id": "election",
+    "name": "party",
+    "table_str": "party Party_ID Year Party Governor Lieutenant_Governor Comptroller Attorney_General US_Senate"
+  },
+  {
+    "db_id": "election",
+    "name": "election",
+    "table_str": "election Election_ID Counties_Represented District Delegate Party First_Elected Committee"
+  },
+  {
+    "db_id": "manufactory_1",
+    "name": "Manufacturers",
+    "table_str": "Manufacturers Code Name Headquarter Founder Revenue"
+  },
+  {
+    "db_id": "manufactory_1",
+    "name": "Products",
+    "table_str": "Products Code Name Price Manufacturer"
+  },
+  {
+    "db_id": "debate",
+    "name": "people",
+    "table_str": "people People_ID District Name Party Age"
+  },
+  {
+    "db_id": "debate",
+    "name": "debate",
+    "table_str": "debate Debate_ID Date Venue Num_of_Audience"
+  },
+  {
+    "db_id": "debate",
+    "name": "debate_people",
+    "table_str": "debate_people Debate_ID Affirmative Negative If_Affirmative_Win"
+  },
+  {
+    "db_id": "network_2",
+    "name": "Person",
+    "table_str": "Person name age city gender job"
+  },
+  {
+    "db_id": "network_2",
+    "name": "PersonFriend",
+    "table_str": "PersonFriend name friend year"
+  },
+  {
+    "db_id": "local_govt_in_alabama",
+    "name": "Services",
+    "table_str": "Services Service_ID Service_Type_Code"
+  },
+  {
+    "db_id": "local_govt_in_alabama",
+    "name": "Participants",
+    "table_str": "Participants Participant_ID Participant_Type_Code Participant_Details"
+  },
+  {
+    "db_id": "local_govt_in_alabama",
+    "name": "Events",
+    "table_str": "Events Event_ID Service_ID Event_Details"
+  },
+  {
+    "db_id": "local_govt_in_alabama",
+    "name": "Participants_in_Events",
+    "table_str": "Participants_in_Events Event_ID Participant_ID"
+  },
+  {
+    "db_id": "climbing",
+    "name": "mountain",
+    "table_str": "mountain Mountain_ID Name Height Prominence Range Country"
+  },
+  {
+    "db_id": "climbing",
+    "name": "climber",
+    "table_str": "climber Climber_ID Name Country Time Points Mountain_ID"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Course_Authors_and_Tutors",
+    "table_str": "Course_Authors_and_Tutors author_id author_tutor_ATB login_name password personal_name middle_name family_name gender_mf address_line_1"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Students",
+    "table_str": "Students student_id date_of_registration date_of_latest_logon login_name password personal_name middle_name family_name"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Subjects",
+    "table_str": "Subjects subject_id subject_name"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Courses",
+    "table_str": "Courses course_id author_id subject_id course_name course_description"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Student_Course_Enrolment",
+    "table_str": "Student_Course_Enrolment registration_id student_id course_id date_of_enrolment date_of_completion"
+  },
+  {
+    "db_id": "e_learning",
+    "name": "Student_Tests_Taken",
+    "table_str": "Student_Tests_Taken registration_id date_test_taken test_result"
+  },
+  {
+    "db_id": "scientist_1",
+    "name": "Scientists",
+    "table_str": "Scientists SSN Name"
+  },
+  {
+    "db_id": "scientist_1",
+    "name": "Projects",
+    "table_str": "Projects Code Name Hours"
+  },
+  {
+    "db_id": "scientist_1",
+    "name": "AssignedTo",
+    "table_str": "AssignedTo Scientist Project"
+  },
+  {
+    "db_id": "ship_1",
+    "name": "captain",
+    "table_str": "captain Captain_ID Name Ship_ID age Class Rank"
+  },
+  {
+    "db_id": "ship_1",
+    "name": "Ship",
+    "table_str": "Ship Ship_ID Name Type Built_Year Class Flag"
+  },
+  {
+    "db_id": "entertainment_awards",
+    "name": "festival_detail",
+    "table_str": "festival_detail Festival_ID Festival_Name Chair_Name Location Year Num_of_Audience"
+  },
+  {
+    "db_id": "entertainment_awards",
+    "name": "artwork",
+    "table_str": "artwork Artwork_ID Type Name"
+  },
+  {
+    "db_id": "entertainment_awards",
+    "name": "nomination",
+    "table_str": "nomination Artwork_ID Festival_ID Result"
+  },
+  {
+    "db_id": "allergy_1",
+    "name": "Allergy_Type",
+    "table_str": "Allergy_Type Allergy AllergyType"
+  },
+  {
+    "db_id": "allergy_1",
+    "name": "Has_Allergy",
+    "table_str": "Has_Allergy StuID Allergy"
+  },
+  {
+    "db_id": "allergy_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "imdb",
+    "name": "actor",
+    "table_str": "actor aid gender name nationality birth_city birth_year"
+  },
+  {
+    "db_id": "imdb",
+    "name": "copyright",
+    "table_str": "copyright id msid cid"
+  },
+  {
+    "db_id": "imdb",
+    "name": "cast",
+    "table_str": "cast id msid aid role"
+  },
+  {
+    "db_id": "imdb",
+    "name": "genre",
+    "table_str": "genre gid genre"
+  },
+  {
+    "db_id": "imdb",
+    "name": "classification",
+    "table_str": "classification id msid gid"
+  },
+  {
+    "db_id": "imdb",
+    "name": "company",
+    "table_str": "company id name country_code"
+  },
+  {
+    "db_id": "imdb",
+    "name": "director",
+    "table_str": "director did gender name nationality birth_city birth_year"
+  },
+  {
+    "db_id": "imdb",
+    "name": "producer",
+    "table_str": "producer pid gender name nationality birth_city birth_year"
+  },
+  {
+    "db_id": "imdb",
+    "name": "directed_by",
+    "table_str": "directed_by id msid did"
+  },
+  {
+    "db_id": "imdb",
+    "name": "keyword",
+    "table_str": "keyword id keyword"
+  },
+  {
+    "db_id": "imdb",
+    "name": "made_by",
+    "table_str": "made_by id msid pid"
+  },
+  {
+    "db_id": "imdb",
+    "name": "movie",
+    "table_str": "movie mid title release_year title_aka budget"
+  },
+  {
+    "db_id": "imdb",
+    "name": "tags",
+    "table_str": "tags id msid kid"
+  },
+  {
+    "db_id": "imdb",
+    "name": "tv_series",
+    "table_str": "tv_series sid title release_year num_of_seasons num_of_episodes title_aka budget"
+  },
+  {
+    "db_id": "imdb",
+    "name": "writer",
+    "table_str": "writer wid gender name nationality num_of_episodes birth_city birth_year"
+  },
+  {
+    "db_id": "imdb",
+    "name": "written_by",
+    "table_str": "written_by id msid wid"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Discount_Coupons",
+    "table_str": "Discount_Coupons coupon_id date_issued coupon_amount"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Customers",
+    "table_str": "Customers customer_id coupon_id good_or_bad_customer first_name last_name gender_mf date_became_customer date_last_hire"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Bookings",
+    "table_str": "Bookings booking_id customer_id booking_status_code returned_damaged_yn booking_start_date booking_end_date count_hired amount_payable amount_of_discount amount_outstanding amount_of_refund"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Products_for_Hire",
+    "table_str": "Products_for_Hire product_id product_type_code daily_hire_cost product_name product_description"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Payments",
+    "table_str": "Payments payment_id booking_id customer_id payment_type_code amount_paid_in_full_yn payment_date amount_due amount_paid"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "Products_Booked",
+    "table_str": "Products_Booked booking_id product_id returned_yn returned_late_yn booked_count booked_amount"
+  },
+  {
+    "db_id": "products_for_hire",
+    "name": "View_Product_Availability",
+    "table_str": "View_Product_Availability product_id booking_id status_date available_yn"
+  },
+  {
+    "db_id": "candidate_poll",
+    "name": "candidate",
+    "table_str": "candidate Candidate_ID People_ID Poll_Source Date Support_rate Consider_rate Oppose_rate Unsure_rate"
+  },
+  {
+    "db_id": "candidate_poll",
+    "name": "people",
+    "table_str": "people People_ID Sex Name Date_of_Birth Height Weight"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Album",
+    "table_str": "Album AlbumId Title ArtistId"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Artist",
+    "table_str": "Artist ArtistId Name"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Customer",
+    "table_str": "Customer CustomerId FirstName LastName Company Address City State Country PostalCode Phone Fax Email SupportRepId"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Employee",
+    "table_str": "Employee EmployeeId LastName FirstName Title ReportsTo BirthDate HireDate Address City State Country PostalCode Phone Fax Email"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Genre",
+    "table_str": "Genre GenreId Name"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Invoice",
+    "table_str": "Invoice InvoiceId CustomerId InvoiceDate BillingAddress BillingCity BillingState BillingCountry BillingPostalCode Total"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "InvoiceLine",
+    "table_str": "InvoiceLine InvoiceLineId InvoiceId TrackId UnitPrice Quantity"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "MediaType",
+    "table_str": "MediaType MediaTypeId Name"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Playlist",
+    "table_str": "Playlist PlaylistId Name"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "PlaylistTrack",
+    "table_str": "PlaylistTrack PlaylistId TrackId"
+  },
+  {
+    "db_id": "chinook_1",
+    "name": "Track",
+    "table_str": "Track TrackId Name AlbumId MediaTypeId GenreId Composer Milliseconds Bytes UnitPrice"
+  },
+  {
+    "db_id": "flight_4",
+    "name": "routes",
+    "table_str": "routes rid dst_apid dst_ap src_apid src_ap alid airline codeshare"
+  },
+  {
+    "db_id": "flight_4",
+    "name": "airports",
+    "table_str": "airports apid name city country x y elevation iata icao"
+  },
+  {
+    "db_id": "flight_4",
+    "name": "airlines",
+    "table_str": "airlines alid name iata icao callsign country active"
+  },
+  {
+    "db_id": "pets_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "pets_1",
+    "name": "Has_Pet",
+    "table_str": "Has_Pet StuID PetID"
+  },
+  {
+    "db_id": "pets_1",
+    "name": "Pets",
+    "table_str": "Pets PetID PetType pet_age weight"
+  },
+  {
+    "db_id": "dorm_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "dorm_1",
+    "name": "Dorm",
+    "table_str": "Dorm dormid dorm_name student_capacity gender"
+  },
+  {
+    "db_id": "dorm_1",
+    "name": "Dorm_amenity",
+    "table_str": "Dorm_amenity amenid amenity_name"
+  },
+  {
+    "db_id": "dorm_1",
+    "name": "Has_amenity",
+    "table_str": "Has_amenity dormid amenid"
+  },
+  {
+    "db_id": "dorm_1",
+    "name": "Lives_in",
+    "table_str": "Lives_in stuid dormid room_number"
+  },
+  {
+    "db_id": "journal_committee",
+    "name": "journal",
+    "table_str": "journal Journal_ID Date Theme Sales"
+  },
+  {
+    "db_id": "journal_committee",
+    "name": "editor",
+    "table_str": "editor Editor_ID Name Age"
+  },
+  {
+    "db_id": "journal_committee",
+    "name": "journal_committee",
+    "table_str": "journal_committee Editor_ID Journal_ID Work_Type"
+  },
+  {
+    "db_id": "flight_1",
+    "name": "flight",
+    "table_str": "flight flno origin destination distance departure_date arrival_date price aid"
+  },
+  {
+    "db_id": "flight_1",
+    "name": "aircraft",
+    "table_str": "aircraft aid name distance"
+  },
+  {
+    "db_id": "flight_1",
+    "name": "employee",
+    "table_str": "employee eid name salary"
+  },
+  {
+    "db_id": "flight_1",
+    "name": "certificate",
+    "table_str": "certificate eid aid"
+  },
+  {
+    "db_id": "medicine_enzyme_interaction",
+    "name": "medicine",
+    "table_str": "medicine id name Trade_Name FDA_approved"
+  },
+  {
+    "db_id": "medicine_enzyme_interaction",
+    "name": "enzyme",
+    "table_str": "enzyme id name Location Product Chromosome OMIM Porphyria"
+  },
+  {
+    "db_id": "medicine_enzyme_interaction",
+    "name": "medicine_enzyme_interaction",
+    "table_str": "medicine_enzyme_interaction enzyme_id medicine_id interaction_type"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Properties",
+    "table_str": "Properties property_id property_type_code property_address other_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Residents",
+    "table_str": "Residents resident_id property_id date_moved_in date_moved_out other_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Organizations",
+    "table_str": "Organizations organization_id parent_organization_id organization_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Services",
+    "table_str": "Services service_id organization_id service_type_code service_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Residents_Services",
+    "table_str": "Residents_Services resident_id service_id date_moved_in property_id date_requested date_provided other_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Things",
+    "table_str": "Things thing_id organization_id Type_of_Thing_Code service_type_code service_details"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Customer_Events",
+    "table_str": "Customer_Events Customer_Event_ID customer_id date_moved_in property_id resident_id thing_id"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Customer_Event_Notes",
+    "table_str": "Customer_Event_Notes Customer_Event_Note_ID Customer_Event_ID service_type_code resident_id property_id date_moved_in"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Timed_Status_of_Things",
+    "table_str": "Timed_Status_of_Things thing_id Date_and_Date Status_of_Thing_Code"
+  },
+  {
+    "db_id": "local_govt_and_lot",
+    "name": "Timed_Locations_of_Things",
+    "table_str": "Timed_Locations_of_Things thing_id Date_and_Time Location_Code"
+  },
+  {
+    "db_id": "station_weather",
+    "name": "train",
+    "table_str": "train id train_number name origin destination time interval"
+  },
+  {
+    "db_id": "station_weather",
+    "name": "station",
+    "table_str": "station id network_name services local_authority"
+  },
+  {
+    "db_id": "station_weather",
+    "name": "route",
+    "table_str": "route train_id station_id"
+  },
+  {
+    "db_id": "station_weather",
+    "name": "weekly_weather",
+    "table_str": "weekly_weather station_id day_of_week high_temperature low_temperature precipitation wind_speed_mph"
+  },
+  {
+    "db_id": "shop_membership",
+    "name": "member",
+    "table_str": "member Member_ID Card_Number Name Hometown Level"
+  },
+  {
+    "db_id": "shop_membership",
+    "name": "branch",
+    "table_str": "branch Branch_ID Name Open_year Address_road City membership_amount"
+  },
+  {
+    "db_id": "shop_membership",
+    "name": "membership_register_branch",
+    "table_str": "membership_register_branch Member_ID Branch_ID Register_Year"
+  },
+  {
+    "db_id": "shop_membership",
+    "name": "purchase",
+    "table_str": "purchase Member_ID Branch_ID Year Total_pounds"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1_number_building city zip_postcode state_province_county country"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Staff",
+    "table_str": "Staff staff_id staff_address_id nickname first_name middle_name last_name date_of_birth date_joined_staff date_left_staff"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Vehicles",
+    "table_str": "Vehicles vehicle_id vehicle_details"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_address_id customer_status_code date_became_customer date_of_birth first_name last_name amount_outstanding email_address phone_number cell_mobile_phone_number"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Customer_Payments",
+    "table_str": "Customer_Payments customer_id datetime_payment payment_method_code amount_payment"
+  },
+  {
+    "db_id": "driving_school",
+    "name": "Lessons",
+    "table_str": "Lessons lesson_id customer_id lesson_status_code staff_id vehicle_id lesson_date lesson_time price"
+  },
+  {
+    "db_id": "concert_singer",
+    "name": "stadium",
+    "table_str": "stadium Stadium_ID Location Name Capacity Highest Lowest Average"
+  },
+  {
+    "db_id": "concert_singer",
+    "name": "singer",
+    "table_str": "singer Singer_ID Name Country Song_Name Song_release_year Age Is_male"
+  },
+  {
+    "db_id": "concert_singer",
+    "name": "concert",
+    "table_str": "concert concert_ID concert_Name Theme Stadium_ID Year"
+  },
+  {
+    "db_id": "concert_singer",
+    "name": "singer_in_concert",
+    "table_str": "singer_in_concert concert_ID Singer_ID"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Songs",
+    "table_str": "Songs SongId Title"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Albums",
+    "table_str": "Albums AId Title Year Label Type"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Band",
+    "table_str": "Band Id Firstname Lastname"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Instruments",
+    "table_str": "Instruments SongId BandmateId Instrument"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Performance",
+    "table_str": "Performance SongId Bandmate StagePosition"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Tracklists",
+    "table_str": "Tracklists AlbumId Position SongId"
+  },
+  {
+    "db_id": "music_2",
+    "name": "Vocals",
+    "table_str": "Vocals SongId Bandmate Type"
+  },
+  {
+    "db_id": "sports_competition",
+    "name": "club",
+    "table_str": "club Club_ID name Region Start_year"
+  },
+  {
+    "db_id": "sports_competition",
+    "name": "club_rank",
+    "table_str": "club_rank Rank Club_ID Gold Silver Bronze Total"
+  },
+  {
+    "db_id": "sports_competition",
+    "name": "player",
+    "table_str": "player Player_ID name Position Club_ID Apps Tries Goals Points"
+  },
+  {
+    "db_id": "sports_competition",
+    "name": "competition",
+    "table_str": "competition Competition_ID Year Competition_type Country"
+  },
+  {
+    "db_id": "sports_competition",
+    "name": "competition_result",
+    "table_str": "competition_result Competition_ID Club_ID_1 Club_ID_2 Score"
+  },
+  {
+    "db_id": "railway",
+    "name": "railway",
+    "table_str": "railway Railway_ID Railway Builder Built Wheels Location ObjectNumber"
+  },
+  {
+    "db_id": "railway",
+    "name": "train",
+    "table_str": "train Train_ID Train_Num Name From Arrival Railway_ID"
+  },
+  {
+    "db_id": "railway",
+    "name": "manager",
+    "table_str": "manager Manager_ID Name Country Working_year_starts Age Level"
+  },
+  {
+    "db_id": "railway",
+    "name": "railway_manage",
+    "table_str": "railway_manage Railway_ID Manager_ID From_Year"
+  },
+  {
+    "db_id": "inn_1",
+    "name": "Rooms",
+    "table_str": "Rooms RoomId roomName beds bedType maxOccupancy basePrice decor"
+  },
+  {
+    "db_id": "inn_1",
+    "name": "Reservations",
+    "table_str": "Reservations Code Room CheckIn CheckOut Rate LastName FirstName Adults Kids"
+  },
+  {
+    "db_id": "museum_visit",
+    "name": "museum",
+    "table_str": "museum Museum_ID Name Num_of_Staff Open_Year"
+  },
+  {
+    "db_id": "museum_visit",
+    "name": "visitor",
+    "table_str": "visitor ID Name Level_of_membership Age"
+  },
+  {
+    "db_id": "museum_visit",
+    "name": "visit",
+    "table_str": "visit Museum_ID visitor_ID Num_of_Ticket Total_spent"
+  },
+  {
+    "db_id": "browser_web",
+    "name": "Web_client_accelerator",
+    "table_str": "Web_client_accelerator id name Operating_system Client Connection"
+  },
+  {
+    "db_id": "browser_web",
+    "name": "browser",
+    "table_str": "browser id name market_share"
+  },
+  {
+    "db_id": "browser_web",
+    "name": "accelerator_compatible_browser",
+    "table_str": "accelerator_compatible_browser accelerator_id browser_id compatible_since_year"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "all_star",
+    "table_str": "all_star player_id year game_num game_id team_id league_id gp starting_pos"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "appearances",
+    "table_str": "appearances year team_id league_id player_id g_all gs g_batting g_defense g_p g_c g_1b g_2b g_3b g_ss g_lf g_cf g_rf g_of g_dh g_ph g_pr"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "manager_award",
+    "table_str": "manager_award player_id award_id year league_id tie notes"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "player_award",
+    "table_str": "player_award player_id award_id year league_id tie notes"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "manager_award_vote",
+    "table_str": "manager_award_vote award_id year league_id player_id points_won points_max votes_first"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "player_award_vote",
+    "table_str": "player_award_vote award_id year league_id player_id points_won points_max votes_first"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "batting",
+    "table_str": "batting player_id year stint team_id league_id g ab r h double triple hr rbi sb cs bb so ibb hbp sh sf g_idp"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "batting_postseason",
+    "table_str": "batting_postseason year round player_id team_id league_id g ab r h double triple hr rbi sb cs bb so ibb hbp sh sf g_idp"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "player_college",
+    "table_str": "player_college player_id college_id year"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "fielding",
+    "table_str": "fielding player_id year stint team_id league_id pos g gs inn_outs po a e dp pb wp sb cs zr"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "fielding_outfield",
+    "table_str": "fielding_outfield player_id year stint glf gcf grf"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "fielding_postseason",
+    "table_str": "fielding_postseason player_id year team_id league_id round pos g gs inn_outs po a e dp tp pb sb cs"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "hall_of_fame",
+    "table_str": "hall_of_fame player_id yearid votedby ballots needed votes inducted category needed_note"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "home_game",
+    "table_str": "home_game year league_id team_id park_id span_first span_last games openings attendance"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "manager",
+    "table_str": "manager player_id year team_id league_id inseason g w l rank plyr_mgr"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "manager_half",
+    "table_str": "manager_half player_id year team_id league_id inseason half g w l rank"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "player",
+    "table_str": "player player_id birth_year birth_month birth_day birth_country birth_state birth_city death_year death_month death_day death_country death_state death_city name_first name_last name_given weight height bats throws debut final_game retro_id bbref_id"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "park",
+    "table_str": "park park_id park_name park_alias city state country"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "pitching",
+    "table_str": "pitching player_id year stint team_id league_id w l g gs cg sho sv ipouts h er hr bb so baopp era ibb wp hbp bk bfp gf r sh sf g_idp"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "pitching_postseason",
+    "table_str": "pitching_postseason player_id year round team_id league_id w l g gs cg sho sv ipouts h er hr bb so baopp era ibb wp hbp bk bfp gf r sh sf g_idp"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "salary",
+    "table_str": "salary year team_id league_id player_id salary"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "college",
+    "table_str": "college college_id name_full city state country"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "postseason",
+    "table_str": "postseason year round team_id_winner league_id_winner team_id_loser league_id_loser wins losses ties"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "team",
+    "table_str": "team year league_id team_id franchise_id div_id rank g ghome w l div_win wc_win lg_win ws_win r ab h double triple hr bb so sb cs hbp sf ra er era cg sho sv ipouts ha hra bba soa e dp fp name park attendance bpf ppf team_id_br team_id_lahman45 team_id_retro"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "team_franchise",
+    "table_str": "team_franchise franchise_id franchise_name active na_assoc"
+  },
+  {
+    "db_id": "baseball_1",
+    "name": "team_half",
+    "table_str": "team_half year league_id team_id half div_id div_win rank g w l"
+  },
+  {
+    "db_id": "architecture",
+    "name": "architect",
+    "table_str": "architect id name nationality gender"
+  },
+  {
+    "db_id": "architecture",
+    "name": "bridge",
+    "table_str": "bridge architect_id id name location length_meters length_feet"
+  },
+  {
+    "db_id": "architecture",
+    "name": "mill",
+    "table_str": "mill architect_id id location name type built_year notes"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "Campuses",
+    "table_str": "Campuses Id Campus Location County Year"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "csu_fees",
+    "table_str": "csu_fees Campus Year CampusFee"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "degrees",
+    "table_str": "degrees Year Campus Degrees"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "discipline_enrollments",
+    "table_str": "discipline_enrollments Campus Discipline Year Undergraduate Graduate"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "enrollments",
+    "table_str": "enrollments Campus Year TotalEnrollment_AY FTE_AY"
+  },
+  {
+    "db_id": "csu_1",
+    "name": "faculty",
+    "table_str": "faculty Campus Year Faculty"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_name customer_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Invoices",
+    "table_str": "Invoices invoice_number invoice_date invoice_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Orders",
+    "table_str": "Orders order_id customer_id order_status date_order_placed order_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Products",
+    "table_str": "Products product_id product_name product_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Order_Items",
+    "table_str": "Order_Items order_item_id product_id order_id order_item_status order_item_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Shipments",
+    "table_str": "Shipments shipment_id order_id invoice_number shipment_tracking_number shipment_date other_shipment_details"
+  },
+  {
+    "db_id": "tracking_orders",
+    "name": "Shipment_Items",
+    "table_str": "Shipment_Items shipment_id order_item_id"
+  },
+  {
+    "db_id": "insurance_policies",
+    "name": "Customers",
+    "table_str": "Customers Customer_ID Customer_Details"
+  },
+  {
+    "db_id": "insurance_policies",
+    "name": "Customer_Policies",
+    "table_str": "Customer_Policies Policy_ID Customer_ID Policy_Type_Code Start_Date End_Date"
+  },
+  {
+    "db_id": "insurance_policies",
+    "name": "Claims",
+    "table_str": "Claims Claim_ID Policy_ID Date_Claim_Made Date_Claim_Settled Amount_Claimed Amount_Settled"
+  },
+  {
+    "db_id": "insurance_policies",
+    "name": "Settlements",
+    "table_str": "Settlements Settlement_ID Claim_ID Date_Claim_Made Date_Claim_Settled Amount_Claimed Amount_Settled Customer_Policy_ID"
+  },
+  {
+    "db_id": "insurance_policies",
+    "name": "Payments",
+    "table_str": "Payments Payment_ID Settlement_ID Payment_Method_Code Date_Payment_Made Amount_Payment"
+  },
+  {
+    "db_id": "gas_company",
+    "name": "company",
+    "table_str": "company Company_ID Rank Company Headquarters Main_Industry Sales_billion Profits_billion Assets_billion Market_Value"
+  },
+  {
+    "db_id": "gas_company",
+    "name": "gas_station",
+    "table_str": "gas_station Station_ID Open_Year Location Manager_Name Vice_Manager_Name Representative_Name"
+  },
+  {
+    "db_id": "gas_company",
+    "name": "station_company",
+    "table_str": "station_company Station_ID Company_ID Rank_of_the_Year"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1_number_building town_city zip_postcode state_province_county country"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Services",
+    "table_str": "Services service_id service_type_code service_name service_descriptio"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Forms",
+    "table_str": "Forms form_id form_type_code service_id form_number form_name form_description"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Individuals",
+    "table_str": "Individuals individual_id individual_first_name individual_middle_name inidividual_phone individual_email individual_address individual_last_name"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Organizations",
+    "table_str": "Organizations organization_id date_formed organization_name uk_vat_number"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Parties",
+    "table_str": "Parties party_id payment_method_code party_phone party_email"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Organization_Contact_Individuals",
+    "table_str": "Organization_Contact_Individuals individual_id organization_id date_contact_from date_contact_to"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Party_Addresses",
+    "table_str": "Party_Addresses party_id address_id date_address_from address_type_code date_address_to"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Party_Forms",
+    "table_str": "Party_Forms party_id form_id date_completion_started form_status_code date_fully_completed"
+  },
+  {
+    "db_id": "e_government",
+    "name": "Party_Services",
+    "table_str": "Party_Services booking_id customer_id service_id service_datetime booking_made_date"
+  },
+  {
+    "db_id": "school_bus",
+    "name": "driver",
+    "table_str": "driver Driver_ID Name Party Home_city Age"
+  },
+  {
+    "db_id": "school_bus",
+    "name": "school",
+    "table_str": "school School_ID Grade School Location Type"
+  },
+  {
+    "db_id": "school_bus",
+    "name": "school_bus",
+    "table_str": "school_bus School_ID Driver_ID Years_Working If_full_time"
+  },
+  {
+    "db_id": "machine_repair",
+    "name": "repair",
+    "table_str": "repair repair_ID name Launch_Date Notes"
+  },
+  {
+    "db_id": "machine_repair",
+    "name": "machine",
+    "table_str": "machine Machine_ID Making_Year Class Team Machine_series value_points quality_rank"
+  },
+  {
+    "db_id": "machine_repair",
+    "name": "technician",
+    "table_str": "technician technician_id Name Team Starting_Year Age"
+  },
+  {
+    "db_id": "machine_repair",
+    "name": "repair_assignment",
+    "table_str": "repair_assignment technician_id repair_ID Machine_ID"
+  },
+  {
+    "db_id": "theme_gallery",
+    "name": "artist",
+    "table_str": "artist Artist_ID Name Country Year_Join Age"
+  },
+  {
+    "db_id": "theme_gallery",
+    "name": "exhibition",
+    "table_str": "exhibition Exhibition_ID Year Theme Artist_ID Ticket_Price"
+  },
+  {
+    "db_id": "theme_gallery",
+    "name": "exhibition_record",
+    "table_str": "exhibition_record Exhibition_ID Date Attendance"
+  },
+  {
+    "db_id": "film_rank",
+    "name": "film",
+    "table_str": "film Film_ID Title Studio Director Gross_in_dollar"
+  },
+  {
+    "db_id": "film_rank",
+    "name": "market",
+    "table_str": "market Market_ID Country Number_cities"
+  },
+  {
+    "db_id": "film_rank",
+    "name": "film_market_estimation",
+    "table_str": "film_market_estimation Estimation_ID Low_Estimate High_Estimate Film_ID Type Market_ID Year"
+  },
+  {
+    "db_id": "party_people",
+    "name": "region",
+    "table_str": "region Region_ID Region_name Date Label Format Catalogue"
+  },
+  {
+    "db_id": "party_people",
+    "name": "party",
+    "table_str": "party Party_ID Minister Took_office Left_office Region_ID Party_name"
+  },
+  {
+    "db_id": "party_people",
+    "name": "member",
+    "table_str": "member Member_ID Member_Name Party_ID In_office"
+  },
+  {
+    "db_id": "party_people",
+    "name": "party_events",
+    "table_str": "party_events Event_ID Event_Name Party_ID Member_in_charge_ID"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Physician",
+    "table_str": "Physician EmployeeID Name Position SSN"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Department",
+    "table_str": "Department DepartmentID Name Head"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Affiliated_With",
+    "table_str": "Affiliated_With Physician Department PrimaryAffiliation"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Procedures",
+    "table_str": "Procedures Code Name Cost"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Trained_In",
+    "table_str": "Trained_In Physician Treatment CertificationDate CertificationExpires"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Patient",
+    "table_str": "Patient SSN Name Address Phone InsuranceID PCP"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Nurse",
+    "table_str": "Nurse EmployeeID Name Position Registered SSN"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Appointment",
+    "table_str": "Appointment AppointmentID Patient PrepNurse Physician Start End ExaminationRoom"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Medication",
+    "table_str": "Medication Code Name Brand Description"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Prescribes",
+    "table_str": "Prescribes Physician Patient Medication Date Appointment Dose"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Block",
+    "table_str": "Block BlockFloor BlockCode"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Room",
+    "table_str": "Room RoomNumber RoomType BlockFloor BlockCode Unavailable"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "On_Call",
+    "table_str": "On_Call Nurse BlockFloor BlockCode OnCallStart OnCallEnd"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Stay",
+    "table_str": "Stay StayID Patient Room StayStart StayEnd"
+  },
+  {
+    "db_id": "hospital_1",
+    "name": "Undergoes",
+    "table_str": "Undergoes Patient Procedures Stay DateUndergoes Physician AssistingNurse"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Premises",
+    "table_str": "Premises premise_id premises_type premise_details"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Products",
+    "table_str": "Products product_id product_category product_name"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Customers",
+    "table_str": "Customers customer_id payment_method customer_name customer_phone customer_email customer_address customer_login customer_password"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Mailshot_Campaigns",
+    "table_str": "Mailshot_Campaigns mailshot_id product_category mailshot_name mailshot_start_date mailshot_end_date"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Customer_Addresses",
+    "table_str": "Customer_Addresses customer_id premise_id date_address_from address_type_code date_address_to"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Customer_Orders",
+    "table_str": "Customer_Orders order_id customer_id order_status_code shipping_method_code order_placed_datetime order_delivered_datetime order_shipping_charges"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Mailshot_Customers",
+    "table_str": "Mailshot_Customers mailshot_id customer_id outcome_code mailshot_customer_date"
+  },
+  {
+    "db_id": "customers_campaigns_ecommerce",
+    "name": "Order_Items",
+    "table_str": "Order_Items item_id order_item_status_code order_id product_id item_status_code item_delivered_datetime item_order_quantity"
+  },
+  {
+    "db_id": "gymnast",
+    "name": "gymnast",
+    "table_str": "gymnast Gymnast_ID Floor_Exercise_Points Pommel_Horse_Points Rings_Points Vault_Points Parallel_Bars_Points Horizontal_Bar_Points Total_Points"
+  },
+  {
+    "db_id": "gymnast",
+    "name": "people",
+    "table_str": "people People_ID Name Age Height Hometown"
+  },
+  {
+    "db_id": "restaurants",
+    "name": "GEOGRAPHIC",
+    "table_str": "GEOGRAPHIC CITY_NAME COUNTY REGION"
+  },
+  {
+    "db_id": "restaurants",
+    "name": "RESTAURANT",
+    "table_str": "RESTAURANT ID NAME FOOD_TYPE CITY_NAME RATING"
+  },
+  {
+    "db_id": "restaurants",
+    "name": "LOCATION",
+    "table_str": "LOCATION RESTAURANT_ID HOUSE_NUMBER STREET_NAME CITY_NAME"
+  },
+  {
+    "db_id": "mountain_photos",
+    "name": "mountain",
+    "table_str": "mountain id name Height Prominence Range Country"
+  },
+  {
+    "db_id": "mountain_photos",
+    "name": "camera_lens",
+    "table_str": "camera_lens id brand name focal_length_mm max_aperture"
+  },
+  {
+    "db_id": "mountain_photos",
+    "name": "photos",
+    "table_str": "photos id camera_lens_id mountain_id color name"
+  },
+  {
+    "db_id": "battle_death",
+    "name": "battle",
+    "table_str": "battle id name date bulgarian_commander latin_commander result"
+  },
+  {
+    "db_id": "battle_death",
+    "name": "ship",
+    "table_str": "ship lost_in_battle id name tonnage ship_type location disposition_of_ship"
+  },
+  {
+    "db_id": "battle_death",
+    "name": "death",
+    "table_str": "death caused_by_ship_id id note killed injured"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Ref_Document_Types",
+    "table_str": "Ref_Document_Types document_type_code document_type_description"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Roles",
+    "table_str": "Roles role_code role_description"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Addresses",
+    "table_str": "Addresses address_id address_details"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Ref_Document_Status",
+    "table_str": "Ref_Document_Status document_status_code document_status_description"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Ref_Shipping_Agents",
+    "table_str": "Ref_Shipping_Agents shipping_agent_code shipping_agent_name shipping_agent_description"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Documents",
+    "table_str": "Documents document_id document_status_code document_type_code shipping_agent_code receipt_date receipt_number other_details"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Employees",
+    "table_str": "Employees employee_id role_code employee_name other_details"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Document_Drafts",
+    "table_str": "Document_Drafts document_id draft_number draft_details"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Draft_Copies",
+    "table_str": "Draft_Copies document_id draft_number copy_number"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Circulation_History",
+    "table_str": "Circulation_History document_id draft_number copy_number employee_id"
+  },
+  {
+    "db_id": "cre_Doc_Control_Systems",
+    "name": "Documents_Mailed",
+    "table_str": "Documents_Mailed document_id mailed_to_address_id mailing_date"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Investors",
+    "table_str": "Investors investor_id Investor_details"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Lots",
+    "table_str": "Lots lot_id investor_id lot_details"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Ref_Transaction_Types",
+    "table_str": "Ref_Transaction_Types transaction_type_code transaction_type_description"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Transactions",
+    "table_str": "Transactions transaction_id investor_id transaction_type_code date_of_transaction amount_of_transaction share_count other_details"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Sales",
+    "table_str": "Sales sales_transaction_id sales_details"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Purchases",
+    "table_str": "Purchases purchase_transaction_id purchase_details"
+  },
+  {
+    "db_id": "tracking_share_transactions",
+    "name": "Transactions_Lots",
+    "table_str": "Transactions_Lots transaction_id lot_id"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "Apartment_Buildings",
+    "table_str": "Apartment_Buildings building_id building_short_name building_full_name building_description building_address building_manager building_phone"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "Apartments",
+    "table_str": "Apartments apt_id building_id apt_type_code apt_number bathroom_count bedroom_count room_count"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "Apartment_Facilities",
+    "table_str": "Apartment_Facilities apt_id facility_code"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "Guests",
+    "table_str": "Guests guest_id gender_code guest_first_name guest_last_name date_of_birth"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "Apartment_Bookings",
+    "table_str": "Apartment_Bookings apt_booking_id apt_id guest_id booking_status_code booking_start_date booking_end_date"
+  },
+  {
+    "db_id": "apartment_rentals",
+    "name": "View_Unit_Status",
+    "table_str": "View_Unit_Status apt_id apt_booking_id status_date available_yn"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1 line_2 line_3 city zip_postcode state_province_county country other_address_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Courses",
+    "table_str": "Courses course_id course_name course_description other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Departments",
+    "table_str": "Departments department_id department_name department_description other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Degree_Programs",
+    "table_str": "Degree_Programs degree_program_id department_id degree_summary_name degree_summary_description other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Sections",
+    "table_str": "Sections section_id course_id section_name section_description other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Semesters",
+    "table_str": "Semesters semester_id semester_name semester_description other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Students",
+    "table_str": "Students student_id current_address_id permanent_address_id first_name middle_name last_name cell_mobile_number email_address ssn date_first_registered date_left other_student_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Student_Enrolment",
+    "table_str": "Student_Enrolment student_enrolment_id degree_program_id semester_id student_id other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Student_Enrolment_Courses",
+    "table_str": "Student_Enrolment_Courses student_course_id course_id student_enrolment_id"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Transcripts",
+    "table_str": "Transcripts transcript_id transcript_date other_details"
+  },
+  {
+    "db_id": "student_transcripts_tracking",
+    "name": "Transcript_Contents",
+    "table_str": "Transcript_Contents student_course_id transcript_id"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Ref_Document_Types",
+    "table_str": "Ref_Document_Types Document_Type_Code Document_Type_Name Document_Type_Description"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Ref_Budget_Codes",
+    "table_str": "Ref_Budget_Codes Budget_Type_Code Budget_Type_Description"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Projects",
+    "table_str": "Projects Project_ID Project_Details"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Documents",
+    "table_str": "Documents Document_ID Document_Type_Code Project_ID Document_Date Document_Name Document_Description Other_Details"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Statements",
+    "table_str": "Statements Statement_ID Statement_Details"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Documents_with_Expenses",
+    "table_str": "Documents_with_Expenses Document_ID Budget_Type_Code Document_Details"
+  },
+  {
+    "db_id": "cre_Docs_and_Epenses",
+    "name": "Accounts",
+    "table_str": "Accounts Account_ID Statement_ID Account_Details"
+  },
+  {
+    "db_id": "ship_mission",
+    "name": "mission",
+    "table_str": "mission Mission_ID Ship_ID Code Launched_Year Location Speed_knots Fate"
+  },
+  {
+    "db_id": "ship_mission",
+    "name": "ship",
+    "table_str": "ship Ship_ID Name Type Nationality Tonnage"
+  },
+  {
+    "db_id": "company_office",
+    "name": "buildings",
+    "table_str": "buildings id name City Height Stories Status"
+  },
+  {
+    "db_id": "company_office",
+    "name": "Companies",
+    "table_str": "Companies id name Headquarters Industry Sales_billion Profits_billion Assets_billion Market_Value_billion"
+  },
+  {
+    "db_id": "company_office",
+    "name": "Office_locations",
+    "table_str": "Office_locations building_id company_id move_in_year"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Problem_Category_Codes",
+    "table_str": "Problem_Category_Codes problem_category_code problem_category_description"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Problem_Log",
+    "table_str": "Problem_Log problem_log_id assigned_to_staff_id problem_id problem_category_code problem_status_code log_entry_date log_entry_description log_entry_fix other_log_details"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Problem_Status_Codes",
+    "table_str": "Problem_Status_Codes problem_status_code problem_status_description"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Product",
+    "table_str": "Product product_id product_name product_details"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Staff",
+    "table_str": "Staff staff_id staff_first_name staff_last_name other_staff_details"
+  },
+  {
+    "db_id": "tracking_software_problems",
+    "name": "Problems",
+    "table_str": "Problems problem_id product_id closure_authorised_by_staff_id reported_by_staff_id date_problem_reported date_problem_closed problem_description other_problem_details"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Ref_Characteristic_Types",
+    "table_str": "Ref_Characteristic_Types characteristic_type_code characteristic_type_description"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Ref_Colors",
+    "table_str": "Ref_Colors color_code color_description"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Ref_Product_Categories",
+    "table_str": "Ref_Product_Categories product_category_code product_category_description unit_of_measure"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Characteristics",
+    "table_str": "Characteristics characteristic_id characteristic_type_code characteristic_data_type characteristic_name other_characteristic_details"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Products",
+    "table_str": "Products product_id color_code product_category_code product_name typical_buying_price typical_selling_price product_description other_product_details"
+  },
+  {
+    "db_id": "products_gen_characteristics",
+    "name": "Product_Characteristics",
+    "table_str": "Product_Characteristics product_id characteristic_id product_characteristic_value"
+  },
+  {
+    "db_id": "coffee_shop",
+    "name": "shop",
+    "table_str": "shop Shop_ID Address Num_of_staff Score Open_Year"
+  },
+  {
+    "db_id": "coffee_shop",
+    "name": "member",
+    "table_str": "member Member_ID Name Membership_card Age Time_of_purchase Level_of_membership Address"
+  },
+  {
+    "db_id": "coffee_shop",
+    "name": "happy_hour",
+    "table_str": "happy_hour HH_ID Shop_ID Month Num_of_shaff_in_charge"
+  },
+  {
+    "db_id": "coffee_shop",
+    "name": "happy_hour_member",
+    "table_str": "happy_hour_member HH_ID Member_ID Total_amount"
+  },
+  {
+    "db_id": "riding_club",
+    "name": "player",
+    "table_str": "player Player_ID Sponsor_name Player_name Gender Residence Occupation Votes Rank"
+  },
+  {
+    "db_id": "riding_club",
+    "name": "club",
+    "table_str": "club Club_ID Club_name Region Start_year"
+  },
+  {
+    "db_id": "riding_club",
+    "name": "coach",
+    "table_str": "coach Coach_ID Coach_name Gender Club_ID Rank"
+  },
+  {
+    "db_id": "riding_club",
+    "name": "player_coach",
+    "table_str": "player_coach Player_ID Coach_ID Starting_year"
+  },
+  {
+    "db_id": "riding_club",
+    "name": "match_result",
+    "table_str": "match_result Rank Club_ID Gold Big_Silver Small_Silver Bronze Points"
+  },
+  {
+    "db_id": "customers_card_transactions",
+    "name": "Accounts",
+    "table_str": "Accounts account_id customer_id account_name other_account_details"
+  },
+  {
+    "db_id": "customers_card_transactions",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_first_name customer_last_name customer_address customer_phone customer_email other_customer_details"
+  },
+  {
+    "db_id": "customers_card_transactions",
+    "name": "Customers_Cards",
+    "table_str": "Customers_Cards card_id customer_id card_type_code card_number date_valid_from date_valid_to other_card_details"
+  },
+  {
+    "db_id": "customers_card_transactions",
+    "name": "Financial_Transactions",
+    "table_str": "Financial_Transactions transaction_id previous_transaction_id account_id card_id transaction_type transaction_date transaction_amount transaction_comment other_transaction_details"
+  },
+  {
+    "db_id": "county_public_safety",
+    "name": "county_public_safety",
+    "table_str": "county_public_safety County_ID Name Population Police_officers Residents_per_officer Case_burden Crime_rate Police_force Location"
+  },
+  {
+    "db_id": "county_public_safety",
+    "name": "city",
+    "table_str": "city City_ID County_ID Name White Black Amerindian Asian Multiracial Hispanic"
+  },
+  {
+    "db_id": "performance_attendance",
+    "name": "member",
+    "table_str": "member Member_ID Name Nationality Role"
+  },
+  {
+    "db_id": "performance_attendance",
+    "name": "performance",
+    "table_str": "performance Performance_ID Date Host Location Attendance"
+  },
+  {
+    "db_id": "performance_attendance",
+    "name": "member_attendance",
+    "table_str": "member_attendance Member_ID Performance_ID Num_of_Pieces"
+  },
+  {
+    "db_id": "club_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "club_1",
+    "name": "Club",
+    "table_str": "Club ClubID ClubName ClubDesc ClubLocation"
+  },
+  {
+    "db_id": "club_1",
+    "name": "Member_of_club",
+    "table_str": "Member_of_club StuID ClubID Position"
+  },
+  {
+    "db_id": "singer",
+    "name": "singer",
+    "table_str": "singer Singer_ID Name Birth_Year Net_Worth_Millions Citizenship"
+  },
+  {
+    "db_id": "singer",
+    "name": "song",
+    "table_str": "song Song_ID Title Singer_ID Sales Highest_Position"
+  },
+  {
+    "db_id": "culture_company",
+    "name": "book_club",
+    "table_str": "book_club book_club_id Year Author_or_Editor Book_Title Publisher Category Result"
+  },
+  {
+    "db_id": "culture_company",
+    "name": "movie",
+    "table_str": "movie movie_id Title Year Director Budget_million Gross_worldwide"
+  },
+  {
+    "db_id": "culture_company",
+    "name": "culture_company",
+    "table_str": "culture_company Company_name Type Incorporated_in Group_Equity_Shareholding book_club_id movie_id"
+  },
+  {
+    "db_id": "cre_Doc_Template_Mgt",
+    "name": "Ref_Template_Types",
+    "table_str": "Ref_Template_Types Template_Type_Code Template_Type_Description"
+  },
+  {
+    "db_id": "cre_Doc_Template_Mgt",
+    "name": "Templates",
+    "table_str": "Templates Template_ID Version_Number Template_Type_Code Date_Effective_From Date_Effective_To Template_Details"
+  },
+  {
+    "db_id": "cre_Doc_Template_Mgt",
+    "name": "Documents",
+    "table_str": "Documents Document_ID Template_ID Document_Name Document_Description Other_Details"
+  },
+  {
+    "db_id": "cre_Doc_Template_Mgt",
+    "name": "Paragraphs",
+    "table_str": "Paragraphs Paragraph_ID Document_ID Paragraph_Text Other_Details"
+  },
+  {
+    "db_id": "musical",
+    "name": "musical",
+    "table_str": "musical Musical_ID Name Year Award Category Nominee Result"
+  },
+  {
+    "db_id": "musical",
+    "name": "actor",
+    "table_str": "actor Actor_ID Name Musical_ID Character Duration age"
+  },
+  {
+    "db_id": "world_1",
+    "name": "city",
+    "table_str": "city ID Name CountryCode District Population"
+  },
+  {
+    "db_id": "world_1",
+    "name": "sqlite_sequence",
+    "table_str": "sqlite_sequence name seq"
+  },
+  {
+    "db_id": "world_1",
+    "name": "country",
+    "table_str": "country Code Name Continent Region SurfaceArea IndepYear Population LifeExpectancy GNP GNPOld LocalName GovernmentForm HeadOfState Capital Code2"
+  },
+  {
+    "db_id": "world_1",
+    "name": "countrylanguage",
+    "table_str": "countrylanguage CountryCode Language IsOfficial Percentage"
+  },
+  {
+    "db_id": "device",
+    "name": "device",
+    "table_str": "device Device_ID Device Carrier Package_Version Applications Software_Platform"
+  },
+  {
+    "db_id": "device",
+    "name": "shop",
+    "table_str": "shop Shop_ID Shop_Name Location Open_Date Open_Year"
+  },
+  {
+    "db_id": "device",
+    "name": "stock",
+    "table_str": "stock Shop_ID Device_ID Quantity"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Document_Types",
+    "table_str": "Document_Types document_type_code document_description"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Documents",
+    "table_str": "Documents document_id document_type_code grant_id sent_date response_received_date other_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Grants",
+    "table_str": "Grants grant_id organisation_id grant_amount grant_start_date grant_end_date other_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Organisation_Types",
+    "table_str": "Organisation_Types organisation_type organisation_type_description"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Organisations",
+    "table_str": "Organisations organisation_id organisation_type organisation_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Project_Outcomes",
+    "table_str": "Project_Outcomes project_id outcome_code outcome_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Project_Staff",
+    "table_str": "Project_Staff staff_id project_id role_code date_from date_to other_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Projects",
+    "table_str": "Projects project_id organisation_id project_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Research_Outcomes",
+    "table_str": "Research_Outcomes outcome_code outcome_description"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Research_Staff",
+    "table_str": "Research_Staff staff_id employer_organisation_id staff_details"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Staff_Roles",
+    "table_str": "Staff_Roles role_code role_description"
+  },
+  {
+    "db_id": "tracking_grants_for_research",
+    "name": "Tasks",
+    "table_str": "Tasks task_id project_id task_details eg Agree Objectives"
+  },
+  {
+    "db_id": "employee_hire_evaluation",
+    "name": "employee",
+    "table_str": "employee Employee_ID Name Age City"
+  },
+  {
+    "db_id": "employee_hire_evaluation",
+    "name": "shop",
+    "table_str": "shop Shop_ID Name Location District Number_products Manager_name"
+  },
+  {
+    "db_id": "employee_hire_evaluation",
+    "name": "hiring",
+    "table_str": "hiring Shop_ID Employee_ID Start_from Is_full_time"
+  },
+  {
+    "db_id": "employee_hire_evaluation",
+    "name": "evaluation",
+    "table_str": "evaluation Employee_ID Year_awarded Bonus"
+  },
+  {
+    "db_id": "movie_1",
+    "name": "Movie",
+    "table_str": "Movie mID title year director"
+  },
+  {
+    "db_id": "movie_1",
+    "name": "Reviewer",
+    "table_str": "Reviewer rID name"
+  },
+  {
+    "db_id": "movie_1",
+    "name": "Rating",
+    "table_str": "Rating rID mID stars ratingDate"
+  },
+  {
+    "db_id": "network_1",
+    "name": "Highschooler",
+    "table_str": "Highschooler ID name grade"
+  },
+  {
+    "db_id": "network_1",
+    "name": "Friend",
+    "table_str": "Friend student_id friend_id"
+  },
+  {
+    "db_id": "network_1",
+    "name": "Likes",
+    "table_str": "Likes student_id liked_id"
+  },
+  {
+    "db_id": "poker_player",
+    "name": "poker_player",
+    "table_str": "poker_player Poker_Player_ID People_ID Final_Table_Made Best_Finish Money_Rank Earnings"
+  },
+  {
+    "db_id": "poker_player",
+    "name": "people",
+    "table_str": "people People_ID Nationality Name Birth_Date Height"
+  },
+  {
+    "db_id": "program_share",
+    "name": "program",
+    "table_str": "program Program_ID Name Origin Launch Owner"
+  },
+  {
+    "db_id": "program_share",
+    "name": "channel",
+    "table_str": "channel Channel_ID Name Owner Share_in_percent Rating_in_percent"
+  },
+  {
+    "db_id": "program_share",
+    "name": "broadcast",
+    "table_str": "broadcast Channel_ID Program_ID Time_of_day"
+  },
+  {
+    "db_id": "program_share",
+    "name": "broadcast_share",
+    "table_str": "broadcast_share Channel_ID Program_ID Date Share_in_percent"
+  },
+  {
+    "db_id": "aircraft",
+    "name": "pilot",
+    "table_str": "pilot Pilot_Id Name Age"
+  },
+  {
+    "db_id": "aircraft",
+    "name": "aircraft",
+    "table_str": "aircraft Aircraft_ID Aircraft Description Max_Gross_Weight Total_disk_area Max_disk_Loading"
+  },
+  {
+    "db_id": "aircraft",
+    "name": "match",
+    "table_str": "match Round Location Country Date Fastest_Qualifying Winning_Pilot Winning_Aircraft"
+  },
+  {
+    "db_id": "aircraft",
+    "name": "airport",
+    "table_str": "airport Airport_ID Airport_Name Total_Passengers %_Change_2007 International_Passengers Domestic_Passengers Transit_Passengers Aircraft_Movements Freight_Metric_Tonnes"
+  },
+  {
+    "db_id": "aircraft",
+    "name": "airport_aircraft",
+    "table_str": "airport_aircraft ID Airport_ID Aircraft_ID"
+  },
+  {
+    "db_id": "restaurant_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "restaurant_1",
+    "name": "Restaurant",
+    "table_str": "Restaurant ResID ResName Address Rating"
+  },
+  {
+    "db_id": "restaurant_1",
+    "name": "Type_Of_Restaurant",
+    "table_str": "Type_Of_Restaurant ResID ResTypeID"
+  },
+  {
+    "db_id": "restaurant_1",
+    "name": "Restaurant_Type",
+    "table_str": "Restaurant_Type ResTypeID ResTypeName ResTypeDescription"
+  },
+  {
+    "db_id": "restaurant_1",
+    "name": "Visits_Restaurant",
+    "table_str": "Visits_Restaurant StuID ResID Time Spent"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_first_name customer_middle_initial customer_last_name gender email_address login_name login_password phone_number town_city state_county_province country"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Orders",
+    "table_str": "Orders order_id customer_id date_order_placed order_details"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Invoices",
+    "table_str": "Invoices invoice_number order_id invoice_date"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Accounts",
+    "table_str": "Accounts account_id customer_id date_account_opened account_name other_account_details"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Product_Categories",
+    "table_str": "Product_Categories production_type_code product_type_description vat_rating"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Products",
+    "table_str": "Products product_id parent_product_id production_type_code unit_price product_name product_color product_size"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Financial_Transactions",
+    "table_str": "Financial_Transactions transaction_id account_id invoice_number transaction_type transaction_date transaction_amount transaction_comment other_transaction_details"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Order_Items",
+    "table_str": "Order_Items order_item_id order_id product_id product_quantity other_order_item_details"
+  },
+  {
+    "db_id": "customers_and_invoices",
+    "name": "Invoice_Line_Items",
+    "table_str": "Invoice_Line_Items order_item_id invoice_number product_id product_title product_quantity product_price derived_product_cost derived_vat_payable derived_total_cost"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Customers",
+    "table_str": "Customers Customer_ID Customer_Details"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Staff",
+    "table_str": "Staff Staff_ID Staff_Details"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Policies",
+    "table_str": "Policies Policy_ID Customer_ID Policy_Type_Code Start_Date End_Date"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Claim_Headers",
+    "table_str": "Claim_Headers Claim_Header_ID Claim_Status_Code Claim_Type_Code Policy_ID Date_of_Claim Date_of_Settlement Amount_Claimed Amount_Piad"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Claims_Documents",
+    "table_str": "Claims_Documents Claim_ID Document_Type_Code Created_by_Staff_ID Created_Date"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Claims_Processing_Stages",
+    "table_str": "Claims_Processing_Stages Claim_Stage_ID Next_Claim_Stage_ID Claim_Status_Name Claim_Status_Description"
+  },
+  {
+    "db_id": "insurance_and_eClaims",
+    "name": "Claims_Processing",
+    "table_str": "Claims_Processing Claim_Processing_ID Claim_ID Claim_Outcome_Code Claim_Stage_ID Staff_ID"
+  },
+  {
+    "db_id": "college_1",
+    "name": "CLASS",
+    "table_str": "CLASS CLASS_CODE CRS_CODE CLASS_SECTION CLASS_TIME CLASS_ROOM PROF_NUM"
+  },
+  {
+    "db_id": "college_1",
+    "name": "COURSE",
+    "table_str": "COURSE CRS_CODE DEPT_CODE CRS_DESCRIPTION CRS_CREDIT"
+  },
+  {
+    "db_id": "college_1",
+    "name": "DEPARTMENT",
+    "table_str": "DEPARTMENT DEPT_CODE DEPT_NAME SCHOOL_CODE EMP_NUM DEPT_ADDRESS DEPT_EXTENSION"
+  },
+  {
+    "db_id": "college_1",
+    "name": "EMPLOYEE",
+    "table_str": "EMPLOYEE EMP_NUM EMP_LNAME EMP_FNAME EMP_INITIAL EMP_JOBCODE EMP_HIREDATE EMP_DOB"
+  },
+  {
+    "db_id": "college_1",
+    "name": "ENROLL",
+    "table_str": "ENROLL CLASS_CODE STU_NUM ENROLL_GRADE"
+  },
+  {
+    "db_id": "college_1",
+    "name": "PROFESSOR",
+    "table_str": "PROFESSOR EMP_NUM DEPT_CODE PROF_OFFICE PROF_EXTENSION PROF_HIGH_DEGREE"
+  },
+  {
+    "db_id": "college_1",
+    "name": "STUDENT",
+    "table_str": "STUDENT STU_NUM STU_LNAME STU_FNAME STU_INIT STU_DOB STU_HRS STU_CLASS STU_GPA STU_TRANSFER DEPT_CODE STU_PHONE PROF_NUM"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Customer_Master_Index",
+    "table_str": "Customer_Master_Index master_customer_id cmi_details"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "CMI_Cross_References",
+    "table_str": "CMI_Cross_References cmi_cross_ref_id master_customer_id source_system_code"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Council_Tax",
+    "table_str": "Council_Tax council_tax_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Business_Rates",
+    "table_str": "Business_Rates business_rates_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Benefits_Overpayments",
+    "table_str": "Benefits_Overpayments council_tax_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Parking_Fines",
+    "table_str": "Parking_Fines council_tax_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Rent_Arrears",
+    "table_str": "Rent_Arrears council_tax_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "local_govt_mdm",
+    "name": "Electoral_Register",
+    "table_str": "Electoral_Register electoral_register_id cmi_cross_ref_id"
+  },
+  {
+    "db_id": "book_2",
+    "name": "publication",
+    "table_str": "publication Publication_ID Book_ID Publisher Publication_Date Price"
+  },
+  {
+    "db_id": "book_2",
+    "name": "book",
+    "table_str": "book Book_ID Title Issues Writer"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "regions",
+    "table_str": "regions REGION_ID REGION_NAME"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "countries",
+    "table_str": "countries COUNTRY_ID COUNTRY_NAME REGION_ID"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "departments",
+    "table_str": "departments DEPARTMENT_ID DEPARTMENT_NAME MANAGER_ID LOCATION_ID"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "jobs",
+    "table_str": "jobs JOB_ID JOB_TITLE MIN_SALARY MAX_SALARY"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "employees",
+    "table_str": "employees EMPLOYEE_ID FIRST_NAME LAST_NAME EMAIL PHONE_NUMBER HIRE_DATE JOB_ID SALARY COMMISSION_PCT MANAGER_ID DEPARTMENT_ID"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "job_history",
+    "table_str": "job_history EMPLOYEE_ID START_DATE END_DATE JOB_ID DEPARTMENT_ID"
+  },
+  {
+    "db_id": "hr_1",
+    "name": "locations",
+    "table_str": "locations LOCATION_ID STREET_ADDRESS POSTAL_CODE CITY STATE_PROVINCE COUNTRY_ID"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "Player_Attributes",
+    "table_str": "Player_Attributes id player_fifa_api_id player_api_id date overall_rating potential preferred_foot attacking_work_rate defensive_work_rate crossing finishing heading_accuracy short_passing volleys dribbling curve free_kick_accuracy long_passing ball_control acceleration sprint_speed agility reactions balance shot_power jumping stamina strength long_shots aggression interceptions positioning vision penalties marking standing_tackle sliding_tackle gk_diving gk_handling gk_kicking gk_positioning gk_reflexes"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "sqlite_sequence",
+    "table_str": "sqlite_sequence name seq"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "Player",
+    "table_str": "Player id player_api_id player_name player_fifa_api_id birthday height weight"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "League",
+    "table_str": "League id country_id name"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "Country",
+    "table_str": "Country id name"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "Team",
+    "table_str": "Team id team_api_id team_fifa_api_id team_long_name team_short_name"
+  },
+  {
+    "db_id": "soccer_1",
+    "name": "Team_Attributes",
+    "table_str": "Team_Attributes id team_fifa_api_id team_api_id date buildUpPlaySpeed buildUpPlaySpeedClass buildUpPlayDribbling buildUpPlayDribblingClass buildUpPlayPassing buildUpPlayPassingClass buildUpPlayPositioningClass chanceCreationPassing chanceCreationPassingClass chanceCreationCrossing chanceCreationCrossingClass chanceCreationShooting chanceCreationShootingClass chanceCreationPositioningClass defencePressure defencePressureClass defenceAggression defenceAggressionClass defenceTeamWidth defenceTeamWidthClass defenceDefenderLineClass"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "actor",
+    "table_str": "actor actor_id first_name last_name last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "address",
+    "table_str": "address address_id address address2 district city_id postal_code phone last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "category",
+    "table_str": "category category_id name last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "city",
+    "table_str": "city city_id city country_id last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "country",
+    "table_str": "country country_id country last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "customer",
+    "table_str": "customer customer_id store_id first_name last_name email address_id active create_date last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "film",
+    "table_str": "film film_id title description release_year language_id original_language_id rental_duration rental_rate length replacement_cost rating special_features last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "film_actor",
+    "table_str": "film_actor actor_id film_id last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "film_category",
+    "table_str": "film_category film_id category_id last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "film_text",
+    "table_str": "film_text film_id title description"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "inventory",
+    "table_str": "inventory inventory_id film_id store_id last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "language",
+    "table_str": "language language_id name last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "payment",
+    "table_str": "payment payment_id customer_id staff_id rental_id amount payment_date last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "rental",
+    "table_str": "rental rental_id rental_date inventory_id customer_id return_date staff_id last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "staff",
+    "table_str": "staff staff_id first_name last_name address_id picture email store_id active username password last_update"
+  },
+  {
+    "db_id": "sakila_1",
+    "name": "store",
+    "table_str": "store store_id manager_staff_id address_id last_update"
+  },
+  {
+    "db_id": "real_estate_properties",
+    "name": "Ref_Feature_Types",
+    "table_str": "Ref_Feature_Types feature_type_code feature_type_name"
+  },
+  {
+    "db_id": "real_estate_properties",
+    "name": "Ref_Property_Types",
+    "table_str": "Ref_Property_Types property_type_code property_type_description"
+  },
+  {
+    "db_id": "real_estate_properties",
+    "name": "Other_Available_Features",
+    "table_str": "Other_Available_Features feature_id feature_type_code feature_name feature_description"
+  },
+  {
+    "db_id": "real_estate_properties",
+    "name": "Properties",
+    "table_str": "Properties property_id property_type_code date_on_market date_sold property_name property_address room_count vendor_requested_price buyer_offered_price agreed_selling_price apt_feature_1 apt_feature_2 apt_feature_3 fld_feature_1 fld_feature_2 fld_feature_3 hse_feature_1 hse_feature_2 hse_feature_3 oth_feature_1 oth_feature_2 oth_feature_3 shp_feature_1 shp_feature_2 shp_feature_3 other_property_details"
+  },
+  {
+    "db_id": "real_estate_properties",
+    "name": "Other_Property_Features",
+    "table_str": "Other_Property_Features property_id feature_id property_feature_description"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Faculty",
+    "table_str": "Faculty FacID Lname Fname Rank Sex Phone Room Building"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Department",
+    "table_str": "Department DNO Division DName Room Building DPhone"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Member_of",
+    "table_str": "Member_of FacID DNO Appt_Type"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Course",
+    "table_str": "Course CID CName Credits Instructor Days Hours DNO"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Minor_in",
+    "table_str": "Minor_in StuID DNO"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Enrolled_in",
+    "table_str": "Enrolled_in StuID CID Grade"
+  },
+  {
+    "db_id": "college_3",
+    "name": "Gradeconversion",
+    "table_str": "Gradeconversion lettergrade gradepoint"
+  },
+  {
+    "db_id": "course_teach",
+    "name": "course",
+    "table_str": "course Course_ID Staring_Date Course"
+  },
+  {
+    "db_id": "course_teach",
+    "name": "teacher",
+    "table_str": "teacher Teacher_ID Name Age Hometown"
+  },
+  {
+    "db_id": "course_teach",
+    "name": "course_arrange",
+    "table_str": "course_arrange Course_ID Teacher_ID Grade"
+  },
+  {
+    "db_id": "roller_coaster",
+    "name": "roller_coaster",
+    "table_str": "roller_coaster Roller_Coaster_ID Name Park Country_ID Length Height Speed Opened Status"
+  },
+  {
+    "db_id": "roller_coaster",
+    "name": "country",
+    "table_str": "country Country_ID Name Population Area Languages"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Products",
+    "table_str": "Products product_id product_name product_price product_description"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Addresses",
+    "table_str": "Addresses address_id address_details city zip_postcode state_province_county country"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Customers",
+    "table_str": "Customers customer_id payment_method customer_name customer_phone customer_email date_became_customer"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Regular_Orders",
+    "table_str": "Regular_Orders regular_order_id distributer_id"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Regular_Order_Products",
+    "table_str": "Regular_Order_Products regular_order_id product_id"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Actual_Orders",
+    "table_str": "Actual_Orders actual_order_id order_status_code regular_order_id actual_order_date"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Actual_Order_Products",
+    "table_str": "Actual_Order_Products actual_order_id product_id"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Customer_Addresses",
+    "table_str": "Customer_Addresses customer_id address_id date_from address_type date_to"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Delivery_Routes",
+    "table_str": "Delivery_Routes route_id route_name other_route_details"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Delivery_Route_Locations",
+    "table_str": "Delivery_Route_Locations location_code route_id location_address_id location_name"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Trucks",
+    "table_str": "Trucks truck_id truck_licence_number truck_details"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Employees",
+    "table_str": "Employees employee_id employee_address_id employee_name employee_phone"
+  },
+  {
+    "db_id": "customer_deliveries",
+    "name": "Order_Deliveries",
+    "table_str": "Order_Deliveries location_code actual_order_id delivery_status_code driver_employee_id truck_id delivery_date"
+  },
+  {
+    "db_id": "game_injury",
+    "name": "stadium",
+    "table_str": "stadium id name Home_Games Average_Attendance Total_Attendance Capacity_Percentage"
+  },
+  {
+    "db_id": "game_injury",
+    "name": "game",
+    "table_str": "game stadium_id id Season Date Home_team Away_team Score Competition"
+  },
+  {
+    "db_id": "game_injury",
+    "name": "injury_accident",
+    "table_str": "injury_accident game_id id Player Injury Number_of_matches Source"
+  },
+  {
+    "db_id": "school_finance",
+    "name": "School",
+    "table_str": "School School_id School_name Location Mascot Enrollment IHSAA_Class IHSAA_Football_Class County"
+  },
+  {
+    "db_id": "school_finance",
+    "name": "budget",
+    "table_str": "budget School_id Year Budgeted total_budget_percent_budgeted Invested total_budget_percent_invested Budget_invested_percent"
+  },
+  {
+    "db_id": "school_finance",
+    "name": "endowment",
+    "table_str": "endowment endowment_id School_id donator_name amount"
+  },
+  {
+    "db_id": "scholar",
+    "name": "venue",
+    "table_str": "venue venueId venueName"
+  },
+  {
+    "db_id": "scholar",
+    "name": "author",
+    "table_str": "author authorId authorName"
+  },
+  {
+    "db_id": "scholar",
+    "name": "dataset",
+    "table_str": "dataset datasetId datasetName"
+  },
+  {
+    "db_id": "scholar",
+    "name": "journal",
+    "table_str": "journal journalId journalName"
+  },
+  {
+    "db_id": "scholar",
+    "name": "keyphrase",
+    "table_str": "keyphrase keyphraseId keyphraseName"
+  },
+  {
+    "db_id": "scholar",
+    "name": "paper",
+    "table_str": "paper paperId title venueId year numCiting numCitedBy journalId"
+  },
+  {
+    "db_id": "scholar",
+    "name": "cite",
+    "table_str": "cite citingPaperId citedPaperId"
+  },
+  {
+    "db_id": "scholar",
+    "name": "paperDataset",
+    "table_str": "paperDataset paperId datasetId"
+  },
+  {
+    "db_id": "scholar",
+    "name": "paperKeyphrase",
+    "table_str": "paperKeyphrase paperId keyphraseId"
+  },
+  {
+    "db_id": "scholar",
+    "name": "writes",
+    "table_str": "writes paperId authorId"
+  },
+  {
+    "db_id": "voter_1",
+    "name": "AREA_CODE_STATE",
+    "table_str": "AREA_CODE_STATE area_code state"
+  },
+  {
+    "db_id": "voter_1",
+    "name": "CONTESTANTS",
+    "table_str": "CONTESTANTS contestant_number contestant_name"
+  },
+  {
+    "db_id": "voter_1",
+    "name": "VOTES",
+    "table_str": "VOTES vote_id phone_number state contestant_number created"
+  },
+  {
+    "db_id": "match_season",
+    "name": "country",
+    "table_str": "country Country_id Country_name Capital Official_native_language"
+  },
+  {
+    "db_id": "match_season",
+    "name": "team",
+    "table_str": "team Team_id Name"
+  },
+  {
+    "db_id": "match_season",
+    "name": "match_season",
+    "table_str": "match_season Season Player Position Country Team Draft_Pick_Number Draft_Class College"
+  },
+  {
+    "db_id": "match_season",
+    "name": "player",
+    "table_str": "player Player_ID Player Years_Played Total_WL Singles_WL Doubles_WL Team"
+  },
+  {
+    "db_id": "small_bank_1",
+    "name": "ACCOUNTS",
+    "table_str": "ACCOUNTS custid name"
+  },
+  {
+    "db_id": "small_bank_1",
+    "name": "SAVINGS",
+    "table_str": "SAVINGS custid balance"
+  },
+  {
+    "db_id": "small_bank_1",
+    "name": "CHECKING",
+    "table_str": "CHECKING custid balance"
+  },
+  {
+    "db_id": "wta_1",
+    "name": "players",
+    "table_str": "players player_id first_name last_name hand birth_date country_code"
+  },
+  {
+    "db_id": "wta_1",
+    "name": "matches",
+    "table_str": "matches best_of draw_size loser_age loser_entry loser_hand loser_ht loser_id loser_ioc loser_name loser_rank loser_rank_points loser_seed match_num minutes round score surface tourney_date tourney_id tourney_level tourney_name winner_age winner_entry winner_hand winner_ht winner_id winner_ioc winner_name winner_rank winner_rank_points winner_seed year"
+  },
+  {
+    "db_id": "wta_1",
+    "name": "rankings",
+    "table_str": "rankings ranking_date ranking player_id ranking_points tours"
+  },
+  {
+    "db_id": "yelp",
+    "name": "business",
+    "table_str": "business bid business_id name full_address city latitude longitude review_count is_open rating state"
+  },
+  {
+    "db_id": "yelp",
+    "name": "category",
+    "table_str": "category id business_id category_name"
+  },
+  {
+    "db_id": "yelp",
+    "name": "user",
+    "table_str": "user uid user_id name"
+  },
+  {
+    "db_id": "yelp",
+    "name": "checkin",
+    "table_str": "checkin cid business_id count day"
+  },
+  {
+    "db_id": "yelp",
+    "name": "neighbourhood",
+    "table_str": "neighbourhood id business_id neighbourhood_name"
+  },
+  {
+    "db_id": "yelp",
+    "name": "review",
+    "table_str": "review rid business_id user_id rating text year month"
+  },
+  {
+    "db_id": "yelp",
+    "name": "tip",
+    "table_str": "tip tip_id business_id text user_id likes year month"
+  },
+  {
+    "db_id": "student_1",
+    "name": "list",
+    "table_str": "list LastName FirstName Grade Classroom"
+  },
+  {
+    "db_id": "student_1",
+    "name": "teachers",
+    "table_str": "teachers LastName FirstName Classroom"
+  },
+  {
+    "db_id": "manufacturer",
+    "name": "manufacturer",
+    "table_str": "manufacturer Manufacturer_ID Open_Year Name Num_of_Factories Num_of_Shops"
+  },
+  {
+    "db_id": "manufacturer",
+    "name": "furniture",
+    "table_str": "furniture Furniture_ID Name Num_of_Component Market_Rate"
+  },
+  {
+    "db_id": "manufacturer",
+    "name": "furniture_manufacte",
+    "table_str": "furniture_manufacte Manufacturer_ID Furniture_ID Price_in_Dollar"
+  },
+  {
+    "db_id": "store_1",
+    "name": "artists",
+    "table_str": "artists id name"
+  },
+  {
+    "db_id": "store_1",
+    "name": "sqlite_sequence",
+    "table_str": "sqlite_sequence name seq"
+  },
+  {
+    "db_id": "store_1",
+    "name": "albums",
+    "table_str": "albums id title artist_id"
+  },
+  {
+    "db_id": "store_1",
+    "name": "employees",
+    "table_str": "employees id last_name first_name title reports_to birth_date hire_date address city state country postal_code phone fax email"
+  },
+  {
+    "db_id": "store_1",
+    "name": "customers",
+    "table_str": "customers id first_name last_name company address city state country postal_code phone fax email support_rep_id"
+  },
+  {
+    "db_id": "store_1",
+    "name": "genres",
+    "table_str": "genres id name"
+  },
+  {
+    "db_id": "store_1",
+    "name": "invoices",
+    "table_str": "invoices id customer_id invoice_date billing_address billing_city billing_state billing_country billing_postal_code total"
+  },
+  {
+    "db_id": "store_1",
+    "name": "media_types",
+    "table_str": "media_types id name"
+  },
+  {
+    "db_id": "store_1",
+    "name": "tracks",
+    "table_str": "tracks id name album_id media_type_id genre_id composer milliseconds bytes unit_price"
+  },
+  {
+    "db_id": "store_1",
+    "name": "invoice_lines",
+    "table_str": "invoice_lines id invoice_id track_id unit_price quantity"
+  },
+  {
+    "db_id": "store_1",
+    "name": "playlists",
+    "table_str": "playlists id name"
+  },
+  {
+    "db_id": "store_1",
+    "name": "playlist_tracks",
+    "table_str": "playlist_tracks playlist_id track_id"
+  },
+  {
+    "db_id": "train_station",
+    "name": "station",
+    "table_str": "station Station_ID Name Annual_entry_exit Annual_interchanges Total_Passengers Location Main_Services Number_of_Platforms"
+  },
+  {
+    "db_id": "train_station",
+    "name": "train",
+    "table_str": "train Train_ID Name Time Service"
+  },
+  {
+    "db_id": "train_station",
+    "name": "train_station",
+    "table_str": "train_station Train_ID Station_ID"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Roles",
+    "table_str": "Roles role_code role_description"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Users",
+    "table_str": "Users user_id role_code user_name user_login password"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Document_Structures",
+    "table_str": "Document_Structures document_structure_code parent_document_structure_code document_structure_description"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Functional_Areas",
+    "table_str": "Functional_Areas functional_area_code parent_functional_area_code functional_area_description"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Images",
+    "table_str": "Images image_id image_alt_text image_name image_url"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Documents",
+    "table_str": "Documents document_code document_structure_code document_type_code access_count document_name"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Document_Functional_Areas",
+    "table_str": "Document_Functional_Areas document_code functional_area_code"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Document_Sections",
+    "table_str": "Document_Sections section_id document_code section_sequence section_code section_title"
+  },
+  {
+    "db_id": "document_management",
+    "name": "Document_Sections_Images",
+    "table_str": "Document_Sections_Images section_id image_id"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "circuits",
+    "table_str": "circuits circuitId circuitRef name location country lat lng alt url"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "races",
+    "table_str": "races raceId year round circuitId name date time url"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "drivers",
+    "table_str": "drivers driverId driverRef number code forename surname dob nationality url"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "status",
+    "table_str": "status statusId status"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "seasons",
+    "table_str": "seasons year url"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "constructors",
+    "table_str": "constructors constructorId constructorRef name nationality url"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "constructorStandings",
+    "table_str": "constructorStandings constructorStandingsId raceId constructorId points position positionText wins"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "results",
+    "table_str": "results resultId raceId driverId constructorId number grid position positionText positionOrder points laps time milliseconds fastestLap rank fastestLapTime fastestLapSpeed statusId"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "driverStandings",
+    "table_str": "driverStandings driverStandingsId raceId driverId points position positionText wins"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "constructorResults",
+    "table_str": "constructorResults constructorResultsId raceId constructorId points status"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "qualifying",
+    "table_str": "qualifying qualifyId raceId driverId constructorId number position q1 q2 q3"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "pitStops",
+    "table_str": "pitStops raceId driverId stop lap time duration milliseconds"
+  },
+  {
+    "db_id": "formula_1",
+    "name": "lapTimes",
+    "table_str": "lapTimes raceId driverId lap position time milliseconds"
+  },
+  {
+    "db_id": "game_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "game_1",
+    "name": "Video_Games",
+    "table_str": "Video_Games GameID GName GType"
+  },
+  {
+    "db_id": "game_1",
+    "name": "Plays_Games",
+    "table_str": "Plays_Games StuID GameID Hours_Played"
+  },
+  {
+    "db_id": "game_1",
+    "name": "SportsInfo",
+    "table_str": "SportsInfo StuID SportName HoursPerWeek GamesPlayed OnScholarship"
+  },
+  {
+    "db_id": "loan_1",
+    "name": "bank",
+    "table_str": "bank branch_ID bname no_of_customers city state"
+  },
+  {
+    "db_id": "loan_1",
+    "name": "customer",
+    "table_str": "customer cust_ID cust_name acc_type acc_bal no_of_loans credit_score branch_ID state"
+  },
+  {
+    "db_id": "loan_1",
+    "name": "loan",
+    "table_str": "loan loan_ID loan_type cust_ID branch_ID amount"
+  },
+  {
+    "db_id": "bike_1",
+    "name": "station",
+    "table_str": "station id name lat long dock_count city installation_date"
+  },
+  {
+    "db_id": "bike_1",
+    "name": "status",
+    "table_str": "status station_id bikes_available docks_available time"
+  },
+  {
+    "db_id": "bike_1",
+    "name": "trip",
+    "table_str": "trip id duration start_date start_station_name start_station_id end_date end_station_name end_station_id bike_id subscription_type zip_code"
+  },
+  {
+    "db_id": "bike_1",
+    "name": "weather",
+    "table_str": "weather date max_temperature_f mean_temperature_f min_temperature_f max_dew_point_f mean_dew_point_f min_dew_point_f max_humidity mean_humidity min_humidity max_sea_level_pressure_inches mean_sea_level_pressure_inches min_sea_level_pressure_inches max_visibility_miles mean_visibility_miles min_visibility_miles max_wind_Speed_mph mean_wind_speed_mph max_gust_speed_mph precipitation_inches cloud_cover events wind_dir_degrees zip_code"
+  },
+  {
+    "db_id": "entrepreneur",
+    "name": "entrepreneur",
+    "table_str": "entrepreneur Entrepreneur_ID People_ID Company Money_Requested Investor"
+  },
+  {
+    "db_id": "entrepreneur",
+    "name": "people",
+    "table_str": "people People_ID Name Height Weight Date_of_Birth"
+  },
+  {
+    "db_id": "orchestra",
+    "name": "conductor",
+    "table_str": "conductor Conductor_ID Name Age Nationality Year_of_Work"
+  },
+  {
+    "db_id": "orchestra",
+    "name": "orchestra",
+    "table_str": "orchestra Orchestra_ID Orchestra Conductor_ID Record_Company Year_of_Founded Major_Record_Format"
+  },
+  {
+    "db_id": "orchestra",
+    "name": "performance",
+    "table_str": "performance Performance_ID Orchestra_ID Type Date Official_ratings_(millions) Weekly_rank Share"
+  },
+  {
+    "db_id": "orchestra",
+    "name": "show",
+    "table_str": "show Show_ID Performance_ID If_first_show Result Attendance"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Ref_Payment_Methods",
+    "table_str": "Ref_Payment_Methods payment_method_code payment_method_description"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Ref_Service_Types",
+    "table_str": "Ref_Service_Types Service_Type_Code Parent_Service_Type_Code Service_Type_Description"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Addresses",
+    "table_str": "Addresses Address_ID Line_1 Line_2 City_Town State_County Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Products",
+    "table_str": "Products Product_ID Product_Name Product_Price Product_Description Other_Product_Service_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Marketing_Regions",
+    "table_str": "Marketing_Regions Marketing_Region_Code Marketing_Region_Name Marketing_Region_Descriptrion Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Clients",
+    "table_str": "Clients Client_ID Address_ID Customer_Email_Address Customer_Name Customer_Phone Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Drama_Workshop_Groups",
+    "table_str": "Drama_Workshop_Groups Workshop_Group_ID Address_ID Currency_Code Marketing_Region_Code Store_Name Store_Phone Store_Email_Address Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Performers",
+    "table_str": "Performers Performer_ID Address_ID Customer_Name Customer_Phone Customer_Email_Address Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Customers",
+    "table_str": "Customers Customer_ID Address_ID Customer_Name Customer_Phone Customer_Email_Address Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Stores",
+    "table_str": "Stores Store_ID Address_ID Marketing_Region_Code Store_Name Store_Phone Store_Email_Address Other_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Bookings",
+    "table_str": "Bookings Booking_ID Customer_ID Workshop_Group_ID Status_Code Store_ID Order_Date Planned_Delivery_Date Actual_Delivery_Date Other_Order_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Performers_in_Bookings",
+    "table_str": "Performers_in_Bookings Order_ID Performer_ID"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Customer_Orders",
+    "table_str": "Customer_Orders Order_ID Customer_ID Store_ID Order_Date Planned_Delivery_Date Actual_Delivery_Date Other_Order_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Order_Items",
+    "table_str": "Order_Items Order_Item_ID Order_ID Product_ID Order_Quantity Other_Item_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Invoices",
+    "table_str": "Invoices Invoice_ID Order_ID payment_method_code Product_ID Order_Quantity Other_Item_Details Order_Item_ID"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Services",
+    "table_str": "Services Service_ID Service_Type_Code Workshop_Group_ID Product_Description Product_Name Product_Price Other_Product_Service_Details"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Bookings_Services",
+    "table_str": "Bookings_Services Order_ID Product_ID"
+  },
+  {
+    "db_id": "cre_Drama_Workshop_Groups",
+    "name": "Invoice_Items",
+    "table_str": "Invoice_Items Invoice_Item_ID Invoice_ID Order_ID Order_Item_ID Product_ID Order_Quantity Other_Item_Details"
+  },
+  {
+    "db_id": "car_1",
+    "name": "continents",
+    "table_str": "continents ContId Continent"
+  },
+  {
+    "db_id": "car_1",
+    "name": "countries",
+    "table_str": "countries CountryId CountryName Continent"
+  },
+  {
+    "db_id": "car_1",
+    "name": "car_makers",
+    "table_str": "car_makers Id Maker FullName Country"
+  },
+  {
+    "db_id": "car_1",
+    "name": "model_list",
+    "table_str": "model_list ModelId Maker Model"
+  },
+  {
+    "db_id": "car_1",
+    "name": "car_names",
+    "table_str": "car_names MakeId Model Make"
+  },
+  {
+    "db_id": "car_1",
+    "name": "cars_data",
+    "table_str": "cars_data Id MPG Cylinders Edispl Horsepower Weight Accelerate Year"
+  },
+  {
+    "db_id": "geo",
+    "name": "state",
+    "table_str": "state state_name population area country_name capital density"
+  },
+  {
+    "db_id": "geo",
+    "name": "city",
+    "table_str": "city city_name population country_name state_name"
+  },
+  {
+    "db_id": "geo",
+    "name": "border_info",
+    "table_str": "border_info state_name border"
+  },
+  {
+    "db_id": "geo",
+    "name": "highlow",
+    "table_str": "highlow state_name highest_elevation lowest_point highest_point lowest_elevation"
+  },
+  {
+    "db_id": "geo",
+    "name": "lake",
+    "table_str": "lake lake_name area country_name state_name"
+  },
+  {
+    "db_id": "geo",
+    "name": "mountain",
+    "table_str": "mountain mountain_name mountain_altitude country_name state_name"
+  },
+  {
+    "db_id": "geo",
+    "name": "river",
+    "table_str": "river river_name length country_name traverse"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Ref_Address_Types",
+    "table_str": "Ref_Address_Types address_type_code address_type_description"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Ref_Detention_Type",
+    "table_str": "Ref_Detention_Type detention_type_code detention_type_description"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Ref_Incident_Type",
+    "table_str": "Ref_Incident_Type incident_type_code incident_type_description"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1 line_2 line_3 city zip_postcode state_province_county country other_address_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Students",
+    "table_str": "Students student_id address_id first_name middle_name last_name cell_mobile_number email_address date_first_rental date_left_university other_student_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Teachers",
+    "table_str": "Teachers teacher_id address_id first_name middle_name last_name gender cell_mobile_number email_address other_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Assessment_Notes",
+    "table_str": "Assessment_Notes notes_id student_id teacher_id date_of_notes text_of_notes other_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Behavior_Incident",
+    "table_str": "Behavior_Incident incident_id incident_type_code student_id date_incident_start date_incident_end incident_summary recommendations other_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Detention",
+    "table_str": "Detention detention_id detention_type_code teacher_id datetime_detention_start datetime_detention_end detention_summary other_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Student_Addresses",
+    "table_str": "Student_Addresses student_id address_id date_address_from date_address_to monthly_rental other_details"
+  },
+  {
+    "db_id": "behavior_monitoring",
+    "name": "Students_in_Detention",
+    "table_str": "Students_in_Detention student_id detention_id incident_id"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Ref_Document_Types",
+    "table_str": "Ref_Document_Types Document_Type_Code Document_Type_Name Document_Type_Description"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Ref_Calendar",
+    "table_str": "Ref_Calendar Calendar_Date Day_Number"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Ref_Locations",
+    "table_str": "Ref_Locations Location_Code Location_Name Location_Description"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Roles",
+    "table_str": "Roles Role_Code Role_Name Role_Description"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "All_Documents",
+    "table_str": "All_Documents Document_ID Date_Stored Document_Type_Code Document_Name Document_Description Other_Details"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Employees",
+    "table_str": "Employees Employee_ID Role_Code Employee_Name Gender_MFU Date_of_Birth Other_Details"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Document_Locations",
+    "table_str": "Document_Locations Document_ID Location_Code Date_in_Location_From Date_in_Locaton_To"
+  },
+  {
+    "db_id": "cre_Doc_Tracking_DB",
+    "name": "Documents_to_be_Destroyed",
+    "table_str": "Documents_to_be_Destroyed Document_ID Destruction_Authorised_by_Employee_ID Destroyed_by_Employee_ID Planned_Destruction_Date Actual_Destruction_Date Other_Details"
+  },
+  {
+    "db_id": "university_basketball",
+    "name": "basketball_match",
+    "table_str": "basketball_match Team_ID School_ID Team_Name ACC_Regular_Season ACC_Percent ACC_Home ACC_Road All_Games All_Games_Percent All_Home All_Road All_Neutral"
+  },
+  {
+    "db_id": "university_basketball",
+    "name": "university",
+    "table_str": "university School_ID School Location Founded Affiliation Enrollment Nickname Primary_conference"
+  },
+  {
+    "db_id": "soccer_2",
+    "name": "College",
+    "table_str": "College cName state enr"
+  },
+  {
+    "db_id": "soccer_2",
+    "name": "Player",
+    "table_str": "Player pID pName yCard HS"
+  },
+  {
+    "db_id": "soccer_2",
+    "name": "Tryout",
+    "table_str": "Tryout pID cName pPos decision"
+  },
+  {
+    "db_id": "activity_1",
+    "name": "Activity",
+    "table_str": "Activity actid activity_name"
+  },
+  {
+    "db_id": "activity_1",
+    "name": "Participates_in",
+    "table_str": "Participates_in stuid actid"
+  },
+  {
+    "db_id": "activity_1",
+    "name": "Faculty_Participates_in",
+    "table_str": "Faculty_Participates_in FacID actid"
+  },
+  {
+    "db_id": "activity_1",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "activity_1",
+    "name": "Faculty",
+    "table_str": "Faculty FacID Lname Fname Rank Sex Phone Room Building"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Ref_Hotel_Star_Ratings",
+    "table_str": "Ref_Hotel_Star_Ratings star_rating_code star_rating_description"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Locations",
+    "table_str": "Locations Location_ID Location_Name Address Other_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Ref_Attraction_Types",
+    "table_str": "Ref_Attraction_Types Attraction_Type_Code Attraction_Type_Description"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Visitors",
+    "table_str": "Visitors Tourist_ID Tourist_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Features",
+    "table_str": "Features Feature_ID Feature_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Hotels",
+    "table_str": "Hotels hotel_id star_rating_code pets_allowed_yn price_range other_hotel_details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Tourist_Attractions",
+    "table_str": "Tourist_Attractions Tourist_Attraction_ID Attraction_Type_Code Location_ID How_to_Get_There Name Description Opening_Hours Other_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Street_Markets",
+    "table_str": "Street_Markets Market_ID Market_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Shops",
+    "table_str": "Shops Shop_ID Shop_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Museums",
+    "table_str": "Museums Museum_ID Museum_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Royal_Family",
+    "table_str": "Royal_Family Royal_Family_ID Royal_Family_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Theme_Parks",
+    "table_str": "Theme_Parks Theme_Park_ID Theme_Park_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Visits",
+    "table_str": "Visits Visit_ID Tourist_Attraction_ID Tourist_ID Visit_Date Visit_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Photos",
+    "table_str": "Photos Photo_ID Tourist_Attraction_ID Name Description Filename Other_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Staff",
+    "table_str": "Staff Staff_ID Tourist_Attraction_ID Name Other_Details"
+  },
+  {
+    "db_id": "cre_Theme_park",
+    "name": "Tourist_Attraction_Features",
+    "table_str": "Tourist_Attraction_Features Tourist_Attraction_ID Feature_ID"
+  },
+  {
+    "db_id": "twitter_1",
+    "name": "follows",
+    "table_str": "follows f1 f2"
+  },
+  {
+    "db_id": "twitter_1",
+    "name": "tweets",
+    "table_str": "tweets id uid text createdate"
+  },
+  {
+    "db_id": "twitter_1",
+    "name": "user_profiles",
+    "table_str": "user_profiles uid name email partitionid followers"
+  },
+  {
+    "db_id": "election_representative",
+    "name": "election",
+    "table_str": "election Election_ID Representative_ID Date Votes Vote_Percent Seats Place"
+  },
+  {
+    "db_id": "election_representative",
+    "name": "representative",
+    "table_str": "representative Representative_ID Name State Party Lifespan"
+  },
+  {
+    "db_id": "voter_2",
+    "name": "Student",
+    "table_str": "Student StuID LName Fname Age Sex Major Advisor city_code"
+  },
+  {
+    "db_id": "voter_2",
+    "name": "Voting_record",
+    "table_str": "Voting_record StuID Registration_Date Election_Cycle President_Vote Vice_President_Vote Secretary_Vote Treasurer_Vote Class_President_Vote Class_Senator_Vote"
+  },
+  {
+    "db_id": "wedding",
+    "name": "people",
+    "table_str": "people People_ID Name Country Is_Male Age"
+  },
+  {
+    "db_id": "wedding",
+    "name": "church",
+    "table_str": "church Church_ID Name Organized_by Open_Date Continuation_of"
+  },
+  {
+    "db_id": "wedding",
+    "name": "wedding",
+    "table_str": "wedding Church_ID Male_ID Female_ID Year"
+  },
+  {
+    "db_id": "news_report",
+    "name": "event",
+    "table_str": "event Event_ID Date Venue Name Event_Attendance"
+  },
+  {
+    "db_id": "news_report",
+    "name": "journalist",
+    "table_str": "journalist journalist_ID Name Nationality Age Years_working"
+  },
+  {
+    "db_id": "news_report",
+    "name": "news_report",
+    "table_str": "news_report journalist_ID Event_ID Work_Type"
+  },
+  {
+    "db_id": "wine_1",
+    "name": "grapes",
+    "table_str": "grapes ID Grape Color"
+  },
+  {
+    "db_id": "wine_1",
+    "name": "appellations",
+    "table_str": "appellations No Appelation County State Area isAVA"
+  },
+  {
+    "db_id": "wine_1",
+    "name": "wine",
+    "table_str": "wine No Grape Winery Appelation State Name Year Price Score Cases Drink"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Addresses",
+    "table_str": "Addresses address_id address_content city zip_postcode state_province_county country other_address_details"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Products",
+    "table_str": "Products product_id product_details"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Customers",
+    "table_str": "Customers customer_id payment_method customer_name date_became_customer other_customer_details"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Customer_Addresses",
+    "table_str": "Customer_Addresses customer_id address_id date_address_from address_type date_address_to"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Customer_Contact_Channels",
+    "table_str": "Customer_Contact_Channels customer_id channel_code active_from_date active_to_date contact_number"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Customer_Orders",
+    "table_str": "Customer_Orders order_id customer_id order_status order_date order_details"
+  },
+  {
+    "db_id": "customers_and_addresses",
+    "name": "Order_Items",
+    "table_str": "Order_Items order_id product_id order_quantity"
+  },
+  {
+    "db_id": "protein_institute",
+    "name": "building",
+    "table_str": "building building_id Name Street_address Years_as_tallest Height_feet Floors"
+  },
+  {
+    "db_id": "protein_institute",
+    "name": "Institution",
+    "table_str": "Institution Institution_id Institution Location Founded Type Enrollment Team Primary_Conference building_id"
+  },
+  {
+    "db_id": "protein_institute",
+    "name": "protein",
+    "table_str": "protein common_name protein_name divergence_from_human_lineage accession_number sequence_length sequence_identity_to_human_protein Institution_id"
+  },
+  {
+    "db_id": "school_player",
+    "name": "school",
+    "table_str": "school School_ID School Location Enrollment Founded Denomination Boys_or_Girls Day_or_Boarding Year_Entered_Competition School_Colors"
+  },
+  {
+    "db_id": "school_player",
+    "name": "school_details",
+    "table_str": "school_details School_ID Nickname Colors League Class Division"
+  },
+  {
+    "db_id": "school_player",
+    "name": "school_performance",
+    "table_str": "school_performance School_Id School_Year Class_A Class_AA"
+  },
+  {
+    "db_id": "school_player",
+    "name": "player",
+    "table_str": "player Player_ID Player Team Age Position School_ID"
+  },
+  {
+    "db_id": "phone_1",
+    "name": "chip_model",
+    "table_str": "chip_model Model_name Launch_year RAM_MiB ROM_MiB Slots WiFi Bluetooth"
+  },
+  {
+    "db_id": "phone_1",
+    "name": "screen_mode",
+    "table_str": "screen_mode Graphics_mode Char_cells Pixels Hardware_colours used_kb map Type"
+  },
+  {
+    "db_id": "phone_1",
+    "name": "phone",
+    "table_str": "phone Company_name Hardware_Model_name Accreditation_type Accreditation_level Date chip_model screen_mode"
+  },
+  {
+    "db_id": "tvshow",
+    "name": "TV_Channel",
+    "table_str": "TV_Channel id series_name Country Language Content Pixel_aspect_ratio_PAR Hight_definition_TV Pay_per_view_PPV Package_Option"
+  },
+  {
+    "db_id": "tvshow",
+    "name": "TV_series",
+    "table_str": "TV_series id Episode Air_Date Rating Share 18_49_Rating_Share Viewers_m Weekly_Rank Channel"
+  },
+  {
+    "db_id": "tvshow",
+    "name": "Cartoon",
+    "table_str": "Cartoon id Title Directed_by Written_by Original_air_date Production_code Channel"
+  },
+  {
+    "db_id": "wrestler",
+    "name": "wrestler",
+    "table_str": "wrestler Wrestler_ID Name Reign Days_held Location Event"
+  },
+  {
+    "db_id": "wrestler",
+    "name": "Elimination",
+    "table_str": "Elimination Elimination_ID Wrestler_ID Team Eliminated_By Elimination_Move Time"
+  },
+  {
+    "db_id": "customer_complaints",
+    "name": "Staff",
+    "table_str": "Staff staff_id gender first_name last_name email_address phone_number"
+  },
+  {
+    "db_id": "customer_complaints",
+    "name": "Customers",
+    "table_str": "Customers customer_id customer_type_code address_line_1 address_line_2 town_city state email_address phone_number"
+  },
+  {
+    "db_id": "customer_complaints",
+    "name": "Products",
+    "table_str": "Products product_id parent_product_id product_category_code date_product_first_available date_product_discontinued product_name product_description product_price"
+  },
+  {
+    "db_id": "customer_complaints",
+    "name": "Complaints",
+    "table_str": "Complaints complaint_id product_id customer_id complaint_outcome_code complaint_status_code complaint_type_code date_complaint_raised date_complaint_closed staff_id"
+  },
+  {
+    "db_id": "department_management",
+    "name": "department",
+    "table_str": "department Department_ID Name Creation Ranking Budget_in_Billions Num_Employees"
+  },
+  {
+    "db_id": "department_management",
+    "name": "head",
+    "table_str": "head head_ID name born_state age"
+  },
+  {
+    "db_id": "department_management",
+    "name": "management",
+    "table_str": "management department_ID head_ID temporary_acting"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Addresses",
+    "table_str": "Addresses address_id line_1_number_building city zip_postcode state_province_county country"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Products",
+    "table_str": "Products product_id product_type_code product_name product_price"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Customers",
+    "table_str": "Customers customer_id payment_method_code customer_number customer_name customer_address customer_phone customer_email"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Contacts",
+    "table_str": "Contacts contact_id customer_id gender first_name last_name contact_phone"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Customer_Address_History",
+    "table_str": "Customer_Address_History customer_id address_id date_from date_to"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Customer_Orders",
+    "table_str": "Customer_Orders order_id customer_id order_date order_status_code"
+  },
+  {
+    "db_id": "customers_and_products_contacts",
+    "name": "Order_Items",
+    "table_str": "Order_Items order_item_id order_id product_id order_quantity"
+  },
+  {
+    "db_id": "company_1",
+    "name": "works_on",
+    "table_str": "works_on Essn Pno Hours"
+  },
+  {
+    "db_id": "company_1",
+    "name": "employee",
+    "table_str": "employee Fname Minit Lname Ssn Bdate Address Sex Salary Super_ssn Dno"
+  },
+  {
+    "db_id": "company_1",
+    "name": "department",
+    "table_str": "department Dname Dnumber Mgr_ssn Mgr_start_date"
+  },
+  {
+    "db_id": "company_1",
+    "name": "project",
+    "table_str": "project Pname Pnumber Plocation Dnum"
+  },
+  {
+    "db_id": "company_1",
+    "name": "dependent",
+    "table_str": "dependent Essn Dependent_name Sex Bdate Relationship"
+  },
+  {
+    "db_id": "company_1",
+    "name": "dept_locations",
+    "table_str": "dept_locations Dnumber Dlocation"
+  },
+  {
+    "db_id": "workshop_paper",
+    "name": "workshop",
+    "table_str": "workshop Workshop_ID Date Venue Name"
+  },
+  {
+    "db_id": "workshop_paper",
+    "name": "submission",
+    "table_str": "submission Submission_ID Scores Author College"
+  },
+  {
+    "db_id": "workshop_paper",
+    "name": "Acceptance",
+    "table_str": "Acceptance Submission_ID Workshop_ID Result"
+  },
+  {
+    "db_id": "epinions_1",
+    "name": "item",
+    "table_str": "item i_id title"
+  },
+  {
+    "db_id": "epinions_1",
+    "name": "review",
+    "table_str": "review a_id u_id i_id rating rank"
+  },
+  {
+    "db_id": "epinions_1",
+    "name": "useracct",
+    "table_str": "useracct u_id name"
+  },
+  {
+    "db_id": "epinions_1",
+    "name": "trust",
+    "table_str": "trust source_u_id target_u_id trust"
+  },
+  {
+    "db_id": "party_host",
+    "name": "party",
+    "table_str": "party Party_ID Party_Theme Location First_year Last_year Number_of_hosts"
+  },
+  {
+    "db_id": "party_host",
+    "name": "host",
+    "table_str": "host Host_ID Name Nationality Age"
+  },
+  {
+    "db_id": "party_host",
+    "name": "party_host",
+    "table_str": "party_host Party_ID Host_ID Is_Main_in_Charge"
+  },
+  {
+    "db_id": "product_catalog",
+    "name": "Attribute_Definitions",
+    "table_str": "Attribute_Definitions attribute_id attribute_name attribute_data_type"
+  },
+  {
+    "db_id": "product_catalog",
+    "name": "Catalogs",
+    "table_str": "Catalogs catalog_id catalog_name catalog_publisher date_of_publication date_of_latest_revision"
+  },
+  {
+    "db_id": "product_catalog",
+    "name": "Catalog_Structure",
+    "table_str": "Catalog_Structure catalog_level_number catalog_id catalog_level_name"
+  },
+  {
+    "db_id": "product_catalog",
+    "name": "Catalog_Contents",
+    "table_str": "Catalog_Contents catalog_entry_id catalog_level_number parent_entry_id previous_entry_id next_entry_id catalog_entry_name product_stock_number price_in_dollars price_in_euros price_in_pounds capacity length height width"
+  },
+  {
+    "db_id": "product_catalog",
+    "name": "Catalog_Contents_Additional_Attributes",
+    "table_str": "Catalog_Contents_Additional_Attributes catalog_entry_id catalog_level_number attribute_id attribute_value"
+  }
+]

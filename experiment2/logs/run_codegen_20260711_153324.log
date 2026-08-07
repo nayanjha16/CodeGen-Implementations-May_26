@@ -1,0 +1,31 @@
+2026-07-11 15:33:24,871 [INFO   ] [orchestration] pipeline_start  start_from=train  run_rag=True  sanity=True  ckpt_pass1=models/codegen_pass1  ckpt_pass2=models/codegen_pass2
+2026-07-11 15:33:24,873 [INFO   ] [orchestration] step_start  label=Pass 1 — Fine-tune CodeGen (standard multi-task)  cmd=finetune_unified.py --checkpoint_dir models/codegen_pass1 --limit 3
+2026-07-11 15:35:52,102 [INFO   ] [orchestration] step_complete  label=Pass 1 — Fine-tune CodeGen (standard multi-task)  exit_code=0  end_time=15:35:52
+2026-07-11 15:35:52,103 [INFO   ] [orchestration] step_start  label=Pass 1 Inference — text2sql  cmd=run_multi_task_inference.py --task text2sql --checkpoint_override models/codegen_pass1 --output_dir outputs/codegen/pass1/text2sql --limit 3
+2026-07-11 15:37:11,921 [INFO   ] [orchestration] step_complete  label=Pass 1 Inference — text2sql  exit_code=0  end_time=15:37:11
+2026-07-11 15:37:11,921 [INFO   ] [orchestration] step_start  label=Pass 1 Inference — sql2nosql  cmd=run_multi_task_inference.py --task sql2nosql --checkpoint_override models/codegen_pass1 --output_dir outputs/codegen/pass1/sql2nosql --limit 3
+2026-07-11 15:38:25,502 [INFO   ] [orchestration] step_complete  label=Pass 1 Inference — sql2nosql  exit_code=0  end_time=15:38:25
+2026-07-11 15:38:25,502 [INFO   ] [orchestration] step_start  label=Pass 1 Inference — text2nosql  cmd=run_multi_task_inference.py --task text2nosql --checkpoint_override models/codegen_pass1 --output_dir outputs/codegen/pass1/text2nosql --limit 3
+2026-07-11 15:39:39,868 [INFO   ] [orchestration] step_complete  label=Pass 1 Inference — text2nosql  exit_code=0  end_time=15:39:39
+2026-07-11 15:39:39,868 [INFO   ] [orchestration] step_start  label=Extract Pass 1 failures  cmd=extract_failures.py --text2sql_pred outputs/codegen/pass1/text2sql\predictions.json --sql2nosql_pred outputs/codegen/pass1/sql2nosql\predictions.json --text2nosql_pred outputs/codegen/pass1/text2nosql\predictions.json
+2026-07-11 15:39:46,475 [INFO   ] [orchestration] step_complete  label=Extract Pass 1 failures  exit_code=0  end_time=15:39:46
+2026-07-11 15:39:46,475 [INFO   ] [orchestration] step_start  label=Teacher LLM inference — generate Pass 2 calibration data (MOCK)  cmd=generate_teacher_data.py --mock_teacher
+2026-07-11 15:39:51,739 [INFO   ] [orchestration] step_complete  label=Teacher LLM inference — generate Pass 2 calibration data (MOCK)  exit_code=0  end_time=15:39:51
+2026-07-11 15:39:51,740 [INFO   ] [orchestration] step_start  label=Pass 2 — Fine-tune CodeGen (teacher-calibrated data, starting from Pass 1 weights)  cmd=finetune_unified.py --spider_data data/spider/spider_augmented_train.json --docspider_data docspider/docspider_ground_truth_dataset/train_augmented.json --checkpoint_dir models/codegen_pass2 --resume_from models/codegen_pass1 --limit 3
+2026-07-11 15:42:18,192 [INFO   ] [orchestration] step_complete  label=Pass 2 — Fine-tune CodeGen (teacher-calibrated data, starting from Pass 1 weights)  exit_code=0  end_time=15:42:18
+2026-07-11 15:42:18,193 [INFO   ] [orchestration] retrieval_index_exists  tasks=['text2sql', 'sql2nosql', 'text2nosql']
+2026-07-11 15:42:18,193 [INFO   ] [orchestration] step_start  label=Pass 2 Inference — text2sql  cmd=run_multi_task_inference.py --task text2sql --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/text2sql --limit 3
+2026-07-11 15:43:24,757 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference — text2sql  exit_code=0  end_time=15:43:24
+2026-07-11 15:43:24,758 [INFO   ] [orchestration] step_start  label=Pass 2 Inference +RAG — text2sql  cmd=run_multi_task_inference.py --task text2sql --rag --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/text2sql --limit 3
+2026-07-11 15:44:20,640 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference +RAG — text2sql  exit_code=0  end_time=15:44:20
+2026-07-11 15:44:20,640 [INFO   ] [orchestration] step_start  label=Pass 2 Inference — sql2nosql  cmd=run_multi_task_inference.py --task sql2nosql --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/sql2nosql --limit 3
+2026-07-11 15:45:33,275 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference — sql2nosql  exit_code=0  end_time=15:45:33
+2026-07-11 15:45:33,275 [INFO   ] [orchestration] step_start  label=Pass 2 Inference +RAG — sql2nosql  cmd=run_multi_task_inference.py --task sql2nosql --rag --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/sql2nosql --limit 3
+2026-07-11 15:46:30,621 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference +RAG — sql2nosql  exit_code=0  end_time=15:46:30
+2026-07-11 15:46:30,621 [INFO   ] [orchestration] step_start  label=Pass 2 Inference — text2nosql  cmd=run_multi_task_inference.py --task text2nosql --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/text2nosql --limit 3
+2026-07-11 15:47:30,700 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference — text2nosql  exit_code=0  end_time=15:47:30
+2026-07-11 15:47:30,700 [INFO   ] [orchestration] step_start  label=Pass 2 Inference +RAG — text2nosql  cmd=run_multi_task_inference.py --task text2nosql --rag --checkpoint_override models/codegen_pass2 --output_dir outputs/codegen/pass2/text2nosql --limit 3
+2026-07-11 15:48:57,997 [INFO   ] [orchestration] step_complete  label=Pass 2 Inference +RAG — text2nosql  exit_code=0  end_time=15:48:57
+2026-07-11 15:48:57,998 [INFO   ] [orchestration] step_start  label=Generate cross-model comparison report  cmd=compare_results.py
+2026-07-11 15:49:04,012 [INFO   ] [orchestration] step_complete  label=Generate cross-model comparison report  exit_code=0  end_time=15:49:04
+2026-07-11 15:49:04,012 [INFO   ] [orchestration] pipeline_complete

@@ -1,0 +1,96 @@
+Codegen-phase2 — Teacher-Student Distillation for DB Query Translation
+A from-scratch research pipeline that fine-tunes a code LLM to translate between three DB-query formats and measures, with a falsifiable 3-arm controlled experiment, whether a larger "teacher" model's written diagnoses actually help a smaller "student" learn. Everything runs locally on Apple Silicon (PyTorch / MPS / bf16); nothing is rented; correctness is measured by executing generated queries against real databases, never by string matching.
+
+Status (2026-07-21): complete. All 15 build steps implemented and verified; the experiment has run to completion twice with a headline result (below).
+
+The three tasks
+Task	Input	Output	Data	Executed against
+text2sql	NL question + schema	SQL	Spider (7000 train / 1034 dev / 166 DBs)	SQLite (sql_exec.py)
+sql2nosql	gold SQL + schema	MongoDB MQL	DocSpider (4043 / 620 / 159 DBs)	MongoDB via mongosh (mongo_exec.py)
+text2nosql	NL question + schema	MongoDB MQL	DocSpider (same file)	MongoDB via mongosh
+Gold MQL is mongosh shell syntax (db.head.aggregate([...])), executed natively — not translated to pymongo. Correctness = DocSpider's value-set-per-row result-set equality (order-sensitive only when the gold query implies ordering), a deliberately lossy metric kept for comparability with the dataset authors.
+
+The experiment: three arms, headline = C − B
+Two training passes produce three model "arms":
+
+A — Pass 1 (baseline): multi-task student trained on Stage-A (draft-only) prompts. Scored draft-only.
+B — Pass 2 control: resumes from A, adds Stage-B (revise) samples with a neutral fixed analysis.
+C — Pass 2 teacher: resumes from A, identical to B except the analysis slot carries the teacher's diagnosis.
+The only valid headline is C − B (both two-stage, so the difference isolates the teacher signal). Arm A is draft-only and structurally not comparable to B/C — the report never headlines C−A or B−A (that would confound "teacher signal" with "got a second inference pass at all").
+
+Results
+Task	A (draft)	B (control)	C (teacher)	Run #1 C−B	Run #2 C−B
+text2sql	0.728	0.676	0.722	−0.136	+0.046
+sql2nosql	0.826	0.774	0.811	−0.034	+0.037
+text2nosql	0.677	0.637	0.658	−0.108	+0.021
+(Run #2 numbers shown for A/B/C. Reports: outputs/comparison_report_run1.txt, outputs/comparison_report_run2_keepfix.txt.)
+
+Run #1 (Stage-B trained on broken drafts only): the teacher hurt. Diagnosed root cause — the two-stage revise pass over-corrects: drafts are ~68% correct, but the model, having only ever seen broken drafts in Stage-B, learned "always rewrite" and destroyed good drafts (it broke 16 / fixed 2 correct drafts on a sample; the teacher's confident diagnoses amplified this).
+Run #2 (added KEEP examples — correct drafts whose target is the draft itself, with a fixed "draft is correct" analysis, ~1:1 with the failures, identical across both arms): the teacher helps. C−B flipped positive on all three tasks. Control barely moved; the teacher arm jumped and recovered to ≈A — confirming the over-correction diagnosis by fixing it.
+Takeaway: under this two-stage distillation design, teacher rationales help a Qwen-1.5B student — but only once the student is also taught not to over-correct already-correct drafts. Gains are modest (+0.02…+0.05) and carry the lossy-metric caveat.
+
+Architecture / final configuration
+Student: Qwen/Qwen2.5-Coder-1.5B, LoRA (r=16, α=32, dropout=0.05; targets q,k,v,o,gate,up,down_proj; 18.5M/1.56B = 1.18% trainable). Switched from CodeGen-350M (2026-07-18) for a stronger signal.
+Teacher: Qwen/Qwen2.5-Coder-14B-Instruct (~30GB bf16), loaded only during the teacher stage then freed; TeacherConfig.backend = "api" is an OpenAI-compatible fallback.
+Device/dtype: MPS + bf16 for everything (student and teacher). No CUDA, no MLX, no bitsandbytes.
+Memory trims (for MPS): max_len=768 (from 2048), epochs_max=2 (from 5), prediction_loss_only=True (eval must not gather Qwen's 152k-wide logits → swap-death), MPSCacheCallback clears the allocator every 10 steps. _encode truncates the prompt, never the target/gold.
+Task balance: loss-weighting (≈1.0 / 1.73 / 1.73), not upsampling — each example seen once.
+RAG: BM25 + dense (bge-small-en-v1.5) hybrid, same-DB references, self-excluded by uid (load-bearing during train-split failure mining), 20% no-reference holdout.
+All knobs live in src/config.py (single source of truth).
+
+How to run
+source .venv/bin/activate
+# MongoDB must be running (brew service on 127.0.0.1:27017); mongosh on PATH.
+
+# Smoke test — all 7 stages incl. both Pass 2 arms, tiny data, ~minutes:
+python run_codegen.py --sanity
+
+# Full pipeline (overnight; stage 4 loads the local Qwen-14B teacher):
+python run_codegen.py                       # or --start_from <stage>, --skip_rag
+
+# One-time data setup (already done): load Spider SQLite → MongoDB
+python scripts/setup_mongo.py data/spider/database --confirm
+python scripts/build_retrieval_index.py     # train-only RAG index
+The 7 stages (each an isolated subprocess so memory is freed between them): train (Pass 1) → mine (inference on TRAIN) → extract failures → teacher annotate → Pass 2 ×2 arms → eval (inference on DEV) → compare.
+
+Individual stages (see SPEC.md §7 for full CLI):
+
+python finetune_unified.py --pass 1
+python run_multi_task_inference.py --task text2sql --split train --rag   # mining
+python extract_failures.py
+python generate_teacher_data.py --provider local          # or --mock, or --provider api
+python finetune_unified.py --pass 2 --arm control         # then --arm teacher
+python run_multi_task_inference.py --task text2sql --split dev --arm teacher --rag
+python compare_results.py --rag
+Repository map
+Path	Role
+src/config.py	Single source of truth: paths, hyperparameters, model IDs, endpoints
+src/device.py, src/logger.py	MPS device/dtype; per-subprocess timestamped logs
+src/loader.py, src/splits.py	Dataset/schema loaders (Example), minify_sql_schema(); deterministic train/valid split + dev-leak guard
+src/prompt_builder.py, src/processor.py	Stage A/B prompt construction; query/analysis extraction
+src/retriever.py, scripts/build_retrieval_index.py	Hybrid BM25+dense retriever (same-DB, self-excluded); train-only index
+src/model_factory.py, src/generator.py	Load base + LoRA on MPS/bf16; batched generation
+src/mongo_exec.py, src/sql_exec.py	Execution harnesses (MQL via mongosh, SQL via sqlite3) — the correctness signal
+scripts/setup_mongo.py	Load Spider SQLite → MongoDB collections (destructive; --confirm)
+finetune_unified.py	Pass 1 & Pass 2 training (--pass, --arm); weighted masked loss; KEEP+FIX Stage-B
+run_multi_task_inference.py	Mining (--split train) / evaluation (--split dev), --rag, --arm
+extract_failures.py	Execution-based failure mining → outputs/codegen/failures/* (failures + correct-draft pools)
+generate_teacher_data.py	Teacher annotation + execution-based verification filter (--mock/--provider)
+compare_results.py	3-arm × task × difficulty report; headline C−B
+run_codegen.py	Orchestrator, 7 stages, --start_from / --skip_rag / --sanity
+models/, outputs/, retrieval_index/, logs/	Artifacts (gitignored). models/_pass1_real_backup = protected real Pass 1
+Documentation
+Doc	Contents
+README.md (this)	Overview, results, how to run, file map
+plan.md (v2)	Experiment design & rationale — wins on what/why
+SPEC.md	Implementation contract — module layout, schemas, CLI, §10 build order + DoD — wins on how
+STATUS.md	Live snapshot: run #1 and run #2 results at the top, environment, build table, decisions
+DECISIONS.md	Every decision, build-time + both runs, with rationale and rejected alternatives
+SPEC-REVIEW.md	The 6 experiment-validity flaws and how each was closed
+plan-v1-original.md	Superseded history — not current
+Gotchas / hard rules
+Never finetune_unified.py --pass 1 --sanity — it overwrites the real Pass-1 root adapter that both Pass 2 arms resume from. Restore from models/_pass1_real_backup if it happens.
+Both Pass 2 arms must resume from the same Pass 1 or C−B is invalid.
+Correctness is execution-based everywhere — failure mining and the teacher verification filter both use mongo_exec / sql_exec, never string match (re-introducing string matching is the exact bug this project exists to fix).
+The dev split is sacred — never trained on, never mined; a content-hash guard asserts dev ⊄ train.
+MPS memory is the binding constraint — keep the trims; watch for step-time blowups (swap) on any config change.

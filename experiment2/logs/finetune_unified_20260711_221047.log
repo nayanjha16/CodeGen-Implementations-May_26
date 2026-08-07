@@ -1,0 +1,65 @@
+2026-07-11 22:10:47,713 [INFO   ] [fine_tuning] pipeline_start  model_id=Salesforce/codegen-350M-multi  epochs=5  lr=0.0002  train_batch=4  grad_accum=4  effective_batch=16  max_input_len=2048  lora_r=16  lora_alpha=32  checkpoint_output=models/codegen_pass1  resume_from=none (fresh LoRA)  device=cpu  fp16=False  bf16=False
+2026-07-11 22:10:47,862 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/train_spider.json  total_tasks=7000  returned=7000  limit_applied=False
+2026-07-11 22:10:47,894 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/train.json  total_raw=4043  valid=4043  skipped_incomplete=0  returned=4043  limit_applied=False
+2026-07-11 22:10:47,912 [INFO   ] [fine_tuning] limit_applied  limit=3
+2026-07-11 22:10:47,912 [INFO   ] [fine_tuning] datasets_loaded  spider_tasks=3  docspider_tasks=3  spider_path=data/spider/train_spider.json  docspider_path=docspider/docspider_ground_truth_dataset/train.json
+2026-07-11 22:10:47,926 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 22:10:47,943 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 22:10:47,943 [INFO   ] [fine_tuning] schemas_loaded  spider_dbs=166  docspider_dbs=159
+2026-07-11 22:10:47,943 [INFO   ] [model_init] load_start  model_type=codegen  model_id=Salesforce/codegen-350M-multi  mode=train  device=cpu  dtype=torch.float32  checkpoint_path=None  load_base_only=False
+2026-07-11 22:10:49,126 [INFO   ] [model_init] tokenizer_loaded  model_id=Salesforce/codegen-350M-multi  vocab_size=50257  padding_side=right  pad_token=<|endoftext|>
+2026-07-11 22:10:50,306 [INFO   ] [model_init] base_model_loaded  model_id=Salesforce/codegen-350M-multi  total_params=356712448  total_params_M=356.7  device=cpu  dtype=torch.float32
+2026-07-11 22:10:50,489 [INFO   ] [model_init] fresh_lora_injected  lora_r=16  lora_alpha=32  lora_dropout=0.05  target_modules=['qkv_proj', 'out_proj', 'fc_in', 'fc_out']  trainable_params=5242880  trainable_params_M=5.243  trainable_pct=1.47
+2026-07-11 22:10:50,496 [INFO   ] [fine_tuning] schema_minification_start  spider_dbs=166  docspider_dbs=159
+2026-07-11 22:10:50,513 [INFO   ] [fine_tuning] schema_minification_done  spider_dbs_minified=166  docspider_dbs_minified=159
+2026-07-11 22:10:50,513 [INFO   ] [fine_tuning] task_balancing  spider_count=3  docspider_original=3  docspider_oversampled=3  target_count=3
+2026-07-11 22:10:50,513 [INFO   ] [fine_tuning] pass_mode_detected  has_teacher_data=False  mode=Pass 1 (Standard)
+2026-07-11 22:10:50,516 [INFO   ] [fine_tuning] spider_sample_preview  index=0  db_id=department_management  question=How many heads of the departments are older than 56 ?  prompt_tokens=148  target_tokens=28  rag_fallback=False  has_teacher_data=False
+2026-07-11 22:10:50,516 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: List the creation year, name and budget of each department.
+Target SQL: SELECT creation ,  name ,  budget_in_billions FROM department
+#########################
+
+### TARGET TASK ###
+Question: How many heads of the departments are older than 56 ?
+Schema: department(Department_ID, Name, Creation, Ranking, Budget_in_Billions, Num_Employees) | head(head_ID, name, born_state, age) | management(department_ID, head_ID, temporary_acting)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:10:50,516 [INFO   ]   >> OUTPUT : Analysis: Verify schema tracking and alignment boundaries. | Corrected_SQL: SELECT count(*) FROM head WHERE age  >  56
+2026-07-11 22:10:50,517 [INFO   ] [fine_tuning] spider_samples_built  total_spider_samples=3  rag_fallbacks=0  rag_fallback_pct=0.0
+2026-07-11 22:10:50,518 [INFO   ] [fine_tuning] docspider_sql2nosql_sample_preview  index=0  db_id=department_management  sql_preview=SELECT name , born_state , age FROM head ORDER BY age  prompt_tokens=172  target_tokens=49  rag_fallback=False
+2026-07-11 22:10:50,518 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### REFERENCE EXAMPLE ###
+Input SQL: SELECT creation , name , budget_in_billions FROM department
+Target MQL: db.department.find({}, { Creation: 1, Name: 1, Budget_in_Billions: 1 })
+#########################
+
+### TARGET TASK ###
+Input SQL: SELECT name , born_state , age FROM head ORDER BY age
+Schema: head(_id, age, born_state, head_ID, name) | management(_id, department_ID, head_ID, temporary_acting) | department(Budget_in_Billions, Creation, Department_ID, Name, Num_Employees, Ranking, _id)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:10:50,518 [INFO   ]   >> OUTPUT : Analysis: Map relational algebraic commands to minified document keys. | Final_MQL: db.head.find({}, {name: 1, born_state: 1, age: 1}).sort({age: 1})
+2026-07-11 22:10:50,519 [INFO   ] [fine_tuning] docspider_text2nosql_sample_preview  index=0  db_id=department_management  question=List the name, born state and age of the heads of departments ordered by age.  prompt_tokens=174  target_tokens=46  rag_fallback=False
+2026-07-11 22:10:50,519 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### REFERENCE EXAMPLE ###
+Context Question: List the creation year, name and budget of each department.
+Target MQL: db.department.find({}, { Creation: 1, Name: 1, Budget_in_Billions: 1 })
+#########################
+
+### TARGET TASK ###
+Question: List the name, born state and age of the heads of departments ordered by age.
+Schema: head(_id, age, born_state, head_ID, name) | management(_id, department_ID, head_ID, temporary_acting) | department(Budget_in_Billions, Creation, Department_ID, Name, Num_Employees, Ranking, _id)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:10:50,519 [INFO   ]   >> OUTPUT : Analysis: Query collections using native structural operator pipelines. | Final_MQL: db.head.find({}, {name: 1, born_state: 1, age: 1}).sort({age: 1})
+2026-07-11 22:10:50,522 [INFO   ] [fine_tuning] docspider_samples_built  oversampled_entries=3  trans_samples=3  dir_samples=3  trans_rag_fallbacks=0  dir_rag_fallbacks=0
+2026-07-11 22:10:50,523 [INFO   ] [fine_tuning] tokenization_start  total_samples=9  max_len=2048
+2026-07-11 22:10:50,529 [INFO   ] [fine_tuning] tokenization_complete  total_samples=9  truncations=0  truncation_pct=0.0  avg_raw_tokens=211.3  max_len_budget=2048
+2026-07-11 22:10:50,537 [INFO   ] [fine_tuning] dataset_ready  total_samples=9
+2026-07-11 22:10:50,604 [INFO   ] [fine_tuning] training_start  samples=9  epochs=5  steps_per_epoch=1  logging_steps=25  save_strategy=epoch  fp16=False  bf16=False
+2026-07-11 22:12:49,054 [INFO   ] [fine_tuning] training_complete  checkpoint_path=models/codegen_pass1

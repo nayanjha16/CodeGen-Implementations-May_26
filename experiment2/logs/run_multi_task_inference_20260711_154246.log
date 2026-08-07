@@ -1,0 +1,30 @@
+2026-07-11 15:42:46,743 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/dev.json  total_tasks=1034  returned=1034  limit_applied=False
+2026-07-11 15:42:46,764 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 15:42:50,024 [INFO   ] [inference] generate_sql  latency_sec=0.7493  input_tokens=122  output_tokens=4
+2026-07-11 15:42:50,025 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:42:50,026 [INFO   ]   >> OUTPUT : Output: 1
+2026-07-11 15:43:03,921 [INFO   ] [inference] generate_sql  latency_sec=13.8917  input_tokens=123  output_tokens=150
+2026-07-11 15:43:03,921 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:43:03,921 [INFO   ]   >> OUTPUT : Output: Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Singers | Total_Sing
+2026-07-11 15:43:17,931 [INFO   ] [inference] generate_sql  latency_sec=14.0061  input_tokens=134  output_tokens=150
+2026-07-11 15:43:17,931 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:43:17,931 [INFO   ]   >> OUTPUT : Output:
+[Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: SQL-to-NL] | [Task: NL-to-SQL] | [Task: SQL-to-

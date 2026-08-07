@@ -1,0 +1,42 @@
+2026-07-11 22:21:50,412 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/dev.json  total_raw=620  valid=620  skipped_incomplete=0  returned=620  limit_applied=False
+2026-07-11 22:21:50,428 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 22:22:07,132 [INFO   ] [inference] generate_nosql  latency_sec=14.1476  input_tokens=142  output_tokens=150
+2026-07-11 22:22:07,132 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### TARGET TASK ###
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:22:07,132 [INFO   ]   >> OUTPUT : Output SQL: SELECT name , country , age FROM stadium ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### FILTER ###
+Output SQL: SELECT name , country , age FROM stadium WHERE Name = 'Singer' ORDER BY age DESC
+Schema: stadium(
+2026-07-11 22:22:21,261 [INFO   ] [inference] generate_nosql  latency_sec=14.1254  input_tokens=142  output_tokens=150
+2026-07-11 22:22:21,261 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### TARGET TASK ###
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:22:21,261 [INFO   ]   >> OUTPUT : Output SQL: SELECT name , country , age FROM stadium ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### FILTER ###
+Output SQL: SELECT name , country , age FROM stadium WHERE Name = 'Singer' ORDER BY age DESC
+Schema: stadium(
+2026-07-11 22:22:33,734 [INFO   ] [inference] generate_nosql  latency_sec=12.4697  input_tokens=152  output_tokens=130
+2026-07-11 22:22:33,735 [INFO   ]   >> INPUT  : [Task: SQL-to-MQL]
+### TARGET TASK ###
+Input SQL: SELECT avg(age) , min(age) , max(age) FROM singer WHERE country = 'France'
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:22:33,735 [INFO   ]   >> OUTPUT : Output SQL: SELECT avg(age) , min(age) , max(age) FROM station WHERE name = 'Singer'
+Schema: station(Average, Capacity, Highest, Location, Lowest, Name, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### EXECUTION ###

@@ -1,0 +1,8 @@
+2026-07-31 16:51:59,046 [INFO   ] [extract_failures] start
+2026-07-31 16:51:59,078 [INFO   ] [extract_failures] text2sql_extraction_done  total_predictions=1034  failures=797  failure_pct=77.1
+2026-07-31 16:51:59,088 [INFO   ] [extract_failures] text2sql_failures_saved  path=data/spider/text2sql_failures.json  count=797
+2026-07-31 16:51:59,114 [INFO   ] [extract_failures] sql2nosql_extraction_done  total_predictions=620  failures=562  failure_pct=90.6
+2026-07-31 16:51:59,127 [INFO   ] [extract_failures] sql2nosql_failures_saved  path=docspider/docspider_ground_truth_dataset/sql2nosql_failures.json  count=562
+2026-07-31 16:51:59,142 [INFO   ] [extract_failures] text2nosql_extraction_done  total_predictions=620  failures=577  failure_pct=93.1
+2026-07-31 16:51:59,147 [INFO   ] [extract_failures] text2nosql_failures_saved  path=docspider/docspider_ground_truth_dataset/text2nosql_failures.json  count=577
+2026-07-31 16:51:59,147 [INFO   ] [extract_failures] complete  total_failures=1936

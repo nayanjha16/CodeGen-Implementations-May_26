@@ -1,0 +1,36 @@
+ What was implemented
+
+  Files moved to legacy/ — 6 Colab-only scripts that had !nvidia-smi, !pip install, hardcoded paths.
+
+  src/config.py — Clean rewrite. get_device_settings() auto-detects CPU vs CUDA and returns the right dtype and
+  precision flags. MODELS dict replaces the old scattered STAGE3_*/STAGE4_* constants. DATA dict centralizes all file
+  paths.
+
+  src/model_factory.py — Single load_model(model_type, checkpoint_path, mode) call. All architectural differences
+  (CausalLM vs Seq2SeqLM, qkv_proj vs q/v targets, left vs right padding) live here and nowhere else.
+
+  src/prompt_builder.py — build_text2sql_sample() and build_sql2nosql_sample(). Prompt format differences between
+  CodeGen (DDL schema, instruction-style) and CodeT5 (compact pipe schema, prefix-style from experiment 1) are isolated
+  here.
+
+  src/loader.py — Added load_spider_compact_schema_maps() (experiment 1's format) and load_docspider_tasks(). Existing
+  functions kept.
+
+  finetune_text2sql.py / finetune_sql2nosql.py — Unified fine-tuning. CodeGen uses Trainer + label masking (prompt
+  tokens = -100). CodeT5 uses Seq2SeqTrainer with per-epoch exact-match checkpointing on GPU, last-epoch save on CPU.
+
+  run_inference_text2sql.py / run_inference_sql2nosql.py — Inference + evaluation in one script. Saves predictions
+  incrementally (safe to interrupt). Calls Spider/DocSpider evaluators and saves reports.
+
+  compare_results.py — Parses all four eval reports and prints the side-by-side table.
+
+  run_all.py — --model_type codegen|codet5, --task text2sql|sql2nosql, --skip_train, --skip_eval. Omit flags for full
+  run.
+
+  colab_runner.ipynb — Launcher notebook with one cell per run option. Zero model logic inside — just !pip install and
+  !python run_all.py.
+
+  To run locally:
+  python run_all.py                        # both models, both tasks
+  python run_all.py --model_type codet5    # one model
+  python run_all.py --skip_train           # inference only

@@ -1,0 +1,60 @@
+2026-07-11 15:39:48,768 [INFO   ] [teacher_inference] start  provider=openai  model_id=gpt-4o-mini  max_failures_per_task=3000  mock=True
+2026-07-11 15:39:48,911 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/train_spider.json  total_tasks=7000  returned=7000  limit_applied=False
+2026-07-11 15:39:48,943 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/train.json  total_raw=4043  valid=4043  skipped_incomplete=0  returned=4043  limit_applied=False
+2026-07-11 15:39:48,958 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 15:39:48,964 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 15:39:49,420 [INFO   ] [teacher_inference] rag_index_built  db_count=140  total_examples=11043
+2026-07-11 15:39:49,421 [INFO   ] [teacher_inference] spider_failures_loaded  count=3
+2026-07-11 15:39:49,422 [INFO   ] [teacher_inference] text2sql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 15:39:49,422 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Question: What are the amenities in the dorm that a student who has the last name of Smith lives in?
+Schema: Student(StuID, LName, Fname, Age, Sex, Major, Advisor, city_code) | Dorm(dormid, dorm_name, student_capacity, gender) | Dorm_amenity(amenid, amenity_name) | Has_amenity(dormid, amenid) | Lives_in(stuid, dormid, room_number)
+Correct SQL: SELECT T3.amenity_name FROM dorm AS T1 JOIN has_amenity AS T2 ON T1.dormid  =  T2.dormid JOIN dorm_amenity AS T3 ON T2.amenid  =  T3.amenid JOIN lives_in AS T4 ON T4.dormid  =  T1.dormid JOIN student AS T5 ON T5.stuid  =  T4.stuid WHERE T5.lname  =  'Smith'
+
+[FAILURE TO CORRECT]
+Task: NL-to-SQL
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+Gold SQL: SELECT count(*) FROM singe
+2026-07-11 15:39:49,727 [INFO   ] [teacher_inference] text2sql_complete  annotated=3  cap_applied=False
+2026-07-11 15:39:49,734 [INFO   ] [teacher_inference] spider_merge_done  total=7000  replaced_with_teacher_data=0
+2026-07-11 15:39:50,598 [INFO   ] [teacher_inference] sql2nosql_failures_loaded  count=3
+2026-07-11 15:39:50,599 [INFO   ] [teacher_inference] sql2nosql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 15:39:50,599 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Input SQL: SELECT friend FROM PersonFriend WHERE name = 'Zach' AND YEAR = (SELECT max(YEAR) FROM PersonFriend WHERE name = 'Zach')
+Correct MQL: db.PersonFriend.find( { name: 'Zach' }, { friend: 1 } ).sort({ year: -1 }).limit(1)
+
+[FAILURE TO CORRECT]
+Task: SQL-to-MQL
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+Gold MQL: db.singer.find({}, { Name: 1, Country: 1, Age: 1 }).sort({ Age: -1 })
+Student's Broken Draft: singer_in_concert(Singer_ID, _id, concert_ID)
+
+[INSTRUCTIONS]
+1. Write ONE sentence (max 15 words) identifying the structural error.
+2. Output the exact corrected MQL — no comments, no markdown fences.
+
+[RESPOND WITH STRICT JSON ONLY]
+{ "teacher_analysis": 
+2026-07-11 15:39:50,904 [INFO   ] [teacher_inference] sql2nosql_complete  annotated=3  cap_applied=False
+2026-07-11 15:39:50,906 [INFO   ] [teacher_inference] text2nosql_failures_loaded  count=3
+2026-07-11 15:39:50,909 [INFO   ] [teacher_inference] text2nosql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 15:39:50,909 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Question: List the names of climbers in descending order of points.
+Schema: climber(Climber_ID, Country, Mountain_ID, Name, Points, Time, _id) | mountain(Country, Height, Mountain_ID, Name, Prominence, Range, _id)
+Correct MQL: db.climber.find({}, { Name: 1}).sort({Points: -1})
+
+[FAILURE TO CORRECT]
+Task: NL-to-MQL
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+Gold MQL: db.singer.find({}, { Name: 1, Country: 1, Age: 1 }).sort({ Age: -1 })
+Student's Broken Draft: singer_in_concert(Singer_ID, _id, concert_ID)
+
+[INSTRUCTIONS]
+1. Write ONE sentence (max 15 words) identifying the structural error.
+2. Output the exact corrected MQL — no comment
+2026-07-11 15:39:51,216 [INFO   ] [teacher_inference] text2nosql_complete  annotated=3  cap_applied=False
+2026-07-11 15:39:51,334 [INFO   ] [teacher_inference] docspider_merge_done  total=4043  entries_with_teacher_data=0
+2026-07-11 15:39:51,411 [INFO   ] [teacher_inference] complete  spider_annotated=3  sql2nosql_annotated=3  text2nosql_annotated=3

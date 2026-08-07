@@ -1,0 +1,30 @@
+📖 Building difficulty reference map from: ./docspider/docspider_ground_truth_dataset/dev.json
+📥 Loading generated experimental predictions from: outputs/codegen/pass1/text2nosql/predictions.json
+
+📊 OFFICIAL DOCSPIDER EXECUTION RESULTS SCORECARD
+=======================================================
+🔹 EASY    Accuracy : 19/132 (14.39%)
+🔹 MEDIUM  Accuracy : 24/307 (7.82%)
+🔹 HARD    Accuracy : 0/102 (0.00%)
+🔹 EXTRA   Accuracy : 0/79 (0.00%)
+=======================================================
+📈 TOTAL DATA EXECUTION ACCURACY: 6.94%
+⚠️  FAILED TRACES CAPTURED: 577
+=======================================================
+
+=======================================================
+📊 OFFICIAL DOCSPIDER EXECUTION RESULTS REPORT
+=======================================================
+📅 Evaluation Run Date : 2026-06-22
+📥 Predictions Source  : outputs/codegen/pass1/text2nosql/predictions.json
+📖 Reference Source    : ./docspider/docspider_ground_truth_dataset/dev.json
+-------------------------------------------------------
+🔹 EASY    Accuracy : 19/132 (14.39%)
+🔹 MEDIUM  Accuracy : 24/307 (7.82%)
+🔹 HARD    Accuracy : 0/102 (0.00%)
+🔹 EXTRA   Accuracy : 0/79 (0.00%)
+=======================================================
+📈 TOTAL DATA EXECUTION ACCURACY: 6.94%
+⚠️  FAILED TRACES CAPTURED: 577
+=======================================================
+💾 Teacher Calibration Queue safely extracted to: outputs/evaluation_reports/teacher_calibration_queue.json

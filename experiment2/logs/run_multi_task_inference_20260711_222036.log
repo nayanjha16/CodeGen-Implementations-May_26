@@ -1,0 +1,46 @@
+2026-07-11 22:20:36,250 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/dev.json  total_tasks=1034  returned=1034  limit_applied=False
+2026-07-11 22:20:36,270 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 22:20:59,305 [INFO   ] [inference] generate_sql  latency_sec=14.8798  input_tokens=157  output_tokens=150
+2026-07-11 22:20:59,306 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: How many artists do we have?
+Target SQL: SELECT count(*) FROM artist
+#########################
+
+### TARGET TASK ###
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:20:59,306 [INFO   ]   >> OUTPUT : Analysis: Verify the schema. | Final_SQL: SELECT count(*) FROM stadium | Final_SQL: SELECT count(*) FROM artist | Final_SQL: SELECT count(*) FROM concert | Final_SQL: SELECT count(*) FROM singer | Final_SQL: SELECT count(*) FROM artist | Final_SQL: SELECT count(*) FROM concert | Final_SQL: SELECT count(*) FROM singer | Final_SQL: SELECT count(*) FROM artist | Final_SQL: SELECT count(*) FROM concert | Final_SQL: SELECT count(*) FROM singer | Final_SQL: SELECT count(*) FROM artist | Final_SQL: SELECT count(*) FROM concert | Final_SQL: SELECT count(*) FROM singer |
+2026-07-11 22:21:01,362 [INFO   ] [inference] generate_sql  latency_sec=1.9903  input_tokens=159  output_tokens=16
+2026-07-11 22:21:01,362 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: What is the total number of clubs?
+Target SQL: SELECT count(*) FROM club
+#########################
+
+### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:21:01,362 [INFO   ]   >> OUTPUT : Answer: 1
+
+### DIAGNOSTIC OUTPUT ###
+2026-07-11 22:21:16,257 [INFO   ] [inference] generate_sql  latency_sec=14.819  input_tokens=193  output_tokens=150
+2026-07-11 22:21:16,257 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: Show the name and country for all people whose age is smaller than the average.
+Target SQL: SELECT name ,  country FROM people WHERE age  <  (SELECT avg(age) FROM people)
+#########################
+
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:21:16,257 [INFO   ]   >> OUTPUT : Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure | Error | Output: Success | Failure |

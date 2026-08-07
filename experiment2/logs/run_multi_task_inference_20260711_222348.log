@@ -1,0 +1,35 @@
+2026-07-11 22:23:48,797 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/dev.json  total_raw=620  valid=620  skipped_incomplete=0  returned=620  limit_applied=False
+2026-07-11 22:23:48,815 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 22:23:53,363 [INFO   ] [inference] generate_nosql  latency_sec=1.9121  input_tokens=147  output_tokens=16
+2026-07-11 22:23:53,363 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:23:53,364 [INFO   ]   >> OUTPUT : Output: Success | Failure
+
+### FILES DEFINITION ###
+2026-07-11 22:23:57,517 [INFO   ] [inference] generate_nosql  latency_sec=4.1506  input_tokens=146  output_tokens=41
+2026-07-11 22:23:57,517 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### TARGET TASK ###
+Question: What are the names, countries, and ages for every singer in descending order of age?
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:23:57,518 [INFO   ]   >> OUTPUT : Output: [Stadium_ID, Theme, Year, _id, Song_Name, Song_release_year, Concert_ID]
+
+### FILES BEHAVIOR ###
+2026-07-11 22:24:02,304 [INFO   ] [inference] generate_nosql  latency_sec=4.7828  input_tokens=144  output_tokens=48
+2026-07-11 22:24:02,304 [INFO   ]   >> INPUT  : [Task: NL-to-MQL]
+### TARGET TASK ###
+Question: What is the average, minimum, and maximum age of all singers from France?
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 22:24:02,304 [INFO   ]   >> OUTPUT : Output: Average, Minimum, Maximum, Name, Stadium_ID, Theme, Year, Name, Song_ID, Song_Name, Song_release_year | _id
+
+### FILES DEFINITION ###

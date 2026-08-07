@@ -1,0 +1,20 @@
+[
+  {
+    "db_id": "concert_singer",
+    "question": "How many singers do we have?",
+    "query": "SELECT count(*) FROM singer",
+    "broken_draft": "singer_in_concert(concert_ID, Singer_ID)"
+  },
+  {
+    "db_id": "concert_singer",
+    "question": "What is the total number of singers?",
+    "query": "SELECT count(*) FROM singer",
+    "broken_draft": "singer_in_concert(concert_ID, Concert_ID)"
+  },
+  {
+    "db_id": "concert_singer",
+    "question": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+    "query": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+    "broken_draft": "singer_in_concert(concert_ID, Concert_ID)"
+  }
+]

@@ -1,0 +1,53 @@
+2026-07-11 15:43:52,109 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/dev.json  total_tasks=1034  returned=1034  limit_applied=False
+2026-07-11 15:43:52,131 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 15:44:02,219 [INFO   ] [inference] generate_sql  latency_sec=1.9424  input_tokens=157  output_tokens=16
+2026-07-11 15:44:02,219 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: How many artists do we have?
+Target SQL: SELECT count(*) FROM artist
+#########################
+
+### TARGET TASK ###
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:44:02,220 [INFO   ]   >> OUTPUT : Output: 1
+
+### DIAGNOSTIC OUTPUT ###
+2026-07-11 15:44:09,840 [INFO   ] [inference] generate_sql  latency_sec=7.5678  input_tokens=159  output_tokens=77
+2026-07-11 15:44:09,840 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: What is the total number of clubs?
+Target SQL: SELECT count(*) FROM club
+#########################
+
+### TARGET TASK ###
+Question: What is the total number of singers?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:44:09,840 [INFO   ]   >> OUTPUT : Output: Total number of singers: 3
+
+### DIAGNOSTIC MESSAGES ###
+### DIAGNOSTIC TIPULATION ###
+### DIAGNOSTIC CHECKING ###
+### DIAGNOSTIC PLUGIN MIGRATION ###
+### DIAGNOSTIC PLUGIN MIGRATION END ###
+2026-07-11 15:44:13,795 [INFO   ] [inference] generate_sql  latency_sec=3.8997  input_tokens=193  output_tokens=36
+2026-07-11 15:44:13,795 [INFO   ]   >> INPUT  : [Task: NL-to-SQL]
+### REFERENCE EXAMPLE ###
+Context Question: Show the name and country for all people whose age is smaller than the average.
+Target SQL: SELECT name ,  country FROM people WHERE age  <  (SELECT avg(age) FROM people)
+#########################
+
+### TARGET TASK ###
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+
+### SYSTEM RESPONSE ###
+
+2026-07-11 15:44:13,795 [INFO   ]   >> OUTPUT : Output:
+[Task: NL-to-SQL] | [Output: Show name, country, age for all singers ordered by age from the oldest to the youngest.]

@@ -1,0 +1,60 @@
+2026-07-11 22:16:45,593 [INFO   ] [teacher_inference] start  provider=openai  model_id=gpt-4o-mini  max_failures_per_task=3000  mock=True
+2026-07-11 22:16:45,734 [INFO   ] [data_loading] spider_tasks_loaded  path=data/spider/train_spider.json  total_tasks=7000  returned=7000  limit_applied=False
+2026-07-11 22:16:45,765 [INFO   ] [data_loading] docspider_tasks_loaded  path=docspider/docspider_ground_truth_dataset/train.json  total_raw=4043  valid=4043  skipped_incomplete=0  returned=4043  limit_applied=False
+2026-07-11 22:16:45,779 [INFO   ] [data_loading] spider_schema_maps_loaded  path=data/spider/tables.json  db_count=166
+2026-07-11 22:16:45,784 [INFO   ] [data_loading] docspider_schema_map_loaded  path=docspider/docspider_ground_truth_dataset/collections.json  db_count=159
+2026-07-11 22:16:46,246 [INFO   ] [teacher_inference] rag_index_built  db_count=140  total_examples=11043
+2026-07-11 22:16:46,247 [INFO   ] [teacher_inference] spider_failures_loaded  count=3
+2026-07-11 22:16:46,248 [INFO   ] [teacher_inference] text2sql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 22:16:46,248 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Question: Return the names and locations of shops, ordered by name in alphabetical order.
+Schema: device(Device_ID, Device, Carrier, Package_Version, Applications, Software_Platform) | shop(Shop_ID, Shop_Name, Location, Open_Date, Open_Year) | stock(Shop_ID, Device_ID, Quantity)
+Correct SQL: SELECT Shop_Name ,  LOCATION FROM shop ORDER BY Shop_Name ASC
+
+[FAILURE TO CORRECT]
+Task: NL-to-SQL
+Question: How many singers do we have?
+Schema: stadium(Stadium_ID, Location, Name, Capacity, Highest, Lowest, Average) | singer(Singer_ID, Name, Country, Song_Name, Song_release_year, Age, Is_male) | concert(concert_ID, concert_Name, Theme, Stadium_ID, Year) | singer_in_concert(concert_ID, Singer_ID)
+Gold SQL: SELECT count(*) FROM singer
+Student's Broken Draft: singer_in_concert(concert_ID, Singer_ID)
+
+[INSTRUCTIONS]
+1. Write ONE sentence (max 15 words) identifying the structural error.
+2. Output the exact corrected SQL — no comments, no markdown fences.
+
+[RESPOND WITH STRICT JSON
+2026-07-11 22:16:46,553 [INFO   ] [teacher_inference] text2sql_complete  annotated=3  cap_applied=False
+2026-07-11 22:16:46,557 [INFO   ] [teacher_inference] spider_merge_done  total=7000  replaced_with_teacher_data=0
+2026-07-11 22:16:47,380 [INFO   ] [teacher_inference] sql2nosql_failures_loaded  count=3
+2026-07-11 22:16:47,381 [INFO   ] [teacher_inference] sql2nosql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 22:16:47,381 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Input SQL: SELECT city FROM addresses WHERE city NOT IN ( SELECT DISTINCT t3.city FROM customers AS t1 JOIN customer_addresses AS t2 ON t1.customer_id = t2.customer_id JOIN addresses AS t3 ON t2.address_id = t3.address_id)
+Correct MQL: db.Addresses.aggregate([ { $lookup: { from: "Customer_Addresses", localField: "address_id", foreignField: "address_id", as: "customer_addresses" } }, { $match: { "customer_addresses": { $size: 0 } } }, { $group: { _id: "$city" } }, { $project: { city: "$_id" } } ])
+
+[FAILURE TO CORRECT]
+Task: SQL-to-MQL
+Input SQL: SELECT name , country , age FROM singer ORDER BY age DESC
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+Gold MQL: db.singer.find({}, { Name: 1, Country: 1, Age: 1 }).sort({ Age: -1 })
+Student
+2026-07-11 22:16:47,685 [INFO   ] [teacher_inference] sql2nosql_complete  annotated=3  cap_applied=False
+2026-07-11 22:16:47,687 [INFO   ] [teacher_inference] text2nosql_failures_loaded  count=3
+2026-07-11 22:16:47,689 [INFO   ] [teacher_inference] text2nosql_prompt_preview  index=0  db_id=concert_singer  total=3
+2026-07-11 22:16:47,690 [INFO   ]   >> INPUT  : [REFERENCE EXAMPLE]
+Question: What is the ship with the largest amount of tonnage called?
+Schema: ship(Name, Nationality, Ship_ID, Tonnage, Type, _id) | mission(Code, Fate, Launched_Year, Location, Mission_ID, Ship_ID, Speed_knots, _id)
+Correct MQL: db.ship.find({}, {Name: 1}).sort({Tonnage: -1}).limit(1)
+
+[FAILURE TO CORRECT]
+Task: NL-to-MQL
+Question: Show name, country, age for all singers ordered by age from the oldest to the youngest.
+Schema: stadium(Average, Capacity, Highest, Location, Lowest, Name, Stadium_ID, _id) | concert(Stadium_ID, Theme, Year, _id, concert_ID, concert_Name) | singer(Age, Country, Is_male, Name, Singer_ID, Song_Name, Song_release_year, _id) | singer_in_concert(Singer_ID, _id, concert_ID)
+Gold MQL: db.singer.find({}, { Name: 1, Country: 1, Age: 1 }).sort({ Age: -1 })
+Student's Broken Draft: singer_in_concert(Singer_ID, _id, concert_ID)
+
+[INSTRUCTIONS]
+1. Write ONE sentence (max 15 words) identifying the structural error.
+2. Output the exact corrected MQL — n
+2026-07-11 22:16:47,996 [INFO   ] [teacher_inference] text2nosql_complete  annotated=3  cap_applied=False
+2026-07-11 22:16:48,110 [INFO   ] [teacher_inference] docspider_merge_done  total=4043  entries_with_teacher_data=0
+2026-07-11 22:16:48,188 [INFO   ] [teacher_inference] complete  spider_annotated=3  sql2nosql_annotated=3  text2nosql_annotated=3

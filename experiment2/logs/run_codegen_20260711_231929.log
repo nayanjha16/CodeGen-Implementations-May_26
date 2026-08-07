@@ -1,0 +1,2 @@
+2026-07-11 23:19:29,515 [INFO   ] [orchestration] pipeline_start  start_from=train  run_rag=True  sanity=False  ckpt_pass1=models/codegen_pass1  ckpt_pass2=models/codegen_pass2
+2026-07-11 23:19:29,516 [INFO   ] [orchestration] step_start  label=Pass 1 — Fine-tune CodeGen (standard multi-task)  cmd=finetune_unified.py --checkpoint_dir models/codegen_pass1

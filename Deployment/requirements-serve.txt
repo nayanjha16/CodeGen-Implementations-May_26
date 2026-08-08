@@ -1,0 +1,11 @@
+# Serving-only deps for the model UI (app.py). Layer this ON TOP of the training
+# stack (requirements-lock.txt) — it does NOT re-pin torch/transformers/peft.
+#
+#   pip install -r requirements-lock.txt          # model stack (already installed)
+#   pip install -r requirements-serve.txt         # web layer
+#
+# The web layer is intentionally tiny; all heavy lifting is the existing src/ package.
+
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7            # already transitively present via fastapi; pinned for clarity

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Codegen-phase2 — Query Translator</title>
+<style>
+  :root {
+    --bg: #0f1420; --panel: #171e2e; --panel2: #1e2740; --border: #2b3654;
+    --text: #e6ebf5; --muted: #9aa7c2; --accent: #5b8cff; --accent2: #38d39f;
+    --warn: #ffb454; --err: #ff6b6b; --code: #0b0f1a;
+    --radius: 10px; --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  header {
+    padding: 18px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  header .pill {
+    margin-left: auto; font-size: 12px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 22px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab {
+    padding: 9px 16px; border: 1px solid var(--border); background: var(--panel);
+    color: var(--muted); border-radius: var(--radius); cursor: pointer; font-size: 14px;
+  }
+  .tab.active { color: var(--text); border-color: var(--accent); background: var(--panel2); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+  select, textarea, input {
+    width: 100%; background: var(--code); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    font-size: 14px; font-family: inherit;
+  }
+  textarea { min-height: 96px; resize: vertical; font-family: var(--mono); }
+  .row { display: flex; gap: 12px; align-items: center; }
+  .row .grow { flex: 1; }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .check input { width: auto; }
+  button.run {
+    margin-top: 16px; width: 100%; padding: 12px; font-size: 15px; font-weight: 600;
+    background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer;
+  }
+  button.run:disabled { opacity: .5; cursor: default; }
+  .schema {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    background: var(--code); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px; max-height: 120px; overflow: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  .out { margin-top: 18px; }
+  .block { margin-bottom: 14px; }
+  .block .k { font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--muted); margin-bottom: 6px; }
+  pre.q {
+    font-family: var(--mono); font-size: 13.5px; background: var(--code);
+    border: 1px solid var(--border); border-left: 3px solid var(--accent2);
+    border-radius: 8px; padding: 12px; margin: 0; white-space: pre-wrap; word-break: break-word;
+  }
+  pre.q.draft { border-left-color: var(--muted); color: var(--muted); }
+  .analysis { color: var(--warn); font-style: italic; }
+  .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .exec-ok { color: var(--accent2); } .exec-err { color: var(--err); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; margin-top: 6px; display: block; overflow: auto; }
+  th, td { border: 1px solid var(--border); padding: 6px 9px; text-align: left; white-space: nowrap;
+    font-family: var(--mono); }
+  th { background: var(--panel2); color: var(--muted); position: sticky; top: 0; }
+  .empty { color: var(--muted); font-style: italic; }
+  .banner { padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+  .banner.err { background: rgba(255,107,107,.12); border: 1px solid var(--err); color: #ffd0d0; }
+  .banner.info { background: rgba(91,140,255,.1); border: 1px solid var(--accent); color: #cfe0ff; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -2px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  code.inline { font-family: var(--mono); background: var(--code); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Query Translator</h1>
+  <span class="sub">Run #2 teacher model · two-stage (draft → revise)</span>
+  <span class="pill" id="devpill">…</span>
+</header>
+<main>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Input</h2>
+      <label for="db" id="dbLabel">Database</label>
+      <select id="db"></select>
+
+      <div class="check">
+        <input type="checkbox" id="customToggle" />
+        <label for="customToggle" style="margin:0;color:var(--text)">Use a custom schema (generate only — no execution)</label>
+      </div>
+      <div id="customWrap" style="display:none">
+        <label for="customSchema">Custom schema</label>
+        <textarea id="customSchema" placeholder="table1(col1, col2) | table2(colA, colB)"></textarea>
+      </div>
+
+      <label for="input" id="inputLabel">Input</label>
+      <textarea id="input" placeholder=""></textarea>
+
+      <div class="check">
+        <input type="checkbox" id="execute" checked />
+        <label for="execute" id="executeLabel" style="margin:0;color:var(--text)">Execute the generated query and show results</label>
+      </div>
+
+      <button class="run" id="run">Generate</button>
+      <div id="formError"></div>
+    </section>
+
+    <section class="card">
+      <h2>Schema (sent to the model)</h2>
+      <div class="schema" id="schema">Select a database…</div>
+    </section>
+  </div>
+
+  <section class="card out" id="output" style="display:none">
+    <h2>Result</h2>
+    <div id="resultBody"></div>
+  </section>
+</main>
+
+<script>
+const state = { task: null, tasks: [], inputKind: {}, custom: false };
+
+const outputName = task => (task === "text2sql" ? "SQL" : "MQL");
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try { detail = (await res.json()).detail || detail; } catch {}
+    throw new Error(detail);
+  }
+  return res.json();
+}
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k === "html") n.innerHTML = v; else n.setAttribute(k, v);
+  }
+  for (const c of kids) n.append(c?.nodeType ? c : document.createTextNode(c ?? ""));
+  return n;
+}
+
+async function boot() {
+  try {
+    const h = await api("/health");
+    document.getElementById("devpill").textContent =
+      (h.model_loaded ? "model ready · " : "model loading · ") + h.device;
+  } catch { document.getElementById("devpill").textContent = "server unreachable"; }
+
+  const { tasks } = await api("/api/tasks");
+  state.tasks = tasks;
+  tasks.forEach(t => (state.inputKind[t.id] = t.input_kind));
+  const tabsEl = document.getElementById("tabs");
+  tasks.forEach((t, i) => {
+    const b = el("button", { class: "tab" + (i === 0 ? " active" : "") }, t.label);
+    b.onclick = () => selectTask(t.id, b);
+    tabsEl.append(b);
+  });
+  await selectTask(tasks[0].id, tabsEl.firstChild);
+}
+
+async function selectTask(task, btn) {
+  state.task = task;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+
+  const kind = state.inputKind[task];
+  const label = kind === "sql" ? "Source SQL query" : "Natural language question";
+  const ph = kind === "sql"
+    ? "SELECT name FROM singer WHERE age > 30 ORDER BY name"
+    : "How many singers are older than 30?";
+  document.getElementById("inputLabel").textContent = label;
+  document.getElementById("input").placeholder = ph;
+  document.getElementById("run").textContent = "Generate " + outputName(task);
+
+  const dbSel = document.getElementById("db");
+  dbSel.innerHTML = "<option>loading…</option>";
+  const { databases } = await api(`/api/databases?task=${task}`);
+  dbSel.innerHTML = "";
+  databases.forEach(d => dbSel.append(el("option", { value: d }, d)));
+  dbSel.onchange = loadSchema;
+  await loadSchema();
+}
+
+async function loadSchema() {
+  if (state.custom) return;  // preview card shows the editable custom schema note instead
+  const task = state.task, db = document.getElementById("db").value;
+  const box = document.getElementById("schema");
+  if (!db) { box.textContent = "Select a database…"; return; }
+  box.textContent = "loading…";
+  try {
+    const { schema } = await api(`/api/schema?task=${task}&db_id=${encodeURIComponent(db)}`);
+    box.textContent = schema.split(" | ").join("\n");
+  } catch (e) { box.textContent = "schema error: " + e.message; }
+}
+
+document.getElementById("customToggle").onchange = e => {
+  state.custom = e.target.checked;
+  document.getElementById("customWrap").style.display = state.custom ? "block" : "none";
+  document.getElementById("db").disabled = state.custom;
+  document.getElementById("dbLabel").style.opacity = state.custom ? ".4" : "1";
+  const exec = document.getElementById("execute");
+  exec.disabled = state.custom;
+  document.getElementById("executeLabel").style.opacity = state.custom ? ".4" : "1";
+  const box = document.getElementById("schema");
+  if (state.custom) {
+    box.textContent = "Using the custom schema you paste below. Generate-only — the query is not executed.";
+  } else {
+    loadSchema();
+  }
+};
+
+function renderTable(rows) {
+  if (!rows || rows.length === 0) return el("div", { class: "empty" }, "0 rows");
+  const isObj = typeof rows[0] === "object" && !Array.isArray(rows[0]) && rows[0] !== null;
+  const table = el("table");
+  let cols;
+  if (isObj) {
+    cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+    table.append(el("tr", {}, ...cols.map(c => el("th", {}, c))));
+    rows.forEach(r => table.append(el("tr", {}, ...cols.map(c => el("td", {}, fmt(r[c]))))));
+  } else {
+    const width = Math.max(...rows.map(r => (Array.isArray(r) ? r.length : 1)));
+    cols = Array.from({ length: width }, (_, i) => "col" + (i + 1));
+    table.append(el("tr", {}, ...cols.map(c => el("th", {}, c))));
+    rows.forEach(r => {
+      const cells = Array.isArray(r) ? r : [r];
+      table.append(el("tr", {}, ...Array.from({ length: width }, (_, i) => el("td", {}, fmt(cells[i])))));
+    });
+  }
+  return table;
+}
+function fmt(v) {
+  if (v === null || v === undefined) return "∅";
+  if (typeof v === "object") return JSON.stringify(v);
+  return String(v);
+}
+
+function renderResult(r) {
+  const body = document.getElementById("resultBody");
+  body.innerHTML = "";
+
+  // Final query (headline).
+  body.append(el("div", { class: "block" },
+    el("div", { class: "k" }, "Final query"),
+    el("pre", { class: "q" }, r.final_query || "(empty)")));
+
+  // Stage-B analysis, if any.
+  if (r.analysis) {
+    body.append(el("div", { class: "block" },
+      el("div", { class: "k" }, "Model analysis (stage B)"),
+      el("div", { class: "analysis" }, r.analysis)));
+  }
+
+  // Draft (stage A), collapsed styling.
+  body.append(el("div", { class: "block" },
+    el("div", { class: "k" }, "Stage-A draft (before revision)"),
+    el("pre", { class: "q draft" }, r.draft || "(empty)")));
+
+  body.append(el("div", { class: "meta" },
+    `generated in ${r.generation_ms} ms · engine: ${r.engine} · db: ${r.db_id}`));
+
+  // Generate-only note (custom schema).
+  if (r.custom_schema) {
+    body.append(el("div", { class: "banner info" },
+      "Generate-only: a custom schema has no local database, so the query was not executed."));
+  }
+
+  // Execution.
+  if (r.executed && r.execution) {
+    const ex = r.execution;
+    const head = el("div", { class: "block" }, el("div", { class: "k" }, "Execution result"));
+    if (ex.ok) {
+      let note = `${ex.row_count} row(s)`;
+      if (ex.truncated) note += ` — showing first ${ex.rows.length}`;
+      head.append(el("div", { class: "exec-ok" }, "✓ ran successfully · " + note));
+      head.append(renderTable(ex.rows));
+    } else {
+      head.append(el("div", { class: "exec-err" }, "✗ execution error"));
+      head.append(el("pre", { class: "q" }, ex.error || "unknown error"));
+    }
+    body.append(head);
+  }
+  document.getElementById("output").style.display = "block";
+}
+
+document.getElementById("run").onclick = async () => {
+  const btn = document.getElementById("run");
+  const formErr = document.getElementById("formError");
+  formErr.innerHTML = "";
+  const payload = {
+    task: state.task,
+    input: document.getElementById("input").value,
+    execute: document.getElementById("execute").checked,
+  };
+  if (state.custom) {
+    payload.schema = document.getElementById("customSchema").value;
+    payload.execute = false;
+  } else {
+    payload.db_id = document.getElementById("db").value;
+  }
+  if (!payload.input.trim()) {
+    formErr.append(el("div", { class: "banner err" }, "Enter an input first."));
+    return;
+  }
+  if (state.custom && !payload.schema.trim()) {
+    formErr.append(el("div", { class: "banner err" }, "Paste a custom schema, or uncheck custom schema."));
+    return;
+  }
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Running…';
+  try {
+    const r = await api("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    renderResult(r);
+    document.getElementById("devpill").textContent = "model ready";
+  } catch (e) {
+    formErr.append(el("div", { class: "banner err" }, "Error: " + e.message));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+};
+
+boot();
+</script>
+</body>
+</html>

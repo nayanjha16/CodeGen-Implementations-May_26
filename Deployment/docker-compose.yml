@@ -1,0 +1,40 @@
+# Two-service deployment: the model UI + a MongoDB the NoSQL executor talks to.
+#
+# Before first run, provision the heavy assets (they are gitignored, not in the image):
+#   1. Put the trained Run #2 adapter at ./models/codegen_pass2_teacher
+#   2. Put Spider SQLite DBs at ./data/spider/database  (text2sql execution)
+#   3. Load DocSpider into the mongo service (sql2nosql execution):
+#        docker compose run --rm -e MONGO_HOST=mongo app \
+#          python scripts/setup_mongo.py data/spider/database --confirm
+#   Then: docker compose up
+#
+# GPU: see docs/DEPLOYMENT.md for the CUDA variant (add `deploy.resources` / `--gpus all`).
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_HOST: mongo          # executor points at the mongo service, not localhost
+      MONGO_PORT: "27017"
+      CODEGEN_ARM: teacher       # Run #2 final version
+      CODEGEN_LAZY_LOAD: "1"     # healthy before first (slow) model load
+    volumes:
+      - ./models:/app/models:ro                       # trained adapter (required)
+      - ./data:/app/data:ro                           # Spider SQLite (text2sql exec)
+      - hf-cache:/root/.cache/huggingface             # 1.5B base model cache
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - mongo-data:/data/db                           # persisted DocSpider load
+    # No published port by default — only the app container needs it. Uncomment
+    # to inspect from the host:
+    # ports: ["27017:27017"]
+
+volumes:
+  hf-cache:
+  mongo-data:

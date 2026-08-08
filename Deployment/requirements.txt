@@ -1,0 +1,27 @@
+# Codegen-phase2 — Python 3.12 (see .venv), Apple Silicon / MPS.
+# Human-readable intent. For exact reproducibility use requirements-lock.txt.
+# DO NOT add bitsandbytes: CUDA-only, no Apple Silicon build (see plan.md §2).
+
+# --- core training stack (PyTorch on MPS) ---
+torch>=2.4                 # MPS backend is built in; no CUDA extras on Apple Silicon
+transformers>=4.44
+peft>=0.13                 # LoRA adapters
+datasets>=3.0
+accelerate>=0.34
+
+# --- retrieval / RAG index ---
+sentence-transformers>=3.0 # BAAI/bge-small-en-v1.5 embeddings
+rank-bm25>=0.2             # lexical half of the hybrid retriever
+
+# --- NoSQL execution harness ---
+pymongo>=4.8               # talks to local mongod on 127.0.0.1:27017
+
+# --- teacher (in-process, SAME PyTorch/MPS stack as training) ---
+# Default teacher = Qwen2.5-Coder-14B-Instruct via transformers on MPS (bf16, ~30GB).
+# No separate server, no MLX. Loaded only during the teacher stage, then freed.
+# openai is OPTIONAL: only for the hosted-API teacher fallback (plan §6). Safe to remove.
+openai>=1.40
+
+# --- utilities ---
+numpy>=1.26
+tqdm>=4.66

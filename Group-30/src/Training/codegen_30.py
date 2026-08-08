@@ -1091,6 +1091,7 @@ class FilteredDataset(metaclass=SingletonMeta):
         print("Resetting dataset streams and iterators...")
         self._num_samples = 0
 
+        print(f"UseCache: {self._use_cached} CachedDataset: {self._cached_dataset}")
         # Try to auto-load cached dataset if exists with matching sample count
         if not self._use_cached or self._cached_dataset is None:
             if self._try_load_cached_dataset():
@@ -1098,8 +1099,9 @@ class FilteredDataset(metaclass=SingletonMeta):
                 return
             # No cached dataset found, fall through to streaming
 
-        # Fall back to streaming from HuggingFace
-        self._load_datasets() # Re-call to reload the streams and create new iterators
+            # Fall back to streaming from HuggingFace
+            self._load_datasets() # Re-call to reload the streams and create new iterators
+
 
     def _try_load_cached_dataset(self) -> bool:
         """
@@ -1111,7 +1113,7 @@ class FilteredDataset(metaclass=SingletonMeta):
 
         expected_samples = self._samples_to_cache
         expected_cache_path = get_cache_path(expected_samples)
-
+        print(f"Looking for cached data at {expected_cache_path}");
         # First, try to load the expected cache file
         if os.path.exists(expected_cache_path):
             try:

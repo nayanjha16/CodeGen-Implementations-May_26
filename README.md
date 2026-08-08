@@ -7,6 +7,21 @@ https://github.com/nayanjha16/CodeGen-Implementations-May_26/blob/Group-46/RepoC
 
 ---
 
+## Repository Layout: What's Final vs. Intermediate
+
+- **`Stage 1/`, `Stage 2/`, `Stage 3/`, `Stage 4/`, `Combined Stage 1-3/`** — these are
+  intermediate development snapshots kept for history/traceability. They are **not**
+  the submission.
+- **[`RepoCoderStudio/`](RepoCoderStudio/)** — this is the actual final, submitted
+  project. It supersedes and folds in the work from Stages 1–4 and the combined
+  stage into a single bilingual, repository-aware code-generation system.
+
+To navigate the final project, start with **[`RepoCoderStudio/README.md`](RepoCoderStudio/README.md)**,
+which has a "Start here" table pointing to the implementation report, reviewer
+quick-start guide, reproduction runbook, and training notebooks.
+
+---
+
 ## Discussion Points
 
 **Date:** June 20th  

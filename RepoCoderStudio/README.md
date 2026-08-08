@@ -25,19 +25,21 @@ Choose the document that matches what you need:
 | Review the submission quickly | [`START_HERE.md`](START_HERE.md) |
 | Reproduce, reopen the UI, or deploy | [`RUNBOOK.md`](RUNBOOK.md) |
 | Inspect the original corrected full run | [`notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb`](notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb) |
-| Inspect the final RAG-aware extension | [`notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb`](notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb) |
+| Inspect the RAG-aware extension (v1.2) | [`notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb`](notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb) |
+| Inspect the final transformation-aware continuation (v1.3) | [`notebooks/RepoCoderStudio_RAG_Augmented_Retrain_v1_3_transform.ipynb`](notebooks/RepoCoderStudio_RAG_Augmented_Retrain_v1_3_transform.ipynb) |
 
 ## Canonical submitted models
 
-Two adapters are intentionally retained:
+Three adapters are intentionally retained, one per stage of correction:
 
 | Adapter | Purpose |
 |---|---|
 | `RepoCoderStudio_FastCorrected_LoRA_v1_0` | Combined-stage model used for the six-task baseline-versus-fine-tuned evaluation |
-| `RepoCoderStudio_RAGAware_LoRA_v1_2` | Final serving model, trained with grounded RAG-formatted examples |
+| `RepoCoderStudio_RAGAware_LoRA_v1_2` | Parent RAG-aware model, trained with grounded RAG-formatted examples; reproducible but no longer served |
+| `RepoCoderStudio_RAGAware_LoRA_v1_3_transform` | Final serving model; continues from v1.2 with wrapper-composition and in-place-extension training to fix its copy-only limitation |
 
 The deployable Gradio/FastAPI path uses
-`outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2`.
+`outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_3_transform`.
 
 ## Verified headline evidence
 
@@ -47,11 +49,14 @@ The deployable Gradio/FastAPI path uses
 - Stage 4 retrieval achieved **97% recall@5** on the hand-labelled evaluation
   set; cross-encoder reranking reached **0.980 MRR** in the saved ablation.
 - RepoBench-R top-3 retrieval reached **0.83 for Python** and **0.90 for Java**.
-- The final v1.2 adapter passed the two focused repository-grounding checks:
-  exact LedgerFlow email-regex recovery and exact transfer-policy rule recovery.
+- The v1.2 adapter passed the two focused repository-grounding checks: exact
+  LedgerFlow email-regex recovery and exact transfer-policy rule recovery.
+- The final v1.3 adapter passed all three focused transformation checks
+  (grounded reproduction, wrapper composition, in-place extension), closing
+  the copy-only limitation observed in v1.2.
 
 These claims are backed by machine-readable files in `outputs/evaluation` and
-`outputs/reports`. The targeted v1.2 checks demonstrate the corrected RAG
+`outputs/reports`. The targeted v1.2/v1.3 checks demonstrate the corrected RAG
 behaviour; they are not presented as a new broad six-task statistical study.
 
 ## Project layout
@@ -89,13 +94,15 @@ Copy-Item .env.example .env
 
 Open `http://localhost:8000`, then check
 `http://localhost:8000/api/health`. The health response must name
-`RepoCoderStudio_RAGAware_LoRA_v1_2` and report real, loaded repository and
-corpus indexes.
+`RepoCoderStudio_RAGAware_LoRA_v1_3_transform` and report real, loaded
+repository and corpus indexes.
 
 ## Important operating notes
 
-- Run the notebooks in their documented order. The RAG-aware notebook is an
-  add-on and intentionally reuses artifacts made by the corrected full run.
+- Run the notebooks in their documented order: the corrected full run first,
+  then the RAG-aware extension (v1.2), then the transformation-aware
+  continuation (v1.3). Each RAG-aware notebook is an add-on that intentionally
+  reuses artifacts made by the one before it.
 - The packaged adapter and indexes allow review, UI launch and deployment
   without retraining.
 - Docker functional verification is optional reporting evidence. It does not

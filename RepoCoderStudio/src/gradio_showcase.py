@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from src.browser_code_runner import DemoCodeRunner, format_code_for_display
 from src.demo_showcases import MINIMUM_EXAMPLES_PER_SECTION, showcase_examples
 from src.generation_validation import GenerationOutputValidator
 from src.registry import TaskRegistry
@@ -28,6 +29,7 @@ def build_gradio_showcase(
 
     registry = task_registry or TaskRegistry()
     validator = output_validator or GenerationOutputValidator(gen_engine.config)
+    demo_runner = DemoCodeRunner(timeout_seconds=4)
     engines = dict(retrieval_engines or {})
     if retrieval_engine is not None and "ledgerflow" not in engines:
         engines["ledgerflow"] = retrieval_engine
@@ -175,6 +177,43 @@ def build_gradio_showcase(
             result = "both structurally invalid"
         return f"- **{label}:** {result}"
 
+    def output_language(task_id):
+        if task_id in {"T1", "T4"}:
+            return "python"
+        if task_id in {"T2", "T3"}:
+            return "java"
+        return None
+
+    def output_update(value, task_id):
+        """Update both text and syntax mode whenever the task changes."""
+
+        return gr.update(
+            value=value or "",
+            language=output_language(task_id),
+        )
+
+    def run_generated_output(task_label, source):
+        task_id = task_by_label[task_label]
+        result = demo_runner.run(output_language(task_id) or "text", source)
+        return _runner_result_text(result)
+
+    def _runner_result_text(result):
+        state = str(result.get("status", "UNKNOWN"))
+        message = str(result.get("message", "")).strip()
+        stdout = str(result.get("stdout", "")).strip()
+        parts = [f"{state}: {message}" if message else state]
+        if stdout:
+            parts.append(f"\nPartial stdout:\n{stdout}")
+        return "\n".join(parts)
+
+    def _selected_example(repo_label, selected_label):
+        repo_id = repo_by_label[repo_label]["repository_id"]
+        return next(
+            row for row in examples
+            if row["repository_id"] == repo_id
+            and example_label(row) == selected_label
+        )
+
     def run(
         repo_label,
         task_label,
@@ -276,7 +315,10 @@ def build_gradio_showcase(
                         checked = retry_checked
                         retried = True
 
-                outputs[key] = checked.get("normalized_output", raw)
+                outputs[key] = format_code_for_display(
+                    output_language(task_id),
+                    checked.get("normalized_output", raw),
+                )
                 validations[key] = checked
                 statuses[key] = status(
                     checked,
@@ -326,9 +368,10 @@ def build_gradio_showcase(
             )
 
         return (
-            tuple(outputs[key] for key in keys)
+            tuple(output_update(outputs[key], task_id) for key in keys)
             + tuple(statuses[key] for key in keys)
             + ("\n".join(comparison_lines), "\n".join(evidence_lines))
+            + tuple("" for _ in keys)
         )
 
     # LedgerFlow/T1 is the strongest repository-grounded starting point.
@@ -402,6 +445,8 @@ def build_gradio_showcase(
 
         output_components = []
         status_components = []
+        execute_buttons = []
+        execution_components = []
         with gr.Row():
             for title in (
                 "Baseline / No RAG",
@@ -411,7 +456,22 @@ def build_gradio_showcase(
                     gr.Markdown(f"### {title}")
                     status_components.append(gr.Markdown("_Not run_"))
                     output_components.append(
-                        gr.Code(label="Validated output", lines=16)
+                        gr.Code(
+                            label="Validated output",
+                            lines=16,
+                            language="python",
+                            interactive=False,
+                        )
+                    )
+                    execute_buttons.append(
+                        gr.Button("Run Python / compile Java", size="sm")
+                    )
+                    execution_components.append(
+                        gr.Textbox(
+                            label="Execution result",
+                            lines=4,
+                            interactive=False,
+                        )
                     )
         with gr.Row():
             for title in (
@@ -422,8 +482,34 @@ def build_gradio_showcase(
                     gr.Markdown(f"### {title}")
                     status_components.append(gr.Markdown("_Not run_"))
                     output_components.append(
-                        gr.Code(label="Validated output", lines=16)
+                        gr.Code(
+                            label="Validated output",
+                            lines=16,
+                            language="python",
+                            interactive=False,
+                        )
                     )
+                    execute_buttons.append(
+                        gr.Button("Run Python / compile Java", size="sm")
+                    )
+                    execution_components.append(
+                        gr.Textbox(
+                            label="Execution result",
+                            lines=4,
+                            interactive=False,
+                        )
+                    )
+
+        gr.Markdown(
+            "**Runner scope:** the displayed Python is executed exactly as generated; "
+            "Java is compiled and runs only when it contains `main`. A function "
+            "definition by itself loads successfully but is not automatically called, "
+            "because arbitrary argument values cannot be inferred safely. Execution "
+            "happens on the notebook/app host with "
+            "a short timeout and blocked file, network and process APIs. It is a "
+            "demo convenience; Docker evaluation remains the stronger isolation "
+            "and correctness harness."
+        )
 
         comparison = gr.Markdown()
         with gr.Accordion("Retrieval trace and provenance", open=True):
@@ -463,7 +549,19 @@ def build_gradio_showcase(
             ],
             output_components
             + status_components
-            + [comparison, evidence],
+            + [comparison, evidence]
+            + execution_components,
         )
+
+        for button, code, execution in zip(
+            execute_buttons,
+            output_components,
+            execution_components,
+        ):
+            button.click(
+                run_generated_output,
+                [task_dropdown, code],
+                [execution],
+            )
 
     return demo

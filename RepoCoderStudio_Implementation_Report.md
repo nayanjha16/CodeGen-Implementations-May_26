@@ -7,10 +7,12 @@
 **Document status:** Capstone implementation through Stage 5 completed and evaluated  
 **Full-run notebook:** `notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb`  
 **RAG-aware extension notebook:** `notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb`  
+**Transformation-aware continuation notebook:** `notebooks/RepoCoderStudio_RAG_Augmented_Retrain_v1_3_transform.ipynb`  
 **Full-run profile:** Complete pipeline using a time-bounded, corrected demo data profile  
 **Student model:** `Qwen/Qwen2.5-Coder-0.5B-Instruct`  
 **Combined-stage adapter:** `RepoCoderStudio_FastCorrected_LoRA_v1_0`  
-**Final RAG-aware adapter:** `RepoCoderStudio_RAGAware_LoRA_v1_2`  
+**Parent RAG-aware adapter:** `RepoCoderStudio_RAGAware_LoRA_v1_2`  
+**Final serving adapter:** `RepoCoderStudio_RAGAware_LoRA_v1_3_transform`  
 **Report date:** 6 August 2026
 
 ---
@@ -809,6 +811,25 @@ engine now rejects an unknown selector with a clear error instead of silently
 returning `no_evidence`. This small validation guard prevents a configuration
 mistake from being misreported as a retrieval-quality failure.
 
+## 8.15 Transformation-aware RAG correction (v1.3)
+
+The v1.2 adapter proved that retrieved repository evidence could be reproduced
+accurately, but two controlled tests exposed a more demanding boundary: when
+asked to compose a wrapper around retrieved code or modify that code in place,
+the small model could copy the evidence instead of performing the requested
+transformation. This was treated as a measurable training-distribution gap.
+
+The final v1.3 adapter continues from v1.2 rather than discarding its grounding
+ability. Its focused curriculum combines balanced replay with two new example
+families: dependency-aware wrapper composition and in-place extension while
+preserving existing repository behaviour. Response-safe budgeting retained 637
+of 660 prepared rows; the 23 excluded rows could not fit without risking loss
+of supervised response tokens. The original v1.2 adapter remains available as
+a reproducible parent artifact, while v1.3 is the serving default.
+
+This correction changes the final capability from “retrieve and reproduce” to
+“retrieve, preserve and transform.”
+
 ---
 
 # 9. Generation and output validation
@@ -859,7 +880,7 @@ single validation-guided retry is clearly labelled when it succeeds; it is a
 serving reliability feature and is never counted as first-pass evaluation
 performance. Repository-specific demonstrations use the focused top-1
 repository route so unrelated corpus examples do not crowd out the requested
-private API. A cold-session loader restores the saved v1.2 adapter and
+private API. A cold-session loader restores the saved v1.3 adapter and
 repository indexes without rerunning training or evaluation.
 
 ## 10.2 FastAPI browser interface
@@ -926,6 +947,7 @@ failed or superseded adapter runs are not used as success evidence.
 | Mock embeddings | `False` |
 | Notebook completion status | Full corrected run completed; final Gradio interface launched |
 | RAG-aware extension status | Completed; v1.2 adapter trained, restored in a fresh runtime and verified |
+| Transformation-aware continuation status | Completed; v1.3 adapter trained from v1.2, restored in a fresh runtime and verified as the serving default |
 | Final focused retrieval mode | Repository-only top-1 with real embeddings and cross-encoder reranking |
 
 ## 11.2 Corpus and task construction
@@ -1030,6 +1052,36 @@ Evidence files:
 outputs/reports/training_history.csv
 outputs/reports/training_summary.json
 outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/trained_model_manifest.json
+```
+
+### 11.3.3 Final transformation-aware adapter
+
+| Measure | Final result |
+|---|---:|
+| Adapter path | `outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_3_transform` |
+| Parent adapter | `RepoCoderStudio_RAGAware_LoRA_v1_2` |
+| Training strategy | Continue v1.2 with balanced replay and grounded transformations |
+| Prepared rows | 660 |
+| Retained response-safe rows | 637 |
+| Excluded rows | 23 |
+| Prepared replay rows | 360 |
+| Prepared composition rows | 150 |
+| Prepared in-place extension rows | 150 |
+| Prompt contract | `rag_prompt_contract_v1.3_transform` |
+| Training manifest | `training_manifest_rag_v1.3_transform` |
+| Verification result | 3/3 focused capabilities passed |
+
+The final verification confirms grounded reproduction, wrapper composition and
+in-place extension. Numeric separators were normalized during comparison, so
+Python literals such as `250000` and `250_000` are correctly treated as
+semantically equivalent.
+
+Evidence files:
+
+```text
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_3_transform/trained_model_manifest.json
+outputs/reports/rag_transform_retrain_v1_3_verification.json
+outputs/reports/training_sequence_budget_report_rag_transform_v1_3.json
 ```
 
 ## 11.4 Baseline versus fine-tuned results
@@ -1192,6 +1244,23 @@ correct repository implementation. Structural `PASS` labels in the UI are
 explicitly separated from semantic correctness; the repository-rule checks
 support the grounding claim.
 
+### Final transformation verification
+
+The v1.3 focused verification closes the copying-only limitation observed with
+v1.2. All three controlled tests passed:
+
+| Capability | Result | Retrieved source |
+|---|---|---|
+| Grounded reproduction | PASS | `transfer_risk_score`, score 0.9182 |
+| Wrapper composition | PASS | `transfer_risk_score`, score 0.7842 |
+| In-place weekend-rule extension | PASS | `transfer_risk_score`, score 0.7446 |
+
+The wrapper correctly calls the retrieved dependency instead of copying it.
+The extension preserves all original thresholds, weights, restricted-country
+rules and the 100-point cap, adds `is_weekend` to the signature, and adds 10
+points before applying the existing cap. The saved report records
+`overall_success: true`.
+
 ### Java demonstration boundary
 
 The Java `FraudDetector` example confirmed that the UI, Java retrieval,
@@ -1207,6 +1276,8 @@ Evidence files:
 outputs/reports/stage5_four_arm_repository_demo.json
 outputs/reports/rag_grounded_retrain_v1_2_verification.json
 outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/trained_model_manifest.json
+outputs/reports/rag_transform_retrain_v1_3_verification.json
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_3_transform/trained_model_manifest.json
 ```
 
 ## 11.8 Functional RAG evaluation
@@ -1420,10 +1491,10 @@ Stage 5 capstone scope.
 6. The live GCP URL and post-deployment smoke test are operational deployment
    activities, not part of the completed Stage 5 claim.
 7. The six-task quantitative table evaluates the combined-stage
-   `FastCorrected_LoRA_v1_0` adapter. The later RAG-aware v1.2 adapter was
-   validated with two focused Python repository-grounding cases rather than a
-   second full six-task sweep, because repeating the entire generation matrix
-   would exceed the remaining Colab GPU budget.
+   `FastCorrected_LoRA_v1_0` adapter. The later RAG-aware adapters were
+   validated with focused repository-grounding and transformation tests rather
+   than a second full six-task sweep, because repeating the entire generation
+   matrix would exceed the available Colab GPU budget.
 8. Java retrieval, compilation and UI paths are implemented, but the tested
    fine-tuned Java RAG example remained semantically unreliable. It is reported
    as a model-capacity/generalization limitation, not as a successful Java RAG
@@ -1466,9 +1537,8 @@ The supplied Docker assets provide:
 - a non-root runtime user;
 - `/api/health` readiness reporting;
 - explicit adapter and index paths under the project artifact root;
-- deployment defaults pinned to `RepoCoderStudio_RAGAware_LoRA_v1_2`,
-  `rag_prompt_contract_v1.2` and `training_manifest_rag_v1.2`;
-- image-build checks for the v1.2 weights and manifest, followed by runtime
+- deployment defaults pinned to `RepoCoderStudio_RAGAware_LoRA_v1_3_transform`;
+- image-build checks for the v1.3 weights and manifest, followed by runtime
   manifest checks against the configured model and prompt contract;
 - baseline/fine-tuned and no-RAG/RAG request handling;
 - retrieval scores, method, provenance and decision metadata.
@@ -1486,7 +1556,7 @@ Cloud Storage bucket during controlled startup. The following paths must stay
 consistent:
 
 ```text
-outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_2/
+outputs/adapters/RepoCoderStudio_RAGAware_LoRA_v1_3_transform/
 outputs/repositories/ledgerflow/
 outputs/corpus_index/
 outputs/approved_corpus/
@@ -1536,6 +1606,7 @@ therefore describes the system as **GCP deployment-ready**, not already live.
 | Task and prompt construction | `src/task_builder.py`, `src/prompt_builder.py`, `src/registry.py` |
 | RAG-aware prompt and dataset construction | `src/prompt_builder_rag.py`, `src/task_builder_rag.py` |
 | RAG-aware response-safe budgeting | `src/response_safe_training_rag.py` |
+| Transformation-aware continuation | `src/task_builder_rag_transform.py` |
 | Curriculum | `src/curriculum_builder.py` |
 | Training | `src/trainer.py`, `src/completion_collator.py` |
 | Checkpoints and manifests | `src/checkpoint_manager.py`, `src/artifact_manifest.py` |
@@ -1553,6 +1624,7 @@ therefore describes the system as **GCP deployment-ready**, not already live.
 | Container deployment | `Dockerfile`, `.dockerignore`, `docker-compose.yml` |
 | Full-run notebook | `notebooks/RepoCoderStudio_Fast_Corrected_Retrain.ipynb` |
 | RAG-aware extension notebook | `notebooks/RepoCoderStudio_RAG_Augmented_Retrain.ipynb` |
+| Transformation-aware continuation notebook | `notebooks/RepoCoderStudio_RAG_Augmented_Retrain_v1_3_transform.ipynb` |
 
 ---
 
@@ -1576,14 +1648,24 @@ cross-encoder reranking produced the strongest tested retrieval result at
 0.980 MRR@5. Stage 5 retrieved the hidden transfer policy as the top source and
 made the evidence, score, method and provenance visible to users.
 
-The final RAG-aware extension closed the prompt-contract gap discovered during
-UI testing. Its separately versioned v1.2 adapter trained on 2,877 retained
-rows and was restored successfully in a fresh runtime. With one complete
-repository evidence block, it reproduced the exact LedgerFlow email-validation
-behaviour and every checked hidden transfer-policy rule. These outcomes provide
-a concrete end-to-end demonstration of the intended design: fine-tuning teaches
+The RAG-aware extension closed the prompt-contract gap discovered during UI
+testing. Its separately versioned v1.2 adapter trained on 2,877 retained rows
+and was restored successfully in a fresh runtime. With one complete repository
+evidence block, it reproduced the exact LedgerFlow email-validation behaviour
+and every checked hidden transfer-policy rule. These outcomes provide a
+concrete end-to-end demonstration of the intended design: fine-tuning teaches
 the task contract, retrieval supplies private repository knowledge, and the
 combined system uses that knowledge in generated code.
+
+The final transformation-aware continuation (v1.3) closed a further gap that
+the v1.2 checks did not exercise: reproducing retrieved evidence verbatim is
+not the same as transforming it correctly. Continuing from v1.2 with balanced
+replay and two new example families (dependency-aware wrapper composition and
+in-place extension), the v1.3 adapter passed all three focused capability
+checks — grounded reproduction, wrapper composition and in-place extension —
+while preserving every original repository rule it was extending. v1.3 is the
+adapter shipped as the deployment default; v1.2 remains available as its
+reproducible parent artifact.
 
 The project also produces the artifacts expected of a complete engineering
 capstone: an executed notebook, validated datasets, a trained LoRA adapter,

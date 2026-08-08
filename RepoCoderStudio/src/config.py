@@ -565,7 +565,7 @@ class TrainingConfig:
     demo_task_cap_per_split: int = 10000
 
     final_adapter_name: str = os.environ.get(
-        "REPOCODER_ADAPTER_NAME", "RepoCoderStudio_FastCorrected_LoRA_v1_0"
+        "REPOCODER_ADAPTER_NAME", "RepoCoderStudio_RAGAware_LoRA_v1_3_transform"
     )
 
     # The checkpoint fingerprint must hash the dataset that is actually fed

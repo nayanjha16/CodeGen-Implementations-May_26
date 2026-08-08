@@ -5,3 +5,7 @@
 | Java Compilation Rate                     |                                   100% |
 | Java Pass@1                               |                         98.80%, 98.53% |
 | Python Pass@1                             |                                   100% |
+
+
+ Custom dataset: 332 samples per problem type → 4 × 332 = 1,328 samples total.
+
